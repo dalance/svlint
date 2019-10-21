@@ -1,0 +1,12 @@
+[package]
+name = "svlint"
+version = "0.1.0"
+authors = ["dalance@gmail.com"]
+edition = "2018"
+
+[dependencies]
+colored   = "1.6"
+failure   = "0.1"
+structopt = "0.3"
+sv-parser = {version = "0.2", path = "../sv-parser/sv-parser"}
+term      = "0.5"
