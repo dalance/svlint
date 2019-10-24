@@ -169,16 +169,20 @@ impl Printer {
 
         let mut pos = 0;
         let mut column = 1;
-        let mut last_lf = 0;
+        let mut last_lf = None;
         while pos < s.len() {
             if s.as_bytes()[pos] == CHAR_LF {
                 column += 1;
-                last_lf = pos;
+                last_lf = Some(pos);
             }
             pos += 1;
 
             if failed.beg == pos {
-                let row = pos - last_lf;
+                let row = if let Some(last_lf) = last_lf {
+                    pos - last_lf
+                } else {
+                    pos + 1
+                };
                 let mut next_crlf = pos;
                 while next_crlf < s.len() {
                     if s.as_bytes()[next_crlf] == CHAR_CR || s.as_bytes()[next_crlf] == CHAR_LF {
@@ -207,10 +211,16 @@ impl Printer {
 
                 self.write(&format!("{} |", column), Color::BrightBlue);
 
+                let beg = if let Some(last_lf) = last_lf {
+                    last_lf + 1
+                } else {
+                    0
+                };
+
                 self.write(
                     &format!(
                         " {}\n",
-                        String::from_utf8_lossy(&s.as_bytes()[last_lf + 1..next_crlf])
+                        String::from_utf8_lossy(&s.as_bytes()[beg..next_crlf])
                     ),
                     Color::White,
                 );
@@ -223,7 +233,7 @@ impl Printer {
                 self.write(
                     &format!(
                         " {}{}",
-                        " ".repeat(pos - last_lf - 1),
+                        " ".repeat(pos - beg),
                         "^".repeat(cmp::min(failed.beg + failed.len, next_crlf) - failed.beg)
                     ),
                     Color::BrightYellow,

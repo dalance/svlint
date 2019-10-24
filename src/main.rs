@@ -1,11 +1,15 @@
+mod config;
 mod linter;
 mod printer;
 mod rules;
 
+use crate::config::Config;
 use crate::linter::Linter;
 use crate::printer::Printer;
-use failure::Error;
+use failure::{Error, ResultExt};
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use structopt::{clap, StructOpt};
@@ -42,6 +46,10 @@ pub struct Opt {
     /// Show verbose message
     #[structopt(short = "v", long = "verbose")]
     pub verbose: bool,
+
+    /// Prints config example
+    #[structopt(long = "example")]
+    pub example: bool,
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -70,9 +78,26 @@ pub fn main() {
 
 #[cfg_attr(tarpaulin, skip)]
 pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
-    let _config = search_config(&opt.config);
+    if opt.example {
+        let config = Config::new();
+        println!("{}", toml::to_string(&config).unwrap());
+        return Ok(true);
+    }
 
-    let linter = Linter::new();
+    let config = search_config(&opt.config);
+
+    let config = if let Some(config) = config {
+        let mut f = File::open(&config)
+            .with_context(|_| format!("failed to open: '{}'", config.to_string_lossy()))?;
+        let mut s = String::new();
+        let _ = f.read_to_string(&mut s);
+        toml::from_str(&s)
+            .with_context(|_| format!("failed to parse toml: '{}'", config.to_string_lossy()))?
+    } else {
+        Config::new()
+    };
+
+    let linter = Linter::new(config);
     let mut printer = Printer::new();
 
     let mut defines = HashMap::new();
