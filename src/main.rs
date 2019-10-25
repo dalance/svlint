@@ -13,7 +13,7 @@ use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use structopt::{clap, StructOpt};
-use sv_parser::parse_sv;
+use sv_parser::{parse_sv, ErrorKind};
 
 // -------------------------------------------------------------------------------------------------
 // Opt
@@ -124,7 +124,12 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
                 }
                 defines = new_defines;
             }
-            Err(_) => {}
+            Err(x) => match x.kind() {
+                ErrorKind::Parse(Some((path, pos))) => {
+                    printer.print_error(&path, *pos)?;
+                }
+                _ => (),
+            },
         }
     }
 

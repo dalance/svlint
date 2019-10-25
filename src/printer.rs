@@ -4,6 +4,7 @@ use failure::{Error, ResultExt};
 use std::cmp;
 use std::fs::File;
 use std::io::Read;
+use std::path::Path;
 use term::{self, color, StdoutTerminal};
 
 // -------------------------------------------------------------------------------------------------
@@ -242,6 +243,91 @@ impl Printer {
                 self.write(&format!(" hint: {}\n\n", failed.hint), Color::BrightYellow);
 
                 self.write("", Color::Reset);
+            }
+        }
+        Ok(())
+    }
+
+    #[cfg_attr(tarpaulin, skip)]
+    pub fn print_error(&mut self, path: &Path, error_pos: usize) -> Result<(), Error> {
+        let mut f = File::open(path)
+            .with_context(|_| format!("failed to open: '{}'", path.to_string_lossy()))?;
+        let mut s = String::new();
+        let _ = f.read_to_string(&mut s);
+
+        let mut pos = 0;
+        let mut column = 1;
+        let mut last_lf = None;
+        while pos < s.len() {
+            if s.as_bytes()[pos] == CHAR_LF {
+                column += 1;
+                last_lf = Some(pos);
+            }
+            pos += 1;
+
+            if error_pos == pos {
+                let row = if let Some(last_lf) = last_lf {
+                    pos - last_lf
+                } else {
+                    pos + 1
+                };
+                let mut next_crlf = pos;
+                while next_crlf < s.len() {
+                    if s.as_bytes()[next_crlf] == CHAR_CR || s.as_bytes()[next_crlf] == CHAR_LF {
+                        break;
+                    }
+                    next_crlf += 1;
+                }
+
+                self.write("Error", Color::BrightRed);
+
+                let column_len = format!("{}", column).len();
+
+                self.write(&format!(": parse error\n"), Color::BrightWhite);
+
+                self.write("   -->", Color::BrightBlue);
+
+                self.write(
+                    &format!(" {}:{}:{}\n", path.to_string_lossy(), column, row),
+                    Color::White,
+                );
+
+                self.write(
+                    &format!("{}|\n", " ".repeat(column_len + 1)),
+                    Color::BrightBlue,
+                );
+
+                self.write(&format!("{} |", column), Color::BrightBlue);
+
+                let beg = if let Some(last_lf) = last_lf {
+                    last_lf + 1
+                } else {
+                    0
+                };
+
+                self.write(
+                    &format!(
+                        " {}\n",
+                        String::from_utf8_lossy(&s.as_bytes()[beg..next_crlf])
+                    ),
+                    Color::White,
+                );
+
+                self.write(
+                    &format!("{}|", " ".repeat(column_len + 1)),
+                    Color::BrightBlue,
+                );
+
+                self.write(
+                    &format!(
+                        " {}{}",
+                        " ".repeat(pos - beg),
+                        "^".repeat(cmp::min(error_pos + 1, next_crlf) - error_pos)
+                    ),
+                    Color::BrightYellow,
+                );
+
+                self.write("\n\n", Color::Reset);
             }
         }
         Ok(())
