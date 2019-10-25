@@ -1,9 +1,9 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{RefNode, SyntaxTree};
 
-pub struct ForbidGenerate;
+pub struct GenerateKeyword;
 
-impl Rule for ForbidGenerate {
+impl Rule for GenerateKeyword {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::GenerateRegion(_) => RuleResult::Fail(0),
@@ -12,7 +12,7 @@ impl Rule for ForbidGenerate {
     }
 
     fn name(&self) -> String {
-        String::from("forbid generate")
+        String::from("generate keyword")
     }
 
     fn hint(&self) -> String {

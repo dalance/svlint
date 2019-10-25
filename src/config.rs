@@ -4,20 +4,44 @@ use serde_derive::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
+    #[serde(default)]
+    pub rules: ConfigRules,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ConfigRules {
     #[serde(default = "default_as_true")]
-    pub forbid_always: bool,
+    pub enum_with_type: bool,
     #[serde(default = "default_as_true")]
-    pub forbid_generate: bool,
+    pub generate_keyword: bool,
     #[serde(default = "default_as_true")]
-    pub forbid_priority: bool,
+    pub genvar_declaration: bool,
     #[serde(default = "default_as_true")]
-    pub forbid_tab: bool,
+    pub inout_with_tri: bool,
     #[serde(default = "default_as_true")]
-    pub forbid_unique: bool,
+    pub input_with_var: bool,
     #[serde(default = "default_as_true")]
-    pub forbid_unique0: bool,
+    pub legacy_always: bool,
     #[serde(default = "default_as_true")]
-    pub forbid_wire_reg: bool,
+    pub loop_variable_declaration: bool,
+    #[serde(default = "default_as_true")]
+    pub output_with_var: bool,
+    #[serde(default = "default_as_true")]
+    pub priority_keyword: bool,
+    #[serde(default = "default_as_true")]
+    pub tab_charactor: bool,
+    #[serde(default = "default_as_true")]
+    pub unique0_keyword: bool,
+    #[serde(default = "default_as_true")]
+    pub unique_keyword: bool,
+    #[serde(default = "default_as_true")]
+    pub wire_reg: bool,
+}
+
+impl Default for ConfigRules {
+    fn default() -> Self {
+        toml::from_str("").unwrap()
+    }
 }
 
 #[allow(dead_code)]
@@ -37,26 +61,44 @@ impl Config {
 
     pub fn gen_rules(&self) -> Vec<Box<dyn Rule>> {
         let mut ret: Vec<Box<dyn Rule>> = Vec::new();
-        if self.forbid_always {
-            ret.push(Box::new(ForbidAlways));
+        if self.rules.enum_with_type {
+            ret.push(Box::new(EnumWithType));
         }
-        if self.forbid_generate {
-            ret.push(Box::new(ForbidGenerate));
+        if self.rules.generate_keyword {
+            ret.push(Box::new(GenerateKeyword));
         }
-        if self.forbid_priority {
-            ret.push(Box::new(ForbidPriority));
+        if self.rules.genvar_declaration {
+            ret.push(Box::new(GenvarDeclaration));
         }
-        if self.forbid_tab {
-            ret.push(Box::new(ForbidTab));
+        if self.rules.inout_with_tri {
+            ret.push(Box::new(InoutWithTri));
         }
-        if self.forbid_unique {
-            ret.push(Box::new(ForbidUnique));
+        if self.rules.input_with_var {
+            ret.push(Box::new(InputWithVar));
         }
-        if self.forbid_unique0 {
-            ret.push(Box::new(ForbidUnique0));
+        if self.rules.legacy_always {
+            ret.push(Box::new(LegacyAlways));
         }
-        if self.forbid_wire_reg {
-            ret.push(Box::new(ForbidWireReg));
+        if self.rules.loop_variable_declaration {
+            ret.push(Box::new(LoopVariableDeclaration));
+        }
+        if self.rules.output_with_var {
+            ret.push(Box::new(OutputWithVar));
+        }
+        if self.rules.priority_keyword {
+            ret.push(Box::new(PriorityKeyword));
+        }
+        if self.rules.tab_charactor {
+            ret.push(Box::new(TabCharactor));
+        }
+        if self.rules.unique0_keyword {
+            ret.push(Box::new(Unique0Keyword));
+        }
+        if self.rules.unique_keyword {
+            ret.push(Box::new(UniqueKeyword));
+        }
+        if self.rules.wire_reg {
+            ret.push(Box::new(WireReg));
         }
         ret
     }

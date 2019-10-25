@@ -39,9 +39,13 @@ pub struct Opt {
     #[structopt(short = "c", long = "config", default_value = ".svlint.toml")]
     pub config: PathBuf,
 
-    /// Show results by simple format
-    #[structopt(short = "s", long = "simple")]
-    pub simple: bool,
+    /// Show results by single line
+    #[structopt(short = "1")]
+    pub single: bool,
+
+    /// Suppress message
+    #[structopt(short = "s", long = "silent")]
+    pub silent: bool,
 
     /// Show verbose message
     #[structopt(short = "v", long = "verbose")]
@@ -113,7 +117,9 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
                 for node in &syntax_tree {
                     for failed in linter.check(&syntax_tree, &node) {
                         pass = false;
-                        printer.print(&failed, opt.simple)?;
+                        if !opt.silent {
+                            printer.print(&failed, opt.single)?;
+                        }
                     }
                 }
                 defines = new_defines;
@@ -137,5 +143,97 @@ fn search_config(rule: &Path) -> Option<PathBuf> {
         None
     } else {
         None
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test(name: &str, silent: bool) {
+        let file = format!("testcases/pass/{}.sv", name);
+        let args = if silent {
+            vec!["svlint", "--silent", &file]
+        } else {
+            vec!["svlint", &file]
+        };
+        let opt = Opt::from_iter(args.iter());
+        let ret = run_opt(&opt);
+        assert_eq!(ret.unwrap(), true);
+
+        let file = format!("testcases/fail/{}.sv", name);
+        let args = if silent {
+            vec!["svlint", "--silent", &file]
+        } else {
+            vec!["svlint", &file]
+        };
+        let opt = Opt::from_iter(args.iter());
+        let ret = run_opt(&opt);
+        assert_eq!(ret.unwrap(), false);
+    }
+
+    #[test]
+    fn test_enum_with_type() {
+        test("enum_with_type", true);
+    }
+
+    #[test]
+    fn test_generate_keyword() {
+        test("generate_keyword", true);
+    }
+
+    #[test]
+    fn test_genvar_declaration() {
+        test("genvar_declaration", true);
+    }
+
+    #[test]
+    fn test_inout_with_tri() {
+        test("inout_with_tri", true);
+    }
+
+    #[test]
+    fn test_input_with_var() {
+        test("input_with_var", true);
+    }
+
+    #[test]
+    fn test_legacy_always() {
+        test("legacy_always", true);
+    }
+
+    #[test]
+    fn test_loop_variable_declaration() {
+        test("loop_variable_declaration", true);
+    }
+
+    #[test]
+    fn test_output_with_var() {
+        test("output_with_var", true);
+    }
+
+    #[test]
+    fn test_priority_keyword() {
+        test("priority_keyword", true);
+    }
+
+    #[test]
+    fn test_tab_charactor() {
+        test("tab_charactor", true);
+    }
+
+    #[test]
+    fn test_unique0_keyword() {
+        test("unique0_keyword", true);
+    }
+
+    #[test]
+    fn test_unique_keyword() {
+        test("unique_keyword", true);
+    }
+
+    #[test]
+    fn test_wire_reg() {
+        test("wire_reg", true);
     }
 }

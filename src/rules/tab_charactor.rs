@@ -1,9 +1,9 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{RefNode, SyntaxTree, WhiteSpace};
 
-pub struct ForbidTab;
+pub struct TabCharactor;
 
-impl Rule for ForbidTab {
+impl Rule for TabCharactor {
     fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::WhiteSpace(WhiteSpace::Space(x)) => {
@@ -18,7 +18,7 @@ impl Rule for ForbidTab {
     }
 
     fn name(&self) -> String {
-        String::from("forbid tab")
+        String::from("tab charactor")
     }
 
     fn hint(&self) -> String {

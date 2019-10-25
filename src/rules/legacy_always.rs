@@ -1,9 +1,9 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{AlwaysKeyword, RefNode, SyntaxTree};
 
-pub struct ForbidAlways;
+pub struct LegacyAlways;
 
-impl Rule for ForbidAlways {
+impl Rule for LegacyAlways {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::AlwaysKeyword(AlwaysKeyword::Always(_)) => RuleResult::Fail(0),
@@ -12,7 +12,7 @@ impl Rule for ForbidAlways {
     }
 
     fn name(&self) -> String {
-        String::from("forbid always")
+        String::from("legacy always")
     }
 
     fn hint(&self) -> String {

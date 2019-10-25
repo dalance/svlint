@@ -1,21 +1,21 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{RefNode, SyntaxTree, UniquePriority};
 
-pub struct ForbidUnique0;
+pub struct UniqueKeyword;
 
-impl Rule for ForbidUnique0 {
+impl Rule for UniqueKeyword {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
-            RefNode::UniquePriority(UniquePriority::Unique0(_)) => RuleResult::Fail(0),
+            RefNode::UniquePriority(UniquePriority::Unique(_)) => RuleResult::Fail(0),
             _ => RuleResult::Pass,
         }
     }
 
     fn name(&self) -> String {
-        String::from("forbid unique0")
+        String::from("unique keyword")
     }
 
     fn hint(&self) -> String {
-        String::from("'unique0' is forbidden")
+        String::from("'unique' is forbidden")
     }
 }
