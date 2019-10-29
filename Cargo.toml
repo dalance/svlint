@@ -18,6 +18,6 @@ serde        = "1.0"
 serde_derive = "1.0"
 serde_regex  = "0.4"
 structopt    = "0.3"
-sv-parser    = {version = "0.2", path = "../sv-parser/sv-parser"}
+sv-parser    = "0.3"
 term         = "0.5"
 toml         = "0.4"
