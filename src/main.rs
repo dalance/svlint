@@ -168,6 +168,7 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
     Ok(all_pass)
 }
 
+#[cfg_attr(tarpaulin, skip)]
 fn print_parse_error(printer: &mut Printer, error: sv_parser::Error) -> Result<(), Error> {
     match error.kind() {
         ErrorKind::Parse(Some((path, pos))) => {

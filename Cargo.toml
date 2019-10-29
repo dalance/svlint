@@ -10,6 +10,13 @@ readme = "README.md"
 description = "SystemVerilog linter"
 edition = "2018"
 
+[package.metadata.release]
+dev-version-ext            = "pre"
+pre-release-commit-message = "Prepare to v{{version}}"
+pro-release-commit-message = "Start next development iteration v{{version}}"
+tag-message                = "Bump version to {{version}}"
+tag-prefix                 = ""
+
 [dependencies]
 colored      = "1.6"
 failure      = "0.1"
