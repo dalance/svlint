@@ -250,6 +250,11 @@ mod tests {
     }
 
     #[test]
+    fn test_for_with_begin() {
+        test("for_with_begin", true);
+    }
+
+    #[test]
     fn test_function_with_automatic() {
         test("function_with_automatic", true);
     }

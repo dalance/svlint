@@ -13,6 +13,8 @@ pub struct ConfigRules {
     #[serde(default = "default_as_true")]
     pub enum_with_type: bool,
     #[serde(default = "default_as_true")]
+    pub for_with_begin: bool,
+    #[serde(default = "default_as_true")]
     pub function_with_automatic: bool,
     #[serde(default = "default_as_true")]
     pub generate_for_with_label: bool,
@@ -73,6 +75,9 @@ impl Config {
         let mut ret: Vec<Box<dyn Rule>> = Vec::new();
         if self.rules.enum_with_type {
             ret.push(Box::new(EnumWithType));
+        }
+        if self.rules.for_with_begin {
+            ret.push(Box::new(ForWithBegin));
         }
         if self.rules.function_with_automatic {
             ret.push(Box::new(FunctionWithAutomatic));

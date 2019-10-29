@@ -1,4 +1,5 @@
 pub mod enum_with_type;
+pub mod for_with_begin;
 pub mod function_with_automatic;
 pub mod generate_for_with_label;
 pub mod generate_if_with_label;
@@ -17,6 +18,7 @@ pub mod unique0_keyword;
 pub mod unique_keyword;
 pub mod wire_reg;
 pub use enum_with_type::*;
+pub use for_with_begin::*;
 pub use function_with_automatic::*;
 pub use generate_for_with_label::*;
 pub use generate_if_with_label::*;
