@@ -25,7 +25,7 @@ use sv_parser::{parse_sv, ErrorKind};
 #[structopt(setting(clap::AppSettings::ColoredHelp))]
 pub struct Opt {
     /// Source file
-    #[structopt(required_unless = "filelist")]
+    #[structopt(required_unless_one = &["filelist", "example"])]
     pub files: Vec<PathBuf>,
 
     /// File list

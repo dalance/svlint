@@ -1,4 +1,4 @@
-use crate::config::Config;
+use crate::config::{Config, ConfigOption};
 use std::path::PathBuf;
 use sv_parser::{unwrap_locate, Locate, RefNode, SyntaxTree};
 
@@ -17,6 +17,7 @@ pub trait Rule {
 }
 
 pub struct Linter {
+    option: ConfigOption,
     rules: Vec<Box<dyn Rule>>,
 }
 
@@ -32,7 +33,10 @@ pub struct LintFailed {
 impl Linter {
     pub fn new(config: Config) -> Linter {
         let rules = config.gen_rules();
-        Linter { rules }
+        Linter {
+            option: config.option,
+            rules,
+        }
     }
 
     pub fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> Vec<LintFailed> {
@@ -43,10 +47,15 @@ impl Linter {
         };
 
         let mut ret = Vec::new();
-        for rule in &self.rules {
+        'outer: for rule in &self.rules {
             match rule.check(&syntax_tree, &node) {
                 RuleResult::Fail => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
+                        for exclude in &self.option.exclude_paths {
+                            if exclude.is_match(&path.to_string_lossy()) {
+                                continue 'outer;
+                            }
+                        }
                         let result = LintFailed {
                             path: path.clone(),
                             beg,
@@ -59,6 +68,11 @@ impl Linter {
                 }
                 RuleResult::FailAt(offset, len) => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
+                        for exclude in &self.option.exclude_paths {
+                            if exclude.is_match(&path.to_string_lossy()) {
+                                continue 'outer;
+                            }
+                        }
                         let result = LintFailed {
                             path: path.clone(),
                             beg: beg + offset,
@@ -71,6 +85,11 @@ impl Linter {
                 }
                 RuleResult::FailLocate(x) => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&x) {
+                        for exclude in &self.option.exclude_paths {
+                            if exclude.is_match(&path.to_string_lossy()) {
+                                continue 'outer;
+                            }
+                        }
                         let result = LintFailed {
                             path: path.clone(),
                             beg,

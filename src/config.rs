@@ -1,11 +1,20 @@
 use crate::linter::Rule;
 use crate::rules::*;
+use regex::Regex;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
     #[serde(default)]
+    pub option: ConfigOption,
+    #[serde(default)]
     pub rules: ConfigRules,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ConfigOption {
+    #[serde(with = "serde_regex", default)]
+    pub exclude_paths: Vec<Regex>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -48,6 +57,12 @@ pub struct ConfigRules {
     pub unique_keyword: bool,
     #[serde(default = "default_as_true")]
     pub wire_reg: bool,
+}
+
+impl Default for ConfigOption {
+    fn default() -> Self {
+        toml::from_str("").unwrap()
+    }
 }
 
 impl Default for ConfigRules {
