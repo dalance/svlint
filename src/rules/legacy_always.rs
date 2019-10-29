@@ -6,7 +6,7 @@ pub struct LegacyAlways;
 impl Rule for LegacyAlways {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
-            RefNode::AlwaysKeyword(AlwaysKeyword::Always(_)) => RuleResult::Fail(0),
+            RefNode::AlwaysKeyword(AlwaysKeyword::Always(_)) => RuleResult::Fail,
             _ => RuleResult::Pass,
         }
     }

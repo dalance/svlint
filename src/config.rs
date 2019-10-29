@@ -13,9 +13,17 @@ pub struct ConfigRules {
     #[serde(default = "default_as_true")]
     pub enum_with_type: bool,
     #[serde(default = "default_as_true")]
+    pub function_with_automatic: bool,
+    #[serde(default = "default_as_true")]
+    pub generate_for_with_label: bool,
+    #[serde(default = "default_as_true")]
+    pub generate_if_with_label: bool,
+    #[serde(default = "default_as_true")]
     pub generate_keyword: bool,
     #[serde(default = "default_as_true")]
     pub genvar_declaration: bool,
+    #[serde(default = "default_as_true")]
+    pub if_with_begin: bool,
     #[serde(default = "default_as_true")]
     pub inout_with_tri: bool,
     #[serde(default = "default_as_true")]
@@ -26,6 +34,8 @@ pub struct ConfigRules {
     pub loop_variable_declaration: bool,
     #[serde(default = "default_as_true")]
     pub output_with_var: bool,
+    #[serde(default = "default_as_true")]
+    pub parameter_in_package: bool,
     #[serde(default = "default_as_true")]
     pub priority_keyword: bool,
     #[serde(default = "default_as_true")]
@@ -64,11 +74,23 @@ impl Config {
         if self.rules.enum_with_type {
             ret.push(Box::new(EnumWithType));
         }
+        if self.rules.function_with_automatic {
+            ret.push(Box::new(FunctionWithAutomatic));
+        }
+        if self.rules.generate_for_with_label {
+            ret.push(Box::new(GenerateForWithLabel));
+        }
+        if self.rules.generate_if_with_label {
+            ret.push(Box::new(GenerateIfWithLabel));
+        }
         if self.rules.generate_keyword {
             ret.push(Box::new(GenerateKeyword));
         }
         if self.rules.genvar_declaration {
             ret.push(Box::new(GenvarDeclaration));
+        }
+        if self.rules.if_with_begin {
+            ret.push(Box::new(IfWithBegin));
         }
         if self.rules.inout_with_tri {
             ret.push(Box::new(InoutWithTri));
@@ -84,6 +106,9 @@ impl Config {
         }
         if self.rules.output_with_var {
             ret.push(Box::new(OutputWithVar));
+        }
+        if self.rules.parameter_in_package {
+            ret.push(Box::new(ParameterInPackage));
         }
         if self.rules.priority_keyword {
             ret.push(Box::new(PriorityKeyword));

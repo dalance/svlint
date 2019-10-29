@@ -130,7 +130,6 @@ impl Printer {
                 column += 1;
                 last_lf = pos;
             }
-            pos += 1;
 
             if failed.beg == pos {
                 let row = pos - last_lf;
@@ -154,9 +153,11 @@ impl Printer {
                     ),
                     Color::White,
                 );
-                self.write(&format!("\thint: {}\n", failed.hint), Color::BrightYellow);
-                self.write("", Color::Reset);
+                self.write(&format!("\thint: {}", failed.hint), Color::BrightYellow);
+                self.write("\n", Color::Reset);
             }
+
+            pos += 1;
         }
         Ok(())
     }
@@ -176,7 +177,6 @@ impl Printer {
                 column += 1;
                 last_lf = Some(pos);
             }
-            pos += 1;
 
             if failed.beg == pos {
                 let row = if let Some(last_lf) = last_lf {
@@ -240,16 +240,18 @@ impl Printer {
                     Color::BrightYellow,
                 );
 
-                self.write(&format!(" hint: {}\n\n", failed.hint), Color::BrightYellow);
+                self.write(&format!(" hint: {}\n", failed.hint), Color::BrightYellow);
 
-                self.write("", Color::Reset);
+                self.write("\n", Color::Reset);
             }
+
+            pos += 1;
         }
         Ok(())
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    pub fn print_error(&mut self, path: &Path, error_pos: usize) -> Result<(), Error> {
+    pub fn print_parse_error(&mut self, path: &Path, error_pos: usize) -> Result<(), Error> {
         let mut f = File::open(path)
             .with_context(|_| format!("failed to open: '{}'", path.to_string_lossy()))?;
         let mut s = String::new();
@@ -263,7 +265,6 @@ impl Printer {
                 column += 1;
                 last_lf = Some(pos);
             }
-            pos += 1;
 
             if error_pos == pos {
                 let row = if let Some(last_lf) = last_lf {
@@ -329,7 +330,25 @@ impl Printer {
 
                 self.write("\n\n", Color::Reset);
             }
+
+            pos += 1;
         }
+        Ok(())
+    }
+
+    #[cfg_attr(tarpaulin, skip)]
+    pub fn print_error(&mut self, error: &str) -> Result<(), Error> {
+        self.write("Error", Color::BrightRed);
+        self.write(&format!(": {}", error), Color::BrightWhite);
+        self.write("\n", Color::Reset);
+        Ok(())
+    }
+
+    #[cfg_attr(tarpaulin, skip)]
+    pub fn print_info(&mut self, error: &str) -> Result<(), Error> {
+        self.write("Info", Color::BrightGreen);
+        self.write(&format!(": {}", error), Color::BrightWhite);
+        self.write("\n", Color::Reset);
         Ok(())
     }
 

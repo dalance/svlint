@@ -6,7 +6,7 @@ pub struct GenerateKeyword;
 impl Rule for GenerateKeyword {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
-            RefNode::GenerateRegion(_) => RuleResult::Fail(0),
+            RefNode::GenerateRegion(_) => RuleResult::Fail,
             _ => RuleResult::Pass,
         }
     }

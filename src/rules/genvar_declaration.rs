@@ -11,7 +11,7 @@ impl Rule for GenvarDeclaration {
                 if a.is_some() {
                     RuleResult::Pass
                 } else {
-                    RuleResult::Fail(0)
+                    RuleResult::Fail
                 }
             }
             _ => RuleResult::Pass,

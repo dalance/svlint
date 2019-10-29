@@ -7,7 +7,7 @@ impl Rule for LoopVariableDeclaration {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::ForInitialization(ForInitialization::ListOfVariableAssignments(_)) => {
-                RuleResult::Fail(0)
+                RuleResult::Fail
             }
             _ => RuleResult::Pass,
         }

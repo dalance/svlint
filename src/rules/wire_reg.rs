@@ -6,8 +6,8 @@ pub struct WireReg;
 impl Rule for WireReg {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
-            RefNode::NetType(NetType::Wire(_)) => RuleResult::Fail(0),
-            RefNode::IntegerVectorType(IntegerVectorType::Reg(_)) => RuleResult::Fail(0),
+            RefNode::NetType(NetType::Wire(_)) => RuleResult::Fail,
+            RefNode::IntegerVectorType(IntegerVectorType::Reg(_)) => RuleResult::Fail,
             _ => RuleResult::Pass,
         }
     }

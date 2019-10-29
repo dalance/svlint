@@ -14,7 +14,7 @@ impl Rule for InputWithVar {
                 };
                 let var = unwrap_node!(x.clone(), VarDataTypeVar);
                 if is_input && var.is_none() {
-                    RuleResult::Fail(0)
+                    RuleResult::Fail
                 } else {
                     RuleResult::Pass
                 }

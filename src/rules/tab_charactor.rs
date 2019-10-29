@@ -7,9 +7,9 @@ impl Rule for TabCharactor {
     fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::WhiteSpace(WhiteSpace::Space(x)) => {
-                let text = syntax_tree.get_str(x);
+                let text = syntax_tree.get_str(x).unwrap();
                 match text.find("\t") {
-                    Some(x) => RuleResult::Fail(x),
+                    Some(x) => RuleResult::FailAt(x, 1),
                     None => RuleResult::Pass,
                 }
             }

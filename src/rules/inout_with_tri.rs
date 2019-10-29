@@ -18,7 +18,7 @@ impl Rule for InoutWithTri {
                     _ => false,
                 };
                 if is_inout && !is_tri {
-                    RuleResult::Fail(0)
+                    RuleResult::Fail
                 } else {
                     RuleResult::Pass
                 }

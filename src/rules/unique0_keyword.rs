@@ -6,7 +6,7 @@ pub struct Unique0Keyword;
 impl Rule for Unique0Keyword {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
-            RefNode::UniquePriority(UniquePriority::Unique0(_)) => RuleResult::Fail(0),
+            RefNode::UniquePriority(UniquePriority::Unique0(_)) => RuleResult::Fail,
             _ => RuleResult::Pass,
         }
     }

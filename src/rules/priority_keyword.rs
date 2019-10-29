@@ -6,7 +6,7 @@ pub struct PriorityKeyword;
 impl Rule for PriorityKeyword {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
-            RefNode::UniquePriority(UniquePriority::Priority(_)) => RuleResult::Fail(0),
+            RefNode::UniquePriority(UniquePriority::Priority(_)) => RuleResult::Fail,
             _ => RuleResult::Pass,
         }
     }

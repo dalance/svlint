@@ -11,7 +11,7 @@ impl Rule for EnumWithType {
                 if a.is_some() {
                     RuleResult::Pass
                 } else {
-                    RuleResult::Fail(0)
+                    RuleResult::Fail
                 }
             }
             _ => RuleResult::Pass,

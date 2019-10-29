@@ -1,11 +1,13 @@
 use crate::config::Config;
 use std::path::PathBuf;
-use sv_parser::{unwrap_node, RefNode, SyntaxTree};
+use sv_parser::{unwrap_locate, Locate, RefNode, SyntaxTree};
 
 #[derive(Clone, Copy)]
 pub enum RuleResult {
     Pass,
-    Fail(usize),
+    Fail,
+    FailAt(usize, usize),
+    FailLocate(Locate),
 }
 
 pub trait Rule {
@@ -34,27 +36,52 @@ impl Linter {
     }
 
     pub fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> Vec<LintFailed> {
-        let locate = unwrap_node!(node.clone(), Locate);
+        let locate = if let Some(x) = unwrap_locate!(node.clone()) {
+            x
+        } else {
+            return vec![];
+        };
+
         let mut ret = Vec::new();
         for rule in &self.rules {
-            if let RuleResult::Fail(offset) = rule.check(&syntax_tree, &node) {
-                match locate {
-                    Some(RefNode::Locate(x)) => {
-                        if let Some((path, beg)) = syntax_tree.get_origin(&x) {
-                            let beg = beg + offset;
-                            let len = x.len;
-                            let result = LintFailed {
-                                path: path.clone(),
-                                beg,
-                                len,
-                                name: rule.name(),
-                                hint: rule.hint(),
-                            };
-                            ret.push(result);
-                        }
+            match rule.check(&syntax_tree, &node) {
+                RuleResult::Fail => {
+                    if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
+                        let result = LintFailed {
+                            path: path.clone(),
+                            beg,
+                            len: locate.len,
+                            name: rule.name(),
+                            hint: rule.hint(),
+                        };
+                        ret.push(result);
                     }
-                    _ => (),
                 }
+                RuleResult::FailAt(offset, len) => {
+                    if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
+                        let result = LintFailed {
+                            path: path.clone(),
+                            beg: beg + offset,
+                            len,
+                            name: rule.name(),
+                            hint: rule.hint(),
+                        };
+                        ret.push(result);
+                    }
+                }
+                RuleResult::FailLocate(x) => {
+                    if let Some((path, beg)) = syntax_tree.get_origin(&x) {
+                        let result = LintFailed {
+                            path: path.clone(),
+                            beg,
+                            len: x.len,
+                            name: rule.name(),
+                            hint: rule.hint(),
+                        };
+                        ret.push(result);
+                    }
+                }
+                _ => (),
             }
         }
         ret
