@@ -2,6 +2,12 @@
 name = "svlint"
 version = "0.1.0"
 authors = ["dalance@gmail.com"]
+repository = "https://github.com/dalance/svlint"
+keywords = ["lint", "verilog", "systemverilog"]
+categories = ["command-line-utilities"]
+license = "MIT"
+readme = "README.md"
+description = "SystemVerilog linter"
 edition = "2018"
 
 [dependencies]
