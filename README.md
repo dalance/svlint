@@ -6,6 +6,8 @@ SystemVerilog linter
 [![Crates.io](https://img.shields.io/crates/v/svlint.svg)](https://crates.io/crates/svlint)
 [![codecov](https://codecov.io/gh/dalance/svlint/branch/master/graph/badge.svg)](https://codecov.io/gh/dalance/svlint)
 
+![svlint](https://user-images.githubusercontent.com/4331004/67759475-d3f12700-fa82-11e9-9ec0-c23fc14b8b10.png)
+
 ## Installation
 
 ### Download binary
