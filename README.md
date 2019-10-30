@@ -7,7 +7,7 @@ SystemVerilog linter
 [![codecov](https://codecov.io/gh/dalance/svlint/branch/master/graph/badge.svg)](https://codecov.io/gh/dalance/svlint)
 
 [![Crates.io](https://img.shields.io/crates/v/svlint.svg)](https://crates.io/crates/svlint)
-[![procs](https://snapcraft.io/procs/badge.svg)](https://snapcraft.io/procs)
+[![svlint](https://snapcraft.io/svlint/badge.svg)](https://snapcraft.io/svlint)
 
 ![svlint](https://user-images.githubusercontent.com/4331004/67759664-377b5480-fa83-11e9-895f-7deef6dde516.png)
 
