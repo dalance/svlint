@@ -16,6 +16,9 @@ pre-release-commit-message = "Prepare to v{{version}}"
 pro-release-commit-message = "Start next development iteration v{{version}}"
 tag-message                = "Bump version to {{version}}"
 tag-prefix                 = ""
+pre-release-replacements = [
+    {file="snapcraft.yaml", search="version v[0-9\\.]+", replace="version v{{version}}"},
+]
 
 [dependencies]
 colored      = "1.6"
