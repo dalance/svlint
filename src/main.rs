@@ -107,6 +107,11 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
         Config::new()
     };
 
+    run_opt_config(opt, config)
+}
+
+#[cfg_attr(tarpaulin, skip)]
+pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
     let linter = Linter::new(config);
     let mut printer = Printer::new();
 
@@ -224,6 +229,9 @@ mod tests {
     use super::*;
 
     fn test(name: &str, silent: bool) {
+        let s = format!("[rules]\n{} = true", name);
+        let config: Config = toml::from_str(&s).unwrap();
+
         let file = format!("testcases/pass/{}.sv", name);
         let args = if silent {
             vec!["svlint", "--silent", &file]
@@ -231,7 +239,7 @@ mod tests {
             vec!["svlint", &file]
         };
         let opt = Opt::from_iter(args.iter());
-        let ret = run_opt(&opt);
+        let ret = run_opt_config(&opt, config.clone());
         assert_eq!(ret.unwrap(), true);
 
         let file = format!("testcases/fail/{}.sv", name);
@@ -241,7 +249,7 @@ mod tests {
             vec!["svlint", &file]
         };
         let opt = Opt::from_iter(args.iter());
-        let ret = run_opt(&opt);
+        let ret = run_opt_config(&opt, config.clone());
         assert_eq!(ret.unwrap(), false);
     }
 
@@ -303,6 +311,11 @@ mod tests {
     #[test]
     fn test_loop_variable_declaration() {
         test("loop_variable_declaration", true);
+    }
+
+    #[test]
+    fn test_non_ansi_module() {
+        test("non_ansi_module", true);
     }
 
     #[test]

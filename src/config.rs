@@ -3,7 +3,7 @@ use crate::rules::*;
 use regex::Regex;
 use serde_derive::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
     #[serde(default)]
     pub option: ConfigOption,
@@ -11,51 +11,53 @@ pub struct Config {
     pub rules: ConfigRules,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ConfigOption {
     #[serde(with = "serde_regex", default)]
     pub exclude_paths: Vec<Regex>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ConfigRules {
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub enum_with_type: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub for_with_begin: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub function_with_automatic: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub generate_for_with_label: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub generate_if_with_label: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub generate_keyword: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub genvar_declaration: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub if_with_begin: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub inout_with_tri: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub input_with_var: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub legacy_always: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub loop_variable_declaration: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
+    pub non_ansi_module: bool,
+    #[serde(default = "default_as_false")]
     pub output_with_var: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub parameter_in_package: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub priority_keyword: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub tab_charactor: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub unique0_keyword: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub unique_keyword: bool,
-    #[serde(default = "default_as_true")]
+    #[serde(default = "default_as_false")]
     pub wire_reg: bool,
 }
 
@@ -123,6 +125,9 @@ impl Config {
         }
         if self.rules.loop_variable_declaration {
             ret.push(Box::new(LoopVariableDeclaration));
+        }
+        if self.rules.non_ansi_module {
+            ret.push(Box::new(NonAnsiModule));
         }
         if self.rules.output_with_var {
             ret.push(Box::new(OutputWithVar));
