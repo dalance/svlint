@@ -3,8 +3,11 @@
 SystemVerilog linter
 
 [![Actions Status](https://github.com/dalance/svlint/workflows/Regression/badge.svg)](https://github.com/dalance/svlint/actions)
-[![Crates.io](https://img.shields.io/crates/v/svlint.svg)](https://crates.io/crates/svlint)
+[![Snap Status](https://build.snapcraft.io/badge/dalance/svlint.svg)](https://build.snapcraft.io/user/dalance/svlint)
 [![codecov](https://codecov.io/gh/dalance/svlint/branch/master/graph/badge.svg)](https://codecov.io/gh/dalance/svlint)
+
+[![Crates.io](https://img.shields.io/crates/v/svlint.svg)](https://crates.io/crates/svlint)
+[![procs](https://snapcraft.io/procs/badge.svg)](https://snapcraft.io/procs)
 
 ![svlint](https://user-images.githubusercontent.com/4331004/67759664-377b5480-fa83-11e9-895f-7deef6dde516.png)
 
@@ -14,12 +17,20 @@ SystemVerilog linter
 
 Download from [release page](https://github.com/dalance/svlint/releases/latest), and extract to the directory in PATH.
 
-### Cargo
+### snapcraft
 
-You can install by [cargo](https://crates.io/crates/procs).
+You can install from [snapcraft](https://snapcraft.io/svlint)
 
 ```
-cargo install procs
+sudo snap install svlint
+```
+
+### Cargo
+
+You can install by [cargo](https://crates.io/crates/svlint).
+
+```
+cargo install svlint
 ```
 
 ## Usage
