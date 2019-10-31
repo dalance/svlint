@@ -309,6 +309,11 @@ mod tests {
     }
 
     #[test]
+    fn test_level_sensitive_always() {
+        test("level_sensitive_always", false);
+    }
+
+    #[test]
     fn test_loop_variable_declaration() {
         test("loop_variable_declaration", true);
     }

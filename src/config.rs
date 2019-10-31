@@ -42,6 +42,8 @@ pub struct ConfigRules {
     #[serde(default = "default_as_false")]
     pub legacy_always: bool,
     #[serde(default = "default_as_false")]
+    pub level_sensitive_always: bool,
+    #[serde(default = "default_as_false")]
     pub loop_variable_declaration: bool,
     #[serde(default = "default_as_false")]
     pub non_ansi_module: bool,
@@ -122,6 +124,9 @@ impl Config {
         }
         if self.rules.legacy_always {
             ret.push(Box::new(LegacyAlways));
+        }
+        if self.rules.level_sensitive_always {
+            ret.push(Box::new(LevelSensitiveAlways));
         }
         if self.rules.loop_variable_declaration {
             ret.push(Box::new(LoopVariableDeclaration));
