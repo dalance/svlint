@@ -53,9 +53,9 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    pub fn print(&mut self, failed: &LintFailed, simple: bool) -> Result<(), Error> {
-        if simple {
-            self.print_simple(failed)?;
+    pub fn print(&mut self, failed: &LintFailed, single: bool) -> Result<(), Error> {
+        if single {
+            self.print_single(failed)?;
         } else {
             self.print_pretty(failed)?;
         }
@@ -116,7 +116,7 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    fn print_simple(&mut self, failed: &LintFailed) -> Result<(), Error> {
+    fn print_single(&mut self, failed: &LintFailed) -> Result<(), Error> {
         let mut f = File::open(&failed.path)
             .with_context(|_| format!("failed to open: '{}'", failed.path.to_string_lossy()))?;
         let mut s = String::new();

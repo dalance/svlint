@@ -251,6 +251,16 @@ mod tests {
         let opt = Opt::from_iter(args.iter());
         let ret = run_opt_config(&opt, config.clone());
         assert_eq!(ret.unwrap(), false);
+
+        let file = format!("testcases/fail/{}.sv", name);
+        let args = if silent {
+            vec!["svlint", "-1", "--silent", &file]
+        } else {
+            vec!["svlint", "-1", &file]
+        };
+        let opt = Opt::from_iter(args.iter());
+        let ret = run_opt_config(&opt, config.clone());
+        assert_eq!(ret.unwrap(), false);
     }
 
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
