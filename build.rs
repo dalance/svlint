@@ -38,7 +38,8 @@ fn main() {
         let _ = write!(
             out_rules,
             "#[path = \"{}/src/rules/{}.rs\"]\n",
-            root_dir, file_name
+            root_dir.replace("\\", "\\\\"),
+            file_name
         );
         let _ = write!(out_rules, "pub mod {};\n", file_name);
     }
