@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.0...Unreleased) - ReleaseDate
 
 * [Added] level_sensitive_always rule
+* [Changed] auto generatoin of rule's mod/config
 
 ## [v0.2.0](https://github.com/dalance/svlint/compare/v0.1.0...v0.2.0) - 2019-10-30
 
