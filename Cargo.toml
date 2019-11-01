@@ -31,6 +31,11 @@ serde        = "1.0"
 serde_derive = "1.0"
 serde_regex  = "0.4"
 structopt    = "0.3"
-sv-parser    = "0.3"
+#sv-parser    = "0.3"
+sv-parser    = {path = "../sv-parser/sv-parser"}
 term         = "0.5"
 toml         = "0.4"
+
+[build-dependencies]
+regex   = "1"
+walkdir = "2"
