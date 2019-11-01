@@ -12,7 +12,7 @@ impl Rule for Unique0Keyword {
     }
 
     fn name(&self) -> String {
-        String::from("unique0 keyword")
+        String::from("unique0_keyword")
     }
 
     fn hint(&self) -> String {

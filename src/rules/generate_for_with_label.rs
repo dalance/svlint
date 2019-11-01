@@ -25,7 +25,7 @@ impl Rule for GenerateForWithLabel {
     }
 
     fn name(&self) -> String {
-        String::from("generate for with label")
+        String::from("generate_for_with_label")
     }
 
     fn hint(&self) -> String {

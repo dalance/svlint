@@ -42,7 +42,7 @@ impl Rule for GenerateIfWithLabel {
     }
 
     fn name(&self) -> String {
-        String::from("generate if with label")
+        String::from("generate_if_with_label")
     }
 
     fn hint(&self) -> String {

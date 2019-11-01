@@ -18,7 +18,7 @@ impl Rule for TabCharactor {
     }
 
     fn name(&self) -> String {
-        String::from("tab charactor")
+        String::from("tab_charactor")
     }
 
     fn hint(&self) -> String {

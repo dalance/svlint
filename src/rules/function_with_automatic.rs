@@ -18,7 +18,7 @@ impl Rule for FunctionWithAutomatic {
     }
 
     fn name(&self) -> String {
-        String::from("function with automatic")
+        String::from("function_with_automatic")
     }
 
     fn hint(&self) -> String {

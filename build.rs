@@ -72,6 +72,7 @@ pub struct ConfigRules {{
     let mut out_impl_config = File::create(&out_impl_config).unwrap();
 
     let mut body = String::new();
+    let mut body_all = String::new();
     for (file_name, struct_name) in &rules {
         body.push_str(&format!("        if self.rules.{} {{\n", file_name));
         body.push_str(&format!(
@@ -79,6 +80,7 @@ pub struct ConfigRules {{
             struct_name
         ));
         body.push_str(&format!("        }}\n"));
+        body_all.push_str(&format!("        ret.push(Box::new({}));\n", struct_name));
     }
 
     let str_impl_config = format!(
@@ -93,8 +95,14 @@ impl Config {{
 {}
         ret
     }}
+
+    pub fn gen_all_rules() -> Vec<Box<dyn Rule>> {{
+        let mut ret: Vec<Box<dyn Rule>> = Vec::new();
+{}
+        ret
+    }}
 }}"##,
-        body
+        body, body_all
     );
     let _ = write!(out_impl_config, "{}", str_impl_config);
 

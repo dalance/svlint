@@ -26,7 +26,7 @@ impl Rule for LevelSensitiveAlways {
     }
 
     fn name(&self) -> String {
-        String::from("level sensitive always")
+        String::from("level_sensitive_always")
     }
 
     fn hint(&self) -> String {

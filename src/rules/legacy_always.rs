@@ -12,7 +12,7 @@ impl Rule for LegacyAlways {
     }
 
     fn name(&self) -> String {
-        String::from("legacy always")
+        String::from("legacy_always")
     }
 
     fn hint(&self) -> String {

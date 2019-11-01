@@ -14,7 +14,7 @@ impl Rule for LoopVariableDeclaration {
     }
 
     fn name(&self) -> String {
-        String::from("loop variable declaration")
+        String::from("loop_variable_declaration")
     }
 
     fn hint(&self) -> String {

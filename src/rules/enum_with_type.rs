@@ -19,7 +19,7 @@ impl Rule for EnumWithType {
     }
 
     fn name(&self) -> String {
-        String::from("enum with type")
+        String::from("enum_with_type")
     }
 
     fn hint(&self) -> String {

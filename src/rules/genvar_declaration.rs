@@ -19,7 +19,7 @@ impl Rule for GenvarDeclaration {
     }
 
     fn name(&self) -> String {
-        String::from("genvar declaration")
+        String::from("genvar_declaration")
     }
 
     fn hint(&self) -> String {

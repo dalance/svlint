@@ -64,28 +64,8 @@ By default, all rules are disabled. If you want to enable some rules, `true` can
 
 ### Rules
 
-| Name                      | Description                                                 |
-| ------------------------- | ----------------------------------------------------------- |
-| enum_with_type            | enum must have data type                                    |
-| for_with_begin            | multiline 'for' statement must have 'begin'                 |
-| function_with_automatic   | 'function' must be 'automatic'                              |
-| generate_for_with_label   | 'generate for' must have label                              |
-| generate_if_with_label    | 'generate if' must have label                               |
-| generate_keyword          | 'generate'/'endgenerate' must be omitted                    |
-| genvar_declaration        | genvar must be declared in loop                             |
-| if_with_begin             | multiline 'if' statement must have 'begin'                  |
-| inout_with_tri            | 'inout' must have 'tri'                                     |
-| input_with_var            | 'input' must have 'var'                                     |
-| legacy_always             | 'always_comb'/'always_ff'/'always_latch' must be used       |
-| loop_variable_declaration | loop variable must be declared in loop                      |
-| non_ansi_module           | module declaration must be ANSI-style                       |
-| output_with_var           | 'output' must have 'var'                                    |
-| parameter_in_package      | 'parameter' must be replaced to 'localparam' in package     |
-| priority_keyword          | 'priority' is forbidden                                     |
-| tab_charactor             | tab charactor is forbidden                                  |
-| unique0_keyword           | 'unique0' is forbidden                                      |
-| unique_keyword            | 'unique' is forbidden                                       |
-| wire_reg                  | 'wire'/'reg' must be replaced to 'logic'/'tri'              |
+All rules are [here](./RULES.md).
+Suggesting a new rule through [Issues](https://github.com/dalance/svlint/issues) or [Pull requests](https://github.com/dalance/svlint/pulls) is welcome.
 
 ### Option
 

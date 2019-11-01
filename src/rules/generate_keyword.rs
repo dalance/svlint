@@ -12,7 +12,7 @@ impl Rule for GenerateKeyword {
     }
 
     fn name(&self) -> String {
-        String::from("generate keyword")
+        String::from("generate_keyword")
     }
 
     fn hint(&self) -> String {

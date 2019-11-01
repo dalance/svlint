@@ -34,7 +34,7 @@ impl Rule for ForWithBegin {
     }
 
     fn name(&self) -> String {
-        String::from("for with begin")
+        String::from("for_with_begin")
     }
 
     fn hint(&self) -> String {

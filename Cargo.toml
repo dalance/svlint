@@ -23,6 +23,10 @@ pre-release-replacements = [
     {file="snapcraft.yaml", search="version v[0-9\\.]+", replace="version v{{version}}"},
 ]
 
+[[bin]]
+name = "mdgen"
+path = "src/mdgen.rs"
+
 [dependencies]
 colored      = "1.6"
 failure      = "0.1"

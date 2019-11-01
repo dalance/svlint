@@ -28,7 +28,7 @@ impl Rule for InoutWithTri {
     }
 
     fn name(&self) -> String {
-        String::from("inout with tri")
+        String::from("inout_with_tri")
     }
 
     fn hint(&self) -> String {

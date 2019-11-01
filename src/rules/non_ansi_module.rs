@@ -12,7 +12,7 @@ impl Rule for NonAnsiModule {
     }
 
     fn name(&self) -> String {
-        String::from("non ansi module")
+        String::from("non_ansi_module")
     }
 
     fn hint(&self) -> String {

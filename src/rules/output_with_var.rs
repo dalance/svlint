@@ -24,7 +24,7 @@ impl Rule for OutputWithVar {
     }
 
     fn name(&self) -> String {
-        String::from("output with var")
+        String::from("output_with_var")
     }
 
     fn hint(&self) -> String {

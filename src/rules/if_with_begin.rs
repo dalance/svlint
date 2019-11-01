@@ -90,7 +90,7 @@ impl Rule for IfWithBegin {
     }
 
     fn name(&self) -> String {
-        String::from("if with begin")
+        String::from("if_with_begin")
     }
 
     fn hint(&self) -> String {

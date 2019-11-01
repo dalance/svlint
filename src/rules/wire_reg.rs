@@ -13,7 +13,7 @@ impl Rule for WireReg {
     }
 
     fn name(&self) -> String {
-        String::from("wire reg")
+        String::from("wire_reg")
     }
 
     fn hint(&self) -> String {

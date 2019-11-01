@@ -24,7 +24,7 @@ impl Rule for InputWithVar {
     }
 
     fn name(&self) -> String {
-        String::from("input with var")
+        String::from("input_with_var")
     }
 
     fn hint(&self) -> String {

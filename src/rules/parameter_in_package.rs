@@ -20,7 +20,7 @@ impl Rule for ParameterInPackage {
     }
 
     fn name(&self) -> String {
-        String::from("parameter in package")
+        String::from("parameter_in_package")
     }
 
     fn hint(&self) -> String {

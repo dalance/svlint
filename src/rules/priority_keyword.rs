@@ -12,7 +12,7 @@ impl Rule for PriorityKeyword {
     }
 
     fn name(&self) -> String {
-        String::from("priority keyword")
+        String::from("priority_keyword")
     }
 
     fn hint(&self) -> String {
