@@ -28,6 +28,10 @@ impl Rule for OutputWithVar {
     }
 
     fn hint(&self) -> String {
-        String::from("'output' must have 'var'")
+        String::from("`output` must have `var`")
+    }
+
+    fn reason(&self) -> String {
+        String::from("")
     }
 }

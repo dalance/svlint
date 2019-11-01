@@ -16,6 +16,10 @@ impl Rule for LegacyAlways {
     }
 
     fn hint(&self) -> String {
-        String::from("'always_comb'/'always_ff'/'always_latch' must be used")
+        String::from("`always_comb`/`always_ff`/`always_latch` must be used")
+    }
+
+    fn reason(&self) -> String {
+        String::from("`always` can't detect blocking/non-blocking mistake")
     }
 }

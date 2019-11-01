@@ -17,6 +17,10 @@ impl Rule for WireReg {
     }
 
     fn hint(&self) -> String {
-        String::from("'wire'/'reg' must be replaced to 'logic'/'tri'")
+        String::from("`wire`/`reg` must be replaced to `logic`/`tri`")
+    }
+
+    fn reason(&self) -> String {
+        String::from("`logic` can detect multi-drive")
     }
 }

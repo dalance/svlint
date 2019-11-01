@@ -16,6 +16,10 @@ impl Rule for PriorityKeyword {
     }
 
     fn hint(&self) -> String {
-        String::from("'priority' is forbidden")
+        String::from("`priority` is forbidden")
+    }
+
+    fn reason(&self) -> String {
+        String::from("this causes mismatch between simulaton and synthesis")
     }
 }

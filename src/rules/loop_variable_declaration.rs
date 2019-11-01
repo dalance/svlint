@@ -20,4 +20,8 @@ impl Rule for LoopVariableDeclaration {
     fn hint(&self) -> String {
         String::from("loop variable must be declared in loop")
     }
+
+    fn reason(&self) -> String {
+        String::from("the scope of variable should be minimized")
+    }
 }

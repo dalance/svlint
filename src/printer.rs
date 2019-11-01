@@ -240,7 +240,23 @@ impl Printer {
                     Color::BrightYellow,
                 );
 
-                self.write(&format!(" hint: {}\n", failed.hint), Color::BrightYellow);
+                self.write(&format!(" hint  : {}\n", failed.hint), Color::BrightYellow);
+
+                self.write(
+                    &format!("{}|", " ".repeat(column_len + 1)),
+                    Color::BrightBlue,
+                );
+
+                self.write(
+                    &format!(
+                        " {}{}",
+                        " ".repeat(pos - beg),
+                        " ".repeat(cmp::min(failed.beg + failed.len, next_crlf) - failed.beg)
+                    ),
+                    Color::Yellow,
+                );
+
+                self.write(&format!(" reason: {}\n", failed.reason), Color::Yellow);
 
                 self.write("\n", Color::Reset);
             }

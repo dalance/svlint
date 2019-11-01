@@ -22,6 +22,10 @@ impl Rule for FunctionWithAutomatic {
     }
 
     fn hint(&self) -> String {
-        String::from("'function' must be 'automatic'")
+        String::from("`function` must be `automatic`")
+    }
+
+    fn reason(&self) -> String {
+        String::from("this causes mismatch between simulaton and synthesis")
     }
 }

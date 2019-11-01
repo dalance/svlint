@@ -16,6 +16,10 @@ impl Rule for GenerateKeyword {
     }
 
     fn hint(&self) -> String {
-        String::from("'generate'/'endgenerate' must be omitted")
+        String::from("`generate`/`endgenerate` must be omitted")
+    }
+
+    fn reason(&self) -> String {
+        String::from("")
     }
 }

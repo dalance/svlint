@@ -24,4 +24,8 @@ impl Rule for TabCharactor {
     fn hint(&self) -> String {
         String::from("tab charactor is forbidden")
     }
+
+    fn reason(&self) -> String {
+        String::from("this causes broken indent by editor setting")
+    }
 }

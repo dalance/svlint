@@ -24,6 +24,10 @@ impl Rule for ParameterInPackage {
     }
 
     fn hint(&self) -> String {
-        String::from("'parameter' must be replaced to 'localparam' in package")
+        String::from("`parameter` must be replaced to `localparam` in `package`")
+    }
+
+    fn reason(&self) -> String {
+        String::from("some tools can't take `parameter` in `package`")
     }
 }

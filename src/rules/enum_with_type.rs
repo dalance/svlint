@@ -23,6 +23,10 @@ impl Rule for EnumWithType {
     }
 
     fn hint(&self) -> String {
-        String::from("enum must have data type")
+        String::from("`enum` must have data type")
+    }
+
+    fn reason(&self) -> String {
+        String::from("the default data type is `int`")
     }
 }

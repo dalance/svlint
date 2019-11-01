@@ -18,4 +18,8 @@ impl Rule for NonAnsiModule {
     fn hint(&self) -> String {
         String::from("module declaration must be ANSI-style")
     }
+
+    fn reason(&self) -> String {
+        String::from("non-ANSI-style has duplicated port declaration")
+    }
 }

@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.2...Unreleased) - ReleaseDate
 
+* [Added] reason of rules
+
 ## [v0.2.2](https://github.com/dalance/svlint/compare/v0.2.1...v0.2.2) - 2019-11-01
 
 ## [v0.2.1](https://github.com/dalance/svlint/compare/v0.2.0...v0.2.1) - 2019-11-01

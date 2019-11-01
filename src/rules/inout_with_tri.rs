@@ -32,6 +32,10 @@ impl Rule for InoutWithTri {
     }
 
     fn hint(&self) -> String {
-        String::from("'inout' must have 'tri'")
+        String::from("`inout` must have `tri`")
+    }
+
+    fn reason(&self) -> String {
+        String::from("")
     }
 }

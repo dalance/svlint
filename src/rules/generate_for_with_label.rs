@@ -29,6 +29,10 @@ impl Rule for GenerateForWithLabel {
     }
 
     fn hint(&self) -> String {
-        String::from("'generate for' must have label")
+        String::from("`generate for` must have label")
+    }
+
+    fn reason(&self) -> String {
+        String::from("the hierarchiral path can't be determined")
     }
 }

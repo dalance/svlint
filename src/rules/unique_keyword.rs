@@ -16,6 +16,10 @@ impl Rule for UniqueKeyword {
     }
 
     fn hint(&self) -> String {
-        String::from("'unique' is forbidden")
+        String::from("`unique` is forbidden")
+    }
+
+    fn reason(&self) -> String {
+        String::from("this causes mismatch between simulaton and synthesis")
     }
 }

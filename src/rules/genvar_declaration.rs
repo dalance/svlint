@@ -23,6 +23,10 @@ impl Rule for GenvarDeclaration {
     }
 
     fn hint(&self) -> String {
-        String::from("genvar must be declared in loop")
+        String::from("`genvar` must be declared in loop")
+    }
+
+    fn reason(&self) -> String {
+        String::from("the scope of variable should be minimized")
     }
 }

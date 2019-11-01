@@ -28,6 +28,10 @@ impl Rule for InputWithVar {
     }
 
     fn hint(&self) -> String {
-        String::from("'input' must have 'var'")
+        String::from("`input` must have `var`")
+    }
+
+    fn reason(&self) -> String {
+        String::from("")
     }
 }

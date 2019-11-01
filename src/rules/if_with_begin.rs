@@ -94,6 +94,10 @@ impl Rule for IfWithBegin {
     }
 
     fn hint(&self) -> String {
-        String::from("multiline 'if' statement must have 'begin'")
+        String::from("multiline `if` statement must have `begin`")
+    }
+
+    fn reason(&self) -> String {
+        String::from("if there is not `begin`, the second statatement are confusing")
     }
 }

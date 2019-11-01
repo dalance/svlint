@@ -14,6 +14,7 @@ pub trait Rule {
     fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult;
     fn name(&self) -> String;
     fn hint(&self) -> String;
+    fn reason(&self) -> String;
 }
 
 pub struct Linter {
@@ -28,6 +29,7 @@ pub struct LintFailed {
     pub len: usize,
     pub name: String,
     pub hint: String,
+    pub reason: String,
 }
 
 impl Linter {
@@ -62,6 +64,7 @@ impl Linter {
                             len: locate.len,
                             name: rule.name(),
                             hint: rule.hint(),
+                            reason: rule.reason(),
                         };
                         ret.push(result);
                     }
@@ -79,6 +82,7 @@ impl Linter {
                             len,
                             name: rule.name(),
                             hint: rule.hint(),
+                            reason: rule.reason(),
                         };
                         ret.push(result);
                     }
@@ -96,6 +100,7 @@ impl Linter {
                             len: x.len,
                             name: rule.name(),
                             hint: rule.hint(),
+                            reason: rule.reason(),
                         };
                         ret.push(result);
                     }

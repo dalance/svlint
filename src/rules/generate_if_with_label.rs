@@ -46,6 +46,10 @@ impl Rule for GenerateIfWithLabel {
     }
 
     fn hint(&self) -> String {
-        String::from("'generate if' must have label")
+        String::from("`generate if` must have label")
+    }
+
+    fn reason(&self) -> String {
+        String::from("the hierarchiral path can't be determined")
     }
 }
