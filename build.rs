@@ -110,7 +110,7 @@ impl Config {{
     let out_test = Path::new(&out_dir).join("test.rs");
     let mut out_test = File::create(&out_test).unwrap();
 
-    let test_verbose = ["level_sensitive_always"];
+    let test_verbose = ["case_default"];
 
     for (file_name, _) in &rules {
         let silent = if test_verbose.contains(&file_name.as_str()) {

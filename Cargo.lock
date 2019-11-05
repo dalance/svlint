@@ -561,7 +561,7 @@ dependencies = [
 
 [[package]]
 name = "sv-parser"
-version = "0.3.4"
+version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "nom 5.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -639,7 +639,7 @@ dependencies = [
  "serde_derive 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_regex 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "sv-parser 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sv-parser 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "term 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "walkdir 2.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -845,7 +845,7 @@ dependencies = [
 "checksum strsim 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "8ea5119cdb4c55b55d432abb513a0429384878c15dde60cc77b1c99de1a95a6a"
 "checksum structopt 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "6d4f66a4c0ddf7aee4677995697366de0749b0139057342eccbb609b12d0affc"
 "checksum structopt-derive 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "8fe0c13e476b4e21ff7f5c4ace3818b6d7bdc16897c31c73862471bc1663acae"
-"checksum sv-parser 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)" = "4d3bdecff37cedbb69707e07023663c1a2ed9d0fd723d2b4661d992d3c695bbd"
+"checksum sv-parser 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)" = "fd4a43df55b50186d4a22146a4e7a49e175a5a42f57d38d3c3d5ea14142e1da2"
 "checksum sv-parser-error 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)" = "2b35e3f7058934b812fab0d5dbcab5d825110b8b77b0310fe0a95c1beae1d9fa"
 "checksum sv-parser-macros 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)" = "4439229fe9ab6f5fb7d87bf57f655331ddec08b5aff15fd09ab5ee07ea68b079"
 "checksum sv-parser-parser 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)" = "646ceb0ec2a6b5f9ba33402b1bf2297757673c196003bd514673436dbd79f7fb"

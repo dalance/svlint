@@ -8,8 +8,8 @@ use crate::linter::Linter;
 use crate::printer::Printer;
 use failure::{Error, Fail, ResultExt};
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::Read;
+use std::fs::{File, OpenOptions};
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use structopt::{clap, StructOpt};
@@ -25,7 +25,7 @@ use sv_parser::{parse_sv, ErrorKind};
 #[structopt(setting(clap::AppSettings::ColoredHelp))]
 pub struct Opt {
     /// Source file
-    #[structopt(required_unless_one = &["filelist", "example"])]
+    #[structopt(required_unless_one = &["filelist", "example", "update-config"])]
     pub files: Vec<PathBuf>,
 
     /// File list
@@ -55,6 +55,10 @@ pub struct Opt {
     /// Prints verbose message
     #[structopt(short = "v", long = "verbose")]
     pub verbose: bool,
+
+    /// Updates config
+    #[structopt(long = "update")]
+    pub update_config: bool,
 
     /// Prints config example
     #[structopt(long = "example")]
@@ -101,8 +105,20 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
             .with_context(|_| format!("failed to open '{}'", config.to_string_lossy()))?;
         let mut s = String::new();
         let _ = f.read_to_string(&mut s);
-        toml::from_str(&s)
-            .with_context(|_| format!("failed to parse toml '{}'", config.to_string_lossy()))?
+        let ret = toml::from_str(&s)
+            .with_context(|_| format!("failed to parse toml '{}'", config.to_string_lossy()))?;
+
+        if opt.update_config {
+            let mut f = OpenOptions::new()
+                .write(true)
+                .open(&config)
+                .with_context(|_| format!("failed to open '{}'", config.to_string_lossy()))?;
+            write!(f, "{}", toml::to_string(&ret).unwrap())
+                .with_context(|_| format!("failed to write '{}'", config.to_string_lossy()))?;
+            return Ok(true);
+        }
+
+        ret
     } else {
         println!(
             "Config file '{}' is not found. Use default config",

@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.4...Unreleased) - ReleaseDate
 
+* [Added] case_default / function_same_as_system_function rule
+* [Added] --update option
+
 ## [v0.2.4](https://github.com/dalance/svlint/compare/v0.2.3...v0.2.4) - 2019-11-05
 
 * [Changed] update sv-parser to 0.3.4 ( #5 )
