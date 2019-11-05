@@ -104,6 +104,10 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
         toml::from_str(&s)
             .with_context(|_| format!("failed to parse toml '{}'", config.to_string_lossy()))?
     } else {
+        println!(
+            "Config file '{}' is not found. Use default config",
+            opt.config.to_string_lossy()
+        );
         Config::new()
     };
 

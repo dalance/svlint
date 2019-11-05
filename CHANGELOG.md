@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.3...Unreleased) - ReleaseDate
 
+* [Changed] update sv-parser to 0.3.4 ( #5 )
+
 ## [v0.2.3](https://github.com/dalance/svlint/compare/v0.2.2...v0.2.3) - 2019-11-01
 
 * [Added] reason of rules
