@@ -1,5 +1,50 @@
 # Rules
 
+## case_default
+
+### Description
+
+`case` must have `default` in `always_comb` or `function`
+
+### Reason
+
+'not full case' causes mismatch between simulation and synthesis
+
+### Pass example
+
+```SystemVerilog
+module A;
+always_comb begin
+    case (x)
+        1: y = 0;
+        default: y = 0;
+    endcase
+end
+always_ff begin
+    case (x)
+        1: y = 0;
+    endcase
+end
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+always_comb begin
+    case (x)
+        1: y = 0;
+    endcase
+end
+always_ff begin
+    case (x)
+        1: y = 0;
+    endcase
+end
+endmodule
+```
+
 ## enum_with_type
 
 ### Description
@@ -62,6 +107,34 @@ always_comb begin
         a = 0;
     for (int a=0; a<10; a++) a = 0;
 end
+endmodule
+```
+
+## function_same_as_system_function
+
+### Description
+
+the name of `function` must not be the same as system function
+
+### Reason
+
+some tools confuse function with system function
+
+### Pass example
+
+```SystemVerilog
+module A;
+function my_clog2;
+endfunction
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+function clog2;
+endfunction
 endmodule
 ```
 
