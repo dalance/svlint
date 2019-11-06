@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.4...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.5...Unreleased) - ReleaseDate
+
+## [v0.2.5](https://github.com/dalance/svlint/compare/v0.2.4...v0.2.5) - 2019-11-06
 
 * [Added] case_default / function_same_as_system_function rule
 * [Added] --update option
