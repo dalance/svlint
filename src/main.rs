@@ -215,9 +215,6 @@ fn print_parse_error(printer: &mut Printer, error: sv_parser::Error) -> Result<(
         ErrorKind::DefineArgNotFound(x) => {
             printer.print_error(&format!("define argument '{}' is not found", x))?;
         }
-        ErrorKind::DefineTextNotFound(x) => {
-            printer.print_error(&format!("define text of '{}' is not found", x))?;
-        }
         ErrorKind::DefineNotFound(x) => {
             printer.print_error(&format!("define '{}' is not found", x))?;
         }

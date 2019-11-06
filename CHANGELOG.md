@@ -4,6 +4,7 @@
 
 * [Added] case_default / function_same_as_system_function rule
 * [Added] --update option
+* [Changed] update sv-parser to 0.3.7
 
 ## [v0.2.4](https://github.com/dalance/svlint/compare/v0.2.3...v0.2.4) - 2019-11-05
 
