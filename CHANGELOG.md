@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.5...Unreleased) - ReleaseDate
 
+* [Added] environment variable expansion in filelist
+* [Changed] multiple filelist support
+
 ## [v0.2.5](https://github.com/dalance/svlint/compare/v0.2.4...v0.2.5) - 2019-11-06
 
 * [Added] case_default / function_same_as_system_function rule

@@ -7,6 +7,7 @@ use crate::config::Config;
 use crate::linter::Linter;
 use crate::printer::Printer;
 use failure::{Error, Fail, ResultExt};
+use regex::Regex;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
@@ -30,7 +31,7 @@ pub struct Opt {
 
     /// File list
     #[structopt(short = "f", long = "filelist", conflicts_with = "files")]
-    pub filelist: Option<PathBuf>,
+    pub filelist: Vec<PathBuf>,
 
     /// Define
     #[structopt(short = "d", long = "define", multiple = true, number_of_values = 1)]
@@ -140,17 +141,28 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         defines.insert(define.clone(), None);
     }
 
-    let files = if let Some(ref filelist) = opt.filelist {
-        let mut f = File::open(&filelist)
-            .with_context(|_| format!("failed to open '{}'", filelist.to_string_lossy()))?;
-        let mut s = String::new();
-        let _ = f.read_to_string(&mut s);
-
+    let files = if !opt.filelist.is_empty() {
         let mut files = Vec::new();
+        let re_env = Regex::new(r"\$\{(?P<env>[^}]+)\}").unwrap();
 
-        for line in s.lines() {
-            if !line.starts_with("//") {
-                files.push(PathBuf::from(line));
+        for filelist in &opt.filelist {
+            let mut f = File::open(&filelist)
+                .with_context(|_| format!("failed to open '{}'", filelist.to_string_lossy()))?;
+            let mut s = String::new();
+            let _ = f.read_to_string(&mut s);
+
+            for line in s.lines() {
+                if !line.starts_with("//") {
+                    let mut expanded_line = String::from(line);
+                    for caps in re_env.captures_iter(&line) {
+                        let env = &caps["env"];
+                        if let Ok(env_var) = std::env::var(env) {
+                            expanded_line =
+                                expanded_line.replace(&format!("${{{}}}", env), &env_var);
+                        }
+                    }
+                    files.push(PathBuf::from(expanded_line));
+                }
             }
         }
 
