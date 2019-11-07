@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.6...Unreleased) - ReleaseDate
 
 * [Fixed] --version string
+* [Fixed] space/tab in filelist
 
 ## [v0.2.6](https://github.com/dalance/svlint/compare/v0.2.5...v0.2.6) - 2019-11-07
 

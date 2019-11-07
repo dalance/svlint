@@ -152,7 +152,8 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
             let _ = f.read_to_string(&mut s);
 
             for line in s.lines() {
-                if !line.starts_with("//") {
+                let line = line.trim();
+                if !line.starts_with("//") && line != "" {
                     let mut expanded_line = String::from(line);
                     for caps in re_env.captures_iter(&line) {
                         let env = &caps["env"];
