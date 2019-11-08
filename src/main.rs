@@ -141,42 +141,26 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         defines.insert(define.clone(), None);
     }
 
-    let files = if !opt.filelist.is_empty() {
+    let (files, includes) = if !opt.filelist.is_empty() {
         let mut files = Vec::new();
-        let re_env = Regex::new(r"\$\{(?P<env>[^}]+)\}").unwrap();
+        let mut includes = Vec::new();
 
         for filelist in &opt.filelist {
-            let mut f = File::open(&filelist)
-                .with_context(|_| format!("failed to open '{}'", filelist.to_string_lossy()))?;
-            let mut s = String::new();
-            let _ = f.read_to_string(&mut s);
-
-            for line in s.lines() {
-                let line = line.trim();
-                if !line.starts_with("//") && line != "" {
-                    let mut expanded_line = String::from(line);
-                    for caps in re_env.captures_iter(&line) {
-                        let env = &caps["env"];
-                        if let Ok(env_var) = std::env::var(env) {
-                            expanded_line =
-                                expanded_line.replace(&format!("${{{}}}", env), &env_var);
-                        }
-                    }
-                    files.push(PathBuf::from(expanded_line));
-                }
-            }
+            let (mut f, mut i) = parse_filelist(filelist)?;
+            files.append(&mut f);
+            includes.append(&mut i);
         }
 
-        files
+        (files, includes)
     } else {
-        opt.files.clone()
+        (opt.files.clone(), opt.includes.clone())
     };
 
     let mut all_pass = true;
 
     for path in &files {
         let mut pass = true;
-        match parse_sv(&path, &defines, &opt.includes) {
+        match parse_sv(&path, &defines, &includes) {
             Ok((syntax_tree, new_defines)) => {
                 for node in &syntax_tree {
                     for failed in linter.check(&syntax_tree, &node) {
@@ -252,6 +236,47 @@ fn search_config(rule: &Path) -> Option<PathBuf> {
     } else {
         None
     }
+}
+
+#[cfg_attr(tarpaulin, skip)]
+fn parse_filelist(path: &Path) -> Result<(Vec<PathBuf>, Vec<PathBuf>), Error> {
+    let mut f = File::open(path)
+        .with_context(|_| format!("failed to open '{}'", path.to_string_lossy()))?;
+    let mut s = String::new();
+    let _ = f.read_to_string(&mut s);
+
+    let mut files = Vec::new();
+    let mut includes = Vec::new();
+    let re_env = Regex::new(r"\$\{(?P<env>[^}]+)\}").unwrap();
+
+    for line in s.lines() {
+        let line = line.trim();
+        if !line.starts_with("//") && line != "" {
+            // Expand environment variable
+            let mut expanded_line = String::from(line);
+            for caps in re_env.captures_iter(&line) {
+                let env = &caps["env"];
+                if let Ok(env_var) = std::env::var(env) {
+                    expanded_line = expanded_line.replace(&format!("${{{}}}", env), &env_var);
+                }
+            }
+
+            if line.starts_with("+incdir") {
+                for dir in line.trim_start_matches("+incdir+").split("+") {
+                    includes.push(PathBuf::from(dir));
+                }
+            } else if line.starts_with("-f ") {
+                let path = line.trim_start_matches("-f ");
+                let (mut f, mut i) = parse_filelist(&PathBuf::from(path))?;
+                files.append(&mut f);
+                includes.append(&mut i);
+            } else {
+                files.push(PathBuf::from(expanded_line));
+            }
+        }
+    }
+
+    Ok((files, includes))
 }
 
 #[cfg(test)]

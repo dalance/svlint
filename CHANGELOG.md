@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.6...Unreleased) - ReleaseDate
 
+* [Added] '+incdir'/'-f' in filelist support
 * [Fixed] --version string
 * [Fixed] space/tab in filelist
 
