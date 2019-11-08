@@ -261,12 +261,12 @@ fn parse_filelist(path: &Path) -> Result<(Vec<PathBuf>, Vec<PathBuf>), Error> {
                 }
             }
 
-            if line.starts_with("+incdir") {
-                for dir in line.trim_start_matches("+incdir+").split("+") {
+            if expanded_line.starts_with("+incdir") {
+                for dir in expanded_line.trim_start_matches("+incdir+").split("+") {
                     includes.push(PathBuf::from(dir));
                 }
-            } else if line.starts_with("-f ") {
-                let path = line.trim_start_matches("-f ");
+            } else if expanded_line.starts_with("-f ") {
+                let path = expanded_line.trim_start_matches("-f ");
                 let (mut f, mut i) = parse_filelist(&PathBuf::from(path))?;
                 files.append(&mut f);
                 includes.append(&mut i);
