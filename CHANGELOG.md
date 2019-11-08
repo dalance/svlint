@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.7...Unreleased) - ReleaseDate
 
 * [Fixed] environment variable in +incdir/-f
+* [Fixed] --include is ignored when --filelist exists
 
 ## [v0.2.7](https://github.com/dalance/svlint/compare/v0.2.6...v0.2.7) - 2019-11-08
 

@@ -142,8 +142,8 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
     }
 
     let (files, includes) = if !opt.filelist.is_empty() {
-        let mut files = Vec::new();
-        let mut includes = Vec::new();
+        let mut files = opt.files.clone();
+        let mut includes = opt.includes.clone();
 
         for filelist in &opt.filelist {
             let (mut f, mut i) = parse_filelist(filelist)?;
