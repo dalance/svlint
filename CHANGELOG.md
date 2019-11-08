@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.6...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.7...Unreleased) - ReleaseDate
+
+## [v0.2.7](https://github.com/dalance/svlint/compare/v0.2.6...v0.2.7) - 2019-11-08
 
 * [Added] '+incdir'/'-f' in filelist support
 * [Fixed] --version string
