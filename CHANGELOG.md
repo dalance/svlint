@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.7...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.8...Unreleased) - ReleaseDate
+
+## [v0.2.8](https://github.com/dalance/svlint/compare/v0.2.7...v0.2.8) - 2019-11-08
 
 * [Fixed] environment variable in +incdir/-f
 * [Fixed] --include is ignored when --filelist exists
