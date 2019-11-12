@@ -14,7 +14,7 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use structopt::{clap, StructOpt};
-use sv_parser::{parse_sv, ErrorKind};
+use sv_parser::{parse_sv, Define, DefineText, ErrorKind};
 
 // -------------------------------------------------------------------------------------------------
 // Opt
@@ -146,9 +146,12 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         let mut includes = opt.includes.clone();
 
         for filelist in &opt.filelist {
-            let (mut f, mut i) = parse_filelist(filelist)?;
+            let (mut f, mut i, d) = parse_filelist(filelist)?;
             files.append(&mut f);
             includes.append(&mut i);
+            for (k, v) in d {
+                defines.insert(k, v);
+            }
         }
 
         (files, includes)
@@ -239,7 +242,9 @@ fn search_config(rule: &Path) -> Option<PathBuf> {
 }
 
 #[cfg_attr(tarpaulin, skip)]
-fn parse_filelist(path: &Path) -> Result<(Vec<PathBuf>, Vec<PathBuf>), Error> {
+fn parse_filelist(
+    path: &Path,
+) -> Result<(Vec<PathBuf>, Vec<PathBuf>, HashMap<String, Option<Define>>), Error> {
     let mut f = File::open(path)
         .with_context(|_| format!("failed to open '{}'", path.to_string_lossy()))?;
     let mut s = String::new();
@@ -247,6 +252,7 @@ fn parse_filelist(path: &Path) -> Result<(Vec<PathBuf>, Vec<PathBuf>), Error> {
 
     let mut files = Vec::new();
     let mut includes = Vec::new();
+    let mut defines = HashMap::new();
     let re_env = Regex::new(r"\$\{(?P<env>[^}]+)\}").unwrap();
 
     for line in s.lines() {
@@ -265,18 +271,34 @@ fn parse_filelist(path: &Path) -> Result<(Vec<PathBuf>, Vec<PathBuf>), Error> {
                 for dir in expanded_line.trim_start_matches("+incdir+").split("+") {
                     includes.push(PathBuf::from(dir));
                 }
+            } else if expanded_line.starts_with("+define") {
+                for define in expanded_line.trim_start_matches("+define+").split("+") {
+                    if let Some(pos) = define.find("=") {
+                        let (s, t) = define.split_at(pos);
+                        let define_text = DefineText::new(String::from(&t[1..]), None);
+                        let define = Define::new(String::from(s), vec![], Some(define_text));
+                        defines.insert(String::from(s), Some(define));
+                    } else {
+                        defines.insert(String::from(define), None);
+                    }
+                }
             } else if expanded_line.starts_with("-f ") {
                 let path = expanded_line.trim_start_matches("-f ");
-                let (mut f, mut i) = parse_filelist(&PathBuf::from(path))?;
+                let (mut f, mut i, d) = parse_filelist(&PathBuf::from(path))?;
                 files.append(&mut f);
                 includes.append(&mut i);
+                for (k, v) in d {
+                    defines.insert(k, v);
+                }
+            } else if expanded_line.starts_with("-") || expanded_line.starts_with("+") {
+                // Ignore unknown options
             } else {
                 files.push(PathBuf::from(expanded_line));
             }
         }
     }
 
-    Ok((files, includes))
+    Ok((files, includes, defines))
 }
 
 #[cfg(test)]

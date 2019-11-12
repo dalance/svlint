@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.8...Unreleased) - ReleaseDate
 
+* [Added] '+define' in filelist support
+
 ## [v0.2.8](https://github.com/dalance/svlint/compare/v0.2.7...v0.2.8) - 2019-11-08
 
 * [Fixed] environment variable in +incdir/-f
