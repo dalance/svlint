@@ -67,10 +67,16 @@ By default, all rules are disabled. If you want to enable some rules, `true` can
 All rules are [here](./RULES.md).
 Suggesting a new rule through [Issues](https://github.com/dalance/svlint/issues) or [Pull requests](https://github.com/dalance/svlint/pulls) is welcome.
 
+### Plugin
+
+svlint supports rule plugin. A sample project is below:
+
+https://github.com/dalance/svlint-plugin-sample
+
 ### Option
 
 ```
-svlint 0.1.0
+svlint 0.2.12
 
 USAGE:
     svlint [FLAGS] [OPTIONS] <files>...
@@ -80,14 +86,16 @@ FLAGS:
     -h, --help       Prints help information
     -s, --silent     Suppresses message
     -1               Prints results by single line
+        --update     Updates config
     -V, --version    Prints version information
     -v, --verbose    Prints verbose message
 
 OPTIONS:
-    -c, --config <config>          Config file [default: .svlint.toml]
-    -d, --define <defines>...      Define
-    -f, --filelist <filelist>      File list
-    -i, --include <includes>...    Include path
+    -c, --config <config>           Config file [default: .svlint.toml]
+    -d, --define <defines>...       Define
+    -f, --filelist <filelist>...    File list
+    -i, --include <includes>...     Include path
+    -p, --plugin <plugins>...       Plugin file
 
 ARGS:
     <files>...    Source file
