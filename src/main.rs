@@ -1,11 +1,3 @@
-mod config;
-mod linter;
-mod printer;
-mod rules;
-
-use crate::config::Config;
-use crate::linter::Linter;
-use crate::printer::Printer;
 use failure::{Error, Fail, ResultExt};
 use regex::Regex;
 use std::collections::HashMap;
@@ -15,6 +7,9 @@ use std::path::{Path, PathBuf};
 use std::{env, process};
 use structopt::{clap, StructOpt};
 use sv_parser::{parse_sv, Define, DefineText, ErrorKind};
+use svlint::config::Config;
+use svlint::linter::Linter;
+use svlint::printer::Printer;
 
 // -------------------------------------------------------------------------------------------------
 // Opt
@@ -44,6 +39,10 @@ pub struct Opt {
     /// Config file
     #[structopt(short = "c", long = "config", default_value = ".svlint.toml")]
     pub config: PathBuf,
+
+    /// Plugin file
+    #[structopt(short = "p", long = "plugin", multiple = true, number_of_values = 1)]
+    pub plugins: Vec<PathBuf>,
 
     /// Prints results by single line
     #[structopt(short = "1")]
@@ -133,7 +132,11 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
 
 #[cfg_attr(tarpaulin, skip)]
 pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
-    let linter = Linter::new(config);
+    let mut linter = Linter::new(config);
+    for plugin in &opt.plugins {
+        linter.load(&plugin);
+    }
+
     let mut printer = Printer::new();
 
     let mut defines = HashMap::new();

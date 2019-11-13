@@ -1,5 +1,6 @@
 use crate::config::{Config, ConfigOption};
-use std::path::PathBuf;
+use libloading::{Library, Symbol};
+use std::path::{Path, PathBuf};
 use sv_parser::{unwrap_locate, Locate, RefNode, SyntaxTree};
 
 #[derive(Clone, Copy)]
@@ -20,6 +21,7 @@ pub trait Rule {
 pub struct Linter {
     option: ConfigOption,
     rules: Vec<Box<dyn Rule>>,
+    plugins: Vec<Library>,
 }
 
 #[derive(Debug)]
@@ -38,6 +40,22 @@ impl Linter {
         Linter {
             option: config.option,
             rules,
+            plugins: Vec::new(),
+        }
+    }
+
+    pub fn load(&mut self, path: &Path) {
+        let lib = Library::new(path);
+        if let Ok(lib) = lib {
+            self.plugins.push(lib);
+            let lib = self.plugins.last().unwrap();
+
+            let get_plugin: Result<Symbol<extern "C" fn() -> *mut dyn Rule>, _> =
+                unsafe { lib.get(b"get_plugin") };
+            if let Ok(get_plugin) = get_plugin {
+                let plugin = unsafe { Box::from_raw(get_plugin()) };
+                self.rules.push(plugin);
+            }
         }
     }
 

@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.9...Unreleased) - ReleaseDate
 
+* [Added] plugin support
+
 ## [v0.2.9](https://github.com/dalance/svlint/compare/v0.2.8...v0.2.9) - 2019-11-12
 
 * [Added] '+define' in filelist support
