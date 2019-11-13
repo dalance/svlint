@@ -27,10 +27,6 @@ pre-release-replacements = [
 name = "mdgen"
 path = "src/mdgen.rs"
 
-[[bin]]
-name = "svlint"
-path = "src/svlint.rs"
-
 [dependencies]
 colored      = "1.6"
 failure      = "0.1"
