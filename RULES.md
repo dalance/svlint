@@ -404,6 +404,36 @@ module A (
 endmodule
 ```
 
+## interface_port_with_modport
+
+### Description
+
+interface port must have modport
+
+### Reason
+
+interface port without modport maybe `inout` at synthesis
+
+### Pass example
+
+```SystemVerilog
+module A (
+    test_if.a a,
+    interface.b b
+);
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A (
+    test_if a,
+    interface b
+);
+endmodule
+```
+
 ## legacy_always
 
 ### Description
