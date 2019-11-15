@@ -11,7 +11,7 @@ pub enum RuleResult {
     FailLocate(Locate),
 }
 
-pub trait Rule {
+pub trait Rule: Sync + Send {
     fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult;
     fn name(&self) -> String;
     fn hint(&self) -> String;
