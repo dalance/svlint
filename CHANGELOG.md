@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.13...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.14...Unreleased) - ReleaseDate
+
+## [v0.2.14](https://github.com/dalance/svlint/compare/v0.2.13...v0.2.14) - 2019-11-15
 
 ## [v0.2.13](https://github.com/dalance/svlint/compare/v0.2.12...v0.2.13) - 2019-11-14
 
