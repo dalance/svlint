@@ -71,16 +71,18 @@ pub struct ConfigRules {{
     let out_impl_config = Path::new(&out_dir).join("impl_config.rs");
     let mut out_impl_config = File::create(&out_impl_config).unwrap();
 
-    let mut body = String::new();
-    let mut body_all = String::new();
+    let mut enable_all_body = String::new();
+    let mut gen_rules_body = String::new();
+    let mut gen_all_rules_body = String::new();
     for (file_name, struct_name) in &rules {
-        body.push_str(&format!("        if self.rules.{} {{\n", file_name));
-        body.push_str(&format!(
+        enable_all_body.push_str(&format!("        self.rules.{} = true;\n", file_name));
+        gen_rules_body.push_str(&format!("        if self.rules.{} {{\n", file_name));
+        gen_rules_body.push_str(&format!(
             "            ret.push(Box::new({}));\n",
             struct_name
         ));
-        body.push_str(&format!("        }}\n"));
-        body_all.push_str(&format!("        ret.push(Box::new({}));\n", struct_name));
+        gen_rules_body.push_str(&format!("        }}\n"));
+        gen_all_rules_body.push_str(&format!("        ret.push(Box::new({}));\n", struct_name));
     }
 
     let str_impl_config = format!(
@@ -88,6 +90,11 @@ pub struct ConfigRules {{
 impl Config {{
     pub fn new() -> Self {{
         toml::from_str("").unwrap()
+    }}
+
+    pub fn enable_all(mut self) -> Self {{
+{}
+        self
     }}
 
     pub fn gen_rules(&self) -> Vec<Box<dyn Rule>> {{
@@ -102,7 +109,7 @@ impl Config {{
         ret
     }}
 }}"##,
-        body, body_all
+        enable_all_body, gen_rules_body, gen_all_rules_body
     );
     let _ = write!(out_impl_config, "{}", str_impl_config);
 
