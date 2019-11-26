@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.15...Unreleased) - ReleaseDate
 
+* [Changed] Update sv-parser
+
 ## [v0.2.15](https://github.com/dalance/svlint/compare/v0.2.14...v0.2.15) - 2019-11-25
 
 * [Changed] Enable all rules when .svlint.toml is not found
