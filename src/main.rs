@@ -256,17 +256,24 @@ fn parse_filelist(
     let mut files = Vec::new();
     let mut includes = Vec::new();
     let mut defines = HashMap::new();
-    let re_env = Regex::new(r"\$\{(?P<env>[^}]+)\}").unwrap();
+    let re_env_brace = Regex::new(r"\$\{(?P<env>[^}]+)\}").unwrap();
+    let re_env_paren = Regex::new(r"\$\((?P<env>[^)]+)\)").unwrap();
 
     for line in s.lines() {
         let line = line.trim();
         if !line.starts_with("//") && line != "" {
             // Expand environment variable
             let mut expanded_line = String::from(line);
-            for caps in re_env.captures_iter(&line) {
+            for caps in re_env_brace.captures_iter(&line) {
                 let env = &caps["env"];
                 if let Ok(env_var) = std::env::var(env) {
                     expanded_line = expanded_line.replace(&format!("${{{}}}", env), &env_var);
+                }
+            }
+            for caps in re_env_paren.captures_iter(&line) {
+                let env = &caps["env"];
+                if let Ok(env_var) = std::env::var(env) {
+                    expanded_line = expanded_line.replace(&format!("$({})", env), &env_var);
                 }
             }
 
