@@ -77,6 +77,27 @@ svlint supports rule plugin. A sample project is below:
 
 https://github.com/dalance/svlint-plugin-sample
 
+### Filelist
+
+svlint supports filelist like major EDA tools.
+The following features are supported.
+
+* Substitute environment variables
+* Specify include directories by `+incdir`
+* Define Verilog define by `+define`
+* Include other filelists by `-f`
+
+An example is below:
+
+```
+xxx.sv
+${XXX_DIR}/yyy.sv
+$(XXX_DIR)/zzz.sv
++incdir+$(PWD)/header/src
++define+SYNTHESIS
+-f other.f
+```
+
 ### Option
 
 ```
