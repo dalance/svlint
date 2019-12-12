@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.2.19...Unreleased) - ReleaseDate
 
+* [Changed] Update sv-parser
+
 ## [v0.2.19](https://github.com/dalance/svlint/compare/v0.2.18...v0.2.19) - 2019-12-11
 
 * [Added] Environment variable with paren in filelist
