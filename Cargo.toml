@@ -1,6 +1,6 @@
 [package]
 name = "svlint"
-version = "0.2.20"
+version = "0.2.21-pre"
 authors = ["dalance@gmail.com"]
 repository = "https://github.com/dalance/svlint"
 keywords = ["lint", "verilog", "systemverilog"]
