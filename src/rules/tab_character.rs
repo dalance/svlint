@@ -1,9 +1,9 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{RefNode, SyntaxTree, WhiteSpace};
 
-pub struct TabCharactor;
+pub struct TabCharacter;
 
-impl Rule for TabCharactor {
+impl Rule for TabCharacter {
     fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::WhiteSpace(WhiteSpace::Space(x)) => {
@@ -18,14 +18,14 @@ impl Rule for TabCharactor {
     }
 
     fn name(&self) -> String {
-        String::from("tab_charactor")
+        String::from("tab_character")
     }
 
     fn hint(&self) -> String {
-        String::from("tab charactor is forbidden")
+        String::from("tab character is forbidden")
     }
 
     fn reason(&self) -> String {
-        String::from("this causes broken indent by editor setting")
+        String::from("may cause misalignment depending on editor setting")
     }
 }
