@@ -651,15 +651,15 @@ end
 endmodule
 ```
 
-## tab_charactor
+## tab_character
 
 ### Description
 
-tab charactor is forbidden
+tab character is forbidden
 
 ### Reason
 
-this causes broken indent by editor setting
+may cause misalignment depending on editor setting
 
 ### Pass example
 
