@@ -1,6 +1,6 @@
 use crate::linter::LintFailed;
+use anyhow::{Context, Error};
 use colored::*;
-use failure::{Error, ResultExt};
 use std::cmp;
 use std::fs::File;
 use std::io::Read;
@@ -118,7 +118,7 @@ impl Printer {
     #[cfg_attr(tarpaulin, skip)]
     fn print_single(&mut self, failed: &LintFailed) -> Result<(), Error> {
         let mut f = File::open(&failed.path)
-            .with_context(|_| format!("failed to open: '{}'", failed.path.to_string_lossy()))?;
+            .with_context(|| format!("failed to open: '{}'", failed.path.to_string_lossy()))?;
         let mut s = String::new();
         let _ = f.read_to_string(&mut s);
 
@@ -165,7 +165,7 @@ impl Printer {
     #[cfg_attr(tarpaulin, skip)]
     fn print_pretty(&mut self, failed: &LintFailed) -> Result<(), Error> {
         let mut f = File::open(&failed.path)
-            .with_context(|_| format!("failed to open: '{}'", failed.path.to_string_lossy()))?;
+            .with_context(|| format!("failed to open: '{}'", failed.path.to_string_lossy()))?;
         let mut s = String::new();
         let _ = f.read_to_string(&mut s);
 
@@ -269,7 +269,7 @@ impl Printer {
     #[cfg_attr(tarpaulin, skip)]
     pub fn print_parse_error(&mut self, path: &Path, error_pos: usize) -> Result<(), Error> {
         let mut f = File::open(path)
-            .with_context(|_| format!("failed to open: '{}'", path.to_string_lossy()))?;
+            .with_context(|| format!("failed to open: '{}'", path.to_string_lossy()))?;
         let mut s = String::new();
         let _ = f.read_to_string(&mut s);
 

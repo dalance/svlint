@@ -1,4 +1,4 @@
-use failure::{Error, Fail, ResultExt};
+use anyhow::{Context, Error};
 use regex::Regex;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
@@ -6,7 +6,8 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use structopt::{clap, StructOpt};
-use sv_parser::{parse_sv, Define, DefineText, ErrorKind};
+use sv_parser::Error as SvParserError;
+use sv_parser::{parse_sv, Define, DefineText};
 use svlint::config::Config;
 use svlint::linter::Linter;
 use svlint::printer::Printer;
@@ -102,19 +103,19 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
 
     let config = if let Some(config) = config {
         let mut f = File::open(&config)
-            .with_context(|_| format!("failed to open '{}'", config.to_string_lossy()))?;
+            .with_context(|| format!("failed to open '{}'", config.to_string_lossy()))?;
         let mut s = String::new();
         let _ = f.read_to_string(&mut s);
         let ret = toml::from_str(&s)
-            .with_context(|_| format!("failed to parse toml '{}'", config.to_string_lossy()))?;
+            .with_context(|| format!("failed to parse toml '{}'", config.to_string_lossy()))?;
 
         if opt.update_config {
             let mut f = OpenOptions::new()
                 .write(true)
                 .open(&config)
-                .with_context(|_| format!("failed to open '{}'", config.to_string_lossy()))?;
+                .with_context(|| format!("failed to open '{}'", config.to_string_lossy()))?;
             write!(f, "{}", toml::to_string(&ret).unwrap())
-                .with_context(|_| format!("failed to write '{}'", config.to_string_lossy()))?;
+                .with_context(|| format!("failed to write '{}'", config.to_string_lossy()))?;
             return Ok(true);
         }
 
@@ -197,28 +198,21 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 }
 
 #[cfg_attr(tarpaulin, skip)]
-fn print_parse_error(printer: &mut Printer, error: sv_parser::Error) -> Result<(), Error> {
-    match error.kind() {
-        ErrorKind::Parse(Some((path, pos))) => {
-            printer.print_parse_error(&path, *pos)?;
+fn print_parse_error(printer: &mut Printer, error: SvParserError) -> Result<(), Error> {
+    match error {
+        SvParserError::Parse(Some((path, pos))) => {
+            printer.print_parse_error(&path, pos)?;
         }
-        ErrorKind::Include => {
-            let x = error
-                .cause()
-                .unwrap()
-                .downcast_ref::<sv_parser::Error>()
-                .unwrap();
-            match x.kind() {
-                ErrorKind::File(x) => {
-                    printer.print_error(&format!("failed to include '{}'", x.to_string_lossy()))?;
-                }
-                _ => (),
+        SvParserError::Include { source: x } => match *x {
+            SvParserError::File { source: _, path: x } => {
+                printer.print_error(&format!("failed to include '{}'", x.to_string_lossy()))?;
             }
-        }
-        ErrorKind::DefineArgNotFound(x) => {
+            _ => (),
+        },
+        SvParserError::DefineArgNotFound(x) => {
             printer.print_error(&format!("define argument '{}' is not found", x))?;
         }
-        ErrorKind::DefineNotFound(x) => {
+        SvParserError::DefineNotFound(x) => {
             printer.print_error(&format!("define '{}' is not found", x))?;
         }
         x => {
@@ -248,8 +242,8 @@ fn search_config(rule: &Path) -> Option<PathBuf> {
 fn parse_filelist(
     path: &Path,
 ) -> Result<(Vec<PathBuf>, Vec<PathBuf>, HashMap<String, Option<Define>>), Error> {
-    let mut f = File::open(path)
-        .with_context(|_| format!("failed to open '{}'", path.to_string_lossy()))?;
+    let mut f =
+        File::open(path).with_context(|| format!("failed to open '{}'", path.to_string_lossy()))?;
     let mut s = String::new();
     let _ = f.read_to_string(&mut s);
 
