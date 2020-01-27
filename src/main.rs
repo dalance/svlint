@@ -46,6 +46,10 @@ pub struct Opt {
     #[structopt(short = "p", long = "plugin", multiple = true, number_of_values = 1)]
     pub plugins: Vec<PathBuf>,
 
+    /// Ignore any include
+    #[structopt(long = "ignore-include")]
+    pub ignore_include: bool,
+
     /// Prints results by single line
     #[structopt(short = "1")]
     pub single: bool,
@@ -177,7 +181,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 
     for path in &files {
         let mut pass = true;
-        match parse_sv(&path, &defines, &includes) {
+        match parse_sv(&path, &defines, &includes, opt.ignore_include) {
             Ok((syntax_tree, new_defines)) => {
                 for node in &syntax_tree {
                     for failed in linter.check(&syntax_tree, &node) {
