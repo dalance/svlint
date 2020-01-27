@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.3.0...Unreleased) - ReleaseDate
 
+* [Changed] --define can have value like `--define NAME=VALUE` [#9](https://github.com/dalance/svlint/issues/9)
+
 ## [v0.3.0](https://github.com/dalance/svlint/compare/v0.2.21...v0.3.0) - 2020-01-23
 
 * [Changed] Update sv-parser and Migrate to anyhow

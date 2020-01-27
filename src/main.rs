@@ -1,4 +1,5 @@
 use anyhow::{Context, Error};
+use enquote;
 use regex::Regex;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
@@ -142,7 +143,16 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 
     let mut defines = HashMap::new();
     for define in &opt.defines {
-        defines.insert(define.clone(), None);
+        let mut define = define.splitn(2, "=");
+        let ident = String::from(define.next().unwrap());
+        let text = if let Some(x) = define.next() {
+            let x = enquote::unescape(x, None)?;
+            Some(DefineText::new(String::from(x), None))
+        } else {
+            None
+        };
+        let define = Define::new(ident.clone(), vec![], text);
+        defines.insert(ident, Some(define));
     }
 
     let (files, includes) = if !opt.filelist.is_empty() {

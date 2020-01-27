@@ -29,6 +29,7 @@ path = "src/mdgen.rs"
 
 [dependencies]
 anyhow       = "1.0"
+enquote      = "1.0"
 colored      = "1.6"
 libloading   = "0.5"
 regex        = "1.0"
