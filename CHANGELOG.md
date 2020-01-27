@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.3.0...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.3.1...Unreleased) - ReleaseDate
+
+## [v0.3.1](https://github.com/dalance/svlint/compare/v0.3.0...v0.3.1) - 2020-01-27
 
 * [Added] --ignore-include option #[10](https://github.com/dalance/svlint/issues/10)
 * [Changed] --define can have value like `--define NAME=VALUE` [#9](https://github.com/dalance/svlint/issues/9)
