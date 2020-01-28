@@ -187,14 +187,14 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                     for failed in linter.check(&syntax_tree, &node) {
                         pass = false;
                         if !opt.silent {
-                            printer.print(&failed, opt.single)?;
+                            printer.print_failed(&failed, opt.single)?;
                         }
                     }
                 }
                 defines = new_defines;
             }
             Err(x) => {
-                print_parse_error(&mut printer, x)?;
+                print_parse_error(&mut printer, x, opt.single)?;
                 pass = false;
             }
         }
@@ -212,10 +212,14 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 }
 
 #[cfg_attr(tarpaulin, skip)]
-fn print_parse_error(printer: &mut Printer, error: SvParserError) -> Result<(), Error> {
+fn print_parse_error(
+    printer: &mut Printer,
+    error: SvParserError,
+    single: bool,
+) -> Result<(), Error> {
     match error {
         SvParserError::Parse(Some((path, pos))) => {
-            printer.print_parse_error(&path, pos)?;
+            printer.print_parse_error(&path, pos, single)?;
         }
         SvParserError::Include { source: x } => match *x {
             SvParserError::File { source: _, path: x } => {

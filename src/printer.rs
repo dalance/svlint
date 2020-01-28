@@ -53,17 +53,6 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    pub fn print(&mut self, failed: &LintFailed, single: bool) -> Result<(), Error> {
-        if single {
-            self.print_single(failed)?;
-        } else {
-            self.print_pretty(failed)?;
-        }
-
-        Ok(())
-    }
-
-    #[cfg_attr(tarpaulin, skip)]
     fn write(&mut self, dat: &str, color: Color) {
         if let Some(ref mut term) = self.term {
             let term_color = match color {
@@ -116,116 +105,137 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    fn print_single(&mut self, failed: &LintFailed) -> Result<(), Error> {
-        let mut f = File::open(&failed.path)
-            .with_context(|| format!("failed to open: '{}'", failed.path.to_string_lossy()))?;
-        let mut s = String::new();
-        let _ = f.read_to_string(&mut s);
-
-        let mut pos = 0;
-        let mut column = 1;
-        let mut last_lf = 0;
-        while pos < s.len() {
-            if s.as_bytes()[pos] == CHAR_LF {
-                column += 1;
-                last_lf = pos;
-            }
-
-            if failed.beg == pos {
-                let row = pos - last_lf;
-                let mut next_crlf = pos;
-                while next_crlf < s.len() {
-                    if s.as_bytes()[next_crlf] == CHAR_CR || s.as_bytes()[next_crlf] == CHAR_LF {
-                        break;
-                    }
-                    next_crlf += 1;
-                }
-
-                self.write("Fail", Color::BrightRed);
-                self.write(
-                    &format!("\t{}:{}:{}", failed.path.to_string_lossy(), column, row),
-                    Color::BrightBlue,
-                );
-                self.write(
-                    &format!(
-                        "\t{}",
-                        String::from_utf8_lossy(&s.as_bytes()[pos..next_crlf])
-                    ),
-                    Color::White,
-                );
-                self.write(&format!("\thint: {}", failed.hint), Color::BrightYellow);
-                self.write("\n", Color::Reset);
-            }
-
-            pos += 1;
-        }
-        Ok(())
-    }
-
-    #[cfg_attr(tarpaulin, skip)]
-    fn print_pretty(&mut self, failed: &LintFailed) -> Result<(), Error> {
-        let mut f = File::open(&failed.path)
-            .with_context(|| format!("failed to open: '{}'", failed.path.to_string_lossy()))?;
-        let mut s = String::new();
-        let _ = f.read_to_string(&mut s);
-
+    fn with_pos<F: FnMut(usize, usize, usize, usize, Option<usize>)>(
+        src: &str,
+        print_pos: usize,
+        mut func: F,
+    ) {
         let mut pos = 0;
         let mut column = 1;
         let mut last_lf = None;
-        while pos < s.len() {
-            if s.as_bytes()[pos] == CHAR_LF {
+        while pos < src.len() {
+            if src.as_bytes()[pos] == CHAR_LF {
                 column += 1;
                 last_lf = Some(pos);
             }
 
-            if failed.beg == pos {
+            if print_pos == pos {
                 let row = if let Some(last_lf) = last_lf {
                     pos - last_lf
                 } else {
                     pos + 1
                 };
                 let mut next_crlf = pos;
-                while next_crlf < s.len() {
-                    if s.as_bytes()[next_crlf] == CHAR_CR || s.as_bytes()[next_crlf] == CHAR_LF {
+                while next_crlf < src.len() {
+                    if src.as_bytes()[next_crlf] == CHAR_CR || src.as_bytes()[next_crlf] == CHAR_LF
+                    {
                         break;
                     }
                     next_crlf += 1;
                 }
 
-                self.write("Fail", Color::BrightRed);
+                func(pos, column, row, next_crlf, last_lf);
+            }
 
-                let column_len = format!("{}", column).len();
+            pos += 1;
+        }
+    }
 
-                self.write(&format!(": {}\n", failed.name), Color::BrightWhite);
+    #[cfg_attr(tarpaulin, skip)]
+    fn print_single(
+        &mut self,
+        src: &str,
+        print_pos: usize,
+        header: &str,
+        path: &Path,
+        hint: Option<&str>,
+    ) {
+        Printer::with_pos(src, print_pos, |pos, column, row, next_crlf, _last_lf| {
+            self.write(header, Color::BrightRed);
+            self.write(
+                &format!("\t{}:{}:{}", path.to_string_lossy(), column, row),
+                Color::BrightBlue,
+            );
+            self.write(
+                &format!(
+                    "\t{}",
+                    String::from_utf8_lossy(&src.as_bytes()[pos..next_crlf])
+                ),
+                Color::White,
+            );
+            if let Some(hint) = hint {
+                self.write(&format!("\thint: {}", hint), Color::BrightYellow);
+            }
+            self.write("\n", Color::Reset);
+        });
+    }
 
-                self.write("   -->", Color::BrightBlue);
+    #[cfg_attr(tarpaulin, skip)]
+    fn print_pretty(
+        &mut self,
+        src: &str,
+        print_pos: usize,
+        print_len: usize,
+        header: &str,
+        description: &str,
+        path: &Path,
+        hint: Option<&str>,
+        reason: Option<&str>,
+    ) {
+        Printer::with_pos(src, print_pos, |pos, column, row, next_crlf, last_lf| {
+            self.write(header, Color::BrightRed);
 
-                self.write(
-                    &format!(" {}:{}:{}\n", failed.path.to_string_lossy(), column, row),
-                    Color::White,
-                );
+            let column_len = format!("{}", column).len();
 
-                self.write(
-                    &format!("{}|\n", " ".repeat(column_len + 1)),
-                    Color::BrightBlue,
-                );
+            self.write(&format!(": {}\n", description), Color::BrightWhite);
 
-                self.write(&format!("{} |", column), Color::BrightBlue);
+            self.write("   -->", Color::BrightBlue);
 
-                let beg = if let Some(last_lf) = last_lf {
-                    last_lf + 1
-                } else {
-                    0
-                };
+            self.write(
+                &format!(" {}:{}:{}\n", path.to_string_lossy(), column, row),
+                Color::White,
+            );
 
-                self.write(
-                    &format!(
-                        " {}\n",
-                        String::from_utf8_lossy(&s.as_bytes()[beg..next_crlf])
-                    ),
-                    Color::White,
-                );
+            self.write(
+                &format!("{}|\n", " ".repeat(column_len + 1)),
+                Color::BrightBlue,
+            );
 
+            self.write(&format!("{} |", column), Color::BrightBlue);
+
+            let beg = if let Some(last_lf) = last_lf {
+                last_lf + 1
+            } else {
+                0
+            };
+
+            self.write(
+                &format!(
+                    " {}\n",
+                    String::from_utf8_lossy(&src.as_bytes()[beg..next_crlf])
+                ),
+                Color::White,
+            );
+
+            self.write(
+                &format!("{}|", " ".repeat(column_len + 1)),
+                Color::BrightBlue,
+            );
+
+            self.write(
+                &format!(
+                    " {}{}",
+                    " ".repeat(pos - beg),
+                    "^".repeat(cmp::min(print_pos + print_len, next_crlf) - print_pos)
+                ),
+                Color::BrightYellow,
+            );
+
+            if let Some(hint) = hint {
+                self.write(&format!(" hint  : {}\n", hint), Color::BrightYellow);
+            }
+
+            if let Some(reason) = reason {
                 self.write(
                     &format!("{}|", " ".repeat(column_len + 1)),
                     Color::BrightBlue,
@@ -235,119 +245,58 @@ impl Printer {
                     &format!(
                         " {}{}",
                         " ".repeat(pos - beg),
-                        "^".repeat(cmp::min(failed.beg + failed.len, next_crlf) - failed.beg)
-                    ),
-                    Color::BrightYellow,
-                );
-
-                self.write(&format!(" hint  : {}\n", failed.hint), Color::BrightYellow);
-
-                self.write(
-                    &format!("{}|", " ".repeat(column_len + 1)),
-                    Color::BrightBlue,
-                );
-
-                self.write(
-                    &format!(
-                        " {}{}",
-                        " ".repeat(pos - beg),
-                        " ".repeat(cmp::min(failed.beg + failed.len, next_crlf) - failed.beg)
+                        " ".repeat(cmp::min(print_pos + print_len, next_crlf) - print_pos)
                     ),
                     Color::Yellow,
                 );
 
-                self.write(&format!(" reason: {}\n", failed.reason), Color::Yellow);
-
-                self.write("\n", Color::Reset);
+                self.write(&format!(" reason: {}\n", reason), Color::Yellow);
             }
 
-            pos += 1;
+            self.write("\n", Color::Reset);
+        });
+    }
+
+    #[cfg_attr(tarpaulin, skip)]
+    pub fn print_failed(&mut self, failed: &LintFailed, single: bool) -> Result<(), Error> {
+        let mut f = File::open(&failed.path)
+            .with_context(|| format!("failed to open: '{}'", failed.path.to_string_lossy()))?;
+        let mut s = String::new();
+        let _ = f.read_to_string(&mut s);
+
+        if single {
+            self.print_single(&s, failed.beg, "Fail", &failed.path, Some(&failed.hint));
+        } else {
+            self.print_pretty(
+                &s,
+                failed.beg,
+                failed.len,
+                "Fail",
+                &failed.name,
+                &failed.path,
+                Some(&failed.hint),
+                Some(&failed.reason),
+            );
         }
         Ok(())
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    pub fn print_parse_error(&mut self, path: &Path, error_pos: usize) -> Result<(), Error> {
+    pub fn print_parse_error(
+        &mut self,
+        path: &Path,
+        error_pos: usize,
+        single: bool,
+    ) -> Result<(), Error> {
         let mut f = File::open(path)
             .with_context(|| format!("failed to open: '{}'", path.to_string_lossy()))?;
         let mut s = String::new();
         let _ = f.read_to_string(&mut s);
 
-        let mut pos = 0;
-        let mut column = 1;
-        let mut last_lf = None;
-        while pos < s.len() {
-            if s.as_bytes()[pos] == CHAR_LF {
-                column += 1;
-                last_lf = Some(pos);
-            }
-
-            if error_pos == pos {
-                let row = if let Some(last_lf) = last_lf {
-                    pos - last_lf
-                } else {
-                    pos + 1
-                };
-                let mut next_crlf = pos;
-                while next_crlf < s.len() {
-                    if s.as_bytes()[next_crlf] == CHAR_CR || s.as_bytes()[next_crlf] == CHAR_LF {
-                        break;
-                    }
-                    next_crlf += 1;
-                }
-
-                self.write("Error", Color::BrightRed);
-
-                let column_len = format!("{}", column).len();
-
-                self.write(&format!(": parse error\n"), Color::BrightWhite);
-
-                self.write("   -->", Color::BrightBlue);
-
-                self.write(
-                    &format!(" {}:{}:{}\n", path.to_string_lossy(), column, row),
-                    Color::White,
-                );
-
-                self.write(
-                    &format!("{}|\n", " ".repeat(column_len + 1)),
-                    Color::BrightBlue,
-                );
-
-                self.write(&format!("{} |", column), Color::BrightBlue);
-
-                let beg = if let Some(last_lf) = last_lf {
-                    last_lf + 1
-                } else {
-                    0
-                };
-
-                self.write(
-                    &format!(
-                        " {}\n",
-                        String::from_utf8_lossy(&s.as_bytes()[beg..next_crlf])
-                    ),
-                    Color::White,
-                );
-
-                self.write(
-                    &format!("{}|", " ".repeat(column_len + 1)),
-                    Color::BrightBlue,
-                );
-
-                self.write(
-                    &format!(
-                        " {}{}",
-                        " ".repeat(pos - beg),
-                        "^".repeat(cmp::min(error_pos + 1, next_crlf) - error_pos)
-                    ),
-                    Color::BrightYellow,
-                );
-
-                self.write("\n\n", Color::Reset);
-            }
-
-            pos += 1;
+        if single {
+            self.print_single(&s, error_pos, "Error", path, Some("parse error"));
+        } else {
+            self.print_pretty(&s, error_pos, 1, "Error", "parse error", path, None, None);
         }
         Ok(())
     }

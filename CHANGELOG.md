@@ -2,9 +2,11 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.3.1...Unreleased) - ReleaseDate
 
+* [Fixed] parse error with -1 option [#11](https://github.com/dalance/svlint/issues/11)
+
 ## [v0.3.1](https://github.com/dalance/svlint/compare/v0.3.0...v0.3.1) - 2020-01-27
 
-* [Added] --ignore-include option #[10](https://github.com/dalance/svlint/issues/10)
+* [Added] --ignore-include option [#10](https://github.com/dalance/svlint/issues/10)
 * [Changed] --define can have value like `--define NAME=VALUE` [#9](https://github.com/dalance/svlint/issues/9)
 
 ## [v0.3.0](https://github.com/dalance/svlint/compare/v0.2.21...v0.3.0) - 2020-01-23
