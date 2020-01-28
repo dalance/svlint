@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.3.1...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.3.2...Unreleased) - ReleaseDate
+
+## [v0.3.2](https://github.com/dalance/svlint/compare/v0.3.1...v0.3.2) - 2020-01-28
 
 * [Fixed] parse error with -1 option [#11](https://github.com/dalance/svlint/issues/11)
 
