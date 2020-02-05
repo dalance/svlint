@@ -40,6 +40,7 @@ structopt    = "0.3"
 sv-parser    = "0.6.0"
 term         = "0.5"
 toml         = "0.4"
+verilog-filelist-parser = "0.1.0"
 
 [build-dependencies]
 regex   = "1"
