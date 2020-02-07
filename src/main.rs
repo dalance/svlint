@@ -261,10 +261,9 @@ fn search_config(rule: &Path) -> Option<PathBuf> {
 fn parse_filelist(
     path: &Path,
 ) -> Result<(Vec<PathBuf>, Vec<PathBuf>, HashMap<String, Option<Define>>), Error> {
-    let path_str = path.to_string_lossy();
-    let filelist = match verilog_filelist_parser::parse_file(&path_str) {
+    let filelist = match verilog_filelist_parser::parse_file(path) {
         Ok(f) => f,
-        Err(_) => return Err(anyhow::anyhow!("failed to open '{}'", path_str)),
+        Err(_) => return Err(anyhow::anyhow!("failed to open '{}'", path.to_string_lossy())),
     };
     let mut defines = HashMap::new();
     for (d, t) in filelist.defines {
