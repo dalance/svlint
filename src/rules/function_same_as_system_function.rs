@@ -137,7 +137,7 @@ impl Rule for FunctionSameAsSystemFunction {
     fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::FunctionDeclaration(x) => {
-                let a = unwrap_node!(x.clone(), FunctionIdentifier).unwrap();
+                let a = unwrap_node!(*x, FunctionIdentifier).unwrap();
                 match a {
                     RefNode::FunctionIdentifier(a) => {
                         let a = syntax_tree.get_str(a).unwrap();

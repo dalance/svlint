@@ -7,10 +7,10 @@ impl Rule for ParameterInPackage {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::PackageDeclaration(x) => {
-                let param = unwrap_node!(x.clone(), ParameterDeclaration);
+                let param = unwrap_node!(*x, ParameterDeclaration);
                 if let Some(param) = param {
                     let param_locate = unwrap_locate!(param).unwrap();
-                    RuleResult::FailLocate(param_locate.clone())
+                    RuleResult::FailLocate(*param_locate)
                 } else {
                     RuleResult::Pass
                 }

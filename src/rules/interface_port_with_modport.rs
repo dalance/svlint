@@ -7,7 +7,7 @@ impl Rule for InterfacePortWithModport {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::InterfacePortHeader(x) => {
-                let a = unwrap_node!(x.clone(), ModportIdentifier);
+                let a = unwrap_node!(*x, ModportIdentifier);
                 if a.is_some() {
                     RuleResult::Pass
                 } else {

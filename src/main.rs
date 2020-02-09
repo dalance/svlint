@@ -147,11 +147,11 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 
     let mut defines = HashMap::new();
     for define in &opt.defines {
-        let mut define = define.splitn(2, "=");
+        let mut define = define.splitn(2, '=');
         let ident = String::from(define.next().unwrap());
         let text = if let Some(x) = define.next() {
             let x = enquote::unescape(x, None)?;
-            Some(DefineText::new(String::from(x), None))
+            Some(DefineText::new(x, None))
         } else {
             None
         };
@@ -221,12 +221,11 @@ fn print_parse_error(
         SvParserError::Parse(Some((path, pos))) => {
             printer.print_parse_error(&path, pos, single)?;
         }
-        SvParserError::Include { source: x } => match *x {
-            SvParserError::File { source: _, path: x } => {
+        SvParserError::Include { source: x } => {
+            if let SvParserError::File { path: x, .. } = *x {
                 printer.print_error(&format!("failed to include '{}'", x.to_string_lossy()))?;
             }
-            _ => (),
-        },
+        }
         SvParserError::DefineArgNotFound(x) => {
             printer.print_error(&format!("define argument '{}' is not found", x))?;
         }
@@ -290,12 +289,12 @@ fn parse_filelist(
             }
 
             if expanded_line.starts_with("+incdir") {
-                for dir in expanded_line.trim_start_matches("+incdir+").split("+") {
+                for dir in expanded_line.trim_start_matches("+incdir+").split('+') {
                     includes.push(PathBuf::from(dir));
                 }
             } else if expanded_line.starts_with("+define") {
-                for define in expanded_line.trim_start_matches("+define+").split("+") {
-                    if let Some(pos) = define.find("=") {
+                for define in expanded_line.trim_start_matches("+define+").split('+') {
+                    if let Some(pos) = define.find('=') {
                         let (s, t) = define.split_at(pos);
                         let define_text = DefineText::new(String::from(&t[1..]), None);
                         let define = Define::new(String::from(s), vec![], Some(define_text));
@@ -312,7 +311,7 @@ fn parse_filelist(
                 for (k, v) in d {
                     defines.insert(k, v);
                 }
-            } else if expanded_line.starts_with("-") || expanded_line.starts_with("+") {
+            } else if expanded_line.starts_with('-') || expanded_line.starts_with('+') {
                 // Ignore unknown options
             } else {
                 files.push(PathBuf::from(expanded_line));

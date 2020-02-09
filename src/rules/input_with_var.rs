@@ -7,12 +7,12 @@ impl Rule for InputWithVar {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::AnsiPortDeclaration(x) => {
-                let dir = unwrap_node!(x.clone(), PortDirection);
+                let dir = unwrap_node!(*x, PortDirection);
                 let is_input = match dir {
                     Some(RefNode::PortDirection(PortDirection::Input(_))) => true,
                     _ => false,
                 };
-                let var = unwrap_node!(x.clone(), VarDataTypeVar);
+                let var = unwrap_node!(*x, VarDataTypeVar);
                 if is_input && var.is_none() {
                     RuleResult::Fail
                 } else {

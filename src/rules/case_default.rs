@@ -10,13 +10,13 @@ impl Rule for CaseDefault {
                 let (ref a, _) = x.nodes;
                 match a {
                     AlwaysKeyword::AlwaysComb(_) => {
-                        if let Some(x) = unwrap_node!(x.clone(), CaseStatementNormal) {
+                        if let Some(x) = unwrap_node!(*x, CaseStatementNormal) {
                             let loc = unwrap_locate!(x.clone()).unwrap();
-                            let a = unwrap_node!(x.clone(), CaseItemDefault);
+                            let a = unwrap_node!(x, CaseItemDefault);
                             if a.is_some() {
                                 RuleResult::Pass
                             } else {
-                                RuleResult::FailLocate(loc.clone())
+                                RuleResult::FailLocate(*loc)
                             }
                         } else {
                             RuleResult::Pass
@@ -26,13 +26,13 @@ impl Rule for CaseDefault {
                 }
             }
             RefNode::FunctionDeclaration(x) => {
-                if let Some(x) = unwrap_node!(x.clone(), CaseStatementNormal) {
+                if let Some(x) = unwrap_node!(*x, CaseStatementNormal) {
                     let loc = unwrap_locate!(x.clone()).unwrap();
-                    let a = unwrap_node!(x.clone(), CaseItemDefault);
+                    let a = unwrap_node!(x, CaseItemDefault);
                     if a.is_some() {
                         RuleResult::Pass
                     } else {
-                        RuleResult::FailLocate(loc.clone())
+                        RuleResult::FailLocate(*loc)
                     }
                 } else {
                     RuleResult::Pass

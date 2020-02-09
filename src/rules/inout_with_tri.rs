@@ -7,12 +7,12 @@ impl Rule for InoutWithTri {
     fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
         match node {
             RefNode::AnsiPortDeclaration(x) => {
-                let dir = unwrap_node!(x.clone(), PortDirection);
+                let dir = unwrap_node!(*x, PortDirection);
                 let is_inout = match dir {
                     Some(RefNode::PortDirection(PortDirection::Inout(_))) => true,
                     _ => false,
                 };
-                let net = unwrap_node!(x.clone(), NetType);
+                let net = unwrap_node!(*x, NetType);
                 let is_tri = match net {
                     Some(RefNode::NetType(NetType::Tri(_))) => true,
                     _ => false,

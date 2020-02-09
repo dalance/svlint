@@ -21,7 +21,7 @@ impl Rule for GenerateIfWithLabel {
                                         } else {
                                             // failed because a label of 'else' is not found
                                             let locate = unwrap_locate!(e).unwrap();
-                                            RuleResult::FailLocate(locate.clone())
+                                            RuleResult::FailLocate(*locate)
                                         }
                                     }
                                     _ => RuleResult::Pass,

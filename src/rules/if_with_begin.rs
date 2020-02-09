@@ -16,19 +16,16 @@ impl Rule for IfWithBegin {
                 syntax_tree.get_str(c).map(|x| if_str.push_str(x));
                 syntax_tree.get_str(d).map(|x| if_str.push_str(x));
 
-                match d {
-                    StatementOrNull::Statement(x) => {
-                        let (_, _, ref x) = x.nodes;
-                        match x {
-                            StatementItem::SeqBlock(_) => (),
-                            _ => {
-                                if if_str.trim_end().contains("\n") {
-                                    return RuleResult::Fail;
-                                }
+                if let StatementOrNull::Statement(x) = d {
+                    let (_, _, ref x) = x.nodes;
+                    match x {
+                        StatementItem::SeqBlock(_) => (),
+                        _ => {
+                            if if_str.trim_end().contains('\n') {
+                                return RuleResult::Fail;
                             }
                         }
                     }
-                    _ => (),
                 }
 
                 // else if statement
@@ -41,20 +38,17 @@ impl Rule for IfWithBegin {
                     syntax_tree.get_str(c).map(|x| elsif_str.push_str(x));
                     syntax_tree.get_str(d).map(|x| elsif_str.push_str(x));
 
-                    match d {
-                        StatementOrNull::Statement(x) => {
-                            let (_, _, ref x) = x.nodes;
-                            match x {
-                                StatementItem::SeqBlock(_) => (),
-                                _ => {
-                                    if elsif_str.trim_end().contains("\n") {
-                                        let locate = unwrap_locate!(a).unwrap();
-                                        return RuleResult::FailLocate(locate.clone());
-                                    }
+                    if let StatementOrNull::Statement(x) = d {
+                        let (_, _, ref x) = x.nodes;
+                        match x {
+                            StatementItem::SeqBlock(_) => (),
+                            _ => {
+                                if elsif_str.trim_end().contains('\n') {
+                                    let locate = unwrap_locate!(a).unwrap();
+                                    return RuleResult::FailLocate(*locate);
                                 }
                             }
                         }
-                        _ => (),
                     };
                 }
 
@@ -66,20 +60,17 @@ impl Rule for IfWithBegin {
                     syntax_tree.get_str(a).map(|x| else_str.push_str(x));
                     syntax_tree.get_str(b).map(|x| else_str.push_str(x));
 
-                    match b {
-                        StatementOrNull::Statement(x) => {
-                            let (_, _, ref x) = x.nodes;
-                            match x {
-                                StatementItem::SeqBlock(_) => (),
-                                _ => {
-                                    if else_str.trim_end().contains("\n") {
-                                        let locate = unwrap_locate!(a).unwrap();
-                                        return RuleResult::FailLocate(locate.clone());
-                                    }
+                    if let StatementOrNull::Statement(x) = b {
+                        let (_, _, ref x) = x.nodes;
+                        match x {
+                            StatementItem::SeqBlock(_) => (),
+                            _ => {
+                                if else_str.trim_end().contains('\n') {
+                                    let locate = unwrap_locate!(a).unwrap();
+                                    return RuleResult::FailLocate(*locate);
                                 }
                             }
                         }
-                        _ => (),
                     };
                 }
 
