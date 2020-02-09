@@ -37,7 +37,7 @@ serde        = "1.0"
 serde_derive = "1.0"
 serde_regex  = "0.4"
 structopt    = "0.3"
-sv-parser    = "0.6.0"
+sv-parser    = "0.6.1"
 term         = "0.5"
 toml         = "0.4"
 

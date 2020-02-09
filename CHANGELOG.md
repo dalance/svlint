@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.3.2...Unreleased) - ReleaseDate
 
+* [Changed] Update sv-parser
+
 ## [v0.3.2](https://github.com/dalance/svlint/compare/v0.3.1...v0.3.2) - 2020-01-28
 
 * [Fixed] parse error with -1 option [#11](https://github.com/dalance/svlint/issues/11)
