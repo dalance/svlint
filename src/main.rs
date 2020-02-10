@@ -148,11 +148,11 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 
     let mut defines = HashMap::new();
     for define in &opt.defines {
-        let mut define = define.splitn(2, "=");
+        let mut define = define.splitn(2, '=');
         let ident = String::from(define.next().unwrap());
         let text = if let Some(x) = define.next() {
             let x = enquote::unescape(x, None)?;
-            Some(DefineText::new(String::from(x), None))
+            Some(DefineText::new(x, None))
         } else {
             None
         };
@@ -222,12 +222,11 @@ fn print_parse_error(
         SvParserError::Parse(Some((path, pos))) => {
             printer.print_parse_error(&path, pos, single)?;
         }
-        SvParserError::Include { source: x } => match *x {
-            SvParserError::File { source: _, path: x } => {
+        SvParserError::Include { source: x } => {
+            if let SvParserError::File { path: x, .. } = *x {
                 printer.print_error(&format!("failed to include '{}'", x.to_string_lossy()))?;
             }
-            _ => (),
-        },
+        }
         SvParserError::DefineArgNotFound(x) => {
             printer.print_error(&format!("define argument '{}' is not found", x))?;
         }

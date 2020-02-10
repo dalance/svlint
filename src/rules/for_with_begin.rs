@@ -12,19 +12,16 @@ impl Rule for ForWithBegin {
                 let mut for_str = String::from("");
                 syntax_tree.get_str(*x).map(|x| for_str.push_str(x));
 
-                match a {
-                    StatementOrNull::Statement(x) => {
-                        let (_, _, ref x) = x.nodes;
-                        match x {
-                            StatementItem::SeqBlock(_) => (),
-                            _ => {
-                                if for_str.trim_end().contains("\n") {
-                                    return RuleResult::Fail;
-                                }
+                if let StatementOrNull::Statement(x) = a {
+                    let (_, _, ref x) = x.nodes;
+                    match x {
+                        StatementItem::SeqBlock(_) => (),
+                        _ => {
+                            if for_str.trim_end().contains('\n') {
+                                return RuleResult::Fail;
                             }
                         }
                     }
-                    _ => (),
                 }
 
                 RuleResult::Pass
