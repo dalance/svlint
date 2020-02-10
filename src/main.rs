@@ -1,6 +1,5 @@
 use anyhow::{Context, Error};
 use enquote;
-use regex::Regex;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
@@ -262,7 +261,12 @@ fn parse_filelist(
 ) -> Result<(Vec<PathBuf>, Vec<PathBuf>, HashMap<String, Option<Define>>), Error> {
     let filelist = match verilog_filelist_parser::parse_file(path) {
         Ok(f) => f,
-        Err(_) => return Err(anyhow::anyhow!("failed to open '{}'", path.to_string_lossy())),
+        Err(_) => {
+            return Err(anyhow::anyhow!(
+                "failed to open '{}'",
+                path.to_string_lossy()
+            ))
+        }
     };
     let mut defines = HashMap::new();
     for (d, t) in filelist.defines {
