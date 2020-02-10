@@ -12,6 +12,7 @@ use sv_parser::{parse_sv, Define, DefineText};
 use svlint::config::Config;
 use svlint::linter::Linter;
 use svlint::printer::Printer;
+use verilog_filelist_parser;
 
 // -------------------------------------------------------------------------------------------------
 // Opt
@@ -259,67 +260,25 @@ fn search_config(rule: &Path) -> Option<PathBuf> {
 fn parse_filelist(
     path: &Path,
 ) -> Result<(Vec<PathBuf>, Vec<PathBuf>, HashMap<String, Option<Define>>), Error> {
-    let mut f =
-        File::open(path).with_context(|| format!("failed to open '{}'", path.to_string_lossy()))?;
-    let mut s = String::new();
-    let _ = f.read_to_string(&mut s);
-
-    let mut files = Vec::new();
-    let mut includes = Vec::new();
+    let filelist = match verilog_filelist_parser::parse_file(path) {
+        Ok(f) => f,
+        Err(_) => return Err(anyhow::anyhow!("failed to open '{}'", path.to_string_lossy())),
+    };
     let mut defines = HashMap::new();
-    let re_env_brace = Regex::new(r"\$\{(?P<env>[^}]+)\}").unwrap();
-    let re_env_paren = Regex::new(r"\$\((?P<env>[^)]+)\)").unwrap();
-
-    for line in s.lines() {
-        let line = line.trim();
-        if !line.starts_with("//") && line != "" {
-            // Expand environment variable
-            let mut expanded_line = String::from(line);
-            for caps in re_env_brace.captures_iter(&line) {
-                let env = &caps["env"];
-                if let Ok(env_var) = std::env::var(env) {
-                    expanded_line = expanded_line.replace(&format!("${{{}}}", env), &env_var);
-                }
+    for (d, t) in filelist.defines {
+        match t {
+            Some(t) => {
+                let define_text = DefineText::new(String::from(&t[1..]), None);
+                let define = Define::new(String::from(&d), vec![], Some(define_text));
+                defines.insert(String::from(&d), Some(define));
             }
-            for caps in re_env_paren.captures_iter(&line) {
-                let env = &caps["env"];
-                if let Ok(env_var) = std::env::var(env) {
-                    expanded_line = expanded_line.replace(&format!("$({})", env), &env_var);
-                }
-            }
-
-            if expanded_line.starts_with("+incdir") {
-                for dir in expanded_line.trim_start_matches("+incdir+").split('+') {
-                    includes.push(PathBuf::from(dir));
-                }
-            } else if expanded_line.starts_with("+define") {
-                for define in expanded_line.trim_start_matches("+define+").split('+') {
-                    if let Some(pos) = define.find('=') {
-                        let (s, t) = define.split_at(pos);
-                        let define_text = DefineText::new(String::from(&t[1..]), None);
-                        let define = Define::new(String::from(s), vec![], Some(define_text));
-                        defines.insert(String::from(s), Some(define));
-                    } else {
-                        defines.insert(String::from(define), None);
-                    }
-                }
-            } else if expanded_line.starts_with("-f ") {
-                let path = expanded_line.trim_start_matches("-f ");
-                let (mut f, mut i, d) = parse_filelist(&PathBuf::from(path))?;
-                files.append(&mut f);
-                includes.append(&mut i);
-                for (k, v) in d {
-                    defines.insert(k, v);
-                }
-            } else if expanded_line.starts_with('-') || expanded_line.starts_with('+') {
-                // Ignore unknown options
-            } else {
-                files.push(PathBuf::from(expanded_line));
+            None => {
+                defines.insert(String::from(&d), None);
             }
         }
     }
 
-    Ok((files, includes, defines))
+    Ok((filelist.files, filelist.incdirs, defines))
 }
 
 #[cfg(test)]
