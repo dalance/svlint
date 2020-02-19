@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.1...Unreleased) - ReleaseDate
 
+* [Added] generate_keyword_required rule
 * [Added] Check for unknown rules
 
 ## [v0.4.1](https://github.com/dalance/svlint/compare/v0.4.0...v0.4.1) - 2020-02-19
