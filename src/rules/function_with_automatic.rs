@@ -80,6 +80,17 @@ impl Rule for FunctionWithAutomatic {
                 }
                 RuleResult::Pass
             }
+            NodeEvent::Enter(RefNode::PackageDeclaration(x)) => {
+                let (_, _, ref a, _, _, _, _, _, _) = x.nodes;
+                match a {
+                    Some(sv_parser::Lifetime::Automatic(_)) => {
+                        self.lifetimes.push(Lifetime::Automatic)
+                    }
+                    Some(sv_parser::Lifetime::Static(_)) => self.lifetimes.push(Lifetime::Static),
+                    _ => (),
+                }
+                RuleResult::Pass
+            }
             NodeEvent::Enter(RefNode::ClassDeclaration(_)) => {
                 self.lifetimes.push(Lifetime::Automatic);
                 RuleResult::Pass
@@ -107,6 +118,7 @@ impl Rule for FunctionWithAutomatic {
             | NodeEvent::Leave(RefNode::InterfaceDeclarationNonansi(_))
             | NodeEvent::Leave(RefNode::ProgramDeclarationAnsi(_))
             | NodeEvent::Leave(RefNode::ProgramDeclarationNonansi(_))
+            | NodeEvent::Leave(RefNode::PackageDeclaration(_))
             | NodeEvent::Leave(RefNode::ClassDeclaration(_)) => {
                 self.lifetimes.pop();
                 RuleResult::Pass

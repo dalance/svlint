@@ -19,6 +19,11 @@ function A;
 endfunction
 endprogram
 
+package automatic A;
+function A;
+endfunction
+endpackage
+
 // override default lifetime
 module static A;
 function automatic A;
@@ -34,6 +39,11 @@ program static A;
 function automatic A;
 endfunction
 endprogram
+
+package static A;
+function automatic A;
+endfunction
+endpackage
 
 // function in class is automatic
 module A;
