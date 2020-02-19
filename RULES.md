@@ -290,7 +290,7 @@ end
 endmodule
 ```
 
-## generate_keyword
+## generate_keyword_forbidden
 
 ### Description
 
@@ -313,6 +313,46 @@ endmodule
 module A;
 generate
 endgenerate
+endmodule
+```
+
+## generate_keyword_required
+
+### Description
+
+`generate`/`endgenerate` is required
+
+### Reason
+
+some tools don't support `generate`/`endgenerate` omitting
+
+### Pass example
+
+```SystemVerilog
+module A;
+generate
+if (a) begin
+end
+case (a)
+    default: a;
+endcase
+for(i=0; i<10; i++) begin
+end
+endgenerate
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+if (a) begin
+end
+case (a)
+    default: a;
+endcase
+for(i=0; i<10; i++) begin
+end
 endmodule
 ```
 
