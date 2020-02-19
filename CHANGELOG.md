@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.1...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.2...Unreleased) - ReleaseDate
+
+## [v0.4.2](https://github.com/dalance/svlint/compare/v0.4.1...v0.4.2) - 2020-02-19
 
 * [Added] generate_keyword_required rule
 * [Added] genvar_declaration_out_loop rule
