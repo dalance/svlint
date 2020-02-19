@@ -310,6 +310,14 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
+    pub fn print_warning(&mut self, error: &str) -> Result<(), Error> {
+        self.write("Warning", Color::BrightYellow);
+        self.write(&format!(": {}", error), Color::BrightWhite);
+        self.write("\n", Color::Reset);
+        Ok(())
+    }
+
+    #[cfg_attr(tarpaulin, skip)]
     pub fn print_info(&mut self, error: &str) -> Result<(), Error> {
         self.write("Info", Color::BrightGreen);
         self.write(&format!(": {}", error), Color::BrightWhite);

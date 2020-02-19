@@ -138,12 +138,19 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
 
 #[cfg_attr(tarpaulin, skip)]
 pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
+    let mut printer = Printer::new();
+
+    for (org_rule, renamed_rule) in config.check_rename() {
+        printer.print_warning(&format!(
+            "Rule \"{}\" is obsolete. Please rename to \"{}\"",
+            org_rule, renamed_rule,
+        ))?;
+    }
+
     let mut linter = Linter::new(config);
     for plugin in &opt.plugins {
         linter.load(&plugin);
     }
-
-    let mut printer = Printer::new();
 
     let mut defines = HashMap::new();
     for define in &opt.defines {

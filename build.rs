@@ -5,6 +5,15 @@ use std::io::{BufReader, Read, Write};
 use std::path::Path;
 use walkdir::WalkDir;
 
+const RENAMED_RULES: &[(&str, &str, &str)] = &[
+    (
+        "generate_keyword",
+        "generate_keyword_forbidden",
+        "GenerateKeywordForbidden",
+    ),
+    ("tab_charactor", "tab_character", "TabCharacter"),
+];
+
 fn main() {
     let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let out_dir = env::var("OUT_DIR").unwrap();
@@ -30,7 +39,10 @@ fn main() {
 
     rules.sort_by(|a, b| a.0.cmp(&b.0));
 
+    // -------------------------------------------------------------------------------------------------
     // Output 'rules.rs'
+    // -------------------------------------------------------------------------------------------------
+
     let out_rules = Path::new(&out_dir).join("rules.rs");
     let mut out_rules = File::create(&out_rules).unwrap();
 
@@ -47,7 +59,10 @@ fn main() {
         let _ = write!(out_rules, "pub use {}::*;\n", file_name);
     }
 
+    // -------------------------------------------------------------------------------------------------
     // Output 'config_rules.rs'
+    // -------------------------------------------------------------------------------------------------
+
     let out_config_rules = Path::new(&out_dir).join("config_rules.rs");
     let mut out_config_rules = File::create(&out_config_rules).unwrap();
 
@@ -55,6 +70,10 @@ fn main() {
     for (file_name, _) in &rules {
         body.push_str(&format!("    #[serde(default = \"default_as_false\")]\n"));
         body.push_str(&format!("    pub {}: bool,\n", file_name));
+    }
+    for (org_name, _, _) in RENAMED_RULES {
+        body.push_str(&format!("    #[serde(default = \"default_as_false\")]\n"));
+        body.push_str(&format!("    pub {}: bool,\n", org_name));
     }
 
     let str_config_rules = format!(
@@ -68,13 +87,17 @@ pub struct ConfigRules {{
     );
     let _ = write!(out_config_rules, "{}", str_config_rules);
 
+    // -------------------------------------------------------------------------------------------------
     // Output 'impl_config.rs'
+    // -------------------------------------------------------------------------------------------------
+
     let out_impl_config = Path::new(&out_dir).join("impl_config.rs");
     let mut out_impl_config = File::create(&out_impl_config).unwrap();
 
     let mut enable_all_body = String::new();
     let mut gen_rules_body = String::new();
     let mut gen_all_rules_body = String::new();
+    let mut check_rename_body = String::new();
     for (file_name, struct_name) in &rules {
         enable_all_body.push_str(&format!("        self.rules.{} = true;\n", file_name));
         gen_rules_body.push_str(&format!("        if self.rules.{} {{\n", file_name));
@@ -87,6 +110,20 @@ pub struct ConfigRules {{
             "        ret.push(Box::new({}::default()));\n",
             struct_name
         ));
+    }
+    for (org_name, file_name, struct_name) in RENAMED_RULES {
+        gen_rules_body.push_str(&format!("        if self.rules.{} {{\n", org_name));
+        gen_rules_body.push_str(&format!(
+            "            ret.push(Box::new({}::default()));\n",
+            struct_name
+        ));
+        gen_rules_body.push_str(&format!("        }}\n"));
+        check_rename_body.push_str(&format!("        if self.rules.{} {{\n", org_name));
+        check_rename_body.push_str(&format!(
+            "            ret.push((String::from(\"{}\"), String::from(\"{}\")));\n",
+            org_name, file_name
+        ));
+        check_rename_body.push_str(&format!("        }}\n"));
     }
 
     let str_impl_config = format!(
@@ -112,16 +149,25 @@ impl Config {{
 {}
         ret
     }}
+
+    pub fn check_rename(&self) -> Vec<(String, String)> {{
+        let mut ret: Vec<(String, String)> = Vec::new();
+{}
+        ret
+    }}
 }}"##,
-        enable_all_body, gen_rules_body, gen_all_rules_body
+        enable_all_body, gen_rules_body, gen_all_rules_body, check_rename_body
     );
     let _ = write!(out_impl_config, "{}", str_impl_config);
 
+    // -------------------------------------------------------------------------------------------------
     // Output 'test.rs'
+    // -------------------------------------------------------------------------------------------------
+
     let out_test = Path::new(&out_dir).join("test.rs");
     let mut out_test = File::create(&out_test).unwrap();
 
-    let test_verbose = ["interface_port_with_modport"];
+    let test_verbose = ["generate_keyword_forbidden"];
 
     for (file_name, _) in &rules {
         let silent = if test_verbose.contains(&file_name.as_str()) {
