@@ -139,7 +139,7 @@ impl Rule for FunctionSameAsSystemFunction {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Skip;
+                return RuleResult::Pass;
             }
         };
         match node {

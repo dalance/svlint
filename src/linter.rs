@@ -9,7 +9,6 @@ pub enum RuleResult {
     Fail,
     FailAt(usize, usize),
     FailLocate(Locate),
-    Skip,
 }
 
 pub trait Rule: Sync + Send {

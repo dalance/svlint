@@ -9,7 +9,7 @@ impl Rule for GenvarDeclarationInLoop {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Skip;
+                return RuleResult::Pass;
             }
         };
         match node {
