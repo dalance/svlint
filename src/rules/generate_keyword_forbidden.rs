@@ -2,9 +2,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct GenerateKeyword;
+pub struct GenerateKeywordForbidden;
 
-impl Rule for GenerateKeyword {
+impl Rule for GenerateKeywordForbidden {
     fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
@@ -19,7 +19,7 @@ impl Rule for GenerateKeyword {
     }
 
     fn name(&self) -> String {
-        String::from("generate_keyword")
+        String::from("generate_keyword_forbidden")
     }
 
     fn hint(&self) -> String {
