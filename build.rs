@@ -12,6 +12,11 @@ const RENAMED_RULES: &[(&str, &str, &str)] = &[
         "GenerateKeywordForbidden",
     ),
     ("tab_charactor", "tab_character", "TabCharacter"),
+    (
+        "genvar_declaration",
+        "genvar_declaration_in_loop",
+        "GenvarDeclarationInLoop",
+    ),
 ];
 
 fn main() {

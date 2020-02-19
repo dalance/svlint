@@ -6,6 +6,7 @@
 * [Added] Check for unknown rules
 * [Added] Check rule renaming
 * [Breaking Changed] Rename from generate_keyword to generate_keyword_forbidden
+* [Breaking Changed] Rename from genvar_declaration to genvar_declaration_in_loop
 
 ## [v0.4.1](https://github.com/dalance/svlint/compare/v0.4.0...v0.4.1) - 2020-02-19
 

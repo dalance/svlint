@@ -2,9 +2,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct GenvarDeclaration;
+pub struct GenvarDeclarationInLoop;
 
-impl Rule for GenvarDeclaration {
+impl Rule for GenvarDeclarationInLoop {
     fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
@@ -26,7 +26,7 @@ impl Rule for GenvarDeclaration {
     }
 
     fn name(&self) -> String {
-        String::from("genvar_declaration")
+        String::from("genvar_declaration_in_loop")
     }
 
     fn hint(&self) -> String {
