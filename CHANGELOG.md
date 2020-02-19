@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.3.3...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.0...Unreleased) - ReleaseDate
+
+## [v0.4.0](https://github.com/dalance/svlint/compare/v0.3.3...v0.4.0) - 2020-02-19
 
 * [Changed] Update sv-parser
 * [Changed] Rule interface to support statefule rule
