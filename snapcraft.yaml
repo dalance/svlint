@@ -18,6 +18,9 @@ architectures:
 apps:
   svlint:
     command: svlint
+    plugs:
+      - home
+      - removable-media
 
 parts:
   svlint:
