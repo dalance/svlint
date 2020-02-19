@@ -60,6 +60,7 @@ fn main() {
     let str_config_rules = format!(
         r##"
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct ConfigRules {{
 {}
 }}"##,
