@@ -88,7 +88,7 @@ pub fn main() {
         }
         Err(x) => {
             let mut printer = Printer::new();
-            let _ = printer.print_error(&format!("{}", x));
+            let _ = printer.print_error_type(x);
             2
         }
     };

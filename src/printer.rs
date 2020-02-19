@@ -317,6 +317,18 @@ impl Printer {
         Ok(())
     }
 
+    #[cfg_attr(tarpaulin, skip)]
+    pub fn print_error_type(&mut self, error: Error) -> Result<(), Error> {
+        let mut cause = error.chain();
+        self.write("Error", Color::BrightRed);
+        self.write(&format!(": {}", cause.next().unwrap()), Color::BrightWhite);
+        self.write("\n", Color::Reset);
+        for x in cause {
+            self.write(&format!("  caused by: {}\n", x), Color::Reset);
+        }
+        Ok(())
+    }
+
     //#[cfg_attr(tarpaulin, skip)]
     //fn print_summary(
     //    &mut self,

@@ -4,6 +4,7 @@
 
 * [Changed] Update sv-parser
 * [Changed] Rule interface to support statefule rule
+* [Changed] Improve error print
 
 ## [v0.3.3](https://github.com/dalance/svlint/compare/v0.3.2...v0.3.3) - 2020-02-09
 
