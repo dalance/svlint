@@ -146,7 +146,7 @@ endmodule
 
 ### Reason
 
-this causes mismatch between simulaton and synthesis
+this causes mismatch between simulation and synthesis
 
 ### Pass example
 
@@ -625,7 +625,7 @@ endpackage
 
 ### Reason
 
-this causes mismatch between simulaton and synthesis
+this causes mismatch between simulation and synthesis
 
 ### Pass example
 
@@ -685,7 +685,7 @@ endmodule
 
 ### Reason
 
-this causes mismatch between simulaton and synthesis
+this causes mismatch between simulation and synthesis
 
 ### Pass example
 
@@ -719,7 +719,7 @@ endmodule
 
 ### Reason
 
-this causes mismatch between simulaton and synthesis
+this causes mismatch between simulation and synthesis
 
 ### Pass example
 
