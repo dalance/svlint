@@ -15,19 +15,12 @@ architectures:
   - build-on: arm64
   - build-on: armhf
 
-plugs:
-  dot-svlint:
-    interface: personal-files
-    read:
-      - .svlint.toml
-
 apps:
   svlint:
     command: svlint
     plugs:
       - home
       - removable-media
-      - dot-svlint
 
 parts:
   svlint:
