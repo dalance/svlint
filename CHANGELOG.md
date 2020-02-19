@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.1...Unreleased) - ReleaseDate
 
 * [Added] generate_keyword_required rule
+* [Added] genvar_declaration_out_loop rule
 * [Added] Check for unknown rules
 * [Added] Check rule renaming
 * [Breaking Changed] Rename from generate_keyword to generate_keyword_forbidden
