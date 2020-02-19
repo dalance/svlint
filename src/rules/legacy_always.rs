@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
+#[derive(Default)]
 pub struct LegacyAlways;
 
 impl Rule for LegacyAlways {

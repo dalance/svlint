@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 
+#[derive(Default)]
 pub struct PriorityKeyword;
 
 impl Rule for PriorityKeyword {

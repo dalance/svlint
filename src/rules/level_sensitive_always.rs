@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
+#[derive(Default)]
 pub struct LevelSensitiveAlways;
 
 impl Rule for LevelSensitiveAlways {

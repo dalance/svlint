@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 
+#[derive(Default)]
 pub struct Unique0Keyword;
 
 impl Rule for Unique0Keyword {

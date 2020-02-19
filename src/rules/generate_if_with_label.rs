@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, GenerateBlock, NodeEvent, RefNode, SyntaxTree};
 
+#[derive(Default)]
 pub struct GenerateIfWithLabel;
 
 impl Rule for GenerateIfWithLabel {

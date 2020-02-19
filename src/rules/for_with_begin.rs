@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
+#[derive(Default)]
 pub struct ForWithBegin;
 
 impl Rule for ForWithBegin {

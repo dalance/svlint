@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
+#[derive(Default)]
 pub struct ParameterInPackage;
 
 impl Rule for ParameterInPackage {

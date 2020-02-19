@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
+#[derive(Default)]
 pub struct NonAnsiModule;
 
 impl Rule for NonAnsiModule {

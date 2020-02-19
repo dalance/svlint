@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, WhiteSpace};
 
+#[derive(Default)]
 pub struct TabCharacter;
 
 impl Rule for TabCharacter {

@@ -9,7 +9,7 @@ fn main() {
     let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let out_dir = env::var("OUT_DIR").unwrap();
 
-    let re_struct = Regex::new(r"pub struct ([a-zA-Z0-9]*);").unwrap();
+    let re_struct = Regex::new(r"pub struct ([a-zA-Z0-9]*)").unwrap();
 
     let mut rules = Vec::new();
     for entry in WalkDir::new("src/rules") {
@@ -78,11 +78,14 @@ pub struct ConfigRules {{
         enable_all_body.push_str(&format!("        self.rules.{} = true;\n", file_name));
         gen_rules_body.push_str(&format!("        if self.rules.{} {{\n", file_name));
         gen_rules_body.push_str(&format!(
-            "            ret.push(Box::new({}));\n",
+            "            ret.push(Box::new({}::default()));\n",
             struct_name
         ));
         gen_rules_body.push_str(&format!("        }}\n"));
-        gen_all_rules_body.push_str(&format!("        ret.push(Box::new({}));\n", struct_name));
+        gen_all_rules_body.push_str(&format!(
+            "        ret.push(Box::new({}::default()));\n",
+            struct_name
+        ));
     }
 
     let str_impl_config = format!(

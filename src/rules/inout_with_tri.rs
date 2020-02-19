@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NetType, NodeEvent, PortDirection, RefNode, SyntaxTree};
 
+#[derive(Default)]
 pub struct InoutWithTri;
 
 impl Rule for InoutWithTri {

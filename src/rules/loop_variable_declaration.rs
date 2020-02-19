@@ -1,6 +1,7 @@
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{ForInitialization, NodeEvent, RefNode, SyntaxTree};
 
+#[derive(Default)]
 pub struct LoopVariableDeclaration;
 
 impl Rule for LoopVariableDeclaration {
