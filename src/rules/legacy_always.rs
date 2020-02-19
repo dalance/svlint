@@ -1,10 +1,16 @@
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{AlwaysKeyword, RefNode, SyntaxTree};
+use sv_parser::{AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 pub struct LegacyAlways;
 
 impl Rule for LegacyAlways {
-    fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
+    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(_) => {
+                return RuleResult::Skip;
+            }
+        };
         match node {
             RefNode::AlwaysKeyword(AlwaysKeyword::Always(_)) => RuleResult::Fail,
             _ => RuleResult::Pass,

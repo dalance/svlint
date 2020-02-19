@@ -1,10 +1,16 @@
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{GenerateBlock, RefNode, SyntaxTree};
+use sv_parser::{GenerateBlock, NodeEvent, RefNode, SyntaxTree};
 
 pub struct GenerateForWithLabel;
 
 impl Rule for GenerateForWithLabel {
-    fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
+    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(_) => {
+                return RuleResult::Skip;
+            }
+        };
         match node {
             RefNode::LoopGenerateConstruct(x) => {
                 let (_, _, ref a) = x.nodes;

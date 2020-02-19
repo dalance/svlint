@@ -1,10 +1,16 @@
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_node, NetType, PortDirection, RefNode, SyntaxTree};
+use sv_parser::{unwrap_node, NetType, NodeEvent, PortDirection, RefNode, SyntaxTree};
 
 pub struct InoutWithTri;
 
 impl Rule for InoutWithTri {
-    fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
+    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(_) => {
+                return RuleResult::Skip;
+            }
+        };
         match node {
             RefNode::AnsiPortDeclaration(x) => {
                 let dir = unwrap_node!(*x, PortDirection);

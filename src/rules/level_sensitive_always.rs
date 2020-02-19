@@ -1,10 +1,16 @@
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_node, AlwaysKeyword, RefNode, SyntaxTree};
+use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 pub struct LevelSensitiveAlways;
 
 impl Rule for LevelSensitiveAlways {
-    fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
+    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(_) => {
+                return RuleResult::Skip;
+            }
+        };
         match node {
             RefNode::AlwaysConstruct(x) => {
                 let (ref a, ref b) = x.nodes;

@@ -1,7 +1,7 @@
 use crate::config::{Config, ConfigOption};
 use libloading::{Library, Symbol};
 use std::path::{Path, PathBuf};
-use sv_parser::{unwrap_locate, Locate, RefNode, SyntaxTree};
+use sv_parser::{unwrap_locate, Locate, NodeEvent, SyntaxTree};
 
 #[derive(Clone, Copy)]
 pub enum RuleResult {
@@ -9,10 +9,11 @@ pub enum RuleResult {
     Fail,
     FailAt(usize, usize),
     FailLocate(Locate),
+    Skip,
 }
 
 pub trait Rule: Sync + Send {
-    fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult;
+    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult;
     fn name(&self) -> String;
     fn hint(&self) -> String;
     fn reason(&self) -> String;
@@ -59,7 +60,11 @@ impl Linter {
         }
     }
 
-    pub fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> Vec<LintFailed> {
+    pub fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> Vec<LintFailed> {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(x) => x,
+        };
         let locate = if let Some(x) = unwrap_locate!(node.clone()) {
             x
         } else {
@@ -67,8 +72,8 @@ impl Linter {
         };
 
         let mut ret = Vec::new();
-        'outer: for rule in &self.rules {
-            match rule.check(&syntax_tree, &node) {
+        'outer: for rule in &mut self.rules {
+            match rule.check(syntax_tree, event) {
                 RuleResult::Fail => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
                         for exclude in &self.option.exclude_paths {

@@ -1,10 +1,16 @@
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{RefNode, SyntaxTree, WhiteSpace};
+use sv_parser::{NodeEvent, RefNode, SyntaxTree, WhiteSpace};
 
 pub struct TabCharacter;
 
 impl Rule for TabCharacter {
-    fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
+    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(_) => {
+                return RuleResult::Skip;
+            }
+        };
         match node {
             RefNode::WhiteSpace(WhiteSpace::Space(x)) => {
                 let text = syntax_tree.get_str(x).unwrap();

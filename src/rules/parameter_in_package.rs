@@ -1,10 +1,16 @@
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_locate, unwrap_node, RefNode, SyntaxTree};
+use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 pub struct ParameterInPackage;
 
 impl Rule for ParameterInPackage {
-    fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
+    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(_) => {
+                return RuleResult::Skip;
+            }
+        };
         match node {
             RefNode::PackageDeclaration(x) => {
                 let param = unwrap_node!(*x, ParameterDeclaration);

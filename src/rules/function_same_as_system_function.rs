@@ -1,5 +1,5 @@
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_node, RefNode, SyntaxTree};
+use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 pub struct FunctionSameAsSystemFunction;
 
@@ -134,7 +134,13 @@ const SYSTEM_FUNCTION: &[&str] = &[
 ];
 
 impl Rule for FunctionSameAsSystemFunction {
-    fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
+    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(_) => {
+                return RuleResult::Skip;
+            }
+        };
         match node {
             RefNode::FunctionDeclaration(x) => {
                 let a = unwrap_node!(*x, FunctionIdentifier).unwrap();

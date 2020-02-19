@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.3.3...Unreleased) - ReleaseDate
 
 * [Changed] Update sv-parser
+* [Changed] Rule interface to support statefule rule
 
 ## [v0.3.3](https://github.com/dalance/svlint/compare/v0.3.2...v0.3.3) - 2020-02-09
 

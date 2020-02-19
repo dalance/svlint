@@ -1,10 +1,16 @@
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_locate, RefNode, StatementItem, StatementOrNull, SyntaxTree};
+use sv_parser::{unwrap_locate, NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
 pub struct IfWithBegin;
 
 impl Rule for IfWithBegin {
-    fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
+    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(_) => {
+                return RuleResult::Skip;
+            }
+        };
         match node {
             RefNode::ConditionalStatement(x) => {
                 let (ref a, ref b, ref c, ref d, ref e, ref f) = x.nodes;

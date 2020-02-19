@@ -1,10 +1,16 @@
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{RefNode, StatementItem, StatementOrNull, SyntaxTree};
+use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
 pub struct ForWithBegin;
 
 impl Rule for ForWithBegin {
-    fn check(&self, syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
+    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(_) => {
+                return RuleResult::Skip;
+            }
+        };
         match node {
             RefNode::LoopStatementFor(x) => {
                 let (_, _, ref a) = x.nodes;

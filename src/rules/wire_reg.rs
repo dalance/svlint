@@ -1,10 +1,16 @@
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{IntegerVectorType, NetType, RefNode, SyntaxTree};
+use sv_parser::{IntegerVectorType, NetType, NodeEvent, RefNode, SyntaxTree};
 
 pub struct WireReg;
 
 impl Rule for WireReg {
-    fn check(&self, _syntax_tree: &SyntaxTree, node: &RefNode) -> RuleResult {
+    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+        let node = match event {
+            NodeEvent::Enter(x) => x,
+            NodeEvent::Leave(_) => {
+                return RuleResult::Skip;
+            }
+        };
         match node {
             RefNode::NetType(NetType::Wire(_)) => RuleResult::Fail,
             RefNode::IntegerVectorType(IntegerVectorType::Reg(_)) => RuleResult::Fail,
