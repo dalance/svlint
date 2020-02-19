@@ -356,7 +356,7 @@ end
 endmodule
 ```
 
-## genvar_declaration
+## genvar_declaration_in_loop
 
 ### Description
 
@@ -381,6 +381,35 @@ endmodule
 module A;
 genvar i;
 for(i=0;i<10;i++) begin
+end
+endmodule
+```
+
+## genvar_declaration_out_loop
+
+### Description
+
+`genvar` must be declared out loop
+
+### Reason
+
+some tools don't support `genvar` declaration in loop
+
+### Pass example
+
+```SystemVerilog
+module A;
+genvar i;
+for(i=0;i<10;i++) begin: a
+end
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+for(genvar i=0;i<10;i++) begin
 end
 endmodule
 ```
