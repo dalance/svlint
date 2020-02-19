@@ -20,6 +20,6 @@ impl Rule for Unique0Keyword {
     }
 
     fn reason(&self) -> String {
-        String::from("this causes mismatch between simulaton and synthesis")
+        String::from("this causes mismatch between simulation and synthesis")
     }
 }
