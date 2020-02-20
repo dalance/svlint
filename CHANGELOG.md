@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.2...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.3...Unreleased) - ReleaseDate
+
+## [v0.4.3](https://github.com/dalance/svlint/compare/v0.4.2...v0.4.3) - 2020-02-20
 
 * [Added] --github-actions option
 
