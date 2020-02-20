@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.2...Unreleased) - ReleaseDate
 
+* [Added] --github-actions option
+
 ## [v0.4.2](https://github.com/dalance/svlint/compare/v0.4.1...v0.4.2) - 2020-02-19
 
 * [Added] generate_keyword_required rule

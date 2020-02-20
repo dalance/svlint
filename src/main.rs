@@ -62,6 +62,10 @@ pub struct Opt {
     #[structopt(short = "v", long = "verbose")]
     pub verbose: bool,
 
+    /// Prints message for GitHub Actions
+    #[structopt(long = "github-actions")]
+    pub github_actions: bool,
+
     /// Updates config
     #[structopt(long = "update")]
     pub update_config: bool,
@@ -194,7 +198,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                     for failed in linter.check(&syntax_tree, &node) {
                         pass = false;
                         if !opt.silent {
-                            printer.print_failed(&failed, opt.single)?;
+                            printer.print_failed(&failed, opt.single, opt.github_actions)?;
                         }
                     }
                 }

@@ -141,6 +141,39 @@ impl Printer {
         }
     }
 
+    fn get_pos(src: &str, print_pos: usize) -> Option<(usize, usize)> {
+        let mut pos = 0;
+        let mut column = 1;
+        let mut last_lf = None;
+        while pos < src.len() {
+            if src.as_bytes()[pos] == CHAR_LF {
+                column += 1;
+                last_lf = Some(pos);
+            }
+
+            if print_pos == pos {
+                let row = if let Some(last_lf) = last_lf {
+                    pos - last_lf
+                } else {
+                    pos + 1
+                };
+                let mut next_crlf = pos;
+                while next_crlf < src.len() {
+                    if src.as_bytes()[next_crlf] == CHAR_CR || src.as_bytes()[next_crlf] == CHAR_LF
+                    {
+                        break;
+                    }
+                    next_crlf += 1;
+                }
+
+                return Some((row, column));
+            }
+
+            pos += 1;
+        }
+        None
+    }
+
     #[cfg_attr(tarpaulin, skip)]
     fn print_single(
         &mut self,
@@ -258,7 +291,12 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    pub fn print_failed(&mut self, failed: &LintFailed, single: bool) -> Result<(), Error> {
+    pub fn print_failed(
+        &mut self,
+        failed: &LintFailed,
+        single: bool,
+        github_actions: bool,
+    ) -> Result<(), Error> {
         let mut f = File::open(&failed.path)
             .with_context(|| format!("failed to open: '{}'", failed.path.to_string_lossy()))?;
         let mut s = String::new();
@@ -278,6 +316,19 @@ impl Printer {
                 Some(&failed.reason),
             );
         }
+
+        if github_actions {
+            if let Some((row, column)) = Printer::get_pos(&s, failed.beg) {
+                println!(
+                    "::error file={},line={},col={}::{}",
+                    failed.path.to_string_lossy(),
+                    column,
+                    row,
+                    failed.hint
+                );
+            }
+        }
+
         Ok(())
     }
 
