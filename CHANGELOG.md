@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.3...Unreleased) - ReleaseDate
 
+* [Changed] Update verilog-filelist-parser
+
 ## [v0.4.3](https://github.com/dalance/svlint/compare/v0.4.2...v0.4.3) - 2020-02-20
 
 * [Added] --github-actions option
