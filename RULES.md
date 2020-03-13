@@ -83,7 +83,7 @@ multiline `for` statement must have `begin`
 
 ### Reason
 
-if there is not `begin`, the second statatement are confusing
+if there is not `begin`, the second statement are confusing
 
 ### Pass example
 
@@ -422,7 +422,7 @@ multiline `if` statement must have `begin`
 
 ### Reason
 
-if there is not `begin`, the second statatement are confusing
+if there is not `begin`, the second statement are confusing
 
 ### Pass example
 
