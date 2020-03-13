@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.4...Unreleased) - ReleaseDate
 
+* [Changed] Update sv-parser
+
 ## [v0.4.4](https://github.com/dalance/svlint/compare/v0.4.3...v0.4.4) - 2020-02-21
 
 * [Changed] Update verilog-filelist-parser
