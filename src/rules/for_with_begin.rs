@@ -46,6 +46,6 @@ impl Rule for ForWithBegin {
     }
 
     fn reason(&self) -> String {
-        String::from("if there is not `begin`, the second statatement are confusing")
+        String::from("if there is not `begin`, the second statement are confusing")
     }
 }
