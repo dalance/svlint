@@ -547,7 +547,7 @@ dependencies = [
 
 [[package]]
 name = "svlint"
-version = "0.4.6-pre"
+version = "0.4.6"
 dependencies = [
  "anyhow 1.0.27 (registry+https://github.com/rust-lang/crates.io-index)",
  "colored 1.9.3 (registry+https://github.com/rust-lang/crates.io-index)",
