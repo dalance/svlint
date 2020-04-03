@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.6...Unreleased) - ReleaseDate
 
+* [Changed] Update sv-parser
+
 ## [v0.4.6](https://github.com/dalance/svlint/compare/v0.4.5...v0.4.6) - 2020-03-23
 
 * [Fixed] typo of reason [#17](https://github.com/dalance/svlint/pull/17)
