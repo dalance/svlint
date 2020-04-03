@@ -1,5 +1,5 @@
 name: svlint
-version: &version v0.4.6
+version: &version v0.4.7
 summary: SystemVerilog linter
 description: |
   A lint checker supporting SystemVerilog ( IEEE Std. 1800-2017 )
