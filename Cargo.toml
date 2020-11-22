@@ -39,7 +39,7 @@ serde_regex             = "0.4"
 structopt               = "0.3"
 sv-parser               = "0.6.5"
 term                    = "0.5"
-toml                    = "0.4"
+toml                    = "0.5"
 verilog-filelist-parser = "0.1.2"
 
 [build-dependencies]
