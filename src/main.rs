@@ -192,7 +192,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 
     for path in &files {
         let mut pass = true;
-        match parse_sv(&path, &defines, &includes, opt.ignore_include) {
+        match parse_sv(&path, &defines, &includes, opt.ignore_include, false) {
             Ok((syntax_tree, new_defines)) => {
                 for node in syntax_tree.into_iter().event() {
                     for failed in linter.check(&syntax_tree, &node) {
