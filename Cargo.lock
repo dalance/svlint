@@ -653,7 +653,7 @@ dependencies = [
 
 [[package]]
 name = "svlint"
-version = "0.4.10-pre"
+version = "0.4.10"
 dependencies = [
  "anyhow",
  "colored",
