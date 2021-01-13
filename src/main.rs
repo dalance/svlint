@@ -144,11 +144,13 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
 pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
     let mut printer = Printer::new();
 
+    let mut not_obsolete = true;
     for (org_rule, renamed_rule) in config.check_rename() {
         printer.print_warning(&format!(
             "Rule \"{}\" is obsolete. Please rename to \"{}\"",
             org_rule, renamed_rule,
         ))?;
+        not_obsolete = false;
     }
 
     let mut linter = Linter::new(config);
@@ -219,7 +221,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         }
     }
 
-    Ok(all_pass)
+    Ok(all_pass && not_obsolete)
 }
 
 #[cfg_attr(tarpaulin, skip)]
