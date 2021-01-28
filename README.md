@@ -3,7 +3,6 @@
 SystemVerilog linter
 
 [![Actions Status](https://github.com/dalance/svlint/workflows/Regression/badge.svg)](https://github.com/dalance/svlint/actions)
-[![Snap Status](https://build.snapcraft.io/badge/dalance/svlint.svg)](https://build.snapcraft.io/user/dalance/svlint)
 [![codecov](https://codecov.io/gh/dalance/svlint/branch/master/graph/badge.svg)](https://codecov.io/gh/dalance/svlint)
 
 [![Crates.io](https://img.shields.io/crates/v/svlint.svg)](https://crates.io/crates/svlint)
