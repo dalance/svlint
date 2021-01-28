@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.12...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.13...Unreleased) - ReleaseDate
+
+## [v0.4.13](https://github.com/dalance/svlint/compare/v0.4.12...v0.4.13) - 2021-01-28
 
 * [Changed] Obsolete rules return error status
 * [Changed] Update sv-parser
