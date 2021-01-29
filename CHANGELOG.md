@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.14...Unreleased) - ReleaseDate
 
+* [Fixed] multiline detection
+
 ## [v0.4.14](https://github.com/dalance/svlint/compare/v0.4.13...v0.4.14) - 2021-01-29
 
 * [Fixed] multiline detection

@@ -17,7 +17,7 @@ impl Rule for ForWithBegin {
                 let (_, _, ref a) = x.nodes;
 
                 let mut for_str = String::from("");
-                syntax_tree.get_str(*x).map(|x| for_str.push_str(x));
+                syntax_tree.get_str_trim(*x).map(|x| for_str.push_str(x));
 
                 if let StatementOrNull::Statement(x) = a {
                     let (_, _, ref x) = x.nodes;
