@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.15...Unreleased) - ReleaseDate
 
+* [Changed] Update sv-parser
+
 ## [v0.4.15](https://github.com/dalance/svlint/compare/v0.4.14...v0.4.15) - 2021-01-29
 
 * [Fixed] multiline detection
