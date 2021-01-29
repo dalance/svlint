@@ -21,14 +21,14 @@ impl Rule for IfWithBegin {
                 syntax_tree.get_str(a).map(|x| if_str.push_str(x));
                 syntax_tree.get_str(b).map(|x| if_str.push_str(x));
                 syntax_tree.get_str(c).map(|x| if_str.push_str(x));
-                syntax_tree.get_str(d).map(|x| if_str.push_str(x));
+                syntax_tree.get_str_trim(d).map(|x| if_str.push_str(x));
 
                 if let StatementOrNull::Statement(x) = d {
                     let (_, _, ref x) = x.nodes;
                     match x {
                         StatementItem::SeqBlock(_) => (),
                         _ => {
-                            if if_str.trim_end().contains('\n') {
+                            if if_str.contains('\n') {
                                 return RuleResult::Fail;
                             }
                         }
@@ -43,14 +43,14 @@ impl Rule for IfWithBegin {
                     syntax_tree.get_str(a).map(|x| elsif_str.push_str(x));
                     syntax_tree.get_str(b).map(|x| elsif_str.push_str(x));
                     syntax_tree.get_str(c).map(|x| elsif_str.push_str(x));
-                    syntax_tree.get_str(d).map(|x| elsif_str.push_str(x));
+                    syntax_tree.get_str_trim(d).map(|x| elsif_str.push_str(x));
 
                     if let StatementOrNull::Statement(x) = d {
                         let (_, _, ref x) = x.nodes;
                         match x {
                             StatementItem::SeqBlock(_) => (),
                             _ => {
-                                if elsif_str.trim_end().contains('\n') {
+                                if elsif_str.contains('\n') {
                                     let locate = unwrap_locate!(a).unwrap();
                                     return RuleResult::FailLocate(*locate);
                                 }
@@ -65,14 +65,14 @@ impl Rule for IfWithBegin {
 
                     let mut else_str = String::from("");
                     syntax_tree.get_str(a).map(|x| else_str.push_str(x));
-                    syntax_tree.get_str(b).map(|x| else_str.push_str(x));
+                    syntax_tree.get_str_trim(b).map(|x| else_str.push_str(x));
 
                     if let StatementOrNull::Statement(x) = b {
                         let (_, _, ref x) = x.nodes;
                         match x {
                             StatementItem::SeqBlock(_) => (),
                             _ => {
-                                if else_str.trim_end().contains('\n') {
+                                if else_str.contains('\n') {
                                     let locate = unwrap_locate!(a).unwrap();
                                     return RuleResult::FailLocate(*locate);
                                 }

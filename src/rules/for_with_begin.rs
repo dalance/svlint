@@ -24,7 +24,7 @@ impl Rule for ForWithBegin {
                     match x {
                         StatementItem::SeqBlock(_) => (),
                         _ => {
-                            if for_str.trim_end().contains('\n') {
+                            if for_str.contains('\n') {
                                 return RuleResult::Fail;
                             }
                         }
