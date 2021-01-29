@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.13...Unreleased) - ReleaseDate
 
+* [Fixed] multiline detection
+
 ## [v0.4.13](https://github.com/dalance/svlint/compare/v0.4.12...v0.4.13) - 2021-01-28
 
 * [Changed] Obsolete rules return error status
