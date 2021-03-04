@@ -1,5 +1,35 @@
 # Rules
 
+## blocking_assignment_in_always_ff
+
+### Description
+
+blocking assignment is forbidden in`always_ff`
+
+### Reason
+
+blocking assignment in `always_ff` causes elaboration error
+
+### Pass example
+
+```SystemVerilog
+module A;
+always_ff begin
+    x <= 0;
+end
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+always_ff begin
+    x = 0;
+end
+endmodule
+```
+
 ## case_default
 
 ### Description
@@ -693,6 +723,36 @@ module A(
 );
 input  a;
 output b;
+endmodule
+```
+
+## non_blocking_assignment_in_always_comb
+
+### Description
+
+non-blocking assignment is forbidden in`always_comb`
+
+### Reason
+
+non-blocking assignment in `always_comb` causes elaboration error
+
+### Pass example
+
+```SystemVerilog
+module A;
+always_comb begin
+    x = 0;
+end
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+always_comb begin
+    x <= 0;
+end
 endmodule
 ```
 
