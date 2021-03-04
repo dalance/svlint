@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.16...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.17...Unreleased) - ReleaseDate
+
+## [v0.4.17](https://github.com/dalance/svlint/compare/v0.4.16...v0.4.17) - 2021-03-04
 
 * [Added] blocking_assignment_in_always_ff rule [#57](https://github.com/dalance/svlint/issues/57)
 * [Added] non_blocking_assignment_in_always_comb rule [#57](https://github.com/dalance/svlint/issues/57)
