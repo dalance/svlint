@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.16...Unreleased) - ReleaseDate
 
+* [Added] blocking_assignment_in_always_ff rule [#57](https://github.com/dalance/svlint/issues/57)
+* [Added] non_blocking_assignment_in_always_comb rule [#57](https://github.com/dalance/svlint/issues/57)
+
 ## [v0.4.16](https://github.com/dalance/svlint/compare/v0.4.15...v0.4.16) - 2021-01-29
 
 * [Changed] Update sv-parser
