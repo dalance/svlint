@@ -75,6 +75,33 @@ end
 endmodule
 ```
 
+## default_nettype_none
+
+### Description
+
+`` `default_nettype none`` should be at the top of source code
+
+### Reason
+
+`` `default_nettype none`` can detect unintentional implicit wires
+
+### Pass example
+
+```SystemVerilog
+`default_nettype none
+module A;
+endmodule
+
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+endmodule
+
+```
+
 ## enum_with_type
 
 ### Description
