@@ -4,6 +4,7 @@
 
 * [Added] blocking_assignment_in_always_ff rule [#57](https://github.com/dalance/svlint/issues/57)
 * [Added] non_blocking_assignment_in_always_comb rule [#57](https://github.com/dalance/svlint/issues/57)
+* [Added] default_nettype_none rule [#20](https://github.com/dalance/svlint/issues/20)
 
 ## [v0.4.16](https://github.com/dalance/svlint/compare/v0.4.15...v0.4.16) - 2021-01-29
 

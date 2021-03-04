@@ -172,7 +172,7 @@ impl Config {{
     let out_test = Path::new(&out_dir).join("test.rs");
     let mut out_test = File::create(&out_test).unwrap();
 
-    let test_verbose = ["genvar_declaration_out_loop"];
+    let test_verbose = ["default_nettype_none"];
 
     for (file_name, _) in &rules {
         let silent = if test_verbose.contains(&file_name.as_str()) {
