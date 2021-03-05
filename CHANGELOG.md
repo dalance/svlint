@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.17...Unreleased) - ReleaseDate
 
+* [Changed] Update sv-parser
+
 ## [v0.4.17](https://github.com/dalance/svlint/compare/v0.4.16...v0.4.17) - 2021-03-04
 
 * [Added] blocking_assignment_in_always_ff rule [#57](https://github.com/dalance/svlint/issues/57)
