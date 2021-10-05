@@ -218,6 +218,17 @@ impl Printer {
         Printer::with_pos(src, print_pos, |pos, column, row, next_crlf, last_lf| {
             self.write(header, Color::BrightRed);
 
+            let beg = if let Some(last_lf) = last_lf {
+                if next_crlf > last_lf { last_lf + 1 } else { next_crlf }
+            } else {
+                0
+            };
+
+            let column = if beg == 0 && next_crlf == 0 {
+                // Position is first line and first line is empty
+                0
+            } else { column };
+
             let column_len = format!("{}", column).len();
 
             self.write(&format!(": {}\n", description), Color::BrightWhite);
@@ -235,12 +246,6 @@ impl Printer {
             );
 
             self.write(&format!("{} |", column), Color::BrightBlue);
-
-            let beg = if let Some(last_lf) = last_lf {
-                last_lf + 1
-            } else {
-                0
-            };
 
             self.write(
                 &format!(
