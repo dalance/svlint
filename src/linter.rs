@@ -45,7 +45,7 @@ impl Linter {
     }
 
     pub fn load(&mut self, path: &Path) {
-        let lib = Library::new(path);
+        let lib = unsafe { Library::new(path) };
         if let Ok(lib) = lib {
             self.plugins.push(lib);
             let lib = self.plugins.last().unwrap();
