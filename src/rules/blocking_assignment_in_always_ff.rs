@@ -38,7 +38,7 @@ impl Rule for BlockingAssignmentInAlwaysFf {
     }
 
     fn hint(&self) -> String {
-        String::from("blocking assignment is forbidden in`always_ff`")
+        String::from("blocking assignment is forbidden in `always_ff`")
     }
 
     fn reason(&self) -> String {
