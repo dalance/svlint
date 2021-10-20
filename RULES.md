@@ -4,7 +4,7 @@
 
 ### Description
 
-blocking assignment is forbidden in`always_ff`
+blocking assignment is forbidden in `always_ff`
 
 ### Reason
 
