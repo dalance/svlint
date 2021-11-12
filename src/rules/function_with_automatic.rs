@@ -1,3 +1,4 @@
+use crate::config::{ConfigOption};
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
@@ -12,7 +13,8 @@ enum Lifetime {
 }
 
 impl Rule for FunctionWithAutomatic {
-    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent,
+             _option: &ConfigOption) -> RuleResult {
         match event {
             NodeEvent::Enter(RefNode::ModuleAnsiHeader(x)) => {
                 let (_, _, ref a, _, _, _, _, _) = x.nodes;
@@ -131,7 +133,7 @@ impl Rule for FunctionWithAutomatic {
         String::from("function_with_automatic")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("`function` must be `automatic`")
     }
 

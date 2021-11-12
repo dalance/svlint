@@ -1,3 +1,4 @@
+use crate::config::{ConfigOption};
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 
@@ -5,7 +6,8 @@ use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 pub struct UniqueKeyword;
 
 impl Rule for UniqueKeyword {
-    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent,
+             _option: &ConfigOption) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -22,7 +24,7 @@ impl Rule for UniqueKeyword {
         String::from("unique_keyword")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("`unique` is forbidden")
     }
 

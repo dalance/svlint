@@ -1,3 +1,4 @@
+use crate::config::{ConfigOption};
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
@@ -5,7 +6,8 @@ use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 pub struct ForWithBegin;
 
 impl Rule for ForWithBegin {
-    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent,
+             _option: &ConfigOption) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -41,7 +43,7 @@ impl Rule for ForWithBegin {
         String::from("for_with_begin")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("multiline `for` statement must have `begin`")
     }
 

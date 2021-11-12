@@ -1,3 +1,4 @@
+use crate::config::{ConfigOption};
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -135,7 +136,8 @@ const SYSTEM_FUNCTION: &[&str] = &[
 ];
 
 impl Rule for FunctionSameAsSystemFunction {
-    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent,
+             _option: &ConfigOption) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -165,7 +167,7 @@ impl Rule for FunctionSameAsSystemFunction {
         String::from("function_same_as_system_function")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("the name of `function` must not be the same as system function")
     }
 

@@ -1,3 +1,4 @@
+use crate::config::{ConfigOption};
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
@@ -5,7 +6,8 @@ use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 pub struct BlockingAssignmentInAlwaysFf;
 
 impl Rule for BlockingAssignmentInAlwaysFf {
-    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent,
+             _option: &ConfigOption) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -37,7 +39,7 @@ impl Rule for BlockingAssignmentInAlwaysFf {
         String::from("blocking_assignment_in_always_ff")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("blocking assignment is forbidden in `always_ff`")
     }
 

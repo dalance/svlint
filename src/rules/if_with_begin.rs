@@ -1,3 +1,4 @@
+use crate::config::{ConfigOption};
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
@@ -5,7 +6,8 @@ use sv_parser::{unwrap_locate, NodeEvent, RefNode, StatementItem, StatementOrNul
 pub struct IfWithBegin;
 
 impl Rule for IfWithBegin {
-    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent,
+             _option: &ConfigOption) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -91,7 +93,7 @@ impl Rule for IfWithBegin {
         String::from("if_with_begin")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("multiline `if` statement must have `begin`")
     }
 

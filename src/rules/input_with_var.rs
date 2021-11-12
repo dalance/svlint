@@ -1,3 +1,4 @@
+use crate::config::{ConfigOption};
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, PortDirection, RefNode, SyntaxTree};
 
@@ -5,7 +6,8 @@ use sv_parser::{unwrap_node, NodeEvent, PortDirection, RefNode, SyntaxTree};
 pub struct InputWithVar;
 
 impl Rule for InputWithVar {
-    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent,
+             _option: &ConfigOption) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -34,7 +36,7 @@ impl Rule for InputWithVar {
         String::from("input_with_var")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("`input` must have `var`")
     }
 

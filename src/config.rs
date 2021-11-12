@@ -15,6 +15,8 @@ pub struct Config {
 pub struct ConfigOption {
     #[serde(with = "serde_regex", default)]
     pub exclude_paths: Vec<Regex>,
+
+    pub prefix_output: Option<String>,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));
