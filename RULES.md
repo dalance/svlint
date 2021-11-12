@@ -574,7 +574,7 @@ endmodule
 
 ### Reason
 
-
+`input wire` can be assigned by mistake. `input logic` becomes error with `default nettype none` because it doesn't have net type.
 
 ### Pass example
 
