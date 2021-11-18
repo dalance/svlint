@@ -16,6 +16,7 @@ pub struct ConfigOption {
     #[serde(with = "serde_regex", default)]
     pub exclude_paths: Vec<Regex>,
 
+    #[serde(default = "default_prefix_output")]
     pub prefix_output: Option<String>,
 }
 
@@ -41,6 +42,11 @@ fn default_as_true() -> bool {
 #[allow(dead_code)]
 fn default_as_false() -> bool {
     false
+}
+
+#[allow(dead_code)]
+fn default_prefix_output() -> Option<String> {
+    Some("o_".to_string())
 }
 
 include!(concat!(env!("OUT_DIR"), "/impl_config.rs"));

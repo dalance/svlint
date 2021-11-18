@@ -5,7 +5,7 @@ mod linter;
 mod printer;
 mod rules;
 
-use crate::config::Config;
+use crate::config::{Config,ConfigOption};
 use std::fs::File;
 use std::io::{BufReader, Read};
 
@@ -17,7 +17,7 @@ pub fn main() {
         println!("## {}\n", rule.name());
 
         println!("### Description\n");
-        println!("{}\n", rule.hint());
+        println!("{}\n", rule.hint(&ConfigOption::default()));
 
         println!("### Reason\n");
         println!("{}\n", rule.reason());
