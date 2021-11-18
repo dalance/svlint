@@ -1,4 +1,4 @@
-use crate::config::{ConfigOption};
+use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
@@ -8,8 +8,12 @@ pub struct GenerateKeywordRequired {
 }
 
 impl Rule for GenerateKeywordRequired {
-    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent,
-             _option: &ConfigOption) -> RuleResult {
+    fn check(
+        &mut self,
+        _syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        _option: &ConfigOption,
+    ) -> RuleResult {
         match event {
             NodeEvent::Enter(RefNode::GenerateRegion(_)) => {
                 self.generate_region.push(());

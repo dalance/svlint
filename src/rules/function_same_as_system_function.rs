@@ -1,4 +1,4 @@
-use crate::config::{ConfigOption};
+use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -136,8 +136,12 @@ const SYSTEM_FUNCTION: &[&str] = &[
 ];
 
 impl Rule for FunctionSameAsSystemFunction {
-    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent,
-             _option: &ConfigOption) -> RuleResult {
+    fn check(
+        &mut self,
+        syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        _option: &ConfigOption,
+    ) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {

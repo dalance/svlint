@@ -1,14 +1,17 @@
-use crate::config::{ConfigOption};
+use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_node, Identifier, Locate, NodeEvent, PortDirection,
-    RefNode, SyntaxTree};
+use sv_parser::{unwrap_node, Identifier, Locate, NodeEvent, PortDirection, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct PrefixOutput;
 
 impl Rule for PrefixOutput {
-    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent,
-             option: &ConfigOption) -> RuleResult {
+    fn check(
+        &mut self,
+        syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        option: &ConfigOption,
+    ) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -26,11 +29,13 @@ impl Rule for PrefixOutput {
                 let id: Locate = match unwrap_node!(*x, Identifier) {
                     Some(RefNode::Identifier(Identifier::SimpleIdentifier(_id))) => {
                         Some(_id.nodes.0)
-                    },
-                    Some(RefNode::Identifier(Identifier::EscapedIdentifier(_id)))
-                        => Some(_id.nodes.0),
+                    }
+                    Some(RefNode::Identifier(Identifier::EscapedIdentifier(_id))) => {
+                        Some(_id.nodes.0)
+                    }
                     _ => None,
-                }.unwrap();
+                }
+                .unwrap();
                 let nm: &str = syntax_tree.get_str(&id).unwrap();
 
                 match (is_output, &option.prefix_output) {
@@ -40,7 +45,7 @@ impl Rule for PrefixOutput {
                         } else {
                             RuleResult::Fail
                         }
-                    },
+                    }
                     (true, None) => RuleResult::Fail,
                     _ => RuleResult::Pass,
                 }

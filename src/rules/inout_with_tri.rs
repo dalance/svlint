@@ -1,4 +1,4 @@
-use crate::config::{ConfigOption};
+use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NetType, NodeEvent, PortDirection, RefNode, SyntaxTree};
 
@@ -6,8 +6,12 @@ use sv_parser::{unwrap_node, NetType, NodeEvent, PortDirection, RefNode, SyntaxT
 pub struct InoutWithTri;
 
 impl Rule for InoutWithTri {
-    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent,
-             _option: &ConfigOption) -> RuleResult {
+    fn check(
+        &mut self,
+        _syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        _option: &ConfigOption,
+    ) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {

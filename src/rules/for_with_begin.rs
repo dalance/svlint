@@ -1,4 +1,4 @@
-use crate::config::{ConfigOption};
+use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
@@ -6,8 +6,12 @@ use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 pub struct ForWithBegin;
 
 impl Rule for ForWithBegin {
-    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent,
-             _option: &ConfigOption) -> RuleResult {
+    fn check(
+        &mut self,
+        syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        _option: &ConfigOption,
+    ) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
