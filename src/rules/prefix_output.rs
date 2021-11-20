@@ -21,7 +21,7 @@ impl Rule for PrefixOutput {
         match node {
             RefNode::AnsiPortDeclaration(x) => {
                 let dir = unwrap_node!(*x, PortDirection);
-                let is_output = match dir {
+                let is_output: bool = match dir {
                     Some(RefNode::PortDirection(PortDirection::Output(_))) => true,
                     _ => false,
                 };
@@ -37,16 +37,10 @@ impl Rule for PrefixOutput {
                 }
                 .unwrap();
                 let nm: &str = syntax_tree.get_str(&id).unwrap();
+                let is_prefixed: bool = nm.starts_with(&option.prefix_output);
 
-                match (is_output, &option.prefix_output) {
-                    (true, Some(p)) => {
-                        if nm.starts_with(p) {
-                            RuleResult::Pass
-                        } else {
-                            RuleResult::Fail
-                        }
-                    }
-                    (true, None) => RuleResult::Fail,
+                match (is_output, is_prefixed) {
+                    (true, false) => RuleResult::Fail,
                     _ => RuleResult::Pass,
                 }
             }
@@ -59,10 +53,7 @@ impl Rule for PrefixOutput {
     }
 
     fn hint(&self, option: &ConfigOption) -> String {
-        match &option.prefix_output {
-            Some(x) => String::from(format!("`output` must have prefix \"{}\"", x)),
-            _ => String::from("prefix_output enabled but option.prefix_output not specified"),
-        }
+        String::from(format!("`output` must have prefix \"{}\"", &option.prefix_output))
     }
 
     fn reason(&self) -> String {

@@ -21,7 +21,7 @@ impl Rule for PrefixInput {
         match node {
             RefNode::AnsiPortDeclaration(x) => {
                 let dir = unwrap_node!(*x, PortDirection);
-                let is_input = match dir {
+                let is_input: bool = match dir {
                     Some(RefNode::PortDirection(PortDirection::Input(_))) => true,
                     _ => false,
                 };
@@ -37,16 +37,10 @@ impl Rule for PrefixInput {
                 }
                 .unwrap();
                 let nm: &str = syntax_tree.get_str(&id).unwrap();
+                let is_prefixed: bool = nm.starts_with(&option.prefix_input);
 
-                match (is_input, &option.prefix_input) {
-                    (true, Some(p)) => {
-                        if nm.starts_with(p) {
-                            RuleResult::Pass
-                        } else {
-                            RuleResult::Fail
-                        }
-                    }
-                    (true, None) => RuleResult::Fail,
+                match (is_input, is_prefixed) {
+                    (true, false) => RuleResult::Fail,
                     _ => RuleResult::Pass,
                 }
             }
@@ -59,10 +53,7 @@ impl Rule for PrefixInput {
     }
 
     fn hint(&self, option: &ConfigOption) -> String {
-        match &option.prefix_input {
-            Some(x) => String::from(format!("`input` must have prefix \"{}\"", x)),
-            _ => String::from("prefix_input enabled but option.prefix_input not specified"),
-        }
+        String::from(format!("`input` must have prefix \"{}\"", &option.prefix_input))
     }
 
     fn reason(&self) -> String {

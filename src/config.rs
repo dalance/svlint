@@ -17,9 +17,9 @@ pub struct ConfigOption {
     pub exclude_paths: Vec<Regex>,
 
     #[serde(default = "default_prefix_input")]
-    pub prefix_input: Option<String>,
+    pub prefix_input: String,
     #[serde(default = "default_prefix_output")]
-    pub prefix_output: Option<String>,
+    pub prefix_output: String,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));
@@ -47,13 +47,13 @@ fn default_as_false() -> bool {
 }
 
 #[allow(dead_code)]
-fn default_prefix_input() -> Option<String> {
-    Some("i_".to_string())
+fn default_prefix_input() -> String {
+    String::from("i_")
 }
 
 #[allow(dead_code)]
-fn default_prefix_output() -> Option<String> {
-    Some("o_".to_string())
+fn default_prefix_output() -> String {
+    String::from("o_")
 }
 
 include!(concat!(env!("OUT_DIR"), "/impl_config.rs"));
