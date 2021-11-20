@@ -1,6 +1,8 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_node, Identifier, Locate, NodeEvent, PortDirection, RefNode, SyntaxTree};
+use sv_parser::{
+    unwrap_locate, unwrap_node, Locate, NodeEvent, PortDirection, RefNode, SyntaxTree,
+};
 
 #[derive(Default)]
 pub struct PrefixOutput;
@@ -26,18 +28,20 @@ impl Rule for PrefixOutput {
                     _ => false,
                 };
 
-                let id: Locate = match unwrap_node!(*x, Identifier) {
-                    Some(RefNode::Identifier(Identifier::SimpleIdentifier(_id))) => {
-                        Some(_id.nodes.0)
-                    }
-                    Some(RefNode::Identifier(Identifier::EscapedIdentifier(_id))) => {
-                        Some(_id.nodes.0)
+                let id: Option<&Locate> = match unwrap_node!(*x, Identifier) {
+                    Some(RefNode::Identifier(_id)) => {
+                        unwrap_locate!(_id)
                     }
                     _ => None,
-                }
-                .unwrap();
-                let nm: &str = syntax_tree.get_str(&id).unwrap();
-                let is_prefixed: bool = nm.starts_with(&option.prefix_output);
+                };
+
+                let is_prefixed: bool = match &id {
+                    Some(x) => syntax_tree
+                        .get_str(*x)
+                        .unwrap()
+                        .starts_with(&option.prefix_output),
+                    _ => false,
+                };
 
                 match (is_output, is_prefixed) {
                     (true, false) => RuleResult::Fail,
