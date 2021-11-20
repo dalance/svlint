@@ -55,13 +55,13 @@ impl Rule for PrefixOutput {
     }
 
     fn name(&self) -> String {
-        String::from("output_name_prefix")
+        String::from("prefix_output")
     }
 
     fn hint(&self, option: &ConfigOption) -> String {
         match &option.prefix_output {
             Some(x) => String::from(format!("`output` must have prefix \"{}\"", x)),
-            _ => String::from("output_name_prefix enabled but prefix_output not specified"),
+            _ => String::from("prefix_output enabled but option.prefix_output not specified"),
         }
     }
 
