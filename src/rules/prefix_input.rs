@@ -53,7 +53,10 @@ impl Rule for PrefixInput {
     }
 
     fn hint(&self, option: &ConfigOption) -> String {
-        String::from(format!("`input` must have prefix \"{}\"", &option.prefix_input))
+        String::from(format!(
+            "`input` must have prefix \"{}\"",
+            &option.prefix_input
+        ))
     }
 
     fn reason(&self) -> String {

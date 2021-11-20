@@ -53,7 +53,10 @@ impl Rule for PrefixInout {
     }
 
     fn hint(&self, option: &ConfigOption) -> String {
-        String::from(format!("`inout` must have prefix \"{}\"", &option.prefix_inout))
+        String::from(format!(
+            "`inout` must have prefix \"{}\"",
+            &option.prefix_inout
+        ))
     }
 
     fn reason(&self) -> String {

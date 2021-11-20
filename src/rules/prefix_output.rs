@@ -53,7 +53,10 @@ impl Rule for PrefixOutput {
     }
 
     fn hint(&self, option: &ConfigOption) -> String {
-        String::from(format!("`output` must have prefix \"{}\"", &option.prefix_output))
+        String::from(format!(
+            "`output` must have prefix \"{}\"",
+            &option.prefix_output
+        ))
     }
 
     fn reason(&self) -> String {
