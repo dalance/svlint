@@ -22,6 +22,8 @@ pub struct ConfigOption {
     pub prefix_input: String,
     #[serde(default = "default_prefix_output")]
     pub prefix_output: String,
+    #[serde(default = "default_prefix_label")]
+    pub prefix_label: String,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));
@@ -61,6 +63,11 @@ fn default_prefix_input() -> String {
 #[allow(dead_code)]
 fn default_prefix_output() -> String {
     String::from("o_")
+}
+
+#[allow(dead_code)]
+fn default_prefix_label() -> String {
+    String::from("l_")
 }
 
 include!(concat!(env!("OUT_DIR"), "/impl_config.rs"));

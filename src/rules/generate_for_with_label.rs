@@ -1,6 +1,8 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{GenerateBlock, NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{
+    unwrap_locate, unwrap_node, GenerateBlock, Locate, NodeEvent, RefNode, SyntaxTree,
+};
 
 #[derive(Default)]
 pub struct GenerateForWithLabel;
@@ -8,9 +10,9 @@ pub struct GenerateForWithLabel;
 impl Rule for GenerateForWithLabel {
     fn check(
         &mut self,
-        _syntax_tree: &SyntaxTree,
+        syntax_tree: &SyntaxTree,
         event: &NodeEvent,
-        _option: &ConfigOption,
+        option: &ConfigOption,
     ) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
@@ -21,13 +23,29 @@ impl Rule for GenerateForWithLabel {
         match node {
             RefNode::LoopGenerateConstruct(x) => {
                 let (_, _, ref a) = x.nodes;
+
+                let id: Option<&Locate> = match unwrap_node!(*x, GenerateBlockIdentifier) {
+                    Some(RefNode::GenerateBlockIdentifier(_id)) => {
+                        unwrap_locate!(_id)
+                    }
+                    _ => None,
+                };
+
                 match a {
                     GenerateBlock::Multiple(x) => {
                         let (_, _, ref a, _, _, _) = x.nodes;
-                        if a.is_some() {
-                            RuleResult::Pass
-                        } else {
-                            RuleResult::Fail
+
+                        let is_prefixed: bool = match &id {
+                            Some(x) => syntax_tree
+                                .get_str(*x)
+                                .unwrap()
+                                .starts_with(&option.prefix_label),
+                            _ => false,
+                        };
+
+                        match (a.is_some(), is_prefixed) {
+                            (true, true) => RuleResult::Pass,
+                            _ => RuleResult::Fail,
                         }
                     }
                     _ => RuleResult::Fail,
@@ -41,8 +59,11 @@ impl Rule for GenerateForWithLabel {
         String::from("generate_for_with_label")
     }
 
-    fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`generate for` must have label")
+    fn hint(&self, option: &ConfigOption) -> String {
+        String::from(format!(
+            "`generate for` must have label with prefix \"{}\"",
+            &option.prefix_label
+        ))
     }
 
     fn reason(&self) -> String {
