@@ -16,6 +16,8 @@ pub struct ConfigOption {
     #[serde(with = "serde_regex", default)]
     pub exclude_paths: Vec<Regex>,
 
+    #[serde(default = "default_prefix_inout")]
+    pub prefix_inout: String,
     #[serde(default = "default_prefix_input")]
     pub prefix_input: String,
     #[serde(default = "default_prefix_output")]
@@ -44,6 +46,11 @@ fn default_as_true() -> bool {
 #[allow(dead_code)]
 fn default_as_false() -> bool {
     false
+}
+
+#[allow(dead_code)]
+fn default_prefix_inout() -> String {
+    String::from("b_")
 }
 
 #[allow(dead_code)]
