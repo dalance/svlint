@@ -29,8 +29,8 @@ impl Rule for PrefixOutput {
                 };
 
                 let id: Option<&Locate> = match unwrap_node!(*x, Identifier) {
-                    Some(RefNode::Identifier(_id)) => {
-                        unwrap_locate!(_id)
+                    Some(RefNode::Identifier(id_)) => {
+                        unwrap_locate!(id_)
                     }
                     _ => None,
                 };
