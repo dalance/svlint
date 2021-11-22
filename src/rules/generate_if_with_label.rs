@@ -109,8 +109,11 @@ impl Rule for GenerateIfWithLabel {
         String::from("generate_if_with_label")
     }
 
-    fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`generate if` must have label")
+    fn hint(&self, option: &ConfigOption) -> String {
+        String::from(format!(
+            "`generate if` must have label with prefix \"{}\"",
+            &option.prefix_label
+        ))
     }
 
     fn reason(&self) -> String {
