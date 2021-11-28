@@ -12,9 +12,10 @@ pub enum RuleResult {
 }
 
 pub trait Rule: Sync + Send {
-    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult;
+    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent,
+             config: &ConfigOption) -> RuleResult;
     fn name(&self) -> String;
-    fn hint(&self) -> String;
+    fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
 }
 
@@ -72,7 +73,7 @@ impl Linter {
 
         let mut ret = Vec::new();
         'outer: for rule in &mut self.rules {
-            match rule.check(syntax_tree, event) {
+            match rule.check(syntax_tree, event, &self.option) {
                 RuleResult::Fail => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
                         for exclude in &self.option.exclude_paths {
@@ -85,7 +86,7 @@ impl Linter {
                             beg,
                             len: locate.len,
                             name: rule.name(),
-                            hint: rule.hint(),
+                            hint: rule.hint(&self.option),
                             reason: rule.reason(),
                         };
                         ret.push(result);
@@ -103,7 +104,7 @@ impl Linter {
                             beg: beg + offset,
                             len,
                             name: rule.name(),
-                            hint: rule.hint(),
+                            hint: rule.hint(&self.option),
                             reason: rule.reason(),
                         };
                         ret.push(result);
@@ -121,7 +122,7 @@ impl Linter {
                             beg,
                             len: x.len,
                             name: rule.name(),
-                            hint: rule.hint(),
+                            hint: rule.hint(&self.option),
                             reason: rule.reason(),
                         };
                         ret.push(result);

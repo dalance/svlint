@@ -1,3 +1,4 @@
+use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -5,7 +6,12 @@ use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 pub struct InterfacePortWithModport;
 
 impl Rule for InterfacePortWithModport {
-    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(
+        &mut self,
+        _syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        _option: &ConfigOption,
+    ) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -29,7 +35,7 @@ impl Rule for InterfacePortWithModport {
         String::from("interface_port_with_modport")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("interface port must have modport")
     }
 

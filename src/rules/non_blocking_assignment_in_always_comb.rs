@@ -1,3 +1,4 @@
+use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
@@ -5,7 +6,12 @@ use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 pub struct NonBlockingAssignmentInAlwaysComb;
 
 impl Rule for NonBlockingAssignmentInAlwaysComb {
-    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(
+        &mut self,
+        _syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        _option: &ConfigOption,
+    ) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -36,7 +42,7 @@ impl Rule for NonBlockingAssignmentInAlwaysComb {
         String::from("non_blocking_assignment_in_always_comb")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("non-blocking assignment is forbidden in`always_comb`")
     }
 

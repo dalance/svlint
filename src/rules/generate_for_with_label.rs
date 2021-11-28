@@ -1,3 +1,4 @@
+use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{GenerateBlock, NodeEvent, RefNode, SyntaxTree};
 
@@ -5,7 +6,12 @@ use sv_parser::{GenerateBlock, NodeEvent, RefNode, SyntaxTree};
 pub struct GenerateForWithLabel;
 
 impl Rule for GenerateForWithLabel {
-    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(
+        &mut self,
+        _syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        _option: &ConfigOption,
+    ) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -35,7 +41,7 @@ impl Rule for GenerateForWithLabel {
         String::from("generate_for_with_label")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("`generate for` must have label")
     }
 

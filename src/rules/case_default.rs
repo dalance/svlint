@@ -1,3 +1,4 @@
+use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
@@ -5,7 +6,12 @@ use sv_parser::{unwrap_locate, unwrap_node, AlwaysKeyword, NodeEvent, RefNode, S
 pub struct CaseDefault;
 
 impl Rule for CaseDefault {
-    fn check(&mut self, _syntax_tree: &SyntaxTree, event: &NodeEvent) -> RuleResult {
+    fn check(
+        &mut self,
+        _syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        _option: &ConfigOption,
+    ) -> RuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -53,7 +59,7 @@ impl Rule for CaseDefault {
         String::from("case_default")
     }
 
-    fn hint(&self) -> String {
+    fn hint(&self, _option: &ConfigOption) -> String {
         String::from("`case` must have `default` in `always_comb` or `function`")
     }
 
