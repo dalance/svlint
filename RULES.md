@@ -837,6 +837,90 @@ parameter A = 1;
 endpackage
 ```
 
+## prefix_inout
+
+### Description
+
+`inout` must have prefix "b_"
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+module A (
+    inout var b_a
+);
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A (
+    inout var a
+);
+endmodule
+```
+
+## prefix_input
+
+### Description
+
+`input` must have prefix "i_"
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+module A (
+    input var i_a
+);
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A (
+    input var a
+);
+endmodule
+```
+
+## prefix_output
+
+### Description
+
+`output` must have prefix "o_"
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+module A (
+    output var o_a
+);
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A (
+    output var a
+);
+endmodule
+```
+
 ## priority_keyword
 
 ### Description
