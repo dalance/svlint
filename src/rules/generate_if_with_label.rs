@@ -36,12 +36,10 @@ impl Rule for GenerateIfWithLabel {
                         let (_, _, ref a, _, _, _) = x.nodes;
 
                         let is_prefixed: bool = match &id {
-                            Some(x) => {
-                                syntax_tree
-                                    .get_str(*x)
-                                    .unwrap()
-                                    .starts_with(&option.prefix_label)
-                            }
+                            Some(x) => syntax_tree
+                                .get_str(*x)
+                                .unwrap()
+                                .starts_with(&option.prefix_label),
                             _ => false,
                         };
 
@@ -57,12 +55,10 @@ impl Rule for GenerateIfWithLabel {
                                             Some((_, id_)) => {
                                                 let id: Option<&Locate> = unwrap_locate!(id_);
                                                 let is_prefixed: bool = match &id {
-                                                    Some(x) => {
-                                                        syntax_tree
-                                                            .get_str(*x)
-                                                            .unwrap()
-                                                            .starts_with(&option.prefix_label)
-                                                    }
+                                                    Some(x) => syntax_tree
+                                                        .get_str(*x)
+                                                        .unwrap()
+                                                        .starts_with(&option.prefix_label),
                                                     _ => false,
                                                 };
 
