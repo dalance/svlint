@@ -211,6 +211,25 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         match parse_sv(&path, &defines, &includes, opt.ignore_include, false) {
             Ok((syntax_tree, new_defines)) => {
                 for node in syntax_tree.into_iter().event() {
+                    /* TODO:
+                    if (node is comment and comment is special format) {
+                        get on/off command
+                        get single rule name
+                        iterate through list of rules turning them on/off
+                    }
+
+                    // svlint on foo bar baz
+                    Regex: ^\s*svlint\s+(on|off)\s+[a-z0-9_\s]*$
+
+                    for rule in linter.rules {
+                        if ruleName == rule.name() {
+                            rule.enabled = onNotOff
+                            if verbose {
+                                println ruleName onNotOff
+                            }
+                        }
+                    }
+                    */
                     for failed in linter.check(&syntax_tree, &node) {
                         pass = false;
                         if !opt.silent {

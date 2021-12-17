@@ -77,6 +77,11 @@ impl Linter {
 
         let mut ret = Vec::new();
         'outer: for rule in &mut self.rules {
+        /* TODO:
+            if !rule.enable {
+                continue 'outer;
+            }
+        */
             match rule.check(syntax_tree, event, &self.option) {
                 RuleResult::Fail => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {

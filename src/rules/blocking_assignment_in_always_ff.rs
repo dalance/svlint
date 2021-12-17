@@ -4,6 +4,7 @@ use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct BlockingAssignmentInAlwaysFf;
+// TODO: pub struct BlockingAssignmentInAlwaysFf {enable: bool};
 
 impl Rule for BlockingAssignmentInAlwaysFf {
     fn check(
