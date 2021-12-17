@@ -12,8 +12,12 @@ pub enum RuleResult {
 }
 
 pub trait Rule: Sync + Send {
-    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent,
-             config: &ConfigOption) -> RuleResult;
+    fn check(
+        &mut self,
+        syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        config: &ConfigOption,
+    ) -> RuleResult;
     fn name(&self) -> String;
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
