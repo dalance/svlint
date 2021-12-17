@@ -26,6 +26,12 @@ pub struct ConfigOption {
     pub prefix_label: String,
     #[serde(default = "default_prefix_instance")]
     pub prefix_instance: String,
+    #[serde(default = "default_prefix_module")]
+    pub prefix_module: String,
+    #[serde(default = "default_prefix_package")]
+    pub prefix_package: String,
+    #[serde(default = "default_prefix_interface")]
+    pub prefix_interface: String,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));
@@ -75,6 +81,21 @@ fn default_prefix_label() -> String {
 #[allow(dead_code)]
 fn default_prefix_instance() -> String {
     String::from("u_")
+}
+
+#[allow(dead_code)]
+fn default_prefix_module() -> String {
+    String::from("mod_")
+}
+
+#[allow(dead_code)]
+fn default_prefix_package() -> String {
+    String::from("pkg_")
+}
+
+#[allow(dead_code)]
+fn default_prefix_interface() -> String {
+    String::from("ifc_")
 }
 
 include!(concat!(env!("OUT_DIR"), "/impl_config.rs"));

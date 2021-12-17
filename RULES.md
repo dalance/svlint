@@ -1015,6 +1015,50 @@ module A (
 endmodule
 ```
 
+## prefix_interface
+
+### Description
+
+`interface` name must have prefix "ifc_"
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+interface ifc_withPrefix; endinterface
+```
+
+### Fail example
+
+```SystemVerilog
+interface noPrefix; endinterface
+```
+
+## prefix_module
+
+### Description
+
+`module` name must have prefix "mod_"
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+module mod_withPrefix; endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module noPrefix; endmodule
+```
+
 ## prefix_output
 
 ### Description
@@ -1041,6 +1085,28 @@ module A (
     output var a
 );
 endmodule
+```
+
+## prefix_package
+
+### Description
+
+`package` name must have prefix "pkg_"
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+package pkg_withPrefix; endpackage
+```
+
+### Fail example
+
+```SystemVerilog
+package noPrefix; endpackage
 ```
 
 ## priority_keyword
