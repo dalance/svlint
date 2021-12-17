@@ -771,11 +771,11 @@ end
 endmodule
 ```
 
-## module_name_uppercamelcase
+## lowercamelcase_package
 
 ### Description
 
-Module name must begin with UpperCamelCase
+Package name must begin with lowerCamelCase
 
 ### Reason
 
@@ -784,13 +784,13 @@ Naming convention simplifies audit.
 ### Pass example
 
 ```SystemVerilog
-module FooBar; endmodule
+package fooBar; endpackage
 ```
 
 ### Fail example
 
 ```SystemVerilog
-module fooBar; endmodule
+package FooBar; endpackage
 ```
 
 ## non_ansi_module
@@ -881,28 +881,6 @@ module A (
     output logic a
 );
 endmodule
-```
-
-## package_name_lowercamelcase
-
-### Description
-
-Package name must begin with lowerCamelCase
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass example
-
-```SystemVerilog
-package fooBar; endpackage
-```
-
-### Fail example
-
-```SystemVerilog
-package FooBar; endpackage
 ```
 
 ## parameter_in_package
@@ -1235,6 +1213,50 @@ initial begin
     endcase
 end
 endmodule
+```
+
+## uppercamelcase_interface
+
+### Description
+
+Interface name must begin with UpperCamelCase
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+interface FooBar; endinterface
+```
+
+### Fail example
+
+```SystemVerilog
+interface fooBar; endinterface
+```
+
+## uppercamelcase_module
+
+### Description
+
+Module name must begin with UpperCamelCase
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+module FooBar; endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module fooBar; endmodule
 ```
 
 ## wire_reg

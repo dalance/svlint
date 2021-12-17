@@ -3,9 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct PackageNameLowercamelcase;
+pub struct UppercamelcaseModule;
 
-impl Rule for PackageNameLowercamelcase {
+impl Rule for UppercamelcaseModule {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
@@ -19,7 +19,7 @@ impl Rule for PackageNameLowercamelcase {
             }
         };
         match node {
-            RefNode::PackageIdentifier(x) => {
+            RefNode::ModuleIdentifier(x) => {
                 let id: Option<&Locate> = match unwrap_node!(*x, SimpleIdentifier) {
                     Some(RefNode::SimpleIdentifier(id_)) => {
                         unwrap_locate!(id_)
@@ -34,7 +34,7 @@ impl Rule for PackageNameLowercamelcase {
                         .chars()
                         .nth(0)
                         .unwrap()
-                        .is_ascii_lowercase(),
+                        .is_ascii_uppercase(),
                     _ => false,
                 };
 
@@ -49,11 +49,11 @@ impl Rule for PackageNameLowercamelcase {
     }
 
     fn name(&self) -> String {
-        String::from("package_name_lowercamelcase")
+        String::from("uppercamelcase_module")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from(format!("Package name must begin with lowerCamelCase"))
+        String::from(format!("Module name must begin with UpperCamelCase"))
     }
 
     fn reason(&self) -> String {

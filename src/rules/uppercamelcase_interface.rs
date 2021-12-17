@@ -3,9 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct ModuleNameUppercamelcase;
+pub struct UppercamelcaseInterface;
 
-impl Rule for ModuleNameUppercamelcase {
+impl Rule for UppercamelcaseInterface {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
@@ -19,7 +19,7 @@ impl Rule for ModuleNameUppercamelcase {
             }
         };
         match node {
-            RefNode::ModuleIdentifier(x) => {
+            RefNode::InterfaceIdentifier(x) => {
                 let id: Option<&Locate> = match unwrap_node!(*x, SimpleIdentifier) {
                     Some(RefNode::SimpleIdentifier(id_)) => {
                         unwrap_locate!(id_)
@@ -49,11 +49,11 @@ impl Rule for ModuleNameUppercamelcase {
     }
 
     fn name(&self) -> String {
-        String::from("module_name_uppercamelcase")
+        String::from("uppercamelcase_interface")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from(format!("Module name must begin with UpperCamelCase"))
+        String::from(format!("Interface name must begin with UpperCamelCase"))
     }
 
     fn reason(&self) -> String {
