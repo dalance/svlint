@@ -3,7 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct GenvarDeclarationInLoop;
+pub struct GenvarDeclarationInLoop {disable: bool}
 
 impl Rule for GenvarDeclarationInLoop {
     fn check(
@@ -41,5 +41,13 @@ impl Rule for GenvarDeclarationInLoop {
 
     fn reason(&self) -> String {
         String::from("the scope of variable should be minimized")
+    }
+
+    fn disabled(&mut self, disable: Option<bool>) -> bool {
+        match disable {
+            Some(x) => { self.disable = x; }
+            _ => {}
+        }
+        self.disable
     }
 }

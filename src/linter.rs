@@ -21,11 +21,12 @@ pub trait Rule: Sync + Send {
     fn name(&self) -> String;
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
+    fn disabled(&mut self, disable: Option<bool>) -> bool;
 }
 
 pub struct Linter {
     option: ConfigOption,
-    rules: Vec<Box<dyn Rule>>,
+    pub rules: Vec<Box<dyn Rule>>,
     plugins: Vec<Library>,
 }
 
@@ -77,11 +78,10 @@ impl Linter {
 
         let mut ret = Vec::new();
         'outer: for rule in &mut self.rules {
-        /* TODO:
-            if !rule.enable {
+            if rule.disabled(None) {
                 continue 'outer;
             }
-        */
+
             match rule.check(syntax_tree, event, &self.option) {
                 RuleResult::Fail => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {

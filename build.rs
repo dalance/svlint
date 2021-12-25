@@ -105,11 +105,9 @@ pub struct ConfigRules {{
     let mut check_rename_body = String::new();
     for (file_name, struct_name) in &rules {
         enable_all_body.push_str(&format!("        self.rules.{} = true;\n", file_name));
-        // TODO: enable
         gen_rules_body.push_str(&format!("        if self.rules.{} {{\n", file_name));
         gen_rules_body.push_str(&format!(
             "            ret.push(Box::new({}::default()));\n",
-            // TODO: enable
             struct_name
         ));
         gen_rules_body.push_str(&format!("        }}\n"));
