@@ -3,7 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct LevelSensitiveAlways;
+pub struct LevelSensitiveAlways {disable: bool}
 
 impl Rule for LevelSensitiveAlways {
     fn check(
@@ -48,5 +48,13 @@ impl Rule for LevelSensitiveAlways {
 
     fn reason(&self) -> String {
         String::from("`always` can't detect blocking/non-blocking mistake")
+    }
+
+    fn disabled(&mut self, disable: Option<bool>) -> bool {
+        match disable {
+            Some(x) => { self.disable = x; }
+            _ => {}
+        }
+        self.disable
     }
 }

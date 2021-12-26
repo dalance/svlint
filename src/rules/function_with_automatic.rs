@@ -5,6 +5,7 @@ use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 #[derive(Default)]
 pub struct FunctionWithAutomatic {
     lifetimes: Vec<Lifetime>,
+    disable: bool,
 }
 
 enum Lifetime {
@@ -143,5 +144,13 @@ impl Rule for FunctionWithAutomatic {
 
     fn reason(&self) -> String {
         String::from("this causes mismatch between simulation and synthesis")
+    }
+
+    fn disabled(&mut self, disable: Option<bool>) -> bool {
+        match disable {
+            Some(x) => { self.disable = x; }
+            _ => {}
+        }
+        self.disable
     }
 }

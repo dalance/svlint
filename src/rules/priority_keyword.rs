@@ -3,7 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 
 #[derive(Default)]
-pub struct PriorityKeyword;
+pub struct PriorityKeyword {disable: bool}
 
 impl Rule for PriorityKeyword {
     fn check(
@@ -34,5 +34,13 @@ impl Rule for PriorityKeyword {
 
     fn reason(&self) -> String {
         String::from("this causes mismatch between simulation and synthesis")
+    }
+
+    fn disabled(&mut self, disable: Option<bool>) -> bool {
+        match disable {
+            Some(x) => { self.disable = x; }
+            _ => {}
+        }
+        self.disable
     }
 }

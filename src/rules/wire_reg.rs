@@ -3,7 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{IntegerVectorType, NetType, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct WireReg;
+pub struct WireReg {disable: bool}
 
 impl Rule for WireReg {
     fn check(
@@ -35,5 +35,13 @@ impl Rule for WireReg {
 
     fn reason(&self) -> String {
         String::from("`logic` can detect multi-drive")
+    }
+
+    fn disabled(&mut self, disable: Option<bool>) -> bool {
+        match disable {
+            Some(x) => { self.disable = x; }
+            _ => {}
+        }
+        self.disable
     }
 }

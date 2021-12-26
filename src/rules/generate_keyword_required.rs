@@ -5,6 +5,7 @@ use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 #[derive(Default)]
 pub struct GenerateKeywordRequired {
     generate_region: Vec<()>,
+    disable: bool,
 }
 
 impl Rule for GenerateKeywordRequired {
@@ -58,5 +59,13 @@ impl Rule for GenerateKeywordRequired {
 
     fn reason(&self) -> String {
         String::from("some tools don't support `generate`/`endgenerate` omitting")
+    }
+
+    fn disabled(&mut self, disable: Option<bool>) -> bool {
+        match disable {
+            Some(x) => { self.disable = x; }
+            _ => {}
+        }
+        self.disable
     }
 }

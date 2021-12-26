@@ -3,7 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
 #[derive(Default)]
-pub struct ForWithBegin;
+pub struct ForWithBegin {disable: bool}
 
 impl Rule for ForWithBegin {
     fn check(
@@ -53,5 +53,13 @@ impl Rule for ForWithBegin {
 
     fn reason(&self) -> String {
         String::from("if there is not `begin`, the second statement are confusing")
+    }
+
+    fn disabled(&mut self, disable: Option<bool>) -> bool {
+        match disable {
+            Some(x) => { self.disable = x; }
+            _ => {}
+        }
+        self.disable
     }
 }

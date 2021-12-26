@@ -5,7 +5,7 @@ use sv_parser::{
 };
 
 #[derive(Default)]
-pub struct GenerateForWithLabel;
+pub struct GenerateForWithLabel {disable: bool}
 
 impl Rule for GenerateForWithLabel {
     fn check(
@@ -68,5 +68,13 @@ impl Rule for GenerateForWithLabel {
 
     fn reason(&self) -> String {
         String::from("the hierarchiral path can't be determined")
+    }
+
+    fn disabled(&mut self, disable: Option<bool>) -> bool {
+        match disable {
+            Some(x) => { self.disable = x; }
+            _ => {}
+        }
+        self.disable
     }
 }
