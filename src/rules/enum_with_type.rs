@@ -3,7 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct EnumWithType {disable: bool}
+pub struct EnumWithType {
+    disable: bool,
+}
 
 impl Rule for EnumWithType {
     fn check(
@@ -45,7 +47,9 @@ impl Rule for EnumWithType {
 
     fn disabled(&mut self, disable: Option<bool>) -> bool {
         match disable {
-            Some(x) => { self.disable = x; }
+            Some(x) => {
+                self.disable = x;
+            }
             _ => {}
         }
         self.disable

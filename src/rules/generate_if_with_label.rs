@@ -5,7 +5,9 @@ use sv_parser::{
 };
 
 #[derive(Default)]
-pub struct GenerateIfWithLabel {disable: bool}
+pub struct GenerateIfWithLabel {
+    disable: bool,
+}
 
 impl Rule for GenerateIfWithLabel {
     fn check(
@@ -118,7 +120,9 @@ impl Rule for GenerateIfWithLabel {
 
     fn disabled(&mut self, disable: Option<bool>) -> bool {
         match disable {
-            Some(x) => { self.disable = x; }
+            Some(x) => {
+                self.disable = x;
+            }
             _ => {}
         }
         self.disable

@@ -3,7 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 
 #[derive(Default)]
-pub struct Unique0Keyword {disable: bool}
+pub struct Unique0Keyword {
+    disable: bool,
+}
 
 impl Rule for Unique0Keyword {
     fn check(
@@ -38,7 +40,9 @@ impl Rule for Unique0Keyword {
 
     fn disabled(&mut self, disable: Option<bool>) -> bool {
         match disable {
-            Some(x) => { self.disable = x; }
+            Some(x) => {
+                self.disable = x;
+            }
             _ => {}
         }
         self.disable

@@ -4,7 +4,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct BlockingAssignmentInAlwaysFf {disable: bool}
+pub struct BlockingAssignmentInAlwaysFf {
+    disable: bool,
+}
 
 impl Rule for BlockingAssignmentInAlwaysFf {
     fn check(
@@ -54,7 +56,9 @@ impl Rule for BlockingAssignmentInAlwaysFf {
 
     fn disabled(&mut self, disable: Option<bool>) -> bool {
         match disable {
-            Some(x) => { self.disable = x; }
+            Some(x) => {
+                self.disable = x;
+            }
             _ => {}
         }
         self.disable

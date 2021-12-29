@@ -3,7 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct LegacyAlways {disable: bool}
+pub struct LegacyAlways {
+    disable: bool,
+}
 
 impl Rule for LegacyAlways {
     fn check(
@@ -38,7 +40,9 @@ impl Rule for LegacyAlways {
 
     fn disabled(&mut self, disable: Option<bool>) -> bool {
         match disable {
-            Some(x) => { self.disable = x; }
+            Some(x) => {
+                self.disable = x;
+            }
             _ => {}
         }
         self.disable

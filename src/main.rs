@@ -8,7 +8,7 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use sv_parser::Error as SvParserError;
-use sv_parser::{parse_sv, unwrap_locate, Define, DefineText, NodeEvent, RefNode, Locate};
+use sv_parser::{parse_sv, unwrap_locate, Define, DefineText, Locate, NodeEvent, RefNode};
 use svlint::config::Config;
 use svlint::linter::Linter;
 use svlint::printer::Printer;
@@ -225,20 +225,21 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                             if caps.is_some() {
                                 let caps = caps.unwrap();
                                 let ctl_disable = match caps.get(1).unwrap().as_str() {
-                                    "off" => { true }
-                                    _ => { false }
+                                    "off" => true,
+                                    _ => false,
                                 };
                                 let ctl_nmstart = caps.get(2).unwrap().as_str();
                                 for rule in &mut linter.rules {
                                     if rule.name().eq(ctl_nmstart) {
                                         rule.disabled(Some(ctl_disable));
                                         if opt.verbose {
-                                            printer.print_info(
-                                                &format!("'{}':{} {} {}",
+                                            printer.print_info(&format!(
+                                                "'{}':{} {} {}",
                                                 &path.to_string_lossy(),
                                                 loc.unwrap().line,
-                                                if rule.disabled(None) {"off"} else {"on"},
-                                                rule.name()))?;
+                                                if rule.disabled(None) { "off" } else { "on" },
+                                                rule.name()
+                                            ))?;
                                         }
                                     }
                                 }

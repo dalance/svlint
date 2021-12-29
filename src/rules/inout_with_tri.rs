@@ -3,7 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NetType, NodeEvent, PortDirection, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct InoutWithTri {disable: bool}
+pub struct InoutWithTri {
+    disable: bool,
+}
 
 impl Rule for InoutWithTri {
     fn check(
@@ -54,7 +56,9 @@ impl Rule for InoutWithTri {
 
     fn disabled(&mut self, disable: Option<bool>) -> bool {
         match disable {
-            Some(x) => { self.disable = x; }
+            Some(x) => {
+                self.disable = x;
+            }
             _ => {}
         }
         self.disable

@@ -3,7 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
 #[derive(Default)]
-pub struct IfWithBegin {disable: bool}
+pub struct IfWithBegin {
+    disable: bool,
+}
 
 impl Rule for IfWithBegin {
     fn check(
@@ -107,7 +109,9 @@ impl Rule for IfWithBegin {
 
     fn disabled(&mut self, disable: Option<bool>) -> bool {
         match disable {
-            Some(x) => { self.disable = x; }
+            Some(x) => {
+                self.disable = x;
+            }
             _ => {}
         }
         self.disable

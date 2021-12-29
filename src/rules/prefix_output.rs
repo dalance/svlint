@@ -5,7 +5,9 @@ use sv_parser::{
 };
 
 #[derive(Default)]
-pub struct PrefixOutput {disable: bool}
+pub struct PrefixOutput {
+    disable: bool,
+}
 
 impl Rule for PrefixOutput {
     fn check(
@@ -69,7 +71,9 @@ impl Rule for PrefixOutput {
 
     fn disabled(&mut self, disable: Option<bool>) -> bool {
         match disable {
-            Some(x) => { self.disable = x; }
+            Some(x) => {
+                self.disable = x;
+            }
             _ => {}
         }
         self.disable

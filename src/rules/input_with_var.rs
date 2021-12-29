@@ -3,7 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, PortDirection, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct InputWithVar {disable: bool}
+pub struct InputWithVar {
+    disable: bool,
+}
 
 impl Rule for InputWithVar {
     fn check(
@@ -50,7 +52,9 @@ impl Rule for InputWithVar {
 
     fn disabled(&mut self, disable: Option<bool>) -> bool {
         match disable {
-            Some(x) => { self.disable = x; }
+            Some(x) => {
+                self.disable = x;
+            }
             _ => {}
         }
         self.disable

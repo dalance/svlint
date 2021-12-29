@@ -3,7 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct CaseDefault {disable: bool}
+pub struct CaseDefault {
+    disable: bool,
+}
 
 impl Rule for CaseDefault {
     fn check(
@@ -69,7 +71,9 @@ impl Rule for CaseDefault {
 
     fn disabled(&mut self, disable: Option<bool>) -> bool {
         match disable {
-            Some(x) => { self.disable = x; }
+            Some(x) => {
+                self.disable = x;
+            }
             _ => {}
         }
         self.disable
