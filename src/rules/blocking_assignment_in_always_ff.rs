@@ -1,6 +1,5 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-//use crate::disable_derive::{RuleDisable};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
