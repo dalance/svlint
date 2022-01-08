@@ -27,7 +27,7 @@ impl Rule for LowercamelcasePackage {
                     _ => None,
                 };
 
-                let is_uppercamelcase: bool = match &id {
+                let is_lowercamelcase: bool = match &id {
                     Some(x) => syntax_tree
                         .get_str(*x)
                         .unwrap()
@@ -38,7 +38,7 @@ impl Rule for LowercamelcasePackage {
                     _ => false,
                 };
 
-                if is_uppercamelcase {
+                if is_lowercamelcase {
                     RuleResult::Pass
                 } else {
                     RuleResult::Fail
