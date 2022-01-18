@@ -287,11 +287,11 @@ endfunction
 endmodule
 ```
 
-## generate_for_with_label
+## generate_case_with_label
 
 ### Description
 
-`generate for` must have label
+`generate case item` must have label with prefix "l_"
 
 ### Reason
 
@@ -301,7 +301,47 @@ the hierarchiral path can't be determined
 
 ```SystemVerilog
 module A;
-for(genvar i=0; i<10; i++) begin: a
+generate case (2'd3)
+  2'd1:     begin: l_nondefault wire c = 1'b0; end
+  default:  begin: l_default    wire c = 1'b0; end
+endcase endgenerate
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+generate case (2'd0)
+  2'd1:     wire a = 1'b0; // nondefaultNoBegin
+  default:  wire a = 1'b0; // defaultNoBegin
+endcase endgenerate
+generate case (2'd1)
+  2'd1:     begin wire b = 1'b0; end // nondefaultNoLabel
+  default:  begin wire b = 1'b0; end // defaultNoLabel
+endcase endgenerate
+generate case (2'd2)
+  2'd1:     begin: nondefaultNoPrefix wire c = 1'b0; end
+  default:  begin: noPrefix           wire c = 1'b0; end
+endcase endgenerate
+endmodule
+```
+
+## generate_for_with_label
+
+### Description
+
+`generate for` must have label with prefix "l_"
+
+### Reason
+
+the hierarchiral path can't be determined
+
+### Pass example
+
+```SystemVerilog
+module A;
+for(genvar i=0; i<10; i++) begin: l_a
 end
 endmodule
 ```
@@ -310,7 +350,8 @@ endmodule
 
 ```SystemVerilog
 module A;
-for(genvar i=0; i<10; i++) begin
+for(genvar i=0; i<10; i++) foo[i] = i;// noBegin
+for(genvar i=0; i<10; i++) begin // noLabel
 end
 endmodule
 ```
@@ -319,7 +360,7 @@ endmodule
 
 ### Description
 
-`generate if` must have label
+`generate if` must have label with prefix "l_"
 
 ### Reason
 
@@ -329,9 +370,9 @@ the hierarchiral path can't be determined
 
 ```SystemVerilog
 module A;
-if (a) begin: a
-end else if (b) begin: a
-end else begin: a
+if (a) begin: l_abc
+end else if (b) begin: l_def
+end else begin: l_hij
 end
 endmodule
 ```
@@ -341,8 +382,17 @@ endmodule
 ```SystemVerilog
 module A;
 if (a) begin
-end else if (a) begin
+end else if (b) begin
 end else begin
+end
+
+if (c) begin: abc
+end else if (d) begin: def
+end else begin: hij
+end
+
+if (e) begin: l_klm
+end else begin: mno
 end
 endmodule
 ```
@@ -721,6 +771,72 @@ end
 endmodule
 ```
 
+## lowercamelcase_interface
+
+### Description
+
+Interface name must begin with lowerCamelCase
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+interface fooBar; endinterface
+```
+
+### Fail example
+
+```SystemVerilog
+interface FooBar; endinterface
+```
+
+## lowercamelcase_module
+
+### Description
+
+Module name must begin with lowerCamelCase
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+module fooBar; endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module FooBar; endmodule
+```
+
+## lowercamelcase_package
+
+### Description
+
+Package name must begin with lowerCamelCase
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+package fooBar; endpackage
+```
+
+### Fail example
+
+```SystemVerilog
+package FooBar; endpackage
+```
+
 ## non_ansi_module
 
 ### Description
@@ -893,6 +1009,78 @@ module A (
 endmodule
 ```
 
+## prefix_input
+
+### Description
+
+Module instance must have prefix "u_"
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+module A (
+    input var i_a
+);
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A (
+    input var a
+);
+endmodule
+```
+
+## prefix_interface
+
+### Description
+
+`interface` name must have prefix "ifc_"
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+interface ifc_withPrefix; endinterface
+```
+
+### Fail example
+
+```SystemVerilog
+interface noPrefix; endinterface
+```
+
+## prefix_module
+
+### Description
+
+`module` name must have prefix "mod_"
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+module mod_withPrefix; endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module noPrefix; endmodule
+```
+
 ## prefix_output
 
 ### Description
@@ -919,6 +1107,28 @@ module A (
     output var a
 );
 endmodule
+```
+
+## prefix_package
+
+### Description
+
+`package` name must have prefix "pkg_"
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+package pkg_withPrefix; endpackage
+```
+
+### Fail example
+
+```SystemVerilog
+package noPrefix; endpackage
 ```
 
 ## priority_keyword
@@ -1047,6 +1257,72 @@ initial begin
     endcase
 end
 endmodule
+```
+
+## uppercamelcase_interface
+
+### Description
+
+Interface name must begin with UpperCamelCase
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+interface FooBar; endinterface
+```
+
+### Fail example
+
+```SystemVerilog
+interface fooBar; endinterface
+```
+
+## uppercamelcase_module
+
+### Description
+
+Module name must begin with UpperCamelCase
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+module FooBar; endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module fooBar; endmodule
+```
+
+## uppercamelcase_package
+
+### Description
+
+Package name must begin with UpperCamelCase
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass example
+
+```SystemVerilog
+package FooBar; endpackage
+```
+
+### Fail example
+
+```SystemVerilog
+package fooBar; endpackage
 ```
 
 ## wire_reg

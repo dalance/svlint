@@ -1,4 +1,4 @@
 module A;
-for(genvar i=0; i<10; i++) begin: a
+for(genvar i=0; i<10; i++) begin: l_a
 end
 endmodule
