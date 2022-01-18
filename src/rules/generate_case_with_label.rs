@@ -3,7 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct GenerateCaseWithLabel;
+pub struct GenerateCaseWithLabel {
+    disable: bool,
+}
 
 impl Rule for GenerateCaseWithLabel {
     fn check(
@@ -80,5 +82,15 @@ impl Rule for GenerateCaseWithLabel {
 
     fn reason(&self) -> String {
         String::from("the hierarchiral path can't be determined")
+    }
+
+    fn disabled(&mut self, disable: Option<bool>) -> bool {
+        match disable {
+            Some(x) => {
+                self.disable = x;
+            }
+            _ => {}
+        }
+        self.disable
     }
 }

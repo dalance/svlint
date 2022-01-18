@@ -3,7 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct LowercamelcaseInterface;
+pub struct LowercamelcaseInterface {
+    disable: bool,
+}
 
 impl Rule for LowercamelcaseInterface {
     fn check(
@@ -58,5 +60,15 @@ impl Rule for LowercamelcaseInterface {
 
     fn reason(&self) -> String {
         String::from("Naming convention simplifies audit.")
+    }
+
+    fn disabled(&mut self, disable: Option<bool>) -> bool {
+        match disable {
+            Some(x) => {
+                self.disable = x;
+            }
+            _ => {}
+        }
+        self.disable
     }
 }
