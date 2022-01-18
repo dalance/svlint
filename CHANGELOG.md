@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.4.18...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.0...Unreleased) - ReleaseDate
+
+## [v0.5.0](https://github.com/dalance/svlint/compare/v0.4.18...v0.5.0) - 2022-01-18
 
 * [Breaking Changed] `prefix_label` in option is `"l_"` by default. To check only that a label exists, set this to `""`.
 * [Added] prefix_\* rules [#112](https://github.com/dalance/svlint/pull/112)
