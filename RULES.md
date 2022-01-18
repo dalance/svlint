@@ -1165,6 +1165,189 @@ end
 endmodule
 ```
 
+## sequential_block_in_always_comb
+
+### Description
+
+begin/end forbidden within `always_comb` constuct
+
+### Reason
+
+prevent introducing sequential dependencies
+
+### Pass example
+
+```SystemVerilog
+module a;
+  always_comb
+    e = z;
+
+  always_comb
+    if (foo) f = z;
+    else     f = z;
+
+  always_comb
+    case (foo)
+      one:     g = z;
+      two:     g = z;
+      default: g = z;
+    endcase
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module a;
+  always_comb begin
+    a = z;
+  end
+
+  always_comb
+    if (bar) begin
+      b = z;
+    end
+
+  always_comb
+    if (bar) c = z;
+    else begin
+      c = z;
+    end
+
+  always_comb
+    case (bar)
+      one: begin
+        d = z;
+      end
+      two: d = z;
+      default: d = z;
+    endcase
+endmodule
+```
+
+## sequential_block_in_always_ff
+
+### Description
+
+begin/end forbidden within `always_ff` constuct
+
+### Reason
+
+prevent introducing sequential dependencies
+
+### Pass example
+
+```SystemVerilog
+module a;
+  always_ff @(posedge clk)
+    d <= z;
+
+  always_ff @(posedge clk)
+    if (foo) e <= z;
+
+  always_ff @(posedge clk)
+    if (foo) f <= z;
+    else     f <= z;
+
+  always_ff @(posedge clk)
+    case (foo)
+      one:     g <= z;
+      two:     g <= z;
+      default: g <= z;
+    endcase
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module a;
+  always_ff @(posedge clk) begin
+    a <= z;
+  end
+
+  always_ff @(posedge clk)
+    if (bar) begin
+      b <= z;
+    end
+
+  always_ff @(posedge clk)
+    if (bar) c <= z;
+    else begin
+      c <= z;
+    end
+
+  always_ff @(posedge clk)
+    case (bar)
+      one: begin
+        d <= z;
+      end
+      two: d <= z;
+      default: d <= z;
+    endcase
+endmodule
+```
+
+## sequential_block_in_always_latch
+
+### Description
+
+begin/end forbidden within `always_latch` constuct
+
+### Reason
+
+prevent introducing sequential dependencies
+
+### Pass example
+
+```SystemVerilog
+module a;
+  always_latch
+    if (foo) e <= z;
+
+  always_latch
+    if (foo) f <= z;
+    else     f <= z;
+
+  always_latch
+    case (foo)
+      one:     g <= z;
+      two:     g <= z;
+      default: g <= z;
+    endcase
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module a;
+  always_latch begin
+    a <= z;
+  end
+
+  always_latch
+    if (bar) begin
+      b <= z;
+    end
+
+  always_latch
+    if (bar) c <= z;
+    else begin
+      c <= z;
+    end
+
+  always_latch
+    case (bar)
+      one: begin
+        d <= z;
+      end
+      two: d <= z;
+      default: d <= z;
+    endcase
+endmodule
+```
+
 ## tab_character
 
 ### Description
