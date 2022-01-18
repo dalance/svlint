@@ -1,11 +1,11 @@
 use anyhow::{Context, Error};
+use clap::Parser;
 use enquote;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
-use structopt::{clap, StructOpt};
 use sv_parser::Error as SvParserError;
 use sv_parser::{parse_sv, Define, DefineText};
 use svlint::config::Config;
@@ -17,61 +17,75 @@ use verilog_filelist_parser;
 // Opt
 // -------------------------------------------------------------------------------------------------
 
-#[derive(Debug, StructOpt)]
-#[structopt(name = "svlint")]
-#[structopt(long_version(option_env!("LONG_VERSION").unwrap_or(env!("CARGO_PKG_VERSION"))))]
-#[structopt(setting(clap::AppSettings::ColoredHelp))]
+#[derive(Debug, Parser)]
+#[clap(name = "svlint")]
+#[clap(long_version(option_env!("LONG_VERSION").unwrap_or(env!("CARGO_PKG_VERSION"))))]
 pub struct Opt {
     /// Source file
-    #[structopt(required_unless_one = &["filelist", "example", "update-config"])]
+    #[clap(required_unless_present_any = &["filelist", "example", "update-config"])]
     pub files: Vec<PathBuf>,
 
     /// File list
-    #[structopt(short = "f", long = "filelist", conflicts_with = "files")]
+    #[clap(short = 'f', long = "filelist", conflicts_with = "files")]
     pub filelist: Vec<PathBuf>,
 
     /// Define
-    #[structopt(short = "d", long = "define", multiple = true, number_of_values = 1)]
+    #[clap(
+        short = 'd',
+        long = "define",
+        multiple_occurrences = true,
+        number_of_values = 1
+    )]
     pub defines: Vec<String>,
 
     /// Include path
-    #[structopt(short = "i", long = "include", multiple = true, number_of_values = 1)]
+    #[clap(
+        short = 'i',
+        long = "include",
+        multiple_occurrences = true,
+        number_of_values = 1
+    )]
     pub includes: Vec<PathBuf>,
 
     /// Config file
-    #[structopt(short = "c", long = "config", default_value = ".svlint.toml")]
+    #[clap(short = 'c', long = "config", default_value = ".svlint.toml")]
     pub config: PathBuf,
 
     /// Plugin file
-    #[structopt(short = "p", long = "plugin", multiple = true, number_of_values = 1)]
+    #[clap(
+        short = 'p',
+        long = "plugin",
+        multiple_occurrences = true,
+        number_of_values = 1
+    )]
     pub plugins: Vec<PathBuf>,
 
     /// Ignore any include
-    #[structopt(long = "ignore-include")]
+    #[clap(long = "ignore-include")]
     pub ignore_include: bool,
 
     /// Prints results by single line
-    #[structopt(short = "1")]
+    #[clap(short = '1')]
     pub single: bool,
 
     /// Suppresses message
-    #[structopt(short = "s", long = "silent")]
+    #[clap(short = 's', long = "silent")]
     pub silent: bool,
 
     /// Prints verbose message
-    #[structopt(short = "v", long = "verbose")]
+    #[clap(short = 'v', long = "verbose")]
     pub verbose: bool,
 
     /// Prints message for GitHub Actions
-    #[structopt(long = "github-actions")]
+    #[clap(long = "github-actions")]
     pub github_actions: bool,
 
     /// Updates config
-    #[structopt(long = "update")]
+    #[clap(long = "update")]
     pub update_config: bool,
 
     /// Prints config example
-    #[structopt(long = "example")]
+    #[clap(long = "example")]
     pub example: bool,
 }
 
@@ -81,7 +95,7 @@ pub struct Opt {
 
 #[cfg_attr(tarpaulin, skip)]
 pub fn main() {
-    let opt = Opt::from_args();
+    let opt = Parser::parse();
     let exit_code = match run_opt(&opt) {
         Ok(pass) => {
             if pass {

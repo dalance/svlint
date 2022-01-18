@@ -5,6 +5,7 @@
 * [Breaking Changed] `prefix_label` in option is `"l_"` by default. To check only that a label exists, set this to `""`.
 * [Added] prefix_\* rules [#112](https://github.com/dalance/svlint/pull/112)
 * [Added] \*camelcase\* rules [#112](https://github.com/dalance/svlint/pull/112)
+* [Changed] Replace structopt with clap
 
 ## [v0.4.18](https://github.com/dalance/svlint/compare/v0.4.17...v0.4.18) - 2021-03-05
 
