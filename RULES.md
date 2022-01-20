@@ -738,6 +738,32 @@ end
 endmodule
 ```
 
+## localparam_explicit_type
+
+### Description
+
+`localparam` must be have an explicit type
+
+### Reason
+
+parameter types show intent and improve readability
+
+### Pass example
+
+```SystemVerilog
+module A;
+localparam int a = 0;
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+localparam a = 0;
+endmodule
+```
+
 ## loop_variable_declaration
 
 ### Description
@@ -924,6 +950,30 @@ endmodule
 module A (
     output logic a
 );
+endmodule
+```
+
+## parameter_explicit_type
+
+### Description
+
+`parameter` must be have an explicit type
+
+### Reason
+
+parameter types show intent and improve readability
+
+### Pass example
+
+```SystemVerilog
+module A #(parameter int a = 0) ();
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A #(parameter a = 0) ();
 endmodule
 ```
 
