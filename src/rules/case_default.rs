@@ -22,7 +22,7 @@ impl Rule for CaseDefault {
             RefNode::AlwaysConstruct(x) => {
                 let (ref a, _) = x.nodes;
                 match a {
-                    AlwaysKeyword::AlwaysComb(_) => {
+                    AlwaysKeyword::AlwaysComb(_) | AlwaysKeyword::AlwaysFf(_) => {
                         if let Some(x) = unwrap_node!(*x, CaseStatementNormal) {
                             let loc = unwrap_locate!(x.clone()).unwrap();
                             let a = unwrap_node!(x, CaseItemDefault);
@@ -60,7 +60,7 @@ impl Rule for CaseDefault {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`case` must have `default` in `always_comb` or `function`")
+        String::from("`case` must have `default` in `always_comb`, `always_ff` or `function`")
     }
 
     fn reason(&self) -> String {

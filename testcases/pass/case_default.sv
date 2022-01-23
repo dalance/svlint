@@ -8,6 +8,7 @@ end
 always_ff begin
     case (x)
         1: y = 0;
+        default: y = 0;
     endcase
 end
 endmodule
