@@ -34,7 +34,7 @@ endmodule
 
 ### Description
 
-`case` must have `default` in `always_comb` or `function`
+`case` must have `default` in `always_comb`, `always_ff` or `function`
 
 ### Reason
 
@@ -53,6 +53,7 @@ end
 always_ff begin
     case (x)
         1: y = 0;
+        default: y = 0;
     endcase
 end
 endmodule
