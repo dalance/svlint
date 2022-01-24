@@ -521,6 +521,38 @@ end
 endmodule
 ```
 
+## if_else
+
+### Description
+
+`if` must have `else` in `always*`
+
+### Reason
+
+explicit `else` makes design intent clearer
+
+### Pass example
+
+```SystemVerilog
+module A;
+always_ff
+  if (x) y <= 0;
+  else   y <= z;
+always_comb
+  if (x) y = 0;
+  else   y = z;
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+always_ff if (x) y <= 0;
+always_comb if (x) y = 0;
+endmodule
+```
+
 ## if_with_begin
 
 ### Description
