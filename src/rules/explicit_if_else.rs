@@ -3,9 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct IfElse;
+pub struct ExplicitIfElse;
 
-impl Rule for IfElse {
+impl Rule for ExplicitIfElse {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -42,7 +42,7 @@ impl Rule for IfElse {
     }
 
     fn name(&self) -> String {
-        String::from("if_else")
+        String::from("explicit_if_else")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
