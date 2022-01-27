@@ -132,6 +132,84 @@ typedef enum {
 endmodule
 ```
 
+## explicit_case_default
+
+### Description
+
+`case` must have `default` in `always*`
+
+### Reason
+
+explicit `default` makes design intent clearer
+
+### Pass example
+
+```SystemVerilog
+module A;
+always_comb begin
+    case (x)
+        1: y = 0;
+        default: y = 0;
+    endcase
+end
+always_ff begin
+    case (x)
+        1: y = 0;
+        default: y = 0;
+    endcase
+end
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+always_comb begin
+    case (x)
+        1: y = 0;
+    endcase
+end
+always_ff begin
+    case (x)
+        1: y = 0;
+    endcase
+end
+endmodule
+```
+
+## explicit_if_else
+
+### Description
+
+`if` must have `else` in `always*`
+
+### Reason
+
+explicit `else` makes design intent clearer
+
+### Pass example
+
+```SystemVerilog
+module A;
+always_ff
+  if (x) y <= 0;
+  else   y <= z;
+always_comb
+  if (x) y = 0;
+  else   y = z;
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+always_ff if (x) y <= 0;
+always_comb if (x) y = 0;
+endmodule
+```
+
 ## for_with_begin
 
 ### Description
@@ -518,38 +596,6 @@ endmodule
 module A;
 for(genvar i=0;i<10;i++) begin
 end
-endmodule
-```
-
-## if_else
-
-### Description
-
-`if` must have `else` in `always*`
-
-### Reason
-
-explicit `else` makes design intent clearer
-
-### Pass example
-
-```SystemVerilog
-module A;
-always_ff
-  if (x) y <= 0;
-  else   y <= z;
-always_comb
-  if (x) y = 0;
-  else   y = z;
-endmodule
-```
-
-### Fail example
-
-```SystemVerilog
-module A;
-always_ff if (x) y <= 0;
-always_comb if (x) y = 0;
 endmodule
 ```
 
