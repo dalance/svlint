@@ -3,9 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct ExplicitIfElse;
+pub struct ExplicitCaseDefault;
 
-impl Rule for ExplicitIfElse {
+impl Rule for ExplicitCaseDefault {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -20,17 +20,13 @@ impl Rule for ExplicitIfElse {
         };
         match node {
             RefNode::AlwaysConstruct(x) => {
-                if let Some(x) = unwrap_node!(*x, ConditionalStatement) {
-                    if let RefNode::ConditionalStatement(y) = x {
-                        let (_, ref b, _, _, _, ref f) = &y.nodes;
-                        let loc = unwrap_locate!(b).unwrap();
-                        if f.is_none() {
-                            RuleResult::FailLocate(*loc)
-                        } else {
-                            RuleResult::Pass
-                        }
-                    } else {
+                if let Some(x) = unwrap_node!(*x, CaseStatementNormal) {
+                    let loc = unwrap_locate!(x.clone()).unwrap();
+                    let a = unwrap_node!(x, CaseItemDefault);
+                    if a.is_some() {
                         RuleResult::Pass
+                    } else {
+                        RuleResult::FailLocate(*loc)
                     }
                 } else {
                     RuleResult::Pass
@@ -41,14 +37,14 @@ impl Rule for ExplicitIfElse {
     }
 
     fn name(&self) -> String {
-        String::from("explicit_if_else")
+        String::from("explicit_case_default")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`if` must have `else` in `always*`")
+        String::from("`case` must have `default` in `always*`")
     }
 
     fn reason(&self) -> String {
-        String::from("explicit `else` makes design intent clearer")
+        String::from("explicit `default` makes design intent clearer")
     }
 }
