@@ -738,6 +738,64 @@ end
 endmodule
 ```
 
+## localparam_explicit_type
+
+### Description
+
+`localparam` must be have an explicit type
+
+### Reason
+
+parameter types show intent and improve readability
+
+### Pass example
+
+```SystemVerilog
+module A;
+localparam int a = 0;
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+localparam a = 0;
+endmodule
+```
+
+## localparam_type_twostate
+
+### Description
+
+`localparam` must be have a twostate type
+
+### Reason
+
+design constants should not contain X or Z bits.
+
+### Pass example
+
+```SystemVerilog
+module A;
+  localparam byte     a = 0; // 8b
+  localparam shortint b = 0; // 16b
+  localparam int      c = 0; // 32b
+  localparam longint  d = 0; // 64b
+  localparam bit      e = 0; // 1b
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+  localparam integer a = 0; // 32b
+  localparam logic   b = 0; // 1b
+  localparam reg     c = 0; // 1b
+endmodule
+```
+
 ## loop_variable_declaration
 
 ### Description
@@ -927,6 +985,30 @@ module A (
 endmodule
 ```
 
+## parameter_explicit_type
+
+### Description
+
+`parameter` must be have an explicit type
+
+### Reason
+
+parameter types show intent and improve readability
+
+### Pass example
+
+```SystemVerilog
+module A #(parameter int a = 0) ();
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A #(parameter a = 0) ();
+endmodule
+```
+
 ## parameter_in_package
 
 ### Description
@@ -951,6 +1033,40 @@ endpackage
 package A;
 parameter A = 1;
 endpackage
+```
+
+## parameter_type_twostate
+
+### Description
+
+`parameter` must be have a twostate type
+
+### Reason
+
+design constants should not contain X or Z bits.
+
+### Pass example
+
+```SystemVerilog
+module A #(
+  parameter byte     a = 0, // 8b
+  parameter shortint b = 0, // 16b
+  parameter int      c = 0, // 32b
+  parameter longint  d = 0, // 64b
+  parameter bit      e = 0  // 1b
+) ();
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A #(
+  parameter integer a = 0, // 32b
+  parameter logic   b = 0, // 1b
+  parameter reg     c = 0  // 1b
+) ();
+endmodule
 ```
 
 ## prefix_inout
