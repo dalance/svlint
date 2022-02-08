@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.0...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.1...Unreleased) - ReleaseDate
+
+## [v0.5.1](https://github.com/dalance/svlint/compare/v0.5.0...v0.5.1) - 2022-02-08
 
 * [Added] sequential_block_in_always_\* rules [#119](https://github.com/dalance/svlint/pull/119)
 * [Added] parameter type rules [#121](https://github.com/dalance/svlint/pull/121)

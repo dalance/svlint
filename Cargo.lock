@@ -605,7 +605,7 @@ dependencies = [
 
 [[package]]
 name = "svlint"
-version = "0.5.1-pre"
+version = "0.5.1"
 dependencies = [
  "anyhow",
  "clap",
