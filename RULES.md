@@ -1542,6 +1542,58 @@ module a;
 endmodule
 ```
 
+## style_keyword_space
+
+### Description
+
+keyword should be followed by a single space
+
+### Reason
+
+consistent style enhances readability
+
+### Pass example
+
+```SystemVerilog
+package A;
+endpackage
+
+interface A;
+endinterface
+
+module A;
+  for (i = 0; i < 5; i++)
+    assign foo = bar;
+
+  always_ff @(posedge clk)
+    if (a)
+      case (a)
+        1: foo <= bar;
+      endcase
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+package  A; // too many spaces
+endpackage
+
+interface  A; // too many spaces
+endinterface
+
+module  A; // too many spaces
+  for(i = 0; i < 5; i++) // missing space
+    assign  foo = bar; // too many spaces
+
+  always_ff @(posedge clk)
+    if(a) // missing space
+      case   (a) // too many spaces
+        1: foo <= bar;
+      endcase
+endmodule
+```
+
 ## tab_character
 
 ### Description

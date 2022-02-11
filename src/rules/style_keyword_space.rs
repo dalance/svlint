@@ -1,9 +1,12 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
+use regex::Regex;
+use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct StyleKeywordSpace;
+pub struct StyleKeywordSpace {
+    re: Option<Regex>,
+}
 
 impl Rule for StyleKeywordSpace {
     fn check(
@@ -12,6 +15,21 @@ impl Rule for StyleKeywordSpace {
         event: &NodeEvent,
         _option: &ConfigOption,
     ) -> RuleResult {
+        if self.re.is_none() {
+            let keywords =
+                [ "package"
+                , "interface"
+                , "module"
+                , "case"
+                , "for"
+                , "if"
+                , "assign"
+                , "always"
+                , "always_ff"
+                ].join("|");
+            self.re = Some(Regex::new(format!("^({})($|  )", keywords).as_str()).unwrap());
+        }
+
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
@@ -21,10 +39,14 @@ impl Rule for StyleKeywordSpace {
 
         match node {
             RefNode::Keyword(x) => {
-                println!("x={:?}", x);
-                println!("keyword=#{}#", syntax_tree.get_str(*x).unwrap());
+                let re = self.re.as_ref().unwrap();
+                let kw = syntax_tree.get_str(*x).unwrap();
 
-                RuleResult::Pass
+                if re.is_match(&kw) {
+                    RuleResult::Fail
+                } else {
+                    RuleResult::Pass
+                }
             }
             _ => RuleResult::Pass,
         }
