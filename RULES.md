@@ -132,6 +132,84 @@ typedef enum {
 endmodule
 ```
 
+## explicit_case_default
+
+### Description
+
+`case` must have `default` in `always*`
+
+### Reason
+
+explicit `default` makes design intent clearer
+
+### Pass example
+
+```SystemVerilog
+module A;
+always_comb begin
+    case (x)
+        1: y = 0;
+        default: y = 0;
+    endcase
+end
+always_ff begin
+    case (x)
+        1: y = 0;
+        default: y = 0;
+    endcase
+end
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+always_comb begin
+    case (x)
+        1: y = 0;
+    endcase
+end
+always_ff begin
+    case (x)
+        1: y = 0;
+    endcase
+end
+endmodule
+```
+
+## explicit_if_else
+
+### Description
+
+`if` must have `else` in `always*`
+
+### Reason
+
+explicit `else` makes design intent clearer
+
+### Pass example
+
+```SystemVerilog
+module A;
+always_ff
+  if (x) y <= 0;
+  else   y <= z;
+always_comb
+  if (x) y = 0;
+  else   y = z;
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+always_ff if (x) y <= 0;
+always_comb if (x) y = 0;
+endmodule
+```
+
 ## for_with_begin
 
 ### Description
@@ -738,6 +816,64 @@ end
 endmodule
 ```
 
+## localparam_explicit_type
+
+### Description
+
+`localparam` must be have an explicit type
+
+### Reason
+
+parameter types show intent and improve readability
+
+### Pass example
+
+```SystemVerilog
+module A;
+localparam int a = 0;
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+localparam a = 0;
+endmodule
+```
+
+## localparam_type_twostate
+
+### Description
+
+`localparam` must be have a twostate type
+
+### Reason
+
+design constants should not contain X or Z bits.
+
+### Pass example
+
+```SystemVerilog
+module A;
+  localparam byte     a = 0; // 8b
+  localparam shortint b = 0; // 16b
+  localparam int      c = 0; // 32b
+  localparam longint  d = 0; // 64b
+  localparam bit      e = 0; // 1b
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A;
+  localparam integer a = 0; // 32b
+  localparam logic   b = 0; // 1b
+  localparam reg     c = 0; // 1b
+endmodule
+```
+
 ## loop_variable_declaration
 
 ### Description
@@ -927,6 +1063,30 @@ module A (
 endmodule
 ```
 
+## parameter_explicit_type
+
+### Description
+
+`parameter` must be have an explicit type
+
+### Reason
+
+parameter types show intent and improve readability
+
+### Pass example
+
+```SystemVerilog
+module A #(parameter int a = 0) ();
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A #(parameter a = 0) ();
+endmodule
+```
+
 ## parameter_in_package
 
 ### Description
@@ -951,6 +1111,40 @@ endpackage
 package A;
 parameter A = 1;
 endpackage
+```
+
+## parameter_type_twostate
+
+### Description
+
+`parameter` must be have a twostate type
+
+### Reason
+
+design constants should not contain X or Z bits.
+
+### Pass example
+
+```SystemVerilog
+module A #(
+  parameter byte     a = 0, // 8b
+  parameter shortint b = 0, // 16b
+  parameter int      c = 0, // 32b
+  parameter longint  d = 0, // 64b
+  parameter bit      e = 0  // 1b
+) ();
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module A #(
+  parameter integer a = 0, // 32b
+  parameter logic   b = 0, // 1b
+  parameter reg     c = 0  // 1b
+) ();
+endmodule
 ```
 
 ## prefix_inout
@@ -1162,6 +1356,189 @@ initial begin
         default: b = 1;
     endcase
 end
+endmodule
+```
+
+## sequential_block_in_always_comb
+
+### Description
+
+begin/end forbidden within `always_comb` constuct
+
+### Reason
+
+prevent introducing sequential dependencies
+
+### Pass example
+
+```SystemVerilog
+module a;
+  always_comb
+    e = z;
+
+  always_comb
+    if (foo) f = z;
+    else     f = z;
+
+  always_comb
+    case (foo)
+      one:     g = z;
+      two:     g = z;
+      default: g = z;
+    endcase
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module a;
+  always_comb begin
+    a = z;
+  end
+
+  always_comb
+    if (bar) begin
+      b = z;
+    end
+
+  always_comb
+    if (bar) c = z;
+    else begin
+      c = z;
+    end
+
+  always_comb
+    case (bar)
+      one: begin
+        d = z;
+      end
+      two: d = z;
+      default: d = z;
+    endcase
+endmodule
+```
+
+## sequential_block_in_always_ff
+
+### Description
+
+begin/end forbidden within `always_ff` constuct
+
+### Reason
+
+prevent introducing sequential dependencies
+
+### Pass example
+
+```SystemVerilog
+module a;
+  always_ff @(posedge clk)
+    d <= z;
+
+  always_ff @(posedge clk)
+    if (foo) e <= z;
+
+  always_ff @(posedge clk)
+    if (foo) f <= z;
+    else     f <= z;
+
+  always_ff @(posedge clk)
+    case (foo)
+      one:     g <= z;
+      two:     g <= z;
+      default: g <= z;
+    endcase
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module a;
+  always_ff @(posedge clk) begin
+    a <= z;
+  end
+
+  always_ff @(posedge clk)
+    if (bar) begin
+      b <= z;
+    end
+
+  always_ff @(posedge clk)
+    if (bar) c <= z;
+    else begin
+      c <= z;
+    end
+
+  always_ff @(posedge clk)
+    case (bar)
+      one: begin
+        d <= z;
+      end
+      two: d <= z;
+      default: d <= z;
+    endcase
+endmodule
+```
+
+## sequential_block_in_always_latch
+
+### Description
+
+begin/end forbidden within `always_latch` constuct
+
+### Reason
+
+prevent introducing sequential dependencies
+
+### Pass example
+
+```SystemVerilog
+module a;
+  always_latch
+    if (foo) e <= z;
+
+  always_latch
+    if (foo) f <= z;
+    else     f <= z;
+
+  always_latch
+    case (foo)
+      one:     g <= z;
+      two:     g <= z;
+      default: g <= z;
+    endcase
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module a;
+  always_latch begin
+    a <= z;
+  end
+
+  always_latch
+    if (bar) begin
+      b <= z;
+    end
+
+  always_latch
+    if (bar) c <= z;
+    else begin
+      c <= z;
+    end
+
+  always_latch
+    case (bar)
+      one: begin
+        d <= z;
+      end
+      two: d <= z;
+      default: d <= z;
+    endcase
 endmodule
 ```
 
