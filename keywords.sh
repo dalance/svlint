@@ -1,5 +1,7 @@
-Keyword                 Rule
--------                 ----
+#!/usr/bin/env bash
+
+# {{{
+read -d '' keywords <<-EOF
 accept_on               style_keyword_space
 alias                   style_keyword_space
 always                  style_keyword_space
@@ -128,7 +130,7 @@ module                  style_keyword_space
 nand                    style_keyword_space
 negedge                 style_keyword_space
 nettype                 style_keyword_space
-new                     style_keyword_0or1space
+new                     style_keyword_nospace
 nexttime                style_keyword_space
 nmos                    style_keyword_space
 nor                     style_keyword_space
@@ -248,3 +250,27 @@ within                  style_keyword_space
 wor                     style_keyword_space
 xnor                    style_keyword_space
 xor                     style_keyword_space
+EOF
+# }}}
+
+styles=$(echo "$keywords" | \
+         grep style_keyword_ | \
+         tr -s ' ' | \
+         cut -d ' ' -f 2 | \
+         sort -u)
+
+for s in $styles; do
+  kws=$(echo "$keywords" | grep $s | tr -s ' ' | cut -d ' ' -f 1);
+  RS=$(
+    i=0;
+    for kw in $kws; do
+      if [ $((i++)) -eq 0 ]; then
+        echo "[ \"$kw\"";
+      else
+        echo ", \"$kw\"";
+      fi
+    done
+    echo '].join("|");';
+  )
+  echo "$RS" > $s.keywords.rs
+done
