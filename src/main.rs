@@ -269,6 +269,19 @@ fn print_parse_error(
 
 #[cfg_attr(tarpaulin, skip)]
 fn search_config(rule: &Path) -> Option<PathBuf> {
+    if let Ok(c) = env::var("SVLINT_CONFIG") {
+        let candidate = Path::new(&c);
+        if candidate.exists() {
+            return Some(candidate.to_path_buf());
+        } else {
+            let mut printer = Printer::new();
+            printer.print_warning(&format!(
+                "SVLINT_CONFIG=\"{}\" does not exist. Searching hierarchically.",
+                c,
+            )).ok()?;
+        }
+    }
+
     if let Ok(current) = env::current_dir() {
         for dir in current.ancestors() {
             let candidate = dir.join(rule);
