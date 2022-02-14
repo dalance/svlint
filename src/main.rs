@@ -87,6 +87,10 @@ pub struct Opt {
     /// Prints config example
     #[clap(long = "example")]
     pub example: bool,
+
+    /// Prints data from filelists
+    #[clap(long = "dump-filelist")]
+    pub dump_filelist: bool,
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -192,11 +196,18 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 
         for filelist in &opt.filelist {
             let (mut f, mut i, d) = parse_filelist(filelist)?;
+            if opt.dump_filelist {
+                dump_filelist(&filelist, &f, &i, &d);
+            }
             files.append(&mut f);
             includes.append(&mut i);
             for (k, v) in d {
                 defines.insert(k, v);
             }
+        }
+        if opt.dump_filelist {
+            dump_filelist(&Path::new("."), &files, &includes, &defines);
+            return Ok(true);
         }
 
         (files, includes)
@@ -310,6 +321,33 @@ fn parse_filelist(
     }
 
     Ok((filelist.files, filelist.incdirs, defines))
+}
+
+fn dump_filelist(
+    filename: &Path,
+    files: &Vec<PathBuf>,
+    incdirs: &Vec<PathBuf>,
+    defines: &HashMap<String, Option<Define>>,
+) -> () {
+    println!("{:?}:", filename);
+
+    println!("  files:");
+    for f in files {
+        println!("    - {:?}", f);
+    }
+
+    println!("  incdirs:");
+    for i in incdirs {
+        println!("    - {:?}", i);
+    }
+
+    println!("  defines:");
+    for (d, t) in defines {
+        match t {
+            None => println!("    {:?}:", d),
+            Some(te) => println!("    {:?}: {:?}", d, te),
+        };
+    }
 }
 
 #[cfg(test)]
