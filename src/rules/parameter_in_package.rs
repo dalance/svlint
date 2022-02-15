@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct ParameterInPackage {
-    disable: bool,
-}
+pub struct ParameterInPackage;
 
 impl Rule for ParameterInPackage {
     fn check(
@@ -44,15 +42,5 @@ impl Rule for ParameterInPackage {
 
     fn reason(&self) -> String {
         String::from("some tools can't take `parameter` in `package`")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

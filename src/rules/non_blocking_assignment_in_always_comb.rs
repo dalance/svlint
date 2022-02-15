@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct NonBlockingAssignmentInAlwaysComb {
-    disable: bool,
-}
+pub struct NonBlockingAssignmentInAlwaysComb;
 
 impl Rule for NonBlockingAssignmentInAlwaysComb {
     fn check(
@@ -50,15 +48,5 @@ impl Rule for NonBlockingAssignmentInAlwaysComb {
 
     fn reason(&self) -> String {
         String::from("non-blocking assignment in `always_comb` causes elaboration error")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

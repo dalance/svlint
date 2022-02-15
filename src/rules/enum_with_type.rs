@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct EnumWithType {
-    disable: bool,
-}
+pub struct EnumWithType;
 
 impl Rule for EnumWithType {
     fn check(
@@ -43,15 +41,5 @@ impl Rule for EnumWithType {
 
     fn reason(&self) -> String {
         String::from("the default data type is `int`")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

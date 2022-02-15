@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct DefaultNettypeNone {
-    disable: bool,
-}
+pub struct DefaultNettypeNone;
 
 impl Rule for DefaultNettypeNone {
     fn check(
@@ -58,15 +56,5 @@ impl Rule for DefaultNettypeNone {
 
     fn reason(&self) -> String {
         String::from("`` `default_nettype none`` can detect unintentional implicit wires")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

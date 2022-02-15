@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct FunctionSameAsSystemFunction {
-    disable: bool,
-}
+pub struct FunctionSameAsSystemFunction;
 
 const SYSTEM_FUNCTION: &[&str] = &[
     "finish",
@@ -179,15 +177,5 @@ impl Rule for FunctionSameAsSystemFunction {
 
     fn reason(&self) -> String {
         String::from("some tools confuse function with system function")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

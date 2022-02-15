@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct GenerateKeywordForbidden {
-    disable: bool,
-}
+pub struct GenerateKeywordForbidden;
 
 impl Rule for GenerateKeywordForbidden {
     fn check(
@@ -36,15 +34,5 @@ impl Rule for GenerateKeywordForbidden {
 
     fn reason(&self) -> String {
         String::from("")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

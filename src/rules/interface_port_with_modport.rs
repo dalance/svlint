@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct InterfacePortWithModport {
-    disable: bool,
-}
+pub struct InterfacePortWithModport;
 
 impl Rule for InterfacePortWithModport {
     fn check(
@@ -43,15 +41,5 @@ impl Rule for InterfacePortWithModport {
 
     fn reason(&self) -> String {
         String::from("interface port without modport maybe `inout` at synthesis")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

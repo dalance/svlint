@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct LegacyAlways {
-    disable: bool,
-}
+pub struct LegacyAlways;
 
 impl Rule for LegacyAlways {
     fn check(
@@ -36,15 +34,5 @@ impl Rule for LegacyAlways {
 
     fn reason(&self) -> String {
         String::from("`always` can't detect blocking/non-blocking mistake")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

@@ -224,23 +224,21 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                             let caps = re_ctl.captures(text.unwrap());
                             if caps.is_some() {
                                 let caps = caps.unwrap();
-                                let ctl_disable = match caps.get(1).unwrap().as_str() {
-                                    "off" => true,
-                                    _ => false,
-                                };
-                                let ctl_nmstart = caps.get(2).unwrap().as_str();
-                                for rule in &mut linter.rules {
-                                    if rule.name().eq(ctl_nmstart) {
-                                        rule.disabled(Some(ctl_disable));
-                                        if opt.verbose {
-                                            printer.print_info(&format!(
-                                                "'{}':{} {} {}",
-                                                &path.to_string_lossy(),
-                                                loc.unwrap().line,
-                                                if rule.disabled(None) { "off" } else { "on" },
-                                                rule.name()
-                                            ))?;
-                                        }
+                                let ctl_name = caps.get(2).unwrap().as_str();
+                                if linter.ctl_enabled.contains_key(ctl_name) {
+                                    let ctl_enable = match caps.get(1).unwrap().as_str() {
+                                        "off" => false,
+                                        _ => true,
+                                    };
+                                    linter.ctl_enabled.insert(ctl_name.to_string(), ctl_enable);
+                                    if opt.verbose {
+                                        printer.print_info(&format!(
+                                            "'{}':{} {} {}",
+                                            &path.to_string_lossy(),
+                                            loc.unwrap().line,
+                                            if ctl_enable { "off" } else { "on" },
+                                            &ctl_name
+                                        ))?;
                                     }
                                 }
                             }

@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct NonAnsiModule {
-    disable: bool,
-}
+pub struct NonAnsiModule;
 
 impl Rule for NonAnsiModule {
     fn check(
@@ -36,15 +34,5 @@ impl Rule for NonAnsiModule {
 
     fn reason(&self) -> String {
         String::from("non-ANSI-style has duplicated port declaration")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

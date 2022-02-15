@@ -5,9 +5,7 @@ use sv_parser::{
 };
 
 #[derive(Default)]
-pub struct PrefixInput {
-    disable: bool,
-}
+pub struct PrefixInput;
 
 impl Rule for PrefixInput {
     fn check(
@@ -67,15 +65,5 @@ impl Rule for PrefixInput {
 
     fn reason(&self) -> String {
         String::from("Naming convention simplifies audit.")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

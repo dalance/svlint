@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, WhiteSpace};
 
 #[derive(Default)]
-pub struct TabCharacter {
-    disable: bool,
-}
+pub struct TabCharacter;
 
 impl Rule for TabCharacter {
     fn check(
@@ -42,15 +40,5 @@ impl Rule for TabCharacter {
 
     fn reason(&self) -> String {
         String::from("may cause misalignment depending on editor setting")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

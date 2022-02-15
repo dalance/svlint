@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, PortDirection, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct InputWithVar {
-    disable: bool,
-}
+pub struct InputWithVar;
 
 impl Rule for InputWithVar {
     fn check(
@@ -48,15 +46,5 @@ impl Rule for InputWithVar {
 
     fn reason(&self) -> String {
         String::from("`input wire` can be assigned by mistake. `input logic` becomes error with `default nettype none` because it doesn't have net type.")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

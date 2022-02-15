@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct BlockingAssignmentInAlwaysFf {
-    disable: bool,
-}
+pub struct BlockingAssignmentInAlwaysFf;
 
 impl Rule for BlockingAssignmentInAlwaysFf {
     fn check(
@@ -51,15 +49,5 @@ impl Rule for BlockingAssignmentInAlwaysFf {
 
     fn reason(&self) -> String {
         String::from("blocking assignment in `always_ff` causes elaboration error")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }

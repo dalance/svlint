@@ -3,9 +3,7 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct CaseDefault {
-    disable: bool,
-}
+pub struct CaseDefault;
 
 impl Rule for CaseDefault {
     fn check(
@@ -67,15 +65,5 @@ impl Rule for CaseDefault {
 
     fn reason(&self) -> String {
         String::from("'not full case' causes mismatch between simulation and synthesis")
-    }
-
-    fn disabled(&mut self, disable: Option<bool>) -> bool {
-        match disable {
-            Some(x) => {
-                self.disable = x;
-            }
-            _ => {}
-        }
-        self.disable
     }
 }
