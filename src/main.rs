@@ -236,7 +236,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                                             "'{}':{} {} {}",
                                             &path.to_string_lossy(),
                                             loc.unwrap().line,
-                                            if ctl_enable { "off" } else { "on" },
+                                            if ctl_enable { "on" } else { "off" },
                                             &ctl_name
                                         ))?;
                                     }
