@@ -1,10 +1,10 @@
-package A;
+package P;
 endpackage
 
-interface A;
+interface I;
 endinterface
 
-module A;
+module M;
   for (i = 0; i < 5; i++)
     assign foo = bar;
 

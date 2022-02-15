@@ -1,10 +1,11 @@
-package  A; // too many spaces
+package  P; // too many spaces
 endpackage
 
-interface  A; // too many spaces
+interface
+I; // newline, not a space
 endinterface
 
-module  A; // too many spaces
+module  M; // too many spaces
   for(i = 0; i < 5; i++) // missing space
     assign  foo = bar; // too many spaces
 
