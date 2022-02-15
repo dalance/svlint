@@ -326,7 +326,7 @@ mod tests {
         } else {
             vec!["svlint", &file]
         };
-        let opt = Opt::from_iter(args.iter());
+        let opt = Opt::parse_from(args.iter());
         let ret = run_opt_config(&opt, config.clone());
         assert_eq!(ret.unwrap(), true);
 
@@ -336,7 +336,7 @@ mod tests {
         } else {
             vec!["svlint", &file]
         };
-        let opt = Opt::from_iter(args.iter());
+        let opt = Opt::parse_from(args.iter());
         let ret = run_opt_config(&opt, config.clone());
         assert_eq!(ret.unwrap(), false);
 
@@ -346,7 +346,7 @@ mod tests {
         } else {
             vec!["svlint", "-1", &file]
         };
-        let opt = Opt::from_iter(args.iter());
+        let opt = Opt::parse_from(args.iter());
         let ret = run_opt_config(&opt, config.clone());
         assert_eq!(ret.unwrap(), false);
     }
