@@ -310,7 +310,7 @@ fn parse_filelist(
     for (d, t) in filelist.defines {
         match t {
             Some(t) => {
-                let define_text = DefineText::new(String::from(&t[1..]), None);
+                let define_text = DefineText::new(String::from(&t), None);
                 let define = Define::new(String::from(&d), vec![], Some(define_text));
                 defines.insert(String::from(&d), Some(define));
             }
