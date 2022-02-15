@@ -342,10 +342,15 @@ fn dump_filelist(
     }
 
     println!("  defines:");
-    for (d, t) in defines {
-        match t {
-            None => println!("    {:?}:", d),
-            Some(te) => println!("    {:?}: {:?}", d, te),
+    for (k, v) in defines {
+        match v {
+            None => println!("    {:?}:", k),
+            Some(define) => {
+                match &define.text {
+                    Some(definetext) => println!("    {:?}: {:?}", k, definetext.text),
+                    None => println!("    {:?}:", k),
+                }
+            }
         };
     }
 }
