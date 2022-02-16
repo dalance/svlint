@@ -5,16 +5,16 @@ read -d '' keywords <<-EOF
 accept_on               style_keyword_1space
 alias                   style_keyword_1space
 always                  style_keyword_1space
-always_comb             style_keyword_1space
+always_comb             style_keyword_construct
 always_ff               style_keyword_1space
-always_latch            style_keyword_1space
+always_latch            style_keyword_construct
 and                     style_keyword_1space
 assert                  style_keyword_1space
 assign                  style_keyword_1space
 assume                  style_keyword_1space
 automatic               style_keyword_1space
 before                  style_keyword_1space
-begin                   style_keyword_namedblock_0space
+begin                   style_keyword_maybelabel
 bind                    style_keyword_1space
 bins                    style_keyword_1space
 binsof                  style_keyword_1space
@@ -50,26 +50,26 @@ disable                 style_keyword_1space
 dist                    style_keyword_1space
 do                      style_keyword_1space
 edge                    style_keyword_1space
-else                    style_keyword_block_0space
-end                     style_keyword_namedblock_0space
-endcase                 style_keyword_block_0space
-endchecker              style_keyword_namedblock_0space
-endclass                style_keyword_namedblock_0space
-endclocking             style_keyword_namedblock_0space
-endconfig               style_keyword_namedblock_0space
-endfunction             style_keyword_namedblock_0space
-endgenerate             style_keyword_block_0space
-endgroup                style_keyword_namedblock_0space
-endinterface            style_keyword_namedblock_0space
-endmodule               style_keyword_namedblock_0space
-endpackage              style_keyword_namedblock_0space
-endprimitive            style_keyword_namedblock_0space
-endprogram              style_keyword_namedblock_0space
-endproperty             style_keyword_namedblock_0space
-endspecify              style_keyword_block_0space
-endsequence             style_keyword_namedblock_0space
-endtable                style_keyword_block_0space
-endtask                 style_keyword_namedblock_0space
+else                    style_keyword_construct
+end                     style_keyword_end
+endcase                 style_keyword_newline
+endchecker              style_keyword_maybelabel
+endclass                style_keyword_maybelabel
+endclocking             style_keyword_maybelabel
+endconfig               style_keyword_maybelabel
+endfunction             style_keyword_maybelabel
+endgenerate             style_keyword_newline
+endgroup                style_keyword_maybelabel
+endinterface            style_keyword_maybelabel
+endmodule               style_keyword_maybelabel
+endpackage              style_keyword_maybelabel
+endprimitive            style_keyword_maybelabel
+endprogram              style_keyword_maybelabel
+endproperty             style_keyword_maybelabel
+endspecify              style_keyword_newline
+endsequence             style_keyword_maybelabel
+endtable                style_keyword_newline
+endtask                 style_keyword_maybelabel
 enum                    style_keyword_1space
 event                   style_keyword_1space
 eventually              style_keyword_1space
@@ -77,16 +77,16 @@ expect                  style_keyword_1space
 export                  style_keyword_1space
 extends                 style_keyword_1space
 extern                  style_keyword_1space
-final                   style_keyword_block_0space
+final                   style_keyword_construct
 first_match             style_keyword_1space
 for                     style_keyword_1space
 force                   style_keyword_1space
 foreach                 style_keyword_1space
 forever                 style_keyword_1space
-fork                    style_keyword_block_0space
+fork                    style_keyword_maybelabel
 forkjoin                style_keyword_1space
 function                style_keyword_1space
-generate                style_keyword_block_0space
+generate                style_keyword_construct
 genvar                  style_keyword_1space
 global                  style_keyword_1space
 highz0                  style_keyword_1space
@@ -101,7 +101,7 @@ implies                 style_keyword_1space
 import                  style_keyword_1space
 incdir                  style_keyword_1space
 include                 style_keyword_1space
-initial                 style_keyword_block_0space
+initial                 style_keyword_construct
 inout                   style_keyword_1or2space
 input                   style_keyword_1or2space
 inside                  style_keyword_1space
@@ -111,9 +111,9 @@ integer                 style_keyword_1space
 interconnect            style_keyword_1space
 interface               style_keyword_1space
 intersect               style_keyword_1space
-join                    style_keyword_block_0space
-join_any                style_keyword_block_0space
-join_none               style_keyword_block_0space
+join                    style_keyword_maybelabel
+join_any                style_keyword_maybelabel
+join_none               style_keyword_maybelabel
 large                   style_keyword_1space
 let                     style_keyword_1space
 liblist                 style_keyword_1space
@@ -171,7 +171,7 @@ reject_on               style_keyword_1space
 release                 style_keyword_1space
 repeat                  style_keyword_1space
 restrict                style_keyword_1space
-return                  style_keyword_0space
+return                  style_keyword_0or1space
 rnmos                   style_keyword_1space
 rpmos                   style_keyword_1space
 rtran                   style_keyword_1space
@@ -191,7 +191,7 @@ signed                  style_keyword_1space
 small                   style_keyword_1space
 soft                    style_keyword_1space
 solve                   style_keyword_1space
-specify                 style_keyword_block_0space
+specify                 style_keyword_newline
 specparam               style_keyword_1space
 static                  style_keyword_1space
 string                  style_keyword_1space
@@ -204,7 +204,7 @@ supply0                 style_keyword_1space
 supply1                 style_keyword_1space
 sync_accept_on          style_keyword_1space
 sync_reject_on          style_keyword_1space
-table                   style_keyword_block_0space
+table                   style_keyword_newline
 tagged                  style_keyword_1space
 task                    style_keyword_1space
 this                    style_keyword_0space
@@ -265,12 +265,12 @@ for s in $styles; do
     i=0;
     for kw in $kws; do
       if [ $((i++)) -eq 0 ]; then
-        echo "[ \"$kw\"";
+        echo "                [ \"$kw\" // {{{";
       else
-        echo ", \"$kw\"";
+        echo "                , \"$kw\"";
       fi
     done
-    echo '].join("|");';
+    echo '                ].join("|"); // }}}';
   )
   echo "$RS" > $s.keywords.rs
 done

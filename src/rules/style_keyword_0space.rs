@@ -4,13 +4,13 @@ use regex::Regex;
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct StyleKeyword1Or2Space {
+pub struct StyleKeyword0Space {
     re_split: Option<Regex>,
     re_kw: Option<Regex>,
     re_succ: Option<Regex>,
 }
 
-impl Rule for StyleKeyword1Or2Space {
+impl Rule for StyleKeyword0Space {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
@@ -21,22 +21,26 @@ impl Rule for StyleKeyword1Or2Space {
         re_split extracts keyword from anything following it.
         re_kw is used to selectively apply this rule to specific keywords.
         re_succ matches what is allowed after the keyword.
-            - exactly 1space
-            - exactly 2space
+            - nothing, immediately followed by a symbol
         */
         if self.re_split.is_none() {
             self.re_split = Some(Regex::new(r"(?P<kw>[a-z_01]+)(?P<succ>(?s:.)*)").unwrap());
         }
         if self.re_kw.is_none() {
             let keywords =
-                [ "inout" // {{{
-                , "input"
+                [ "break" // {{{
+                , "continue"
+                , "default"
+                , "new"
+                , "null"
+                , "super"
+                , "this"
                 ].join("|"); // }}}
 
             self.re_kw = Some(Regex::new(format!("^({})$", keywords).as_str()).unwrap());
         }
         if self.re_succ.is_none() {
-            self.re_succ = Some(Regex::new(r"^( |  )$").unwrap());
+            self.re_succ = Some(Regex::new(r"^$").unwrap());
         }
 
         let node = match event {
@@ -70,11 +74,11 @@ impl Rule for StyleKeyword1Or2Space {
     }
 
     fn name(&self) -> String {
-        String::from("style_keyword_1or2space")
+        String::from("style_keyword_0space")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("keyword should be followed by exactly 1 or 2 spaces")
+        String::from("keyword should be followed by no space before symbol")
     }
 
     fn reason(&self) -> String {

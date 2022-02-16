@@ -5,7 +5,9 @@ use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct StyleKeyword1Space {
-    re: Option<Regex>,
+    re_split: Option<Regex>,
+    re_kw: Option<Regex>,
+    re_succ: Option<Regex>,
 }
 
 impl Rule for StyleKeyword1Space {
@@ -15,14 +17,21 @@ impl Rule for StyleKeyword1Space {
         event: &NodeEvent,
         _option: &ConfigOption,
     ) -> RuleResult {
-        if self.re.is_none() {
+        /*
+        re_split extracts keyword from anything following it.
+        re_kw is used to selectively apply this rule to specific keywords.
+        re_succ matches what is allowed after the keyword.
+            - exactly 1space
+        */
+        if self.re_split.is_none() {
+            self.re_split = Some(Regex::new(r"(?P<kw>[a-z_01]+)(?P<succ>(?s:.)*)").unwrap());
+        }
+        if self.re_kw.is_none() {
             let keywords =
-                [ "accept_on"
+                [ "accept_on" // {{{
                 , "alias"
                 , "always"
-                , "always_comb"
                 , "always_ff"
-                , "always_latch"
                 , "and"
                 , "assert"
                 , "assign"
@@ -225,16 +234,12 @@ impl Rule for StyleKeyword1Space {
                 , "wor"
                 , "xnor"
                 , "xor"
-                ].join("|");
+                ].join("|"); // }}}
 
-            /* Regex defines pattens which should fail.
-            Keyword followed by something other than exactly 1 space:
-                - nothing
-                - 2 (or more) spaces
-                - something not a space, except where keyword is a prefix of
-                  another keyword (int/interface, always/always_ff)
-            */
-            self.re = Some(Regex::new(format!("^({})($|  |[^ _a-z01])", keywords).as_str()).unwrap());
+            self.re_kw = Some(Regex::new(format!("^({})$", keywords).as_str()).unwrap());
+        }
+        if self.re_succ.is_none() {
+            self.re_succ = Some(Regex::new(r"^ $").unwrap());
         }
 
         let node = match event {
@@ -246,11 +251,19 @@ impl Rule for StyleKeyword1Space {
 
         match node {
             RefNode::Keyword(x) => {
-                let re = self.re.as_ref().unwrap();
-                let kw = syntax_tree.get_str(*x).unwrap();
+                let re_split = self.re_split.as_ref().unwrap();
+                let re_kw = self.re_kw.as_ref().unwrap();
+                let t = syntax_tree.get_str(*x).unwrap();
+                let caps = re_split.captures(&t).unwrap();
 
-                if re.is_match(&kw) {
-                    RuleResult::Fail
+                if re_kw.is_match(&caps[1]) {
+                    let re_succ = self.re_succ.as_ref().unwrap();
+
+                    if re_succ.is_match(&caps[2]) {
+                        RuleResult::Pass
+                    } else {
+                        RuleResult::Fail
+                    }
                 } else {
                     RuleResult::Pass
                 }
