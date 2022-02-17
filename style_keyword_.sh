@@ -259,6 +259,7 @@ styles=$(echo "$keywords" | \
          cut -d ' ' -f 2 | \
          sort -u)
 
+mkdir -p target/partial
 for s in $styles; do
   kws=$(echo "$keywords" | grep $s | tr -s ' ' | cut -d ' ' -f 1);
   RS=$(
@@ -272,5 +273,5 @@ for s in $styles; do
     done
     echo '                ].join("|"); // }}}';
   )
-  echo "$RS" > $s.keywords.rs
+  echo "$RS" > target/partial/$s.partial.rs
 done
