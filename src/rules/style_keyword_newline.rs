@@ -39,7 +39,7 @@ impl Rule for StyleKeywordNewline {
             self.re_kw = Some(Regex::new(format!("^({})$", keywords).as_str()).unwrap());
         }
         if self.re_succ.is_none() {
-            self.re_succ = Some(Regex::new(r"^(\n| /)").unwrap());
+            self.re_succ = Some(Regex::new(r"^([\n\v\f\r]| /)").unwrap());
         }
 
         let node = match event {
