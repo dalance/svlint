@@ -268,7 +268,7 @@ fn print_parse_error(
 }
 
 #[cfg_attr(tarpaulin, skip)]
-fn search_config(rule: &Path) -> Option<PathBuf> {
+fn search_config(config: &Path) -> Option<PathBuf> {
     if let Ok(c) = env::var("SVLINT_CONFIG") {
         let candidate = Path::new(&c);
         if candidate.exists() {
@@ -284,7 +284,7 @@ fn search_config(rule: &Path) -> Option<PathBuf> {
 
     if let Ok(current) = env::current_dir() {
         for dir in current.ancestors() {
-            let candidate = dir.join(rule);
+            let candidate = dir.join(config);
             if candidate.exists() {
                 return Some(candidate);
             }
