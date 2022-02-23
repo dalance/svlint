@@ -46,7 +46,7 @@ impl Rule for PrefixInstance {
     }
 
     fn name(&self) -> String {
-        String::from("prefix_input")
+        String::from("prefix_instance")
     }
 
     fn hint(&self, option: &ConfigOption) -> String {
