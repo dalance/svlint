@@ -28,8 +28,8 @@ impl Rule for PrefixInput {
                     _ => false,
                 };
 
-                let id: Option<&Locate> = match unwrap_node!(*x, Identifier) {
-                    Some(RefNode::Identifier(id_)) => {
+                let id: Option<&Locate> = match unwrap_node!(*x, PortIdentifier) {
+                    Some(RefNode::PortIdentifier(id_)) => {
                         unwrap_locate!(id_)
                     }
                     _ => None,
