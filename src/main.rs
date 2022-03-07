@@ -87,6 +87,10 @@ pub struct Opt {
     /// Prints config example
     #[clap(long = "example")]
     pub example: bool,
+
+    /// Prints data from filelists
+    #[clap(long = "dump-filelist")]
+    pub dump_filelist: bool,
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -192,11 +196,18 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 
         for filelist in &opt.filelist {
             let (mut f, mut i, d) = parse_filelist(filelist)?;
+            if opt.dump_filelist {
+                dump_filelist(&filelist, &f, &i, &d);
+            }
             files.append(&mut f);
             includes.append(&mut i);
             for (k, v) in d {
                 defines.insert(k, v);
             }
+        }
+        if opt.dump_filelist {
+            dump_filelist(&Path::new("."), &files, &includes, &defines);
+            return Ok(true);
         }
 
         (files, includes)
@@ -312,7 +323,7 @@ fn parse_filelist(
     for (d, t) in filelist.defines {
         match t {
             Some(t) => {
-                let define_text = DefineText::new(String::from(&t[1..]), None);
+                let define_text = DefineText::new(String::from(&t), None);
                 let define = Define::new(String::from(&d), vec![], Some(define_text));
                 defines.insert(String::from(&d), Some(define));
             }
@@ -323,6 +334,38 @@ fn parse_filelist(
     }
 
     Ok((filelist.files, filelist.incdirs, defines))
+}
+
+fn dump_filelist(
+    filename: &Path,
+    files: &Vec<PathBuf>,
+    incdirs: &Vec<PathBuf>,
+    defines: &HashMap<String, Option<Define>>,
+) -> () {
+    println!("{:?}:", filename);
+
+    println!("  files:");
+    for f in files {
+        println!("    - {:?}", f);
+    }
+
+    println!("  incdirs:");
+    for i in incdirs {
+        println!("    - {:?}", i);
+    }
+
+    println!("  defines:");
+    for (k, v) in defines {
+        match v {
+            None => println!("    {:?}:", k),
+            Some(define) => {
+                match &define.text {
+                    Some(definetext) => println!("    {:?}: {:?}", k, definetext.text),
+                    None => println!("    {:?}:", k),
+                }
+            }
+        };
+    }
 }
 
 #[cfg(test)]
