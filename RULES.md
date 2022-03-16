@@ -1164,8 +1164,9 @@ Naming convention simplifies audit.
 ### Pass example
 
 ```SystemVerilog
-module A (
-    inout var b_a
+module M
+( inout var b_foo
+, input var logic [FOO-1:0] b_bar
 );
 endmodule
 ```
@@ -1173,8 +1174,9 @@ endmodule
 ### Fail example
 
 ```SystemVerilog
-module A (
-    inout var a
+module M
+( inout var foo
+, inout var logic [FOO-1:0] bar
 );
 endmodule
 ```
@@ -1192,8 +1194,9 @@ Naming convention simplifies audit.
 ### Pass example
 
 ```SystemVerilog
-module A (
-    input var i_a
+module M
+( input var i_foo
+, input var logic [FOO-1:0] i_bar
 );
 endmodule
 ```
@@ -1201,13 +1204,14 @@ endmodule
 ### Fail example
 
 ```SystemVerilog
-module A (
-    input var a
+module M
+( input var foo
+, input var logic [FOO-1:0] bar
 );
 endmodule
 ```
 
-## prefix_input
+## prefix_instance
 
 ### Description
 
@@ -1220,18 +1224,16 @@ Naming convention simplifies audit.
 ### Pass example
 
 ```SystemVerilog
-module A (
-    input var i_a
-);
+module A;
+Foo #() u_foo (a, b, c);
 endmodule
 ```
 
 ### Fail example
 
 ```SystemVerilog
-module A (
-    input var a
-);
+module A;
+Foo #() foo (a, b, c);
 endmodule
 ```
 
@@ -1292,8 +1294,9 @@ Naming convention simplifies audit.
 ### Pass example
 
 ```SystemVerilog
-module A (
-    output var o_a
+module M
+( output var o_foo
+, output var logic [FOO-1:0] o_bar
 );
 endmodule
 ```
@@ -1301,8 +1304,9 @@ endmodule
 ### Fail example
 
 ```SystemVerilog
-module A (
-    output var a
+module M
+( output var foo
+, output var logic [FOO-1:0] bar
 );
 endmodule
 ```

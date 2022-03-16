@@ -39,6 +39,8 @@ cargo install svlint
 First of all, you must put a configuration file `.svlint.toml` to specify enabled rules.
 Configuration file is searched to the upper directory until `/`.
 So you can put configuration file (`.svlint.toml`) on the repository root like `.gitignore`.
+Alternatively, for project-wide rules you can set the environment variable
+`SVLINT_CONFIG` to something like `/cad/projectFoo/teamBar.svlint.toml`.
 
 The example of configuration file is below:
 
