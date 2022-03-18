@@ -5,7 +5,7 @@ mod linter;
 mod printer;
 mod rules;
 
-use crate::config::{Config,ConfigOption};
+use crate::config::{Config, ConfigOption};
 use std::fs::File;
 use std::io::{BufReader, Read};
 

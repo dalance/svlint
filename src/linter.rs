@@ -1,5 +1,6 @@
 use crate::config::{Config, ConfigOption};
 use libloading::{Library, Symbol};
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use sv_parser::{unwrap_locate, Locate, NodeEvent, SyntaxTree};
 
@@ -12,8 +13,12 @@ pub enum RuleResult {
 }
 
 pub trait Rule: Sync + Send {
-    fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent,
-             config: &ConfigOption) -> RuleResult;
+    fn check(
+        &mut self,
+        syntax_tree: &SyntaxTree,
+        event: &NodeEvent,
+        config: &ConfigOption,
+    ) -> RuleResult;
     fn name(&self) -> String;
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
@@ -23,6 +28,7 @@ pub struct Linter {
     option: ConfigOption,
     rules: Vec<Box<dyn Rule>>,
     plugins: Vec<Library>,
+    pub ctl_enabled: HashMap<String, bool>,
 }
 
 #[derive(Debug)]
@@ -38,10 +44,17 @@ pub struct LintFailed {
 impl Linter {
     pub fn new(config: Config) -> Linter {
         let rules = config.gen_rules();
+
+        let mut ctl_enabled = HashMap::new();
+        for rule in &rules {
+            ctl_enabled.insert(rule.name(), true);
+        }
+
         Linter {
             option: config.option,
             rules,
             plugins: Vec::new(),
+            ctl_enabled,
         }
     }
 
@@ -73,6 +86,11 @@ impl Linter {
 
         let mut ret = Vec::new();
         'outer: for rule in &mut self.rules {
+            match self.ctl_enabled[&rule.name()] {
+                true => {}
+                _ => { continue 'outer; }
+            }
+
             match rule.check(syntax_tree, event, &self.option) {
                 RuleResult::Fail => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
