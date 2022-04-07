@@ -2,6 +2,11 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.1...Unreleased) - ReleaseDate
 
+* [Added] take configuration file from environment variable [#137](https://github.com/dalance/svlint/pull/137)
+* [Added] new flag --dump-filelist to help debug filelist issues [#138](https://github.com/dalance/svlint/pull/138)
+* [Fixed] fixes for errors in prefix_\* [#147](https://github.com/dalance/svlint/pull/147)
+* [Changed] apply prefix_module only to module declarations [#155](https://github.com/dalance/svlint/pull/155)
+
 ## [v0.5.1](https://github.com/dalance/svlint/compare/v0.5.0...v0.5.1) - 2022-02-08
 
 * [Added] sequential_block_in_always_\* rules [#119](https://github.com/dalance/svlint/pull/119)
