@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.1...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.2...Unreleased) - ReleaseDate
+
+## [v0.5.2](https://github.com/dalance/svlint/compare/v0.5.1...v0.5.2) - 2022-04-07
 
 * [Added] take configuration file from environment variable [#137](https://github.com/dalance/svlint/pull/137)
 * [Added] new flag --dump-filelist to help debug filelist issues [#138](https://github.com/dalance/svlint/pull/138)
