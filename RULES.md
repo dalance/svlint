@@ -146,11 +146,11 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-`` `default_nettype none`` should be at the top of source code
+Place `` `default_nettype none`` at the top of source code.
 
 ### Reason
 
-`` `default_nettype none`` can detect unintentional implicit wires
+Compiler directive `` `default_nettype none`` detects unintentional implicit wires.
 
 ### Pass Example
 

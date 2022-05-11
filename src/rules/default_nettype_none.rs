@@ -52,11 +52,11 @@ impl Rule for DefaultNettypeNone {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`` `default_nettype none`` should be at the top of source code")
+        String::from("Place `` `default_nettype none`` at the top of source code.")
     }
 
     fn reason(&self) -> String {
-        String::from("`` `default_nettype none`` can detect unintentional implicit wires")
+        String::from("Compiler directive `` `default_nettype none`` detects unintentional implicit wires.")
     }
 
     fn explanation(&self) -> String {
