@@ -49,4 +49,8 @@ impl Rule for NonBlockingAssignmentInAlwaysComb {
     fn reason(&self) -> String {
         String::from("non-blocking assignment in `always_comb` causes elaboration error")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

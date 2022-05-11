@@ -42,4 +42,8 @@ impl Rule for InterfacePortWithModport {
     fn reason(&self) -> String {
         String::from("interface port without modport maybe `inout` at synthesis")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

@@ -47,4 +47,8 @@ impl Rule for OutputWithVar {
     fn reason(&self) -> String {
         String::from("")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

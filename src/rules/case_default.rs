@@ -66,4 +66,8 @@ impl Rule for CaseDefault {
     fn reason(&self) -> String {
         String::from("'not full case' causes mismatch between simulation and synthesis")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

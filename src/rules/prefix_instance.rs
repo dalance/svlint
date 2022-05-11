@@ -59,4 +59,8 @@ impl Rule for PrefixInstance {
     fn reason(&self) -> String {
         String::from("Naming convention simplifies audit.")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

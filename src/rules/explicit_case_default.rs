@@ -47,4 +47,8 @@ impl Rule for ExplicitCaseDefault {
     fn reason(&self) -> String {
         String::from("explicit `default` makes design intent clearer")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

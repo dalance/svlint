@@ -42,4 +42,8 @@ impl Rule for EnumWithType {
     fn reason(&self) -> String {
         String::from("the default data type is `int`")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

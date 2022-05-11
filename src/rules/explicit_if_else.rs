@@ -51,4 +51,8 @@ impl Rule for ExplicitIfElse {
     fn reason(&self) -> String {
         String::from("explicit `else` makes design intent clearer")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

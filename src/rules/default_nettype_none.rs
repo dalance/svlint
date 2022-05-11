@@ -57,4 +57,8 @@ impl Rule for DefaultNettypeNone {
     fn reason(&self) -> String {
         String::from("`` `default_nettype none`` can detect unintentional implicit wires")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

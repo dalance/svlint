@@ -104,4 +104,8 @@ impl Rule for IfWithBegin {
     fn reason(&self) -> String {
         String::from("if there is not `begin`, the second statement are confusing")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

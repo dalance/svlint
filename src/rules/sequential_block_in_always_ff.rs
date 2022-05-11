@@ -49,4 +49,8 @@ impl Rule for SequentialBlockInAlwaysFf {
     fn reason(&self) -> String {
         String::from("prevent introducing sequential dependencies")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

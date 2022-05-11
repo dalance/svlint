@@ -42,4 +42,8 @@ impl Rule for LocalparamExplicitType {
     fn reason(&self) -> String {
         String::from("parameter types show intent and improve readability")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

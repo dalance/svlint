@@ -51,4 +51,8 @@ impl Rule for InoutWithTri {
     fn reason(&self) -> String {
         String::from("")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

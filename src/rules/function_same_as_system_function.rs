@@ -178,4 +178,8 @@ impl Rule for FunctionSameAsSystemFunction {
     fn reason(&self) -> String {
         String::from("some tools confuse function with system function")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }

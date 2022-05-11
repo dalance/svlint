@@ -49,4 +49,8 @@ impl Rule for SequentialBlockInAlwaysLatch {
     fn reason(&self) -> String {
         String::from("prevent introducing sequential dependencies")
     }
+
+    fn explanation(&self) -> String {
+        String::from("TODO")
+    }
 }
