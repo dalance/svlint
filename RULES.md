@@ -1,7 +1,7 @@
 # Rules
 
 This document is generated from the rules' source code (`svlint/src/rules/*.rs`)
-and testcases (`testcases/(fail|pass)/*.sv`) using the `mdgen` binary.
+and testcases (`testcases/(fail|pass)/*.sv`) using the `mdgen` utility.
 Each rule is documented with 5 pieces of information:
 - Hint: A brief instruction on how to modify failing SystemVerilog.
   Also displayed in supported editors using [svls](https://github.com/dalance/svls).
@@ -13,7 +13,6 @@ Each rule is documented with 5 pieces of information:
   In some cases the code shows multiple commented examples.
 - Explanation: A full explanation of the rule's purpose with references to any
   other relevant information sources.
-
 
 ---
 ## `blocking_assignment_in_always_ff`
