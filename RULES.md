@@ -171,11 +171,11 @@ endmodule
 
 ### Explanation
 
-The `\`default_netype` compiler directive can be used to specify the net type
+The `` `default_netype`` compiler directive can be used to specify the net type
 of implicit nets, i.e. where a signal is referenced, or assigned to, without
 being declared.
-IEEE1800-2017 clause 22.8 stipulates "When no `\`default_nettype` directive
-is present or if the `\`resetall` directive is specified, implicit nets are of
+IEEE1800-2017 clause 22.8 stipulates "When no `` `default_nettype`` directive
+is present or if the `` `resetall`` directive is specified, implicit nets are of
 type `wire`."
 
 SystemVerilog makes a distiction between variables (only 0 or 1 drivers)
@@ -198,7 +198,7 @@ Variables are preferred over nets for most digital logic for 2 reasons:
     a compile time error.
   - Simulator performance (dependent on implemetation).
     Value can be found by lookup, rather than evaluation of drivers.
-When `\`default_nettype none` is used, all signals must be declared, thus
+When `` `default_nettype none`` is used, all signals must be declared, thus
 forcing the author to consider whether they mean a variable or a net.
 
 The most relevant clauses of IEEE1800-2017 are:
@@ -206,7 +206,7 @@ The most relevant clauses of IEEE1800-2017 are:
   - 22.8 default nettype
 
 Note: One prominent paper (Cliff Cummings, HDLCON 2002) recommends *against*
-using `\`default_nettype none` on the basis that concise, typeless code has
+using `` `default_nettype none`` on the basis that concise, typeless code has
 fewer opportunities for mistakes.
 This attitude was popular at the time, e.g. Python's dynamic typing, but
 modern attitudes are now favouring explicit types, e.g. Python's new type
