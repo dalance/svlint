@@ -1,16 +1,32 @@
 # Rules
 
-## blocking_assignment_in_always_ff
+This document is generated from the rules' source code (`svlint/src/rules/*.rs`)
+and testcases (`testcases/(fail|pass)/*.sv`) using the `mdgen` binary.
+Each rule is documented with 5 pieces of information:
+- Hint: A brief instruction on how to modify failing SystemVerilog.
+  Also displayed in supported editors using [svls](https://github.com/dalance/svls).
+- Reason: A one sentence explanation of the rule's purpose.
+  Also displayed in supported editors using [svls](https://github.com/dalance/svls).
+- Pass Example: A valid piece of SystemVerilog which is known to pass the rule.
+  Ideally, this will show an example of best-practice.
+- Fail Example: A valid piece of SystemVerilog which is known to fail the rule.
+  In some cases the code shows multiple commented examples.
+- Explanation: A full explanation of the rule's purpose with references to any
+  other relevant information sources.
 
-### Description
 
-blocking assignment is forbidden in `always_ff`
+---
+## `blocking_assignment_in_always_ff`
+
+### Hint
+
+Do not use blocking assignments within `always_ff`.
 
 ### Reason
 
-blocking assignment in `always_ff` causes elaboration error
+Blocking assignment in `always_ff` may cause undefined event ordering.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module M;
@@ -22,7 +38,7 @@ always_ff @(posedge clk) q2 = d;  // Control comments avoid failure.
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module M;
@@ -34,9 +50,30 @@ always_ff @(posedge clk) q2 = d;   // Failure.
 endmodule
 ```
 
-## case_default
+### Explanation
 
-### Description
+Simulator event ordering between blocking and non-blocking assignments
+is undefined, so observed behavior simulator-dependent.
+As all examples in IEEE1800-2017 show, `always_ff` should only contain
+non-blocking assignments in order for sampling and variable evaluation
+to operate in a defined order.
+
+Specifically, `always_ff` constructs should not contain blocking assignments:
+  - Blocking assignment operator, e.g. `foo = 123;`
+  - Increment/decrement operators, e.g. `foo++;`, `foo--;`.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 9.2.2.4 Sequential logic always_ff procedure
+  - 9.4.2 Event control
+  - 10.4.1 Blocking procedural assignments
+  - 10.4.2 Nonblocking procedural assignments
+  - 16.5.1 Sampling
+
+
+---
+## `case_default`
+
+### Hint
 
 `case` must have `default` in `always_comb` or `function`
 
@@ -44,7 +81,7 @@ endmodule
 
 'not full case' causes mismatch between simulation and synthesis
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -62,7 +99,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -79,9 +116,14 @@ end
 endmodule
 ```
 
-## default_nettype_none
+### Explanation
 
-### Description
+TODO
+
+---
+## `default_nettype_none`
+
+### Hint
 
 `` `default_nettype none`` should be at the top of source code
 
@@ -89,7 +131,7 @@ endmodule
 
 `` `default_nettype none`` can detect unintentional implicit wires
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 `default_nettype none
@@ -98,7 +140,7 @@ endmodule
 
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -106,9 +148,14 @@ endmodule
 
 ```
 
-## enum_with_type
+### Explanation
 
-### Description
+TODO
+
+---
+## `enum_with_type`
+
+### Hint
 
 `enum` must have data type
 
@@ -116,7 +163,7 @@ endmodule
 
 the default data type is `int`
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -126,7 +173,7 @@ typedef enum logic {
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -136,9 +183,14 @@ typedef enum {
 endmodule
 ```
 
-## explicit_case_default
+### Explanation
 
-### Description
+TODO
+
+---
+## `explicit_case_default`
+
+### Hint
 
 `case` must have `default` in `always*`
 
@@ -146,7 +198,7 @@ endmodule
 
 explicit `default` makes design intent clearer
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -165,7 +217,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -182,9 +234,14 @@ end
 endmodule
 ```
 
-## explicit_if_else
+### Explanation
 
-### Description
+TODO
+
+---
+## `explicit_if_else`
+
+### Hint
 
 `if` must have `else` in `always*`
 
@@ -192,7 +249,7 @@ endmodule
 
 explicit `else` makes design intent clearer
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -205,7 +262,7 @@ always_comb
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -214,9 +271,14 @@ always_comb if (x) y = 0;
 endmodule
 ```
 
-## for_with_begin
+### Explanation
 
-### Description
+TODO
+
+---
+## `for_with_begin`
+
+### Hint
 
 multiline `for` statement must have `begin`
 
@@ -224,7 +286,7 @@ multiline `for` statement must have `begin`
 
 if there is not `begin`, the second statement are confusing
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -237,7 +299,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -249,9 +311,14 @@ end
 endmodule
 ```
 
-## function_same_as_system_function
+### Explanation
 
-### Description
+TODO
+
+---
+## `function_same_as_system_function`
+
+### Hint
 
 the name of `function` must not be the same as system function
 
@@ -259,7 +326,7 @@ the name of `function` must not be the same as system function
 
 some tools confuse function with system function
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -268,7 +335,7 @@ endfunction
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -277,9 +344,14 @@ endfunction
 endmodule
 ```
 
-## function_with_automatic
+### Explanation
 
-### Description
+TODO
+
+---
+## `function_with_automatic`
+
+### Hint
 
 `function` must be `automatic`
 
@@ -287,7 +359,7 @@ endmodule
 
 this causes mismatch between simulation and synthesis
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -360,7 +432,7 @@ endclass
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -369,9 +441,14 @@ endfunction
 endmodule
 ```
 
-## generate_case_with_label
+### Explanation
 
-### Description
+TODO
+
+---
+## `generate_case_with_label`
+
+### Hint
 
 `generate case item` must have label with prefix "l_"
 
@@ -379,7 +456,7 @@ endmodule
 
 the hierarchiral path can't be determined
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -390,7 +467,7 @@ endcase endgenerate
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -409,9 +486,14 @@ endcase endgenerate
 endmodule
 ```
 
-## generate_for_with_label
+### Explanation
 
-### Description
+TODO
+
+---
+## `generate_for_with_label`
+
+### Hint
 
 `generate for` must have label with prefix "l_"
 
@@ -419,7 +501,7 @@ endmodule
 
 the hierarchiral path can't be determined
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -428,7 +510,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -438,9 +520,14 @@ end
 endmodule
 ```
 
-## generate_if_with_label
+### Explanation
 
-### Description
+TODO
+
+---
+## `generate_if_with_label`
+
+### Hint
 
 `generate if` must have label with prefix "l_"
 
@@ -448,7 +535,7 @@ endmodule
 
 the hierarchiral path can't be determined
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -459,7 +546,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -479,9 +566,14 @@ end
 endmodule
 ```
 
-## generate_keyword_forbidden
+### Explanation
 
-### Description
+TODO
+
+---
+## `generate_keyword_forbidden`
+
+### Hint
 
 `generate`/`endgenerate` must be omitted
 
@@ -489,14 +581,14 @@ endmodule
 
 
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -505,9 +597,14 @@ endgenerate
 endmodule
 ```
 
-## generate_keyword_required
+### Explanation
 
-### Description
+TODO
+
+---
+## `generate_keyword_required`
+
+### Hint
 
 `generate`/`endgenerate` is required
 
@@ -515,7 +612,7 @@ endmodule
 
 some tools don't support `generate`/`endgenerate` omitting
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -531,7 +628,7 @@ endgenerate
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -545,9 +642,14 @@ end
 endmodule
 ```
 
-## genvar_declaration_in_loop
+### Explanation
 
-### Description
+TODO
+
+---
+## `genvar_declaration_in_loop`
+
+### Hint
 
 `genvar` must be declared in loop
 
@@ -555,7 +657,7 @@ endmodule
 
 the scope of variable should be minimized
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -564,7 +666,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -574,9 +676,14 @@ end
 endmodule
 ```
 
-## genvar_declaration_out_loop
+### Explanation
 
-### Description
+TODO
+
+---
+## `genvar_declaration_out_loop`
+
+### Hint
 
 `genvar` must be declared out loop
 
@@ -584,7 +691,7 @@ endmodule
 
 some tools don't support `genvar` declaration in loop
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -594,7 +701,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -603,9 +710,14 @@ end
 endmodule
 ```
 
-## if_with_begin
+### Explanation
 
-### Description
+TODO
+
+---
+## `if_with_begin`
+
+### Hint
 
 multiline `if` statement must have `begin`
 
@@ -613,7 +725,7 @@ multiline `if` statement must have `begin`
 
 if there is not `begin`, the second statement are confusing
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -643,7 +755,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -670,9 +782,14 @@ end
 endmodule
 ```
 
-## inout_with_tri
+### Explanation
 
-### Description
+TODO
+
+---
+## `inout_with_tri`
+
+### Hint
 
 `inout` must have `tri`
 
@@ -680,7 +797,7 @@ endmodule
 
 
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A (
@@ -689,7 +806,7 @@ module A (
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A (
@@ -698,9 +815,14 @@ module A (
 endmodule
 ```
 
-## input_with_var
+### Explanation
 
-### Description
+TODO
+
+---
+## `input_with_var`
+
+### Hint
 
 `input` must have `var`
 
@@ -708,7 +830,7 @@ endmodule
 
 `input wire` can be assigned by mistake. `input logic` becomes error with `default nettype none` because it doesn't have net type.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A (
@@ -717,7 +839,7 @@ module A (
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A (
@@ -726,9 +848,14 @@ module A (
 endmodule
 ```
 
-## interface_port_with_modport
+### Explanation
 
-### Description
+TODO
+
+---
+## `interface_port_with_modport`
+
+### Hint
 
 interface port must have modport
 
@@ -736,7 +863,7 @@ interface port must have modport
 
 interface port without modport maybe `inout` at synthesis
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A (
@@ -746,7 +873,7 @@ module A (
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A (
@@ -756,9 +883,14 @@ module A (
 endmodule
 ```
 
-## legacy_always
+### Explanation
 
-### Description
+TODO
+
+---
+## `legacy_always`
+
+### Hint
 
 `always_comb`/`always_ff`/`always_latch` must be used
 
@@ -766,7 +898,7 @@ endmodule
 
 `always` can't detect blocking/non-blocking mistake
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -775,7 +907,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -784,9 +916,14 @@ end
 endmodule
 ```
 
-## level_sensitive_always
+### Explanation
 
-### Description
+TODO
+
+---
+## `level_sensitive_always`
+
+### Hint
 
 level sensitive `always` must be `always_comb`
 
@@ -794,7 +931,7 @@ level sensitive `always` must be `always_comb`
 
 `always` can't detect blocking/non-blocking mistake
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -807,7 +944,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -820,9 +957,14 @@ end
 endmodule
 ```
 
-## localparam_explicit_type
+### Explanation
 
-### Description
+TODO
+
+---
+## `localparam_explicit_type`
+
+### Hint
 
 `localparam` must be have an explicit type
 
@@ -830,7 +972,7 @@ endmodule
 
 parameter types show intent and improve readability
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -838,7 +980,7 @@ localparam int a = 0;
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -846,9 +988,14 @@ localparam a = 0;
 endmodule
 ```
 
-## localparam_type_twostate
+### Explanation
 
-### Description
+TODO
+
+---
+## `localparam_type_twostate`
+
+### Hint
 
 `localparam` must be have a twostate type
 
@@ -856,7 +1003,7 @@ endmodule
 
 design constants should not contain X or Z bits.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -868,7 +1015,7 @@ module A;
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -878,9 +1025,14 @@ module A;
 endmodule
 ```
 
-## loop_variable_declaration
+### Explanation
 
-### Description
+TODO
+
+---
+## `loop_variable_declaration`
+
+### Hint
 
 loop variable must be declared in loop
 
@@ -888,7 +1040,7 @@ loop variable must be declared in loop
 
 the scope of variable should be minimized
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -899,7 +1051,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -911,9 +1063,14 @@ end
 endmodule
 ```
 
-## lowercamelcase_interface
+### Explanation
 
-### Description
+TODO
+
+---
+## `lowercamelcase_interface`
+
+### Hint
 
 Interface name must begin with lowerCamelCase
 
@@ -921,21 +1078,26 @@ Interface name must begin with lowerCamelCase
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 interface fooBar; endinterface
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 interface FooBar; endinterface
 ```
 
-## lowercamelcase_module
+### Explanation
 
-### Description
+TODO
+
+---
+## `lowercamelcase_module`
+
+### Hint
 
 Module name must begin with lowerCamelCase
 
@@ -943,21 +1105,26 @@ Module name must begin with lowerCamelCase
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module fooBar; endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module FooBar; endmodule
 ```
 
-## lowercamelcase_package
+### Explanation
 
-### Description
+TODO
+
+---
+## `lowercamelcase_package`
+
+### Hint
 
 Package name must begin with lowerCamelCase
 
@@ -965,21 +1132,26 @@ Package name must begin with lowerCamelCase
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 package fooBar; endpackage
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 package FooBar; endpackage
 ```
 
-## non_ansi_module
+### Explanation
 
-### Description
+TODO
+
+---
+## `non_ansi_module`
+
+### Hint
 
 module declaration must be ANSI-style
 
@@ -987,7 +1159,7 @@ module declaration must be ANSI-style
 
 non-ANSI-style has duplicated port declaration
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A(
@@ -997,7 +1169,7 @@ module A(
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A(
@@ -1009,9 +1181,14 @@ output b;
 endmodule
 ```
 
-## non_blocking_assignment_in_always_comb
+### Explanation
 
-### Description
+TODO
+
+---
+## `non_blocking_assignment_in_always_comb`
+
+### Hint
 
 non-blocking assignment is forbidden in`always_comb`
 
@@ -1019,7 +1196,7 @@ non-blocking assignment is forbidden in`always_comb`
 
 non-blocking assignment in `always_comb` causes elaboration error
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -1029,7 +1206,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -1039,9 +1216,14 @@ end
 endmodule
 ```
 
-## output_with_var
+### Explanation
 
-### Description
+TODO
+
+---
+## `output_with_var`
+
+### Hint
 
 `output` must have `var`
 
@@ -1049,7 +1231,7 @@ endmodule
 
 
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A (
@@ -1058,7 +1240,7 @@ module A (
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A (
@@ -1067,9 +1249,14 @@ module A (
 endmodule
 ```
 
-## parameter_explicit_type
+### Explanation
 
-### Description
+TODO
+
+---
+## `parameter_explicit_type`
+
+### Hint
 
 `parameter` must be have an explicit type
 
@@ -1077,23 +1264,28 @@ endmodule
 
 parameter types show intent and improve readability
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A #(parameter int a = 0) ();
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A #(parameter a = 0) ();
 endmodule
 ```
 
-## parameter_in_package
+### Explanation
 
-### Description
+TODO
+
+---
+## `parameter_in_package`
+
+### Hint
 
 `parameter` must be replaced to `localparam` in `package`
 
@@ -1101,7 +1293,7 @@ endmodule
 
 some tools can't take `parameter` in `package`
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 package A;
@@ -1109,7 +1301,7 @@ localparam A = 1;
 endpackage
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 package A;
@@ -1117,9 +1309,14 @@ parameter A = 1;
 endpackage
 ```
 
-## parameter_type_twostate
+### Explanation
 
-### Description
+TODO
+
+---
+## `parameter_type_twostate`
+
+### Hint
 
 `parameter` must be have a twostate type
 
@@ -1127,7 +1324,7 @@ endpackage
 
 design constants should not contain X or Z bits.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A #(
@@ -1140,7 +1337,7 @@ module A #(
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A #(
@@ -1151,9 +1348,14 @@ module A #(
 endmodule
 ```
 
-## prefix_inout
+### Explanation
 
-### Description
+TODO
+
+---
+## `prefix_inout`
+
+### Hint
 
 `inout` must have prefix "b_"
 
@@ -1161,7 +1363,7 @@ endmodule
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module M
@@ -1171,7 +1373,7 @@ module M
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module M
@@ -1181,9 +1383,14 @@ module M
 endmodule
 ```
 
-## prefix_input
+### Explanation
 
-### Description
+TODO
+
+---
+## `prefix_input`
+
+### Hint
 
 `input` must have prefix "i_"
 
@@ -1191,7 +1398,7 @@ endmodule
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module M
@@ -1201,7 +1408,7 @@ module M
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module M
@@ -1211,9 +1418,14 @@ module M
 endmodule
 ```
 
-## prefix_instance
+### Explanation
 
-### Description
+TODO
+
+---
+## `prefix_instance`
+
+### Hint
 
 Module instance must have prefix "u_"
 
@@ -1221,7 +1433,7 @@ Module instance must have prefix "u_"
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -1229,7 +1441,7 @@ Foo #() u_foo (a, b, c);
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -1237,9 +1449,14 @@ Foo #() foo (a, b, c);
 endmodule
 ```
 
-## prefix_interface
+### Explanation
 
-### Description
+TODO
+
+---
+## `prefix_interface`
+
+### Hint
 
 `interface` name must have prefix "ifc_"
 
@@ -1247,21 +1464,26 @@ endmodule
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 interface ifc_withPrefix; endinterface
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 interface noPrefix; endinterface
 ```
 
-## prefix_module
+### Explanation
 
-### Description
+TODO
+
+---
+## `prefix_module`
+
+### Hint
 
 `module` name must have prefix "mod_"
 
@@ -1269,7 +1491,7 @@ interface noPrefix; endinterface
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module mod_withPrefix; // Module identifier of declaration has prefix.
@@ -1277,16 +1499,21 @@ module mod_withPrefix; // Module identifier of declaration has prefix.
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module noPrefix; // Module identifier of declaration should have prefix.
 endmodule
 ```
 
-## prefix_output
+### Explanation
 
-### Description
+TODO
+
+---
+## `prefix_output`
+
+### Hint
 
 `output` must have prefix "o_"
 
@@ -1294,7 +1521,7 @@ endmodule
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module M
@@ -1304,7 +1531,7 @@ module M
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module M
@@ -1314,9 +1541,14 @@ module M
 endmodule
 ```
 
-## prefix_package
+### Explanation
 
-### Description
+TODO
+
+---
+## `prefix_package`
+
+### Hint
 
 `package` name must have prefix "pkg_"
 
@@ -1324,21 +1556,26 @@ endmodule
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 package pkg_withPrefix; endpackage
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 package noPrefix; endpackage
 ```
 
-## priority_keyword
+### Explanation
 
-### Description
+TODO
+
+---
+## `priority_keyword`
+
+### Hint
 
 `priority` is forbidden
 
@@ -1346,7 +1583,7 @@ package noPrefix; endpackage
 
 this causes mismatch between simulation and synthesis
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A();
@@ -1358,7 +1595,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A();
@@ -1370,9 +1607,14 @@ end
 endmodule
 ```
 
-## sequential_block_in_always_comb
+### Explanation
 
-### Description
+TODO
+
+---
+## `sequential_block_in_always_comb`
+
+### Hint
 
 begin/end forbidden within `always_comb` constuct
 
@@ -1380,7 +1622,7 @@ begin/end forbidden within `always_comb` constuct
 
 prevent introducing sequential dependencies
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module a;
@@ -1400,7 +1642,7 @@ module a;
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module a;
@@ -1430,9 +1672,14 @@ module a;
 endmodule
 ```
 
-## sequential_block_in_always_ff
+### Explanation
 
-### Description
+TODO
+
+---
+## `sequential_block_in_always_ff`
+
+### Hint
 
 begin/end forbidden within `always_ff` constuct
 
@@ -1440,7 +1687,7 @@ begin/end forbidden within `always_ff` constuct
 
 prevent introducing sequential dependencies
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module a;
@@ -1463,7 +1710,7 @@ module a;
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module a;
@@ -1493,9 +1740,14 @@ module a;
 endmodule
 ```
 
-## sequential_block_in_always_latch
+### Explanation
 
-### Description
+TODO
+
+---
+## `sequential_block_in_always_latch`
+
+### Hint
 
 begin/end forbidden within `always_latch` constuct
 
@@ -1503,7 +1755,7 @@ begin/end forbidden within `always_latch` constuct
 
 prevent introducing sequential dependencies
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module a;
@@ -1523,7 +1775,7 @@ module a;
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module a;
@@ -1553,9 +1805,14 @@ module a;
 endmodule
 ```
 
-## tab_character
+### Explanation
 
-### Description
+TODO
+
+---
+## `tab_character`
+
+### Hint
 
 tab character is forbidden
 
@@ -1563,7 +1820,7 @@ tab character is forbidden
 
 may cause misalignment depending on editor setting
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A();
@@ -1571,7 +1828,7 @@ module A();
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A();
@@ -1579,9 +1836,14 @@ module A();
 endmodule
 ```
 
-## unique0_keyword
+### Explanation
 
-### Description
+TODO
+
+---
+## `unique0_keyword`
+
+### Hint
 
 `unique0` is forbidden
 
@@ -1589,7 +1851,7 @@ endmodule
 
 this causes mismatch between simulation and synthesis
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A();
@@ -1601,7 +1863,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A();
@@ -1613,9 +1875,14 @@ end
 endmodule
 ```
 
-## unique_keyword
+### Explanation
 
-### Description
+TODO
+
+---
+## `unique_keyword`
+
+### Hint
 
 `unique` is forbidden
 
@@ -1623,7 +1890,7 @@ endmodule
 
 this causes mismatch between simulation and synthesis
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A();
@@ -1635,7 +1902,7 @@ end
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A();
@@ -1647,9 +1914,14 @@ end
 endmodule
 ```
 
-## uppercamelcase_interface
+### Explanation
 
-### Description
+TODO
+
+---
+## `uppercamelcase_interface`
+
+### Hint
 
 Interface name must begin with UpperCamelCase
 
@@ -1657,21 +1929,26 @@ Interface name must begin with UpperCamelCase
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 interface FooBar; endinterface
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 interface fooBar; endinterface
 ```
 
-## uppercamelcase_module
+### Explanation
 
-### Description
+TODO
+
+---
+## `uppercamelcase_module`
+
+### Hint
 
 Module name must begin with UpperCamelCase
 
@@ -1679,21 +1956,26 @@ Module name must begin with UpperCamelCase
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module FooBar; endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module fooBar; endmodule
 ```
 
-## uppercamelcase_package
+### Explanation
 
-### Description
+TODO
+
+---
+## `uppercamelcase_package`
+
+### Hint
 
 Package name must begin with UpperCamelCase
 
@@ -1701,21 +1983,26 @@ Package name must begin with UpperCamelCase
 
 Naming convention simplifies audit.
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 package FooBar; endpackage
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 package fooBar; endpackage
 ```
 
-## wire_reg
+### Explanation
 
-### Description
+TODO
+
+---
+## `wire_reg`
+
+### Hint
 
 `wire`/`reg` must be replaced to `logic`/`tri`
 
@@ -1723,7 +2010,7 @@ package fooBar; endpackage
 
 `logic` can detect multi-drive
 
-### Pass example
+### Pass Example
 
 ```SystemVerilog
 module A;
@@ -1732,7 +2019,7 @@ logic b;
 endmodule
 ```
 
-### Fail example
+### Fail Example
 
 ```SystemVerilog
 module A;
@@ -1740,4 +2027,8 @@ wire a;
 reg b;
 endmodule
 ```
+
+### Explanation
+
+TODO
 
