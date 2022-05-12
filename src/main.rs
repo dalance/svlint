@@ -1,14 +1,13 @@
 use anyhow::{Context, Error};
 use clap::Parser;
 use enquote;
-use regex::Regex;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use sv_parser::Error as SvParserError;
-use sv_parser::{parse_sv, unwrap_locate, Define, DefineText, Locate, NodeEvent, RefNode};
+use sv_parser::{parse_sv, Define, DefineText};
 use svlint::config::Config;
 use svlint::linter::Linter;
 use svlint::printer::Printer;
@@ -222,40 +221,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         let mut pass = true;
         match parse_sv(&path, &defines, &includes, opt.ignore_include, false) {
             Ok((syntax_tree, new_defines)) => {
-                let re_ctl = Regex::new(r"/\*\s*svlint\s+(on|off)\s+([a-z0-9_]+)\s*\*/").unwrap();
-
                 for node in syntax_tree.into_iter().event() {
-                    match node {
-                        NodeEvent::Enter(RefNode::Comment(x)) => {
-                            let loc: Option<&Locate> = unwrap_locate!(x);
-                            let text: Option<&str> = match &loc {
-                                Some(x) => syntax_tree.get_str(*x),
-                                _ => None,
-                            };
-                            let caps = re_ctl.captures(text.unwrap());
-                            if caps.is_some() {
-                                let caps = caps.unwrap();
-                                let ctl_name = caps.get(2).unwrap().as_str();
-                                if linter.ctl_enabled.contains_key(ctl_name) {
-                                    let ctl_enable = match caps.get(1).unwrap().as_str() {
-                                        "off" => false,
-                                        _ => true,
-                                    };
-                                    linter.ctl_enabled.insert(ctl_name.to_string(), ctl_enable);
-                                    if opt.verbose {
-                                        printer.print_info(&format!(
-                                            "'{}':{} {} {}",
-                                            &path.to_string_lossy(),
-                                            loc.unwrap().line,
-                                            if ctl_enable { "on" } else { "off" },
-                                            &ctl_name
-                                        ))?;
-                                    }
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
                     for failed in linter.check(&syntax_tree, &node) {
                         pass = false;
                         if !opt.silent {
@@ -320,10 +286,12 @@ fn search_config(config: &Path) -> Option<PathBuf> {
             return Some(candidate.to_path_buf());
         } else {
             let mut printer = Printer::new();
-            printer.print_warning(&format!(
-                "SVLINT_CONFIG=\"{}\" does not exist. Searching hierarchically.",
-                c,
-            )).ok()?;
+            printer
+                .print_warning(&format!(
+                    "SVLINT_CONFIG=\"{}\" does not exist. Searching hierarchically.",
+                    c,
+                ))
+                .ok()?;
         }
     }
 
@@ -392,12 +360,10 @@ fn dump_filelist(
     for (k, v) in defines {
         match v {
             None => println!("    {:?}:", k),
-            Some(define) => {
-                match &define.text {
-                    Some(definetext) => println!("    {:?}: {:?}", k, definetext.text),
-                    None => println!("    {:?}:", k),
-                }
-            }
+            Some(define) => match &define.text {
+                Some(definetext) => println!("    {:?}: {:?}", k, definetext.text),
+                None => println!("    {:?}:", k),
+            },
         };
     }
 }

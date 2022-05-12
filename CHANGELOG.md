@@ -1,6 +1,10 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.2...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.3...Unreleased) - ReleaseDate
+
+## [v0.5.3](https://github.com/dalance/svlint/compare/v0.5.2...v0.5.3) - 2022-05-12
+
+* [Fixed] control comment is not checked in linter.check
 
 ## [v0.5.2](https://github.com/dalance/svlint/compare/v0.5.1...v0.5.2) - 2022-04-07
 
