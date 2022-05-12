@@ -172,7 +172,9 @@ impl Config {{
     let out_test = Path::new(&out_dir).join("test.rs");
     let mut out_test = File::create(&out_test).unwrap();
 
-    let test_verbose = ["default_nettype_none"];
+    // blocking_assignment_in_always_ff testcases demonstrate comment control,
+    // so visibility is useful when running `cargo test`.
+    let test_verbose = ["blocking_assignment_in_always_ff"];
 
     for (file_name, _) in &rules {
         let silent = if test_verbose.contains(&file_name.as_str()) {
