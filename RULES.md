@@ -13,20 +13,24 @@ blocking assignment in `always_ff` causes elaboration error
 ### Pass example
 
 ```SystemVerilog
-module A;
-always_ff begin
-    x <= 0;
-end
+module M;
+always_ff @(posedge clk) q1 <= d; // Correct.
+
+/* svlint off blocking_assignment_in_always_ff */
+always_ff @(posedge clk) q2 = d;  // Control comments avoid failure.
+/* svlint on blocking_assignment_in_always_ff */
 endmodule
 ```
 
 ### Fail example
 
 ```SystemVerilog
-module A;
-always_ff begin
-    x = 0;
-end
+module M;
+/* svlint off blocking_assignment_in_always_ff */
+always_ff @(posedge clk) q1 = d;   // Control comments avoid failure.
+/* svlint on blocking_assignment_in_always_ff */
+
+always_ff @(posedge clk) q2 = d;   // Failure.
 endmodule
 ```
 
@@ -1160,8 +1164,9 @@ Naming convention simplifies audit.
 ### Pass example
 
 ```SystemVerilog
-module A (
-    inout var b_a
+module M
+( inout var b_foo
+, input var logic [FOO-1:0] b_bar
 );
 endmodule
 ```
@@ -1169,8 +1174,9 @@ endmodule
 ### Fail example
 
 ```SystemVerilog
-module A (
-    inout var a
+module M
+( inout var foo
+, inout var logic [FOO-1:0] bar
 );
 endmodule
 ```
@@ -1188,8 +1194,9 @@ Naming convention simplifies audit.
 ### Pass example
 
 ```SystemVerilog
-module A (
-    input var i_a
+module M
+( input var i_foo
+, input var logic [FOO-1:0] i_bar
 );
 endmodule
 ```
@@ -1197,13 +1204,14 @@ endmodule
 ### Fail example
 
 ```SystemVerilog
-module A (
-    input var a
+module M
+( input var foo
+, input var logic [FOO-1:0] bar
 );
 endmodule
 ```
 
-## prefix_input
+## prefix_instance
 
 ### Description
 
@@ -1216,18 +1224,16 @@ Naming convention simplifies audit.
 ### Pass example
 
 ```SystemVerilog
-module A (
-    input var i_a
-);
+module A;
+Foo #() u_foo (a, b, c);
 endmodule
 ```
 
 ### Fail example
 
 ```SystemVerilog
-module A (
-    input var a
-);
+module A;
+Foo #() foo (a, b, c);
 endmodule
 ```
 
@@ -1266,13 +1272,16 @@ Naming convention simplifies audit.
 ### Pass example
 
 ```SystemVerilog
-module mod_withPrefix; endmodule
+module mod_withPrefix; // Module identifier of declaration has prefix.
+  M #(.A(1)) u_M (.a); // Module identifier of instance doesn't require prefix.
+endmodule
 ```
 
 ### Fail example
 
 ```SystemVerilog
-module noPrefix; endmodule
+module noPrefix; // Module identifier of declaration should have prefix.
+endmodule
 ```
 
 ## prefix_output
@@ -1288,8 +1297,9 @@ Naming convention simplifies audit.
 ### Pass example
 
 ```SystemVerilog
-module A (
-    output var o_a
+module M
+( output var o_foo
+, output var logic [FOO-1:0] o_bar
 );
 endmodule
 ```
@@ -1297,8 +1307,9 @@ endmodule
 ### Fail example
 
 ```SystemVerilog
-module A (
-    output var a
+module M
+( output var foo
+, output var logic [FOO-1:0] bar
 );
 endmodule
 ```

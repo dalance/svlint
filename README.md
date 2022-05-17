@@ -39,6 +39,8 @@ cargo install svlint
 First of all, you must put a configuration file `.svlint.toml` to specify enabled rules.
 Configuration file is searched to the upper directory until `/`.
 So you can put configuration file (`.svlint.toml`) on the repository root like `.gitignore`.
+Alternatively, for project-wide rules you can set the environment variable
+`SVLINT_CONFIG` to something like `/cad/projectFoo/teamBar.svlint.toml`.
 
 The example of configuration file is below:
 
@@ -90,6 +92,16 @@ If svlint is updated, `.svlint.toml` can be updated to the latest version by `sv
 
 All rules are [here](./RULES.md).
 Suggesting a new rule through [Issues](https://github.com/dalance/svlint/issues) or [Pull requests](https://github.com/dalance/svlint/pulls) is welcome.
+Some example rulesets, are available [here](https://github.com/DaveMcEwan/svlint-rulesets).
+
+If you need to turn off specific rules for a section, then you can use special comments:
+```
+...regular code...
+  /* svlint off legacy_always */
+always @* foo = bar; // this is special
+  /* svlint on legacy_always */
+...more regular code...
+```
 
 ### Plugin
 

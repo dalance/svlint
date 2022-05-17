@@ -19,27 +19,13 @@ impl Rule for PrefixModule {
             }
         };
         match node {
-            RefNode::ModuleIdentifier(x) => {
-                let id: Option<&Locate> = match unwrap_node!(*x, SimpleIdentifier) {
-                    Some(RefNode::SimpleIdentifier(id_)) => {
-                        unwrap_locate!(id_)
-                    }
-                    _ => None,
-                };
-
-                let is_prefixed: bool = match &id {
-                    Some(x) => syntax_tree
-                        .get_str(*x)
-                        .unwrap()
-                        .starts_with(&option.prefix_module),
-                    _ => false,
-                };
-
-                if is_prefixed {
-                    RuleResult::Pass
-                } else {
-                    RuleResult::Fail
-                }
+            RefNode::ModuleAnsiHeader(x) => {
+                require_prefix(unwrap_node!(*x, ModuleIdentifier),
+                               &syntax_tree, &option.prefix_module)
+            }
+            RefNode::ModuleNonansiHeader(x) => {
+                require_prefix(unwrap_node!(*x, ModuleIdentifier),
+                               &syntax_tree, &option.prefix_module)
             }
             _ => RuleResult::Pass,
         }
@@ -58,5 +44,35 @@ impl Rule for PrefixModule {
 
     fn reason(&self) -> String {
         String::from("Naming convention simplifies audit.")
+    }
+}
+
+fn require_prefix(
+    id: Option<RefNode>,
+    syntax_tree: &SyntaxTree,
+    prefix: &str,
+) -> RuleResult {
+    let loc: Option<&Locate> = match id {
+        Some(x) => match unwrap_node!(x, SimpleIdentifier) {
+            Some(RefNode::SimpleIdentifier(id_)) => {
+                unwrap_locate!(id_)
+            }
+            _ => None,
+        }
+        _ => None,
+    };
+
+    let is_prefixed: bool = match loc {
+        Some(x) => syntax_tree
+            .get_str(x)
+            .unwrap()
+            .starts_with(prefix),
+        _ => false,
+    };
+
+    if is_prefixed {
+        RuleResult::Pass
+    } else {
+        RuleResult::Fail
     }
 }

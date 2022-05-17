@@ -1,6 +1,6 @@
 [package]
 name = "svlint"
-version = "0.5.2-pre"
+version = "0.5.4-pre"
 authors = ["dalance@gmail.com"]
 repository = "https://github.com/dalance/svlint"
 keywords = ["lint", "verilog", "systemverilog"]
@@ -36,7 +36,7 @@ regex                   = "1.5"
 serde                   = "1.0"
 serde_derive            = "1.0"
 serde_regex             = "1.1"
-clap                    = {version = "3.0.14", features = ["derive"]}
+clap                    = {version = "3.1.18", features = ["derive"]}
 sv-parser               = "0.11.3"
 term                    = "0.7"
 toml                    = "0.5"
