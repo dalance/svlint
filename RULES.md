@@ -1792,6 +1792,42 @@ endmodule
 
 ```
 
+## style_keyword_datatype
+
+### Description
+
+keyword should be followed by a single space
+
+### Reason
+
+consistent style enhances readability
+
+### Pass example
+
+```SystemVerilog
+module M;
+  localparam bit A = 0;   // 1 space after `bit`.
+  localparam int B = 0;   // 1 space after `int`.
+  logic a;                // 1 space after `logic`.
+  reg b;                  // 1 space after `reg`.
+  wire b;                 // 1 space after `wire`.
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M;
+  localparam bit  A = 0;  // multiple spaces after `bit`.
+  localparam int
+    B = 0;                // newline after `int`.
+  logic // foo
+    a;                    // single-line comment after `logic`.
+  reg /* bar */ b;        // multi-line after `reg`.
+  wire        c;          // multiple spaces after `wire`.
+endmodule
+```
+
 ## style_keyword_end
 
 ### Description
