@@ -1561,7 +1561,7 @@ newline should be followed by a multiple of 2 spaces
 
 ### Reason
 
-Naming convention simplifies audit.
+consistent style enhances readability
 
 ### Pass example
 

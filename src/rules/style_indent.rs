@@ -53,6 +53,6 @@ impl Rule for StyleIndent {
     }
 
     fn reason(&self) -> String {
-        String::from("Naming convention simplifies audit.")
+        String::from("consistent style enhances readability")
     }
 }
