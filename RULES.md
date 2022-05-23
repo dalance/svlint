@@ -1553,6 +1553,66 @@ module a;
 endmodule
 ```
 
+## style_commaleading
+
+### Description
+
+comma should be followed by a single space (comma-leading format)
+
+### Reason
+
+consistent style enhances readability
+
+### Pass example
+
+```SystemVerilog
+module M
+#(bit FOO = 1 // comment
+, int BAR = 2 /* comment */
+, bit [31:0] BAZ = 2
+)
+( input  var logic i_abc // comment
+, output var logic o_ghi /* comment */
+);
+  assign {foo, bar} =
+    { i_abc
+    , 12'h345
+    , b_def     // comment
+    , 16'h3456  /* comment */
+    };
+  assign singleline2D = {{foo, bar}, {foo, bar}, {foo, bar}};
+  function foo
+  ( input a
+  , input b
+  );
+  endfunction
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+#( bit FOO = 1 // space after `#(` causes misalignment
+, int BAR = 2
+,  bit [31:0] BAZ = 2 // too many spaces after comma
+)
+(input  var logic i_abc // missing space after `(`
+,output var logic o_ghi // missing space after comma
+);
+  assign {foo, bar} = { // brace not followed by a single space
+      i_abc
+    ,12'h345 // missing space after `(`
+    ,  b_def // too many spaces after comma
+    };
+  function foo
+  (input a // missing space after `(`
+  ,  input b // too many spaces after comma
+  );
+  endfunction
+endmodule
+```
+
 ## style_indent
 
 ### Description
