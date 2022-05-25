@@ -148,10 +148,12 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
 
         ret
     } else {
-        println!(
-            "Config file '{}' is not found. Enable all rules",
-            opt.config.to_string_lossy()
-        );
+        if !opt.silent {
+            println!(
+                "Config file '{}' is not found. Enable all rules",
+                opt.config.to_string_lossy()
+            );
+        }
         Config::new().enable_all()
     };
 
