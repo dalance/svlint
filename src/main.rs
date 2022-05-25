@@ -11,7 +11,7 @@ use sv_parser::{parse_sv, Define, DefineText};
 use svlint::config::Config;
 use svlint::linter::Linter;
 use svlint::printer::Printer;
-use verilog_filelist_parser;
+use sv_filelist_parser;
 
 // -------------------------------------------------------------------------------------------------
 // Opt
@@ -312,7 +312,7 @@ fn search_config(config: &Path) -> Option<PathBuf> {
 fn parse_filelist(
     path: &Path,
 ) -> Result<(Vec<PathBuf>, Vec<PathBuf>, HashMap<String, Option<Define>>), Error> {
-    let filelist = match verilog_filelist_parser::parse_file(path) {
+    let filelist = match sv_filelist_parser::parse_file(path) {
         Ok(f) => f,
         Err(_) => {
             return Err(anyhow::anyhow!(
