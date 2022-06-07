@@ -2,6 +2,10 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.3...Unreleased) - ReleaseDate
 
+* [Changed] Swap verilog_filelist_parser [#171](https://github.com/dalance/svlint/pull/171)
+* [Added] Silent flag silences .toml not found message [#172](https://github.com/dalance/svlint/pull/172)
+* [Added] Add rules to check for whitespace/style consistency [#174](https://github.com/dalance/svlint/pull/174)
+
 ## [v0.5.3](https://github.com/dalance/svlint/compare/v0.5.2...v0.5.3) - 2022-05-12
 
 * [Fixed] control comment is not checked in linter.check
