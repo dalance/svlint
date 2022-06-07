@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.3...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.4...Unreleased) - ReleaseDate
+
+## [v0.5.4](https://github.com/dalance/svlint/compare/v0.5.3...v0.5.4) - 2022-06-07
 
 * [Changed] Swap verilog_filelist_parser [#171](https://github.com/dalance/svlint/pull/171)
 * [Added] Silent flag silences .toml not found message [#172](https://github.com/dalance/svlint/pull/172)
