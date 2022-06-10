@@ -6,12 +6,12 @@ use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
+use sv_filelist_parser;
 use sv_parser::Error as SvParserError;
 use sv_parser::{parse_sv, preprocess, Define, DefineText};
 use svlint::config::Config;
 use svlint::linter::Linter;
 use svlint::printer::Printer;
-use sv_filelist_parser;
 
 // -------------------------------------------------------------------------------------------------
 // Opt
