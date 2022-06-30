@@ -16,6 +16,8 @@ pub struct ConfigOption {
     #[serde(with = "serde_regex", default)]
     pub exclude_paths: Vec<Regex>,
 
+    #[serde(default = "default_indent")]
+    pub indent: usize,
     #[serde(default = "default_prefix_inout")]
     pub prefix_inout: String,
     #[serde(default = "default_prefix_input")]
@@ -56,6 +58,11 @@ fn default_as_true() -> bool {
 #[allow(dead_code)]
 fn default_as_false() -> bool {
     false
+}
+
+#[allow(dead_code)]
+fn default_indent() -> usize {
+    2
 }
 
 #[allow(dead_code)]
