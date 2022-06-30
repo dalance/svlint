@@ -1845,7 +1845,94 @@ endmodule
 
 ### Explanation
 
-TODO
+The consequences/purposes of this rule are a perhaps subtle, particulaly in how
+ it works with companion rules `default_nettype_none`, `explicit_case_default`,
+`explicit_if_else`, `style_indent`, and a guideline to avoid `for` within
+`always_ff`.
+
+In conjunction with these companion rules and guidelines, a nice consequence is
+that editing code after the fact is "safe", i.e. not error prone.
+Without `begin`/`end` adding another statement to a single-statement conditional
+block may be error prone.
+This is why coding styles for C-style languages often forbid writing
+`if (a) foo;`, instead requiring `if (a) { foo; }` - because it's easy to forget
+to add braces with an additional statement like `if (a) { foo; bar; }`.
+While a simple rule is to require the use of `begin`/`end` (or `{`/`}`), this
+introduces some visual noise.
+The goal is to guard programmers from making a simple and easy mistake.
+This rule, in conjunction with the companion rules, achieves the same goal using
+a different approach which provides additional nice properties.
+
+With a sequential block (marked by `begin` and `end`) you can assign to multiple
+signals in a leaf conditon which can easily result in difficult-to-comprehend
+logic, e.g.:
+```systemverilog
+always_ff @(posedge clk) begin
+  if (cond) begin
+    foo_q <= foo_d;       // Block was originally written for foo.
+    bar_q <= bar_d;       // This was added later.
+  end
+  bar_q <= bar_d;         // What happens to bar_q?
+end
+```
+Without a sequential block, you enforce that only one signal is assigned to per
+leaf condition.
+A nice consequence is that exactly one signal is updated each evaluation of the
+`always_ff` block is evaluated.
+IEEE1800-2017 specifies that if a signal is assigned to in an `always_ff` block,
+then it shall not be assigned to by any other block (compile error).
+
+An example with multiple signals in the `always_ff` is a ping-pong buffer (AKA
+shunt buffer, storage of a 2-entry fifo).
+Due to the construction, you can be sure that you never update both entries at
+ the same time (except on reset).
+```systemverilog
+  // Enforced exclusive updates, with reset and clockgate.
+  always_ff @(posedge clk)
+    if (rst) {ping_q, pong_q} <= '0;
+    else if (clkgate)
+      if (foo) ping_q <= data_q;
+      else     pong_q <= data_q;
+    else // Optional explicit else.
+      {ping_q, pong_q} <= {ping_q, pong_q};
+```
+
+Another example with multiple signals is an address decoder.
+Due to the construction, you can be sure that you aren't accidentally updating
+multiple registers on a write to one address.
+```systemverilog
+  // Enforced exclusivity of address decode.
+  always_ff @(posedge clk)
+    if (write)
+      case (addr)
+        123:        red_q   <= foo;
+        456:        blue_q  <= foo;
+        789:        green_q <= foo;
+        default:    black_q <= foo; // Optional explicit default.
+      endcase
+```
+
+When you don't need those exclusivity properties, only one signal should be
+updated per `always_ff`.
+That ensures that the code doesn't get too deep/complex/unintuitive, and
+drawing a logical diagram is straightforward.
+This is the expected form for most signals.
+```systemverilog
+  always_ff @(posedge clk)
+    if (rst)          ctrl_q <= '0;
+    else if (clkgate) ctrl_q <= ctrl_d;
+    else              ctrl_q <= ctrl_q; // Optional explicit else.
+
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 4.6 Determinisim
+  - 9.2.2.4 Sequential logic always_ff procedure
+  - 9.3.1 Sequential blocks
+  - 12.4 Conditional if-else statement
+  - 12.5 Case statement
+  - 12.7 Loop statements
+```
+
 
 ---
 ## `sequential_block_in_always_latch`
@@ -1906,6 +1993,517 @@ module a;
       default: d <= z;
     endcase
 endmodule
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_commaleading`
+
+### Hint
+
+comma should be followed by a single space (comma-leading format)
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module M
+#(bit FOO = 1 // comment
+, int BAR = 2 /* comment */
+, bit [31:0] BAZ = 2
+)
+( input  var logic i_abc // comment
+, output var logic o_ghi /* comment */
+);
+  assign {foo, bar} =
+    { i_abc
+    , 12'h345
+    , b_def     // comment
+    , 16'h3456  /* comment */
+    };
+  assign singleline2D = {{foo, bar}, {foo, bar}, {foo, bar}};
+  function foo
+  ( input a
+  , input b
+  );
+  endfunction
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+#( bit FOO = 1 // space after `#(` causes misalignment
+, int BAR = 2
+,  bit [31:0] BAZ = 2 // too many spaces after comma
+)
+(input  var logic i_abc // missing space after `(`
+,output var logic o_ghi // missing space after comma
+);
+  assign {foo, bar} = { // brace not followed by a single space
+      i_abc
+    ,12'h345 // missing space after `(`
+    ,  b_def // too many spaces after comma
+    };
+  function foo
+  (input a // missing space after `(`
+  ,  input b // too many spaces after comma
+  );
+  endfunction
+endmodule
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_indent`
+
+### Hint
+
+newline should be followed by a multiple of 2 spaces
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  if (a)
+    a = 0;
+  else
+    a = 1;
+  // comment
+/*
+  comment
+*/
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+ if (a)
+   a = 0;
+   else
+     a = 1;
+   // comment
+/*
+ comment
+   */
+endmodule
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_keyword_0or1space`
+
+### Hint
+
+keyword should be followed by a symbol or exactly 1 space
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module A;
+  function foo();
+    if (a)
+      return; // semicolon immediately after `return`.
+    else
+      return a; // 1 space then expression after `return`.
+  endfunction
+endmodule
+
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+  function foo();
+    if (a)
+      return  ; // multiple spaces after `return`.
+  endfunction
+endmodule
+
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_keyword_0space`
+
+### Hint
+
+keyword should be followed by no space before symbol
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module A;
+  always_comb
+    case (a)
+      123:
+        b = c;
+      default: // no space between `default` and colon.
+        b = d;
+    endcase
+  function foo ();
+    for (;;)
+      if (a) break; // no space between `break` and semicolon.
+  endfunction
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+  always_comb
+    case (a)
+      123:
+        b = c;
+      default : // space between `default` and colon.
+        b = d;
+    endcase
+  function foo ();
+    for (;;)
+      if (a) break  ; // spaces between `break` and semicolon.
+  endfunction
+endmodule
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_keyword_1or2space`
+
+### Hint
+
+keyword should be followed by exactly 1 or 2 spaces
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module M (
+  input a,
+  inout b,  // 1 space after `input` or `inout` keywords
+  output c, // makes port identifiers unaligned.
+
+  input  d,
+  inout  e, // 2 spaces after `input` or `inout` keywords
+  output f  // makes port identifiers aligned.
+);
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M (
+  input   a,
+  inout   b   // multiple spaces after `input` or `inout` keywords
+);
+endmodule
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_keyword_1space`
+
+### Hint
+
+keyword should be followed by a single space
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module M;                   // 1 space after `module`.
+  for (i = 0; i < 5; i++)   // 1 space after `for`.
+    assign foo = bar;       // 1 space after `assign`.
+  always_ff @(posedge clk)  // 1 space after `always_ff`.
+    if (a)                  // 1 space after `if`.
+      case (a)              // 1 space after `case`.
+        1: foo <= bar;
+      endcase
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module  M;                  // multiple spaces after `module`.
+  for(i = 0; i < 5; i++)    // no spaces after `for`.
+    assign  foo = bar;      // multiple spaces after `assign`.
+  always_ff@(posedge clk)   // no spaces after `always_ff`.
+    if  (a)                 // multiple spaces after `if`.
+      case(a)               // no spaces after `case`.
+        1: foo <= bar;
+      endcase
+endmodule
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_keyword_construct`
+
+### Hint
+
+keyword should be followed by newline or exactly 1 space
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module A;
+  always_comb a = b;  // 1 space after `always_comb`.
+  initial begin       // 1 space after `initial`.
+    foo = bar;
+  end
+  always_latch
+    if (a) b = c;     // newline after `always_latch`.
+    else d = e;       // 1 space after `else`.
+  final // 1 space then comment after `final`.
+    foo = bar;
+endmodule
+
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+  always_comb   a = b;  // multiple spaces after `always_comb`.
+  initial     begin       // multiple spaces after `initial`.
+    foo = bar;
+  end
+  always_latch
+    if (a) b = c;
+    else      d = e;  // multiple spaces after `else`.
+  final  // multiple spaces then comment after `final`.
+    foo = bar;
+endmodule
+
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_keyword_datatype`
+
+### Hint
+
+keyword should be followed by a single space
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  localparam bit A = 0;   // 1 space after `bit`.
+  localparam int B = 0;   // 1 space after `int`.
+  logic a;                // 1 space after `logic`.
+  reg b;                  // 1 space after `reg`.
+  wire b;                 // 1 space after `wire`.
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  localparam bit  A = 0;  // multiple spaces after `bit`.
+  localparam int
+    B = 0;                // newline after `int`.
+  logic // foo
+    a;                    // single-line comment after `logic`.
+  reg /* bar */ b;        // multi-line after `reg`.
+  wire        c;          // multiple spaces after `wire`.
+endmodule
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_keyword_end`
+
+### Hint
+
+keyword should be followed by newline, colon, or exactly 1 space
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module A ();
+  initial begin
+    if (foo) begin: l_foo
+      a = b;
+    end: l_foo           // colon immediately after `end`.
+
+    if (foo) begin
+      a = c;
+    end else begin       // 1 space after `end`.
+      a = d;
+    end
+//  ^^^ newline after `end`.
+  end // 1 space then comment after `end`.
+endmodule
+
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+  initial begin
+    if (foo) begin: l_foo
+      a = b;
+    end   : l_foo           // spaces between `end` and colon.
+
+    if (foo) begin
+      a = c;
+    end   else begin       // multiple spaces after `end`.
+      a = d;
+    end
+  end   // multiple spaces then comment after `end`.
+endmodule
+
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_keyword_maybelabel`
+
+### Hint
+
+keyword should be followed by newline or colon, not spaces
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module A;
+endmodule: A // colon immediately after `endmodule`
+package A;
+    function foo();
+    endfunction
+//  ^^^^^^^^^^^ newline after `endfunction`
+endpackage // 1 space then comment after `endpackage`
+
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+endmodule  : A // spaces immediately after `endmodule`
+package A;
+endpackage  // multiple spaces then comment after `endpackage`
+interface A;
+endinterface interface B; // space instead of newline after `endinterface`
+endinterface
+```
+
+### Explanation
+
+TODO
+
+---
+## `style_keyword_newline`
+
+### Hint
+
+keyword should be followed by a newline
+
+### Reason
+
+consistent style enhances readability
+
+### Pass Example
+
+```SystemVerilog
+module A;
+  generate
+    case (foo)
+      123: a = b;
+    endcase
+//  ^^^^^^^ newline after `endcase`
+  endgenerate // 1 space then comment after `endgenerate`
+endmodule
+
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+  generate
+    case (foo)
+      123: a = b;
+    endcase if (foo) a = b; // no newline after `endcase`
+  endgenerate   // multiple spaces then comment after `endgenerate`
+endmodule
+
 ```
 
 ### Explanation
