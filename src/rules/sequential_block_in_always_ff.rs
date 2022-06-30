@@ -44,17 +44,17 @@ impl Rule for SequentialBlockInAlwaysFf {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("begin/end forbidden within `always_ff` constuct")
+        String::from("Keywords `begin` and `end` are forbidden within `always_ff`.")
     }
 
     fn reason(&self) -> String {
-        String::from("prevent introducing sequential dependencies")
+        String::from("Sequential blocks within `always_ff` may encourage overly-complex code.")
     }
 
     fn explanation(&self) -> String {
         String::from(indoc!{"
-        The consequences/purposes of this rule are a perhaps subtle, particulaly in how
-         it works with companion rules `default_nettype_none`, `explicit_case_default`,
+        The consequences/purposes of this rule are perhaps subtle, particulaly in how
+        it works with companion rules `default_nettype_none`, `explicit_case_default`,
         `explicit_if_else`, `style_indent`, and a guideline to avoid `for` within
         `always_ff`.
 
@@ -65,11 +65,11 @@ impl Rule for SequentialBlockInAlwaysFf {
         This is why coding styles for C-style languages often forbid writing
         `if (a) foo;`, instead requiring `if (a) { foo; }` - because it's easy to forget
         to add braces with an additional statement like `if (a) { foo; bar; }`.
-        While a simple rule is to require the use of `begin`/`end` (or `{`/`}`), this
-        introduces some visual noise.
+        While a simple rule is to require the use of `begin` and `end` (or `{` and `}`),
+        this introduces visual noise.
         The goal is to guard programmers from making a simple and easy mistake.
         This rule, in conjunction with the companion rules, achieves the same goal using
-        a different approach which provides additional nice properties.
+        a different approach, in addition to providing other nice properties.
 
         With a sequential block (marked by `begin` and `end`) you can assign to multiple
         signals in a leaf conditon which can easily result in difficult-to-comprehend
@@ -83,8 +83,8 @@ impl Rule for SequentialBlockInAlwaysFf {
           bar_q <= bar_d;         // What happens to bar_q?
         end
         ```
-        Without a sequential block, you enforce that only one signal is assigned to per
-        leaf condition.
+        By forbidding sequential blocks, you enforce that only one signal is assigned to
+        per leaf condition.
         A nice consequence is that exactly one signal is updated each evaluation of the
         `always_ff` block is evaluated.
         IEEE1800-2017 specifies that if a signal is assigned to in an `always_ff` block,
@@ -122,7 +122,7 @@ impl Rule for SequentialBlockInAlwaysFf {
 
         When you don't need those exclusivity properties, only one signal should be
         updated per `always_ff`.
-        That ensures that the code doesn't get too deep/complex/unintuitive, and
+        That ensures that the code doesn't get too deep/complex/unintuitive and
         drawing a logical diagram is straightforward.
         This is the expected form for most signals.
         ```systemverilog
@@ -130,7 +130,7 @@ impl Rule for SequentialBlockInAlwaysFf {
             if (rst)          ctrl_q <= '0;
             else if (clkgate) ctrl_q <= ctrl_d;
             else              ctrl_q <= ctrl_q; // Optional explicit else.
-
+        ```
 
         The most relevant clauses of IEEE1800-2017 are:
           - 4.6 Determinisim
@@ -139,7 +139,6 @@ impl Rule for SequentialBlockInAlwaysFf {
           - 12.4 Conditional if-else statement
           - 12.5 Case statement
           - 12.7 Loop statements
-        ```
         "})
     }
 }
