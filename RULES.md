@@ -1918,14 +1918,15 @@ then it shall not be assigned to by any other block (compile error).
 An example with multiple signals in the `always_ff` is a ping-pong buffer (AKA
 shunt buffer, storage of a 2-entry fifo).
 Due to the construction, you can be sure that you never update both entries at
- the same time (except on reset).
+the same time, except when that is clearly explicit.
 ```systemverilog
   // Enforced exclusive updates, with reset and clockgate.
   always_ff @(posedge clk)
-    if (rst) {ping_q, pong_q} <= '0;
+    if (rst)
+      {ping_q, pong_q} <= '0; // Assignment to multiple signals is explicit.
     else if (clkgate)
-      if (foo) ping_q <= data_q;
-      else     pong_q <= data_q;
+      if (foo) ping_q <= foo;
+      else     pong_q <= foo;
     else // Optional explicit else.
       {ping_q, pong_q} <= {ping_q, pong_q};
 ```
