@@ -1811,6 +1811,18 @@ tool for digital synchronous logic will produce a netlist without sequential
 dependencies.
 That can lead to a mismatch between simulation and synthesis.
 
+See also:
+  - **style_indent** - Useful companion rule.
+  - **sequential_block_in_always_ff** - Similar rule, different purpose.
+  - **sequential_block_in_always_latch** - Similar rule, different purpose.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 4.6 Determinisim
+  - 9.2.2.2 Combinational logic always_comb procedure
+  - 9.3.1 Sequential blocks
+  - 10.3 Continuous assignments
+  - 10.4 Procedural assignments
+
 
 ---
 ## `sequential_block_in_always_ff`
@@ -1879,8 +1891,8 @@ endmodule
 ### Explanation
 
 The consequences/purposes of this rule are perhaps subtle, particulaly in how
-it works with companion rules `default_nettype_none`, `explicit_case_default`,
-`explicit_if_else`, `style_indent`, and a guideline to avoid `for` within
+it works with companion rules **default_nettype_none**, **explicit_case_default**,
+**explicit_if_else**, **style_indent**, and a guideline to avoid `for` within
 `always_ff`.
 
 In conjunction with these companion rules and guidelines, a nice consequence is
@@ -1958,10 +1970,19 @@ This is the expected form for most signals.
     else              ctrl_q <= ctrl_q; // Optional explicit else.
 ```
 
+See also:
+  - **default_nettype_none** - Useful companion rule.
+  - **explicit_case_default** - Useful companion rule.
+  - **explicit_if_else** - Useful companion rule.
+  - **style_indent** - Useful companion rule.
+  - **sequential_block_in_always_comb** - Similar rule, different purpose.
+  - **sequential_block_in_always_latch** - Similar rule, different purpose.
+
 The most relevant clauses of IEEE1800-2017 are:
   - 4.6 Determinisim
   - 9.2.2.4 Sequential logic always_ff procedure
   - 9.3.1 Sequential blocks
+  - 9.4.2 Event control
   - 12.4 Conditional if-else statement
   - 12.5 Case statement
   - 12.7 Loop statements
@@ -1972,11 +1993,11 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-begin/end forbidden within `always_latch` constuct
+Keywords `begin` and `end` are forbidden within `always_latch`.
 
 ### Reason
 
-prevent introducing sequential dependencies
+Sequential blocks within `always_latch` may encourage overly-complex code.
 
 ### Pass Example
 
@@ -2030,7 +2051,29 @@ endmodule
 
 ### Explanation
 
-TODO
+The explanation of **sequential_block_in_always_ff**, and much of the explanation
+of **sequential_block_in_always_comb**, also applies to this rule.
+Main points are that avoiding `begin`/`end` helps protect the programmer against
+simple mistakes, provides exclusivity properties by construction, and avoids
+restricting simulator scheduling decisions.
+
+See also:
+  - **default_nettype_none** - Useful companion rule.
+  - **explicit_case_default** - Useful companion rule.
+  - **explicit_if_else** - Useful companion rule.
+  - **style_indent** - Useful companion rule.
+  - **sequential_block_in_always_comb** - Similar rule, different purpose.
+  - **sequential_block_in_always_ff** - Similar rule, different purpose.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 4.6 Determinisim
+  - 9.2.2.3 Latched logic always_latch procedure
+  - 9.3.1 Sequential blocks
+  - 9.4.2 Event control
+  - 12.4 Conditional if-else statement
+  - 12.5 Case statement
+  - 12.7 Loop statements
+
 
 ---
 ## `style_commaleading`

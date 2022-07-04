@@ -54,8 +54,8 @@ impl Rule for SequentialBlockInAlwaysFf {
     fn explanation(&self) -> String {
         String::from(indoc!{"
         The consequences/purposes of this rule are perhaps subtle, particulaly in how
-        it works with companion rules `default_nettype_none`, `explicit_case_default`,
-        `explicit_if_else`, `style_indent`, and a guideline to avoid `for` within
+        it works with companion rules **default_nettype_none**, **explicit_case_default**,
+        **explicit_if_else**, **style_indent**, and a guideline to avoid `for` within
         `always_ff`.
 
         In conjunction with these companion rules and guidelines, a nice consequence is
@@ -132,6 +132,14 @@ impl Rule for SequentialBlockInAlwaysFf {
             else if (clkgate) ctrl_q <= ctrl_d;
             else              ctrl_q <= ctrl_q; // Optional explicit else.
         ```
+
+        See also:
+          - **default_nettype_none** - Useful companion rule.
+          - **explicit_case_default** - Useful companion rule.
+          - **explicit_if_else** - Useful companion rule.
+          - **style_indent** - Useful companion rule.
+          - **sequential_block_in_always_comb** - Similar rule, different purpose.
+          - **sequential_block_in_always_latch** - Similar rule, different purpose.
 
         The most relevant clauses of IEEE1800-2017 are:
           - 4.6 Determinisim
