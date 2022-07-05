@@ -6,12 +6,12 @@ use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
+use sv_filelist_parser;
 use sv_parser::Error as SvParserError;
-use sv_parser::{parse_sv, Define, DefineText};
+use sv_parser::{parse_sv, preprocess, Define, DefineText};
 use svlint::config::Config;
 use svlint::linter::Linter;
 use svlint::printer::Printer;
-use sv_filelist_parser;
 
 // -------------------------------------------------------------------------------------------------
 // Opt
@@ -91,6 +91,10 @@ pub struct Opt {
     /// Prints data from filelists
     #[clap(long = "dump-filelist")]
     pub dump_filelist: bool,
+
+    /// Print preprocessor output instead of performing checks
+    #[clap(short = 'E')]
+    pub preprocess_only: bool,
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -221,21 +225,34 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 
     for path in &files {
         let mut pass = true;
-        match parse_sv(&path, &defines, &includes, opt.ignore_include, false) {
-            Ok((syntax_tree, new_defines)) => {
-                for node in syntax_tree.into_iter().event() {
-                    for failed in linter.check(&syntax_tree, &node) {
-                        pass = false;
-                        if !opt.silent {
-                            printer.print_failed(&failed, opt.single, opt.github_actions)?;
+        if opt.preprocess_only {
+            match preprocess(&path, &defines, &includes, false, opt.ignore_include) {
+                Ok((text, new_defines)) => {
+                    print!("{}", text.text());
+                    defines = new_defines;
+                }
+                Err(x) => {
+                    print_parse_error(&mut printer, x, opt.single)?;
+                    pass = false;
+                }
+            }
+        } else {
+            match parse_sv(&path, &defines, &includes, opt.ignore_include, false) {
+                Ok((syntax_tree, new_defines)) => {
+                    for node in syntax_tree.into_iter().event() {
+                        for failed in linter.check(&syntax_tree, &node) {
+                            pass = false;
+                            if !opt.silent {
+                                printer.print_failed(&failed, opt.single, opt.github_actions)?;
+                            }
                         }
                     }
+                    defines = new_defines;
                 }
-                defines = new_defines;
-            }
-            Err(x) => {
-                print_parse_error(&mut printer, x, opt.single)?;
-                pass = false;
+                Err(x) => {
+                    print_parse_error(&mut printer, x, opt.single)?;
+                    pass = false;
+                }
             }
         }
 
