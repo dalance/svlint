@@ -137,10 +137,11 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
             .with_context(|| format!("failed to open '{}'", config.to_string_lossy()))?;
         let mut s = String::new();
         let _ = f.read_to_string(&mut s);
-        let ret = toml::from_str(&s)
+        let mut ret: Config = toml::from_str(&s)
             .with_context(|| format!("failed to parse toml '{}'", config.to_string_lossy()))?;
 
         if opt.update_config {
+            ret.migrate();
             let mut f = OpenOptions::new()
                 .write(true)
                 .open(&config)

@@ -77,7 +77,9 @@ fn main() {
         body.push_str(&format!("    pub {}: bool,\n", file_name));
     }
     for (org_name, _, _) in RENAMED_RULES {
-        body.push_str(&format!("    #[serde(default = \"default_as_false\")]\n"));
+        body.push_str(&format!(
+            "    #[serde(default = \"default_as_false\", skip_serializing)]\n"
+        ));
         body.push_str(&format!("    pub {}: bool,\n", org_name));
     }
 
@@ -103,6 +105,7 @@ pub struct ConfigRules {{
     let mut gen_rules_body = String::new();
     let mut gen_all_rules_body = String::new();
     let mut check_rename_body = String::new();
+    let mut migrate_body = String::new();
     for (file_name, struct_name) in &rules {
         enable_all_body.push_str(&format!("        self.rules.{} = true;\n", file_name));
         gen_rules_body.push_str(&format!("        if self.rules.{} {{\n", file_name));
@@ -129,6 +132,10 @@ pub struct ConfigRules {{
             org_name, file_name
         ));
         check_rename_body.push_str(&format!("        }}\n"));
+        migrate_body.push_str(&format!(
+            "        self.rules.{} = self.rules.{};\n",
+            file_name, org_name
+        ));
     }
 
     let str_impl_config = format!(
@@ -160,8 +167,12 @@ impl Config {{
 {}
         ret
     }}
+
+    pub fn migrate(&mut self) {{
+{}
+    }}
 }}"##,
-        enable_all_body, gen_rules_body, gen_all_rules_body, check_rename_body
+        enable_all_body, gen_rules_body, gen_all_rules_body, check_rename_body, migrate_body
     );
     let _ = write!(out_impl_config, "{}", str_impl_config);
 
