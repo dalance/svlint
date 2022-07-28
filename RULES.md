@@ -491,11 +491,11 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-`function` must be `automatic`
+Add the `automatic` lifetime specifier to function.
 
 ### Reason
 
-this causes mismatch between simulation and synthesis
+Static lifetime of function items causes a simulation/synthesis mismatch.
 
 ### Pass Example
 
@@ -581,7 +581,20 @@ endmodule
 
 ### Explanation
 
-TODO
+Functions defined within a module, interface, program, or package default to
+being static, with all declared items being statically allocated.
+These items shall be shared across all uses of the function executing
+concurrently.
+This causes a mismatch between simulation and synthesis.
+
+Functions can be defined to use automatic storage by using the `automatic`
+keyword as part of the function declaration, i.e. in simulation each use of a
+function is allocated dynamically for each concurrent function call.
+This behavior can be accurately inferred in synthesis.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 13.4.2 Static and automatic functions
+
 
 ---
 ## `generate_case_with_label`
