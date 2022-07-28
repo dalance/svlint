@@ -1,6 +1,7 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
+use indoc::indoc;
 
 #[derive(Default)]
 pub struct ForWithBegin;
@@ -48,14 +49,25 @@ impl Rule for ForWithBegin {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("multiline `for` statement must have `begin`")
+        String::from("Add `begin`/`end` around multi-line `for` statement.")
     }
 
     fn reason(&self) -> String {
-        String::from("if there is not `begin`, the second statement are confusing")
+        String::from("Without `begin`/`end`, the loop statement may be confusing.")
     }
 
     fn explanation(&self) -> String {
-        String::from("TODO")
+        String::from(indoc!{"
+        This rule is to help prevent a common class of coding mistake, where a future
+        maintainer attempts to add further statements to the loop, but accidentally
+        writes something different.
+
+        See also:
+          - **if_with_begin** - Useful companion rule.
+          - **style_indent** - Useful companion rule.
+
+        The most relevant clauses of IEEE1800-2017 are:
+          - 12.7 Loop statements
+        "})
     }
 }
