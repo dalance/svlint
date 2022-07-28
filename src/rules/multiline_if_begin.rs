@@ -4,9 +4,9 @@ use sv_parser::{unwrap_locate, NodeEvent, RefNode, StatementItem, StatementOrNul
 use indoc::indoc;
 
 #[derive(Default)]
-pub struct IfWithBegin;
+pub struct MultilineIfBegin;
 
-impl Rule for IfWithBegin {
+impl Rule for MultilineIfBegin {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
@@ -95,7 +95,7 @@ impl Rule for IfWithBegin {
     }
 
     fn name(&self) -> String {
-        String::from("if_with_begin")
+        String::from("multiline_if_begin")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
@@ -113,7 +113,7 @@ impl Rule for IfWithBegin {
         accidentally writes something different.
 
         See also:
-          - **for_with_begin** - Useful companion rule.
+          - **multiline_for_begin** - Useful companion rule.
           - **style_indent** - Useful companion rule.
 
         The most relevant clauses of IEEE1800-2017 are:

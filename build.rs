@@ -17,6 +17,8 @@ const RENAMED_RULES: &[(&str, &str, &str)] = &[
         "genvar_declaration_in_loop",
         "GenvarDeclarationInLoop",
     ),
+    ("if_with_begin", "multiline_if_begin", "MultilineIfBegin"),
+    ("for_with_begin", "multiline_for_begin", "MultilineForBegin"),
 ];
 
 fn main() {

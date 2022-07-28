@@ -442,56 +442,6 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
-## `for_with_begin`
-
-### Hint
-
-Add `begin`/`end` around multi-line `for` statement.
-
-### Reason
-
-Without `begin`/`end`, the loop statement may be confusing.
-
-### Pass Example
-
-```SystemVerilog
-module A;
-always_comb begin
-    for (int a=0; a<10; a++) begin
-        a = 0;
-    end
-    for (int a=0; a<10; a++) a = 0;
-end
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A;
-always_comb begin
-    for (int a=0; a<10; a++)
-        a = 0;
-    for (int a=0; a<10; a++) a = 0;
-end
-endmodule
-```
-
-### Explanation
-
-This rule is to help prevent a common class of coding mistake, where a future
-maintainer attempts to add further statements to the loop, but accidentally
-writes something different.
-
-See also:
-  - **if_with_begin** - Useful companion rule.
-  - **style_indent** - Useful companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 12.7 Loop statements
-
-
----
 ## `function_same_as_system_function`
 
 ### Hint
@@ -891,88 +841,6 @@ endmodule
 TODO
 
 ---
-## `if_with_begin`
-
-### Hint
-
-Add `begin`/`end` around multi-line `if` statement.
-
-### Reason
-
-Without `begin`/`end`, the conditional statement may be confusing.
-
-### Pass Example
-
-```SystemVerilog
-module A;
-always_comb begin
-    if (a) begin
-        a = 0;
-    end
-
-    if (a) begin
-        a = 0;
-    end else if (a) begin
-        a = 0;
-    end
-
-    if (a) begin
-        a = 0;
-    end else if (a) begin
-        a = 0;
-    end else begin
-        a = 0;
-    end
-
-    if (a) a = 0;
-    else if (a) a = 0;
-    else a = 0;
-end
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A;
-always_comb begin
-    if (a)
-        a = 0;
-
-    if (a) begin
-        a = 0;
-    end else if (a)
-        a = 0;
-
-    if (a) begin
-        a = 0;
-    end else if (a) begin
-        a = 0;
-    end else
-        a = 0;
-
-    if (a) a = 0;
-    else if (a) a = 0;
-    else a = 0;
-end
-endmodule
-```
-
-### Explanation
-
-This rule is to help prevent a common class of coding mistake, where a future
-maintainer attempts to add further statements to the conditional block, but
-accidentally writes something different.
-
-See also:
-  - **for_with_begin** - Useful companion rule.
-  - **style_indent** - Useful companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 12.4 Conditional if-else statement
-
-
----
 ## `inout_with_tri`
 
 ### Hint
@@ -1333,6 +1201,138 @@ package FooBar; endpackage
 ### Explanation
 
 TODO
+
+---
+## `multiline_for_begin`
+
+### Hint
+
+Add `begin`/`end` around multi-line `for` statement.
+
+### Reason
+
+Without `begin`/`end`, the loop statement may be confusing.
+
+### Pass Example
+
+```SystemVerilog
+module A;
+always_comb begin
+    for (int a=0; a<10; a++) begin
+        a = 0;
+    end
+    for (int a=0; a<10; a++) a = 0;
+end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+always_comb begin
+    for (int a=0; a<10; a++)
+        a = 0;
+    for (int a=0; a<10; a++) a = 0;
+end
+endmodule
+```
+
+### Explanation
+
+This rule is to help prevent a common class of coding mistake, where a future
+maintainer attempts to add further statements to the loop, but accidentally
+writes something different.
+
+See also:
+  - **multiline_if_begin** - Useful companion rule.
+  - **style_indent** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 12.7 Loop statements
+
+
+---
+## `multiline_if_begin`
+
+### Hint
+
+Add `begin`/`end` around multi-line `if` statement.
+
+### Reason
+
+Without `begin`/`end`, the conditional statement may be confusing.
+
+### Pass Example
+
+```SystemVerilog
+module A;
+always_comb begin
+    if (a) begin
+        a = 0;
+    end
+
+    if (a) begin
+        a = 0;
+    end else if (a) begin
+        a = 0;
+    end
+
+    if (a) begin
+        a = 0;
+    end else if (a) begin
+        a = 0;
+    end else begin
+        a = 0;
+    end
+
+    if (a) a = 0;
+    else if (a) a = 0;
+    else a = 0;
+end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+always_comb begin
+    if (a)
+        a = 0;
+
+    if (a) begin
+        a = 0;
+    end else if (a)
+        a = 0;
+
+    if (a) begin
+        a = 0;
+    end else if (a) begin
+        a = 0;
+    end else
+        a = 0;
+
+    if (a) a = 0;
+    else if (a) a = 0;
+    else a = 0;
+end
+endmodule
+```
+
+### Explanation
+
+This rule is to help prevent a common class of coding mistake, where a future
+maintainer attempts to add further statements to the conditional block, but
+accidentally writes something different.
+
+See also:
+  - **multiline_for_begin** - Useful companion rule.
+  - **style_indent** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 12.4 Conditional if-else statement
+
 
 ---
 ## `non_ansi_module`
