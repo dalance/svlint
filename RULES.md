@@ -1,7 +1,8 @@
-# Rules
-
 This document is generated from the rules' source code (`svlint/src/rules/*.rs`)
 and testcases (`testcases/(fail|pass)/*.sv`) using the `mdgen` utility.
+
+# Rules
+
 Each rule is documented with 5 pieces of information:
 - Hint: A brief instruction on how to modify failing SystemVerilog.
   Also displayed in supported editors using [svls](https://github.com/dalance/svls).
@@ -641,6 +642,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `generate_for_with_label`
 
@@ -674,6 +676,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `generate_if_with_label`
@@ -721,6 +724,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `generate_keyword_forbidden`
 
@@ -751,6 +755,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `generate_keyword_required`
@@ -797,6 +802,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `genvar_declaration_in_loop`
 
@@ -830,6 +836,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `genvar_declaration_out_loop`
@@ -865,6 +872,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `inout_with_tri`
 
@@ -898,6 +906,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `input_with_var`
 
@@ -930,6 +939,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `interface_port_with_modport`
@@ -966,6 +976,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `legacy_always`
 
@@ -998,6 +1009,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `level_sensitive_always`
@@ -1040,6 +1052,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `localparam_explicit_type`
 
@@ -1070,6 +1083,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `localparam_type_twostate`
@@ -1107,6 +1121,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `loop_variable_declaration`
@@ -1146,6 +1161,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `lowercamelcase_interface`
 
@@ -1172,6 +1188,7 @@ interface FooBar; endinterface
 ### Explanation
 
 TODO
+
 
 ---
 ## `lowercamelcase_module`
@@ -1200,6 +1217,7 @@ module FooBar; endmodule
 
 TODO
 
+
 ---
 ## `lowercamelcase_package`
 
@@ -1226,6 +1244,7 @@ package FooBar; endpackage
 ### Explanation
 
 TODO
+
 
 ---
 ## `multiline_for_begin`
@@ -1396,6 +1415,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `non_blocking_assignment_in_always_comb`
 
@@ -1431,6 +1451,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `output_with_var`
 
@@ -1464,6 +1485,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `parameter_explicit_type`
 
@@ -1492,6 +1514,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `parameter_in_package`
@@ -1523,6 +1546,7 @@ endpackage
 ### Explanation
 
 TODO
+
 
 ---
 ## `parameter_type_twostate`
@@ -1563,6 +1587,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `prefix_inout`
 
@@ -1597,6 +1622,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `prefix_input`
@@ -1633,6 +1659,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `prefix_instance`
 
@@ -1664,6 +1691,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `prefix_interface`
 
@@ -1690,6 +1718,7 @@ interface noPrefix; endinterface
 ### Explanation
 
 TODO
+
 
 ---
 ## `prefix_module`
@@ -1720,6 +1749,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `prefix_output`
@@ -1756,6 +1786,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `prefix_package`
 
@@ -1782,6 +1813,7 @@ package noPrefix; endpackage
 ### Explanation
 
 TODO
+
 
 ---
 ## `priority_keyword`
@@ -1821,6 +1853,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `sequential_block_in_always_comb`
@@ -2248,6 +2281,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `style_indent`
 
@@ -2293,6 +2327,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `style_keyword_0or1space`
 
@@ -2333,6 +2368,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `style_keyword_0space`
@@ -2385,6 +2421,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `style_keyword_1or2space`
 
@@ -2424,6 +2461,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `style_keyword_1space`
@@ -2467,6 +2505,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `style_keyword_construct`
@@ -2517,6 +2556,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `style_keyword_datatype`
 
@@ -2557,6 +2597,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `style_keyword_end`
@@ -2612,6 +2653,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `style_keyword_maybelabel`
 
@@ -2651,6 +2693,7 @@ endinterface
 ### Explanation
 
 TODO
+
 
 ---
 ## `style_keyword_newline`
@@ -2694,6 +2737,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `tab_character`
 
@@ -2724,6 +2768,7 @@ endmodule
 ### Explanation
 
 TODO
+
 
 ---
 ## `unique0_keyword`
@@ -2764,6 +2809,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `unique_keyword`
 
@@ -2803,6 +2849,7 @@ endmodule
 
 TODO
 
+
 ---
 ## `uppercamelcase_interface`
 
@@ -2829,6 +2876,7 @@ interface fooBar; endinterface
 ### Explanation
 
 TODO
+
 
 ---
 ## `uppercamelcase_module`
@@ -2857,6 +2905,7 @@ module fooBar; endmodule
 
 TODO
 
+
 ---
 ## `uppercamelcase_package`
 
@@ -2883,6 +2932,7 @@ package fooBar; endpackage
 ### Explanation
 
 TODO
+
 
 ---
 ## `wire_reg`
@@ -2916,4 +2966,5 @@ endmodule
 ### Explanation
 
 TODO
+
 

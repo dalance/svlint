@@ -62,8 +62,4 @@ impl Rule for LocalparamTypeTwostate {
     fn reason(&self) -> String {
         String::from("design constants should not contain X or Z bits.")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

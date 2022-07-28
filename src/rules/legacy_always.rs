@@ -35,8 +35,4 @@ impl Rule for LegacyAlways {
     fn reason(&self) -> String {
         String::from("`always` can't detect blocking/non-blocking mistake")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

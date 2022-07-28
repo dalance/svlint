@@ -8,30 +8,28 @@ mod rules;
 use crate::config::{Config, ConfigOption};
 use std::fs::File;
 use std::io::{BufReader, Read};
-use indoc::indoc;
+
+fn file_contents(path: &str) -> String {
+    let file: File = File::open(path).unwrap();
+    let mut buf_reader: BufReader<File> = BufReader::new(file);
+    let mut contents: String = String::new();
+    buf_reader.read_to_string(&mut contents).unwrap();
+
+    contents
+}
 
 #[cfg_attr(tarpaulin, skip)]
 pub fn main() {
     let rules = Config::gen_all_rules();
 
-    println!(indoc!{"
-    # Rules
+    let p: String = format!("md/manual-introduction.md");
+    println!("{}\n", file_contents(&p));
 
-    This document is generated from the rules' source code (`svlint/src/rules/*.rs`)
-    and testcases (`testcases/(fail|pass)/*.sv`) using the `mdgen` utility.
-    Each rule is documented with 5 pieces of information:
-    - Hint: A brief instruction on how to modify failing SystemVerilog.
-      Also displayed in supported editors using [svls](https://github.com/dalance/svls).
-    - Reason: A one sentence explanation of the rule's purpose.
-      Also displayed in supported editors using [svls](https://github.com/dalance/svls).
-    - Pass Example: A valid piece of SystemVerilog which is known to pass the rule.
-      Ideally, this will show an example of best-practice.
-    - Fail Example: A valid piece of SystemVerilog which is known to fail the rule.
-      In some cases the code shows multiple commented examples.
-    - Explanation: A full explanation of the rule's purpose with references to any
-      other relevant information sources.
-    "});
+    // TODO: manual-classes
+    // TODO: classes-* via build.rs to extract list of all rules belonging to each class.
 
+    let p: String = format!("md/manual-rules.md");
+    println!("{}\n", file_contents(&p));
     for rule in rules {
         println!("---");
         println!("## `{}`\n", rule.name());
@@ -43,20 +41,15 @@ pub fn main() {
         println!("{}\n", rule.reason());
 
         println!("### Pass Example\n");
-        let f = File::open(format!("testcases/pass/{}.sv", rule.name())).unwrap();
-        let mut f = BufReader::new(f);
-        let mut s = String::new();
-        let _ = f.read_to_string(&mut s);
-        println!("```SystemVerilog\n{}```\n", s);
+        let p: String = format!("testcases/pass/{}.sv", rule.name());
+        println!("```SystemVerilog\n{}```\n", file_contents(&p));
 
         println!("### Fail Example\n");
-        let f = File::open(format!("testcases/fail/{}.sv", rule.name())).unwrap();
-        let mut f = BufReader::new(f);
-        let mut s = String::new();
-        let _ = f.read_to_string(&mut s);
-        println!("```SystemVerilog\n{}```\n", s);
+        let p: String = format!("testcases/fail/{}.sv", rule.name());
+        println!("```SystemVerilog\n{}```\n", file_contents(&p));
 
         println!("### Explanation\n");
-        println!("{}\n", rule.explanation());
+        let p: String = format!("md/explanation-{}.md", rule.name());
+        println!("{}\n", file_contents(&p));
     }
 }

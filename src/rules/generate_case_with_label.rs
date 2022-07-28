@@ -81,8 +81,4 @@ impl Rule for GenerateCaseWithLabel {
     fn reason(&self) -> String {
         String::from("the hierarchiral path can't be determined")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

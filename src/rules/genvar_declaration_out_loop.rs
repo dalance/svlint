@@ -42,8 +42,4 @@ impl Rule for GenvarDeclarationOutLoop {
     fn reason(&self) -> String {
         String::from("some tools don't support `genvar` declaration in loop")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

@@ -37,8 +37,4 @@ impl Rule for LoopVariableDeclaration {
     fn reason(&self) -> String {
         String::from("the scope of variable should be minimized")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

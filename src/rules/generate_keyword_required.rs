@@ -59,8 +59,4 @@ impl Rule for GenerateKeywordRequired {
     fn reason(&self) -> String {
         String::from("some tools don't support `generate`/`endgenerate` omitting")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

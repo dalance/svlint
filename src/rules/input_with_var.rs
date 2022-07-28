@@ -47,8 +47,4 @@ impl Rule for InputWithVar {
     fn reason(&self) -> String {
         String::from("`input wire` can be assigned by mistake. `input logic` becomes error with `default nettype none` because it doesn't have net type.")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

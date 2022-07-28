@@ -35,8 +35,4 @@ impl Rule for NonAnsiModule {
     fn reason(&self) -> String {
         String::from("non-ANSI-style has duplicated port declaration")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

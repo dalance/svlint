@@ -35,8 +35,4 @@ impl Rule for GenerateKeywordForbidden {
     fn reason(&self) -> String {
         String::from("")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

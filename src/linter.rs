@@ -23,7 +23,6 @@ pub trait Rule: Sync + Send {
     fn name(&self) -> String;
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
-    fn explanation(&self) -> String;
 }
 
 pub struct Linter {

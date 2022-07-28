@@ -84,8 +84,4 @@ impl Rule for StyleKeyword0Space {
     fn reason(&self) -> String {
         String::from("consistent style enhances readability")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

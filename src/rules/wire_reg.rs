@@ -36,8 +36,4 @@ impl Rule for WireReg {
     fn reason(&self) -> String {
         String::from("`logic` can detect multi-drive")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

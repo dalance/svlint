@@ -43,8 +43,4 @@ impl Rule for ParameterInPackage {
     fn reason(&self) -> String {
         String::from("some tools can't take `parameter` in `package`")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

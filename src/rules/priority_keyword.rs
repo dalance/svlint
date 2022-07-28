@@ -35,8 +35,4 @@ impl Rule for PriorityKeyword {
     fn reason(&self) -> String {
         String::from("this causes mismatch between simulation and synthesis")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }

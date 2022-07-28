@@ -1,7 +1,6 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
-use indoc::indoc;
 
 #[derive(Default)]
 pub struct MultilineIfBegin;
@@ -104,20 +103,5 @@ impl Rule for MultilineIfBegin {
 
     fn reason(&self) -> String {
         String::from("Without `begin`/`end`, the conditional statement may be confusing.")
-    }
-
-    fn explanation(&self) -> String {
-        String::from(indoc!{"
-        This rule is to help prevent a common class of coding mistake, where a future
-        maintainer attempts to add further statements to the conditional block, but
-        accidentally writes something different.
-
-        See also:
-          - **multiline_for_begin** - Useful companion rule.
-          - **style_indent** - Useful companion rule.
-
-        The most relevant clauses of IEEE1800-2017 are:
-          - 12.4 Conditional if-else statement
-        "})
     }
 }

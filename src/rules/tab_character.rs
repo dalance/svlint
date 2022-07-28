@@ -41,8 +41,4 @@ impl Rule for TabCharacter {
     fn reason(&self) -> String {
         String::from("may cause misalignment depending on editor setting")
     }
-
-    fn explanation(&self) -> String {
-        String::from("TODO")
-    }
 }
