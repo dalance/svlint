@@ -53,10 +53,10 @@ impl Rule for GenerateKeywordRequired {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`generate`/`endgenerate` is required")
+        String::from("Use `generate`/`endgenerate` keywords to define generate regions.")
     }
 
     fn reason(&self) -> String {
-        String::from("some tools don't support `generate`/`endgenerate` omitting")
+        String::from("Omitting `generate`/`endgenerate` keywords may cause issues with non-compliant tools.")
     }
 }

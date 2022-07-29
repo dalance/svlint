@@ -1,5 +1,5 @@
 A loop generate construct allows a single generate block to be instantiated
-multiple times within a module, program, or checker.
+multiple times within a module, interface, program, or checker.
 The selection of which generate blocks are instantiated is decided during
 elaboration via evaluation of constant expressions.
 Generate blocks introduce hierarchy within a module, whether they are named or

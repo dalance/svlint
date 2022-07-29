@@ -1,5 +1,5 @@
 Conditional generate constructs select zero or one blocks from a set of
-alternative generate blocks within a module, program, or checker.
+alternative generate blocks within a module, interface, program, or checker.
 The selection of which generate blocks are instantiated is decided during
 elaboration via evaluation of constant expressions.
 Generate blocks introduce hierarchy within a module, whether they are named or

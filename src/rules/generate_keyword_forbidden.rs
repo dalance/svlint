@@ -29,10 +29,10 @@ impl Rule for GenerateKeywordForbidden {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`generate`/`endgenerate` must be omitted")
+        String::from("Remove `generate`/`endgenerate` keywords.")
     }
 
     fn reason(&self) -> String {
-        String::from("")
+        String::from("Keywords `generate`/`endgenerate` do not change semantics of generate blocks.")
     }
 }
