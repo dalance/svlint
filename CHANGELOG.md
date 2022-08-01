@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.5...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.6...Unreleased) - ReleaseDate
+
+## [v0.5.6](https://github.com/dalance/svlint/compare/v0.5.5...v0.5.6) - 2022-08-01
 
 * [Fixed] renamed rules in example [#180](https://github.com/dalance/svlint/issues/180)
 * [Changed] Update sv-parser
