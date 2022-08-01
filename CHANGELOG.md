@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.5...Unreleased) - ReleaseDate
 
 * [Fixed] renamed rules in example [#180](https://github.com/dalance/svlint/issues/180)
+* [Changed] Update sv-parser
 
 ## [v0.5.5](https://github.com/dalance/svlint/compare/v0.5.4...v0.5.5) - 2022-07-06
 
