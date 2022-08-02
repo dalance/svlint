@@ -70,6 +70,8 @@ this rule should be considered on a case-by-case basis.
 
 See also:
   - **localparam_explicit_type** - Useful companion rule.
+  - **parameter_explicit_type** - Useful companion rule.
+  - **parameter_type_twostate** - Useful companion rule, equivalent reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
   - 6.8 Variable declarations
