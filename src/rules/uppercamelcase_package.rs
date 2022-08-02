@@ -53,7 +53,7 @@ impl Rule for UppercamelcasePackage {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from(format!("Package name must begin with UpperCamelCase"))
+        String::from(format!("Begin `package` name with UpperCamelCase."))
     }
 
     fn reason(&self) -> String {
