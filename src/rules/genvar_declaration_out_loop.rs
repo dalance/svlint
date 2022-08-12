@@ -36,10 +36,10 @@ impl Rule for GenvarDeclarationOutLoop {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`genvar` must be declared out loop")
+        String::from("Declare `genvar` outside the loop generate construct.")
     }
 
     fn reason(&self) -> String {
-        String::from("some tools don't support `genvar` declaration in loop")
+        String::from("Some tools don't support `genvar` declarations inside loop generate constructs.")
     }
 }
