@@ -2,6 +2,7 @@ This rule checks the whitespace immediately following the `end` keyword.
 TODO
 
 See also:
+  - **style_keyword_indent** - Suggested companion rule.
   - **style_keyword_0or1space** - Suggested companion rule.
   - **style_keyword_0space** - Suggested companion rule.
   - **style_keyword_1or2space** - Suggested companion rule.

@@ -1,5 +1,10 @@
 This rule checks the whitespace immediately following the `return` keyword.
-TODO
+The `return` keyword can be used without an argument for void functions, in
+which case there should be no space between the keyword and the following
+symbol, i.e. `return;`.
+The `return` keyword can also be used with an argument, in which case there
+should be exactly 1 space between the keyword and the following identifier,
+e.g. `return foo;`.
 
 See also:
   - **style_keyword_0space** - Suggested companion rule.
