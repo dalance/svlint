@@ -244,7 +244,7 @@ impl Rule for StyleKeyword1Space {
     }
 
     fn name(&self) -> String {
-        String::from("style_keyword_1space")
+        String::from("Follow keyword with exactly 1 space.")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
@@ -252,6 +252,6 @@ impl Rule for StyleKeyword1Space {
     }
 
     fn reason(&self) -> String {
-        String::from("consistent style enhances readability")
+        String::from("Consistent use of whitespace enhances readability by reducing visual noise.")
     }
 }
