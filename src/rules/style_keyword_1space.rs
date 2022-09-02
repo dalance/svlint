@@ -244,11 +244,11 @@ impl Rule for StyleKeyword1Space {
     }
 
     fn name(&self) -> String {
-        String::from("Follow keyword with exactly 1 space.")
+        String::from("style_keyword_1space")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("keyword should be followed by a single space")
+        String::from("Follow keyword with exactly 1 space.")
     }
 
     fn reason(&self) -> String {
