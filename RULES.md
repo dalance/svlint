@@ -1,5 +1,98 @@
-This document is generated from the rules' source code (`svlint/src/rules/*.rs`)
-and testcases (`testcases/(fail|pass)/*.sv`) using the `mdgen` utility.
+
+# Introduction
+
+## About This Document
+
+This document is generated from the Markdown files in `md/*.md`, the rules'
+source code (`svlint/src/rules/*.rs`), and their testcases
+(`testcases/(fail|pass)/*.sv`) using the `mdgen` utility.
+
+## Purpose of Lint Checks
+
+The authors of any works must consider their audience, particularly in how
+different sections of the audience will interpret the works.
+For example, an author of childrens books has two main sections of audience
+(children, and their adult parents) so they might aim to please both sections
+at once; Children with simple storylines and colorful pictures; Parents with
+cultural references and subtle innuendo.
+Authors writing in SystemVerilog also have two main sections of audience which
+they should aim to please: 1) other silicon engineers, 2) mechanical tools.
+Although the differences between human and mechanical readers are significant,
+both must be satisfied for the text to be nice/enjoyable to work with.
+While a simulation tool doesn't care about whitespace, indentation, or
+thoughtful comments, your human colleagues will dread working with messy code
+(rewiewing, modifying, building upon outputs, etc.), which ultimately wastes
+their time, money, and sanity.
+Human readers will usually be polite about sub-par work, but tools are much more
+direct, simply spitting back at you with warning messages and an outright
+refusal to work if you dare to mis-spell a variable name.
+
+There are two main classes of rule for helping human readers:
+1. Rules which codify naming conventions.
+2. Rules which codify style/formatting conventions.
+
+Naming conventions help a human reader to take in large amounts of detailed
+information (e.g. from netlists, timing reports) by allowing the reader to
+predict the function of a signal from its name, and predict part of a signal's
+name from its function.
+For example, a common convention is: "All signals inferring the output of a
+flip-flop must be suffixed with `_q`."
+If an engineer reads a synthesized netlist and sees a flip-flop cell named
+without the `_q` suffix, there may be a coding error, so further checks
+with the author are required.
+On the frontend, a reader can quickly scan a SystemVerilog file to check that
+signals have the `_q` suffix if (and only if) they are driven in `always_ff`
+processes.
+Other naming conventions are useful for helping readers follow the direction of
+signals through ports, find files quickly in a large filesystem, find
+appropriate files from hierarchical paths in a netlist, and more.
+
+Style conventions also help a human reader to quickly and efficiently
+comprehend large bodies of code.
+Indeed, that is exactly what a reader wants to do when they're working with
+code written by other people, often complete strangers.
+The reader simply wishes to open the file, extract the necessary information,
+close the file, and get on with their life.
+Unlike mechanical tools, people process code visually (by translating their
+view of the screen into a mental model) and any noise which obscures the useful
+information will require extra mental effort to process.
+When code is written with consistent and regular whitespace, the important
+details like operators and identifiers are easily extracted.
+In contrast, when little attention is paid to indentation or spaces around
+keywords, operators, or identifers, the readers must waste their energy
+performing a mental noise reduction.
+Two notable style conventions help with a change-review process, i.e. comparing
+multiple versions of a file, rather than reading one version:
+- Line length limited to a fixed number of characters, usually 80.
+  - Excessively long lines may indicate problems with a program's logic.
+  - Excessively long lines prevent viewing differences side-by-side.
+  - Side-by-side reading is awkward when sideways scrolling is involved.
+  - Code which is printed on paper cannot be scrolled sideways, and soft-wrap
+    alternatives interrupt indentation.
+- Trailing whitespace is forbidden.
+  - Changes to trailing whitespace are not usually visible to human readers,
+    but are found by version control tools.
+  - Editors are often configured to remove trailing whitespace, resulting in
+    unnecessary differences.
+  - Git, a popular version control tool will (by default) warn against trailing
+    whitespace with prominent markers specifically because of the unnecessary
+    noise introduced to a repository's history.
+
+Just as individual human readers have their own preferences (in language,
+style, naming conventions, etc.), each tool has its own quirks and ways of
+interpreting things, particularly when the language specification is not fully
+explicit.
+The most prominent example of tools' differences in interpretation of
+SystemVerilog is between tools for simulation and tools for synthesis.
+The SystemVerilog language is specifed in IEEE1800-2017, also known as the
+Language Reference Manual (LRM).
+The LRM is clear that the specification is written in terms of simulation, but
+that some of it's constructs may be synthesized into physical hardware.
+This distinction is the basis for a class of functional rules which aim to
+minimize the risk of introducing a mismatch between simulation and synthesis.
+Another class of functional rules is those which check for datatypes and
+constructs that avoid compiler checks for legacy compatibility.
+
 
 # Rules
 
@@ -2700,11 +2793,11 @@ TODO
 
 ### Hint
 
-keyword should be followed by a symbol or exactly 1 space
+Follow keyword with a symbol or exactly 1 space.
 
 ### Reason
 
-consistent style enhances readability
+Consistent use of whitespace enhances readability by reducing visual noise.
 
 ### Pass Example
 
@@ -2734,7 +2827,26 @@ endmodule
 
 ### Explanation
 
-TODO
+This rule checks the whitespace immediately following the `return` keyword.
+The `return` keyword can be used without an argument for void functions, in
+which case there should be no space between the keyword and the following
+symbol, i.e. `return;`.
+The `return` keyword can also be used with an argument, in which case there
+should be exactly 1 space between the keyword and the following identifier,
+e.g. `return foo;`.
+
+See also:
+  - **style_keyword_0space** - Suggested companion rule.
+  - **style_keyword_1or2space** - Suggested companion rule.
+  - **style_keyword_1space** - Suggested companion rule.
+  - **style_keyword_construct** - Suggested companion rule.
+  - **style_keyword_datatype** - Potential companion rule.
+  - **style_keyword_end** - Suggested companion rule.
+  - **style_keyword_maybelabel** - Suggested companion rule.
+  - **style_keyword_newline** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2742,11 +2854,11 @@ TODO
 
 ### Hint
 
-keyword should be followed by no space before symbol
+Remove all whitespace between keyword and following symbol.
 
 ### Reason
 
-consistent style enhances readability
+Consistent use of whitespace enhances readability by reducing visual noise.
 
 ### Pass Example
 
@@ -2786,7 +2898,36 @@ endmodule
 
 ### Explanation
 
-TODO
+This rule checks the whitespace immediately following these keywords:
+`break`
+, `continue`
+, `default`
+, `new`
+, `null`
+, `super`
+, and `this`.
+Uses of these keywords should never have any whitespace between the keyword and
+the following symbol, e.g.
+`break;`,
+, `continue;`
+, `default:`
+, `new[5]`
+, `(myexample == null)`
+, or `super.foo`.
+
+See also:
+  - **style_keyword_indent** - Suggested companion rule.
+  - **style_keyword_0or1space** - Suggested companion rule.
+  - **style_keyword_1or2space** - Suggested companion rule.
+  - **style_keyword_1space** - Suggested companion rule.
+  - **style_keyword_construct** - Suggested companion rule.
+  - **style_keyword_datatype** - Potential companion rule.
+  - **style_keyword_end** - Suggested companion rule.
+  - **style_keyword_maybelabel** - Suggested companion rule.
+  - **style_keyword_newline** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2794,11 +2935,11 @@ TODO
 
 ### Hint
 
-keyword should be followed by exactly 1 or 2 spaces
+Follow keyword with exactly 1 or 2 spaces.
 
 ### Reason
 
-consistent style enhances readability
+Consistent use of whitespace enhances readability by reducing visual noise.
 
 ### Pass Example
 
@@ -2827,7 +2968,37 @@ endmodule
 
 ### Explanation
 
-TODO
+This rule checks the whitespace immediately following the `inout` and `input`
+keywords.
+These keywords specify the direction of signal ports, and are frequently used
+alongside the `output` keyword which is 1 character longer.
+The suggested companion rule **style_keyword_1space** checks that `output` is
+followed by a single space, and this rule allows `inout`/`input` to be followed
+by a single space too.
+However, it is common and visually appealing to have port definitions
+vertically aligned, so this rule also allows 2 following spaces, e.g:
+```systemverilog
+module foo
+  ( input  var logic i_foo // aligned, 2 spaces
+  , output var logic o_bar
+  , inout tri logic b_baz // unaligned, 1 space
+  );
+endmodule
+```
+
+See also:
+  - **style_keyword_indent** - Suggested companion rule.
+  - **style_keyword_0or1space** - Suggested companion rule.
+  - **style_keyword_0space** - Suggested companion rule.
+  - **style_keyword_1space** - Suggested companion rule.
+  - **style_keyword_construct** - Suggested companion rule.
+  - **style_keyword_datatype** - Potential companion rule.
+  - **style_keyword_end** - Suggested companion rule.
+  - **style_keyword_maybelabel** - Suggested companion rule.
+  - **style_keyword_newline** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2835,11 +3006,11 @@ TODO
 
 ### Hint
 
-keyword should be followed by a single space
+Follow keyword with exactly 1 space.
 
 ### Reason
 
-consistent style enhances readability
+Consistent use of whitespace enhances readability by reducing visual noise.
 
 ### Pass Example
 
@@ -2871,7 +3042,201 @@ endmodule
 
 ### Explanation
 
-TODO
+This rule checks the whitespace immediately following these keywords:
+`accept_on`
+, `alias`
+, `always`
+, `always_ff`
+, `and`
+, `assert`
+, `assign`
+, `assume`
+, `automatic`
+, `before`
+, `bind`
+, `bins`
+, `binsof`
+, `bit`
+, `buf`
+, `bufif0`
+, `bufif1`
+, `case`
+, `casex`
+, `casez`
+, `cell`
+, `checker`
+, `class`
+, `clocking`
+, `cmos`
+, `config`
+, `const`
+, `constraint`
+, `context`
+, `cover`
+, `covergroup`
+, `coverpoint`
+, `cross`
+, `deassign`
+, `defparam`
+, `design`
+, `disable`
+, `dist`
+, `do`
+, `edge`
+, `enum`
+, `eventually`
+, `expect`
+, `export`
+, `extends`
+, `extern`
+, `first_match`
+, `for`
+, `force`
+, `foreach`
+, `forever`
+, `forkjoin`
+, `function`
+, `genvar`
+, `global`
+, `highz0`
+, `highz1`
+, `if`
+, `iff`
+, `ifnone`
+, `ignore_bins`
+, `illegal_bins`
+, `implements`
+, `implies`
+, `import`
+, `incdir`
+, `include`
+, `inside`
+, `instance`
+, `interconnect`
+, `interface`
+, `intersect`
+, `large`
+, `let`
+, `liblist`
+, `library`
+, `local`
+, `localparam`
+, `macromodule`
+, `matches`
+, `medium`
+, `modport`
+, `module`
+, `nand`
+, `negedge`
+, `nettype`
+, `nexttime`
+, `nmos`
+, `nor`
+, `noshowcancelled`
+, `not`
+, `notif0`
+, `notif1`
+, `or`
+, `output`
+, `package`
+, `packed`
+, `parameter`
+, `pmos`
+, `posedge`
+, `primitive`
+, `priority`
+, `program`
+, `property`
+, `protected`
+, `pull0`
+, `pull1`
+, `pulldown`
+, `pullup`
+, `pulsestyle_ondetect`
+, `pulsestyle_onevent`
+, `pure`
+, `rand`
+, `randc`
+, `randcase`
+, `randsequence`
+, `rcmos`
+, `reject_on`
+, `release`
+, `repeat`
+, `restrict`
+, `rnmos`
+, `rpmos`
+, `rtran`
+, `rtranif0`
+, `rtranif1`
+, `s_always`
+, `s_eventually`
+, `s_nexttime`
+, `s_until`
+, `s_until_with`
+, `scalared`
+, `sequence`
+, `showcancelled`
+, `small`
+, `soft`
+, `solve`
+, `specparam`
+, `static`
+, `strong`
+, `strong0`
+, `strong1`
+, `struct`
+, `sync_accept_on`
+, `sync_reject_on`
+, `tagged`
+, `task`
+, `throughout`
+, `timeprecision`
+, `timeunit`
+, `tran`
+, `tranif0`
+, `tranif1`
+, `trireg`
+, `type`
+, `typedef`
+, `union`
+, `unique`
+, `unique0`
+, `until`
+, `until_with`
+, `untyped`
+, `use`
+, `var`
+, `vectored`
+, `virtual`
+, `wait`
+, `wait_order`
+, `weak`
+, `weak0`
+, `weak1`
+, `while`
+, `wildcard`
+, `with`
+, `within`
+, `xnor`
+, and `xor`.
+This rule covers the majority of SystemVerilog keywords, ensuring that they are
+followed by a single space, e.g. `if (foo)`, `always_ff @(posedge clk)`,
+or `typedef struct packed {`.
+
+See also:
+  - **style_keyword_indent** - Suggested companion rule.
+  - **style_keyword_0or1space** - Suggested companion rule.
+  - **style_keyword_0space** - Suggested companion rule.
+  - **style_keyword_1or2space** - Suggested companion rule.
+  - **style_keyword_construct** - Suggested companion rule.
+  - **style_keyword_datatype** - Potential companion rule.
+  - **style_keyword_end** - Suggested companion rule.
+  - **style_keyword_maybelabel** - Suggested companion rule.
+  - **style_keyword_newline** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2879,11 +3244,11 @@ TODO
 
 ### Hint
 
-keyword should be followed by newline or exactly 1 space
+Follow keyword with a newline or exactly 1 space.
 
 ### Reason
 
-consistent style enhances readability
+Consistent use of whitespace enhances readability by reducing visual noise.
 
 ### Pass Example
 
@@ -2921,7 +3286,47 @@ endmodule
 
 ### Explanation
 
-TODO
+This rule checks the whitespace immediately following these keywords:
+`always_comb`
+, `always_latch`
+, `else`
+, `final`
+, `generate`
+, and `initial`.
+These keyword open constucts and should always be followed by a newline,
+exactly 1 space then another keyword/identifier, or exactly 1 space then a
+comment, e.g:
+```systemverilog
+// Followed by 1 space then another keyword.
+always_comb begin
+  foo = '0;
+  foo[0] = 5;
+end
+
+// Followed by 1 space then an identifier.
+always_comb bar = 5;
+
+// Followed by a newline.
+always_comb
+  if (x < y)
+    z = 5;
+  else // Followed by 1 space then this comment.
+    z = 6;
+```
+
+See also:
+  - **style_keyword_indent** - Suggested companion rule.
+  - **style_keyword_0or1space** - Suggested companion rule.
+  - **style_keyword_0space** - Suggested companion rule.
+  - **style_keyword_1or2space** - Suggested companion rule.
+  - **style_keyword_1space** - Suggested companion rule.
+  - **style_keyword_datatype** - Potential companion rule.
+  - **style_keyword_end** - Suggested companion rule.
+  - **style_keyword_maybelabel** - Suggested companion rule.
+  - **style_keyword_newline** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2929,11 +3334,11 @@ TODO
 
 ### Hint
 
-keyword should be followed by a single space
+Follow datatype keyword with a symbol or exactly 1 space.
 
 ### Reason
 
-consistent style enhances readability
+Consistent use of whitespace enhances readability by reducing visual noise.
 
 ### Pass Example
 
@@ -2963,7 +3368,52 @@ endmodule
 
 ### Explanation
 
-TODO
+This rule checks the whitespace immediately following these keywords:
+`byte`
+, `chandle`
+, `event`
+, `int`
+, `integer`
+, `logic`
+, `longint`
+, `real`
+, `realtime`
+, `ref`
+, `reg`
+, `shortint`
+, `shortreal`
+, `signed`
+, `string`
+, `supply0`
+, `supply1`
+, `time`
+, `tri`
+, `tri0`
+, `tri1`
+, `triand`
+, `trior`
+, `unsigned`
+, `uwire`
+, `void`
+, `wand`
+, `wire`
+, and `wor`.
+These keywords are used to declare the datatype of signals/variables (like
+`logic foo`), and cast expressions (like `int'(foo)`).
+
+See also:
+  - **style_keyword_indent** - Suggested companion rule.
+  - **style_keyword_0or1space** - Suggested companion rule.
+  - **style_keyword_0space** - Suggested companion rule.
+  - **style_keyword_1or2space** - Suggested companion rule.
+  - **style_keyword_1space** - Suggested companion rule.
+  - **style_keyword_construct** - Suggested companion rule.
+  - **style_keyword_end** - Suggested companion rule.
+  - **style_keyword_maybelabel** - Suggested companion rule.
+  - **style_keyword_newline** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2971,11 +3421,11 @@ TODO
 
 ### Hint
 
-keyword should be followed by newline, colon, or exactly 1 space
+Follow keyword with a colon, newline, or exactly 1 space.
 
 ### Reason
 
-consistent style enhances readability
+Consistent use of whitespace enhances readability by reducing visual noise.
 
 ### Pass Example
 
@@ -3018,7 +3468,45 @@ endmodule
 
 ### Explanation
 
-TODO
+This rule checks the whitespace immediately following the `end` keyword.
+The keyword `end` always be followed by a newline,
+exactly 1 space then another keyword, a colon, or exactly 1 space then a
+comment, e.g:
+```systemverilog
+// Followed by a newline.
+if (FOO) begin
+  ...
+end
+
+// Followed by 1 space then a keyword.
+if (FOO) begin
+  ...
+end else ...
+
+// Followed by a colon.
+if (FOO) begin: l_foo
+  ...
+end: l_foo
+
+// Followed by a comment.
+if (FOO) begin // {{{ An opening fold marker.
+  ...
+end // }}} A closing fold marker.
+```
+
+See also:
+  - **style_keyword_indent** - Suggested companion rule.
+  - **style_keyword_0or1space** - Suggested companion rule.
+  - **style_keyword_0space** - Suggested companion rule.
+  - **style_keyword_1or2space** - Suggested companion rule.
+  - **style_keyword_1space** - Suggested companion rule.
+  - **style_keyword_construct** - Suggested companion rule.
+  - **style_keyword_datatype** - Potential companion rule.
+  - **style_keyword_maybelabel** - Suggested companion rule.
+  - **style_keyword_newline** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -3026,11 +3514,11 @@ TODO
 
 ### Hint
 
-keyword should be followed by newline or colon, not spaces
+Follow keyword with a colon, newline, or exactly 1 space plus comment.
 
 ### Reason
 
-consistent style enhances readability
+Consistent use of whitespace enhances readability by reducing visual noise.
 
 ### Pass Example
 
@@ -3059,7 +3547,60 @@ endinterface
 
 ### Explanation
 
-TODO
+This rule checks the whitespace immediately following these keywords:
+`begin`
+, `endchecker`
+, `endclass`
+, `endclocking`
+, `endconfig`
+, `endfunction`
+, `endgroup`
+, `endinterface`
+, `endmodule`
+, `endpackage`
+, `endprimitive`
+, `endprogram`
+, `endproperty`
+, `endsequence`
+, `endtask`
+, `fork`
+, `join`
+, `join_any`
+, and `join_none`.
+These keywords are used to delimit code blocks and should always be followed by
+a colon, a newline, or exactly 1 space then a comment, e.g:
+```systemverilog
+if (FOO) begin: l_foo // Followed by a colon.
+  ...
+end
+
+module top;
+  ...
+endmodule: top  // Followed by a colon.
+
+// Followed by a newline.
+if (FOO) begin
+  ...
+end
+
+if (FOO) begin // Followed by a comment.
+  ...
+end
+```
+
+See also:
+  - **style_keyword_indent** - Suggested companion rule.
+  - **style_keyword_0or1space** - Suggested companion rule.
+  - **style_keyword_0space** - Suggested companion rule.
+  - **style_keyword_1or2space** - Suggested companion rule.
+  - **style_keyword_1space** - Suggested companion rule.
+  - **style_keyword_construct** - Suggested companion rule.
+  - **style_keyword_datatype** - Potential companion rule.
+  - **style_keyword_end** - Suggested companion rule.
+  - **style_keyword_newline** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -3067,11 +3608,11 @@ TODO
 
 ### Hint
 
-keyword should be followed by a newline
+Follow keyword with a newline or exactly 1 space plus comment.
 
 ### Reason
 
-consistent style enhances readability
+Consistent use of whitespace enhances readability by reducing visual noise.
 
 ### Pass Example
 
@@ -3102,7 +3643,39 @@ endmodule
 
 ### Explanation
 
-TODO
+This rule checks the whitespace immediately following these keywords:
+, `endcase`
+, `endgenerate`
+, `endspecify`
+, `endtable`
+, `specify`
+, and `table`.
+These keywords are used to delimit code blocks and should always be followed by
+a newline or exactly 1 space then a comment, e.g:
+```systemverilog
+case (FOO)
+  ...
+endcase // Followed by a comment.
+
+// Followed by a newline.
+case (FOO)
+  ...
+endcase
+```
+
+See also:
+  - **style_keyword_indent** - Suggested companion rule.
+  - **style_keyword_0or1space** - Suggested companion rule.
+  - **style_keyword_0space** - Suggested companion rule.
+  - **style_keyword_1or2space** - Suggested companion rule.
+  - **style_keyword_1space** - Suggested companion rule.
+  - **style_keyword_construct** - Suggested companion rule.
+  - **style_keyword_datatype** - Potential companion rule.
+  - **style_keyword_end** - Suggested companion rule.
+  - **style_keyword_maybelabel** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
