@@ -16,7 +16,7 @@ For example, an author of childrens books has two main sections of audience
 at once; Children with simple storylines and colorful pictures; Parents with
 cultural references and subtle innuendo.
 Authors writing in SystemVerilog also have two main sections of audience which
-they should aim to please (other silicon engineers, and mechanical tools).
+they should aim to please: 1) other silicon engineers, 2) mechanical tools.
 Although the differences between human and mechanical readers are significant,
 both must be satisfied for the text to be nice/enjoyable to work with.
 While a simulation tool doesn't care about whitespace, indentation, or
@@ -33,8 +33,8 @@ There are two main classes of rule for helping human readers:
 
 Naming conventions help a human reader to take in large amounts of detailed
 information (e.g. from netlists, timing reports) by allowing the reader to
-predict the function of a signal from a name, and predict part of a signal's
-name from it's function.
+predict the function of a signal from its name, and predict part of a signal's
+name from its function.
 For example, a common convention is: "All signals inferring the output of a
 flip-flop must be suffixed with `_q`."
 If an engineer reads a synthesized netlist and sees a flip-flop cell named
