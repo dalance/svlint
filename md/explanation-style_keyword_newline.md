@@ -5,7 +5,18 @@ This rule checks the whitespace immediately following these keywords:
 , `endtable`
 , `specify`
 , and `table`.
-TODO
+These keywords are used to delimit code blocks and should always be followed by
+a newline or exactly 1 space then a comment, e.g:
+```systemverilog
+case (FOO)
+  ...
+endcase // Followed by a comment.
+
+// Followed by a newline.
+case (FOO)
+  ...
+endcase
+```
 
 See also:
   - **style_keyword_indent** - Suggested companion rule.

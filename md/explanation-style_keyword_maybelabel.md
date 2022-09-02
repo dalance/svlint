@@ -18,7 +18,26 @@ This rule checks the whitespace immediately following these keywords:
 , `join`
 , `join_any`
 , and `join_none`.
-TODO
+These keywords are used to delimit code blocks and should always be followed by
+a colon, a newline, or exactly 1 space then a comment, e.g:
+```systemverilog
+if (FOO) begin: l_foo // Followed by a colon.
+  ...
+end
+
+module top;
+  ...
+endmodule: top  // Followed by a colon.
+
+// Followed by a newline.
+if (FOO) begin
+  ...
+end
+
+if (FOO) begin // Followed by a comment.
+  ...
+end
+```
 
 See also:
   - **style_keyword_indent** - Suggested companion rule.

@@ -6,7 +6,7 @@ This rule checks the whitespace immediately following these keywords:
 , `generate`
 , and `initial`.
 These keyword open constucts and should always be followed by a newline,
-exactly 1 space the another keyword/identifier, or exactly 1 space then a
+exactly 1 space then another keyword/identifier, or exactly 1 space then a
 comment, e.g:
 ```systemverilog
 // Followed by 1 space then another keyword.

@@ -28,7 +28,8 @@ This rule checks the whitespace immediately following these keywords:
 , `wand`
 , `wire`
 , and `wor`.
-TODO
+These keywords are used to declare the datatype of signals/variables (like
+`logic foo`), and cast expressions (like `int'(foo)`).
 
 See also:
   - **style_keyword_indent** - Suggested companion rule.
