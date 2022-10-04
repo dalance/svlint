@@ -1584,7 +1584,7 @@ interface FooBar; endinterface
 
 There are 3 usual types of SystemVerilog file for synthesizable design code
 (module, interface, package) and having a simple naming convention helps
-distinguish them at a filesystem view.
+distinguish them from a filesystem viewpoint.
 In Haskell, types/typeclasses must start with an uppercase letter, and
 functions/variables must start with a lowercase letter.
 This rule checks part of a related naming scheme where modules and interfaces
@@ -1594,6 +1594,7 @@ uppercase letter.
 See also:
   - **lowercamelcase_module** - Suggested companion rule.
   - **lowercamelcase_package** - Potential companion rule.
+  - **prefix_interface** - Alternative rule.
   - **uppercamelcase_interface** - Mutually exclusive alternative rule.
   - **uppercamelcase_module** - Potential companion rule.
   - **uppercamelcase_package** - Suggested companion rule.
@@ -1629,7 +1630,7 @@ module FooBar; endmodule
 
 There are 3 usual types of SystemVerilog file for synthesizable design code
 (module, interface, package) and having a simple naming convention helps
-distinguish them at a filesystem view.
+distinguish them from a filesystem viewpoint.
 In Haskell, types/typeclasses must start with an uppercase letter, and
 functions/variables must start with a lowercase letter.
 This rule checks part of a related naming scheme where modules and interfaces
@@ -1639,6 +1640,7 @@ uppercase letter.
 See also:
   - **lowercamelcase_interface** - Suggested companion rule.
   - **lowercamelcase_package** - Potential companion rule.
+  - **prefix_module** - Alternative rule.
   - **uppercamelcase_interface** - Potential companion rule.
   - **uppercamelcase_module** - Mutually exclusive alternative rule.
   - **uppercamelcase_package** - Suggested companion rule.
@@ -1674,7 +1676,7 @@ package FooBar; endpackage
 
 There are 3 usual types of SystemVerilog file for synthesizable design code
 (module, interface, package) and having a simple naming convention helps
-distinguish them at a filesystem view.
+distinguish them from a filesystem viewpoint.
 In Haskell, types/typeclasses must start with an uppercase letter, and
 functions/variables must start with a lowercase letter.
 This rule checks part of a related naming scheme where modules and interfaces
@@ -1684,6 +1686,7 @@ lowercase letter.
 See also:
   - **lowercamelcase_interface** - Potential companion rule.
   - **lowercamelcase_module** - Potential companion rule.
+  - **prefix_package** - Alternative rule.
   - **uppercamelcase_interface** - Suggested companion rule.
   - **uppercamelcase_module** - Suggested companion rule.
   - **uppercamelcase_package** - Mutually exclusive alternative rule.
@@ -2053,11 +2056,11 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-`inout` must have prefix "b_"
+Prefix `inout` port identifier with "b_".
 
 ### Reason
 
-Naming convention simplifies audit.
+Port prefixes help readers to follow signals through modules.
 
 ### Pass Example
 
@@ -2081,7 +2084,24 @@ endmodule
 
 ### Explanation
 
-TODO
+There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
+though `ref` is not generally used for synthesisable code.
+For a new reader, unfamiliar with a large module, it is useful to be able to 
+distinguish at a glance between which signals are ports and internal ones.
+This is especially useful for an integrator who needs to read and understand the
+boundaries of many modules quickly and accurately.
+To use a visual analogy, prefixing port names is like adding arrowheads to a
+schematic - they're not essential, but they speed up comprehension.
+This rule requires the prefix `b_` (configurable) on bi-directional signals,
+i.e, ports declared with direction `inout`, which is also the default direction.
+
+See also:
+  - **prefix_input** - Suggested companion rule.
+  - **prefix_instance** - Suggested companion rule.
+  - **prefix_output** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2089,11 +2109,11 @@ TODO
 
 ### Hint
 
-`input` must have prefix "i_"
+Prefix `input` port identifier with "i_".
 
 ### Reason
 
-Naming convention simplifies audit.
+Port prefixes help readers to follow signals through modules.
 
 ### Pass Example
 
@@ -2117,7 +2137,23 @@ endmodule
 
 ### Explanation
 
-TODO
+There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
+though `ref` is not generally used for synthesisable code.
+For a new reader, unfamiliar with a large module, it is useful to be able to 
+distinguish at a glance between which signals are ports and internal ones.
+This is especially useful for an integrator who needs to read and understand the
+boundaries of many modules quickly and accurately.
+To use a visual analogy, prefixing port names is like adding arrowheads to a
+schematic - they're not essential, but they speed up comprehension.
+This rule requires the prefix `i_` (configurable) on `input` signals.
+
+See also:
+  - **prefix_inout** - Suggested companion rule.
+  - **prefix_instance** - Suggested companion rule.
+  - **prefix_output** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2125,11 +2161,11 @@ TODO
 
 ### Hint
 
-Module instance must have prefix "u_"
+Prefix instance identifier with "u_".
 
 ### Reason
 
-Naming convention simplifies audit.
+Naming convention helps investigation using hierarchical paths.
 
 ### Pass Example
 
@@ -2149,7 +2185,27 @@ endmodule
 
 ### Explanation
 
-TODO
+This rule requires that instances of modules or interfaces are prefixed with
+`u_` (configurable) which allows readers to quickly find instances and
+connections of interest.
+Prefixing instances also allows components of a hierarchical path to be easily
+identified as modules/interfaces rather than generate blocks, which is
+especially useful when reading netlists and synthesis reports.
+The default value of `u_` comes from the historical use of `U` for the PCB
+reference designator of an inseparable assembly or integrated-circuit package,
+as standardised in IEEE315-1975.
+
+See also:
+  - **generate_case_with_label** - Suggested companion rule.
+  - **generate_for_with_label** - Suggested companion rule.
+  - **generate_if_with_label** - Suggested companion rule.
+  - **prefix_inout** - Suggested companion rule.
+  - **prefix_input** - Suggested companion rule.
+  - **prefix_output** - Suggested companion rule.
+  - <https://en.wikipedia.org/wiki/Reference_designator>
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2157,7 +2213,7 @@ TODO
 
 ### Hint
 
-`interface` name must have prefix "ifc_"
+Prefix `interface` identifier with "ifc_".
 
 ### Reason
 
@@ -2177,7 +2233,21 @@ interface noPrefix; endinterface
 
 ### Explanation
 
-TODO
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+This rule requires that interface identifiers are declared with a prefix of
+`ifc_` (configurable) which allows a reader to easily distinguish between
+module and interface instances.
+
+See also:
+  - **lowercamelcase_interface** - Alternative rule.
+  - **prefix_module** - Potential companion rule.
+  - **prefix_package** - Suggested companion rule.
+  - **uppercamelcase_interface** - Alternative rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2185,7 +2255,7 @@ TODO
 
 ### Hint
 
-`module` name must have prefix "mod_"
+Prefix `module` identifier with "mod_".
 
 ### Reason
 
@@ -2208,7 +2278,21 @@ endmodule
 
 ### Explanation
 
-TODO
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+This rule requires that module identifiers are declared with a prefix of `mod_`
+(configurable) which allows a reader to easily distinguish between
+module and interface instances.
+
+See also:
+  - **lowercamelcase_module** - Alternative rule.
+  - **prefix_interface** - Suggested companion rule.
+  - **prefix_package** - Suggested companion rule.
+  - **uppercamelcase_module** - Alternative rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2216,11 +2300,11 @@ TODO
 
 ### Hint
 
-`output` must have prefix "o_"
+Prefix `output` port identifier with "o_".
 
 ### Reason
 
-Naming convention simplifies audit.
+Port prefixes help readers to follow signals through modules.
 
 ### Pass Example
 
@@ -2244,7 +2328,23 @@ endmodule
 
 ### Explanation
 
-TODO
+There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
+though `ref` is not generally used for synthesisable code.
+For a new reader, unfamiliar with a large module, it is useful to be able to 
+distinguish at a glance between which signals are ports and internal ones.
+This is especially useful for an integrator who needs to read and understand the
+boundaries of many modules quickly and accurately.
+To use a visual analogy, prefixing port names is like adding arrowheads to a
+schematic - they're not essential, but they speed up comprehension.
+This rule requires the prefix `o_` (configurable) on `output` signals.
+
+See also:
+  - **prefix_inout** - Suggested companion rule.
+  - **prefix_input** - Suggested companion rule.
+  - **prefix_instance** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -2252,7 +2352,7 @@ TODO
 
 ### Hint
 
-`package` name must have prefix "pkg_"
+Prefix `package` identifier with "pkg_".
 
 ### Reason
 
@@ -2272,7 +2372,23 @@ package noPrefix; endpackage
 
 ### Explanation
 
-TODO
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+This rule requires that package identifiers are declared with a prefix of
+`pkg_` (configurable).
+When used in conjunction with a file naming scheme like "There should be one
+package declaration per file, and a package `pkg_foo` must be contained in a
+file called `pkg_foo.sv`.", this aids a reader in browsing a source directory.
+
+See also:
+  - **lowercamelcase_package** - Alternative rule.
+  - **prefix_interface** - Suggested companion rule.
+  - **prefix_module** - Potential companion rule.
+  - **uppercamelcase_package** - Alternative rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -3817,7 +3933,7 @@ interface fooBar; endinterface
 
 There are 3 usual types of SystemVerilog file for synthesizable design code
 (module, interface, package) and having a simple naming convention helps
-distinguish them at a filesystem view.
+distinguish them from a filesystem viewpoint.
 In Haskell, types/typeclasses must start with an uppercase letter, and
 functions/variables must start with a lowercase letter.
 This rule checks part of a related naming scheme where modules and interfaces
@@ -3828,6 +3944,7 @@ See also:
   - **lowercamelcase_interface** - Mutually exclusive alternative rule.
   - **lowercamelcase_module** - Potential companion rule.
   - **lowercamelcase_package** - Suggested companion rule.
+  - **prefix_interface** - Alternative rule.
   - **uppercamelcase_module** - Suggested companion rule.
   - **uppercamelcase_package** - Potential companion rule.
 
@@ -3862,7 +3979,7 @@ module fooBar; endmodule
 
 There are 3 usual types of SystemVerilog file for synthesizable design code
 (module, interface, package) and having a simple naming convention helps
-distinguish them at a filesystem view.
+distinguish them from a filesystem viewpoint.
 In Haskell, types/typeclasses must start with an uppercase letter, and
 functions/variables must start with a lowercase letter.
 This rule checks part of a related naming scheme where modules and interfaces
@@ -3873,6 +3990,7 @@ See also:
   - **lowercamelcase_interface** - Potential companion rule.
   - **lowercamelcase_module** - Mutually exclusive alternative rule.
   - **lowercamelcase_package** - Suggested companion rule.
+  - **prefix_module** - Alternative rule.
   - **uppercamelcase_interface** - Suggested companion rule.
   - **uppercamelcase_package** - Potential companion rule.
 
@@ -3907,7 +4025,7 @@ package fooBar; endpackage
 
 There are 3 usual types of SystemVerilog file for synthesizable design code
 (module, interface, package) and having a simple naming convention helps
-distinguish them at a filesystem view.
+distinguish them from a filesystem viewpoint.
 In Haskell, types/typeclasses must start with an uppercase letter, and
 functions/variables must start with a lowercase letter.
 This rule checks part of a related naming scheme where modules and interfaces
@@ -3918,6 +4036,7 @@ See also:
   - **lowercamelcase_interface** - Suggested companion rule.
   - **lowercamelcase_module** - Suggested companion rule.
   - **lowercamelcase_package** - Mutually exclusive alternative rule.
+  - **prefix_package** - Alternative rule.
   - **uppercamelcase_interface** - Potential companion rule.
   - **uppercamelcase_module** - Potential companion rule.
 
