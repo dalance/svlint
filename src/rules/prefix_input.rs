@@ -58,12 +58,12 @@ impl Rule for PrefixInput {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "`input` must have prefix \"{}\"",
+            "Prefix `input` identifier with \"{}\".",
             &option.prefix_input
         ))
     }
 
     fn reason(&self) -> String {
-        String::from("Naming convention simplifies audit.")
+        String::from("Port prefixes help readers to follow signals through modules.")
     }
 }

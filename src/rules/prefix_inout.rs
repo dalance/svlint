@@ -58,12 +58,12 @@ impl Rule for PrefixInout {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "`inout` must have prefix \"{}\"",
+            "Prefix `inout` port identifier with \"{}\".",
             &option.prefix_inout
         ))
     }
 
     fn reason(&self) -> String {
-        String::from("Naming convention simplifies audit.")
+        String::from("Port prefixes help readers to follow signals through modules.")
     }
 }
