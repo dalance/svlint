@@ -58,7 +58,7 @@ impl Rule for PrefixInput {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Prefix `input` identifier with \"{}\".",
+            "Prefix `input` port identifier with \"{}\".",
             &option.prefix_input
         ))
     }
