@@ -6,7 +6,7 @@ identified as modules/interfaces rather than generate blocks, which is
 especially useful when reading netlists and synthesis reports.
 The default value of `u_` comes from the historical use of `U` for the PCB
 reference designator of an inseparable assembly or integrated-circuit package,
-as standardised in IEEE315-1975.
+as standardized in IEEE315-1975.
 
 See also:
   - **generate_case_with_label** - Suggested companion rule.
