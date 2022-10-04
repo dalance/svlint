@@ -10,6 +10,7 @@ uppercase letter.
 See also:
   - **lowercamelcase_module** - Suggested companion rule.
   - **lowercamelcase_package** - Potential companion rule.
+  - **prefix_interface** - Alternative rule.
   - **uppercamelcase_interface** - Mutually exclusive alternative rule.
   - **uppercamelcase_module** - Potential companion rule.
   - **uppercamelcase_package** - Suggested companion rule.

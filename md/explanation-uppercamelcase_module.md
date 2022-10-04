@@ -11,6 +11,7 @@ See also:
   - **lowercamelcase_interface** - Potential companion rule.
   - **lowercamelcase_module** - Mutually exclusive alternative rule.
   - **lowercamelcase_package** - Suggested companion rule.
+  - **prefix_module** - Alternative rule.
   - **uppercamelcase_interface** - Suggested companion rule.
   - **uppercamelcase_package** - Potential companion rule.
 
