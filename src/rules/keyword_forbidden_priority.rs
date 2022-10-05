@@ -3,9 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 
 #[derive(Default)]
-pub struct UniqueKeyword;
+pub struct KeywordForbiddenPriority;
 
-impl Rule for UniqueKeyword {
+impl Rule for KeywordForbiddenPriority {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -19,17 +19,17 @@ impl Rule for UniqueKeyword {
             }
         };
         match node {
-            RefNode::UniquePriority(UniquePriority::Unique(_)) => RuleResult::Fail,
+            RefNode::UniquePriority(UniquePriority::Priority(_)) => RuleResult::Fail,
             _ => RuleResult::Pass,
         }
     }
 
     fn name(&self) -> String {
-        String::from("unique_keyword")
+        String::from("keyword_forbidden_priority")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`unique` is forbidden")
+        String::from("`priority` is forbidden")
     }
 
     fn reason(&self) -> String {

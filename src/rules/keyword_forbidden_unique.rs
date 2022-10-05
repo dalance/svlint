@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{IntegerVectorType, NetType, NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 
 #[derive(Default)]
-pub struct WireReg;
+pub struct KeywordForbiddenUnique;
 
-impl Rule for WireReg {
+impl Rule for KeywordForbiddenUnique {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -19,21 +19,20 @@ impl Rule for WireReg {
             }
         };
         match node {
-            RefNode::NetType(NetType::Wire(_)) => RuleResult::Fail,
-            RefNode::IntegerVectorType(IntegerVectorType::Reg(_)) => RuleResult::Fail,
+            RefNode::UniquePriority(UniquePriority::Unique(_)) => RuleResult::Fail,
             _ => RuleResult::Pass,
         }
     }
 
     fn name(&self) -> String {
-        String::from("wire_reg")
+        String::from("keyword_forbidden_unique")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`wire`/`reg` must be replaced to `logic`/`tri`")
+        String::from("`unique` is forbidden")
     }
 
     fn reason(&self) -> String {
-        String::from("`logic` can detect multi-drive")
+        String::from("this causes mismatch between simulation and synthesis")
     }
 }

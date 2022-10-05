@@ -14,7 +14,7 @@ NOTE: The visual noise introduced by these keywords provides an argument
 against this rule.
 
 See also:
-  - **generate_keyword_forbidden** - Opposite reasoning.
+  - **keyword_forbidden_generate** - Opposite reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
   - 27.3 Generate construct syntax

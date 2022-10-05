@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 
 #[derive(Default)]
-pub struct LegacyAlways;
+pub struct KeywordForbiddenUnique0;
 
-impl Rule for LegacyAlways {
+impl Rule for KeywordForbiddenUnique0 {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -19,20 +19,20 @@ impl Rule for LegacyAlways {
             }
         };
         match node {
-            RefNode::AlwaysKeyword(AlwaysKeyword::Always(_)) => RuleResult::Fail,
+            RefNode::UniquePriority(UniquePriority::Unique0(_)) => RuleResult::Fail,
             _ => RuleResult::Pass,
         }
     }
 
     fn name(&self) -> String {
-        String::from("legacy_always")
+        String::from("keyword_forbidden_unique0")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`always_comb`/`always_ff`/`always_latch` must be used")
+        String::from("`unique0` is forbidden")
     }
 
     fn reason(&self) -> String {
-        String::from("`always` can't detect blocking/non-blocking mistake")
+        String::from("this causes mismatch between simulation and synthesis")
     }
 }

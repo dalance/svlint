@@ -915,124 +915,6 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
-## `generate_keyword_forbidden`
-
-### Hint
-
-Remove `generate`/`endgenerate` keywords.
-
-### Reason
-
-Keywords `generate`/`endgenerate` do not change semantics of generate blocks.
-
-### Pass Example
-
-```SystemVerilog
-module A;
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A;
-generate
-endgenerate
-endmodule
-```
-
-### Explanation
-
-The `generate`/`endgenerate` keywords may be used in a module, interface,
-program, or checker to define a generate region.
-A generate region is a textual span in the module description where generate
-constructs may appear.
-Use of generate regions is optional.
-There is no semantic difference in the module when a generate region is used.
-A parser may choose to recognize the generate region to produce different error
-messages for misused generate construct keywords.
-
-As the semantics of generate blocks are unchanged by the
-`generate`/`endgenerate` keywords, the keywords can be argued to be visual
-noise, simply distracting the reader.
-Therefore, this rule is designed to detect and forbid their use.
-
-NOTE: Some non-compliant tools may require the use of these keywords, which
-provides an argument against this rule.
-
-See also:
-  - **generate_keyword_required** - Opposite reasoning.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 27.3 Generate construct syntax
-
-
----
-## `generate_keyword_required`
-
-### Hint
-
-Use `generate`/`endgenerate` keywords to define generate regions.
-
-### Reason
-
-Omitting `generate`/`endgenerate` keywords may cause issues with non-compliant tools.
-
-### Pass Example
-
-```SystemVerilog
-module A;
-generate
-if (a) begin
-end
-case (a)
-    default: a;
-endcase
-for(i=0; i<10; i++) begin
-end
-endgenerate
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A;
-if (a) begin
-end
-case (a)
-    default: a;
-endcase
-for(i=0; i<10; i++) begin
-end
-endmodule
-```
-
-### Explanation
-
-The `generate`/`endgenerate` keywords may be used in a module, interface,
-program, or checker to define a generate region.
-A generate region is a textual span in the module description where generate
-constructs may appear.
-Use of generate regions is optional.
-There is no semantic difference in the module when a generate region is used.
-A parser may choose to recognize the generate region to produce different error
-messages for misused generate construct keywords.
-
-Some non-compliant tools may require the use of these keywords.
-Therefore, this rule is designed to mandate their use.
-
-NOTE: The visual noise introduced by these keywords provides an argument
-against this rule.
-
-See also:
-  - **generate_keyword_forbidden** - Opposite reasoning.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 27.3 Generate construct syntax
-
-
----
 ## `genvar_declaration_in_loop`
 
 ### Hint
@@ -1287,7 +1169,7 @@ TODO
 
 
 ---
-## `legacy_always`
+## `keyword_forbidden_always`
 
 ### Hint
 
@@ -1318,6 +1200,278 @@ endmodule
 ### Explanation
 
 TODO
+
+
+---
+## `keyword_forbidden_generate`
+
+### Hint
+
+Remove `generate`/`endgenerate` keywords.
+
+### Reason
+
+Keywords `generate`/`endgenerate` do not change semantics of generate blocks.
+
+### Pass Example
+
+```SystemVerilog
+module A;
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+generate
+endgenerate
+endmodule
+```
+
+### Explanation
+
+The `generate`/`endgenerate` keywords may be used in a module, interface,
+program, or checker to define a generate region.
+A generate region is a textual span in the module description where generate
+constructs may appear.
+Use of generate regions is optional.
+There is no semantic difference in the module when a generate region is used.
+A parser may choose to recognize the generate region to produce different error
+messages for misused generate construct keywords.
+
+As the semantics of generate blocks are unchanged by the
+`generate`/`endgenerate` keywords, the keywords can be argued to be visual
+noise, simply distracting the reader.
+Therefore, this rule is designed to detect and forbid their use.
+
+NOTE: Some non-compliant tools may require the use of these keywords, which
+provides an argument against this rule.
+
+See also:
+  - **keyword_required_generate** - Opposite reasoning.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 27.3 Generate construct syntax
+
+
+---
+## `keyword_forbidden_priority`
+
+### Hint
+
+`priority` is forbidden
+
+### Reason
+
+this causes mismatch between simulation and synthesis
+
+### Pass Example
+
+```SystemVerilog
+module A();
+initial begin
+    case (a)
+        default: b = 1;
+    endcase
+end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A();
+initial begin
+    priority case (a)
+        default: b = 1;
+    endcase
+end
+endmodule
+```
+
+### Explanation
+
+TODO
+
+
+---
+## `keyword_forbidden_unique`
+
+### Hint
+
+`unique` is forbidden
+
+### Reason
+
+this causes mismatch between simulation and synthesis
+
+### Pass Example
+
+```SystemVerilog
+module A();
+initial begin
+    case (a)
+        default: b = 1;
+    endcase
+end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A();
+initial begin
+    unique case (a)
+        default: b = 1;
+    endcase
+end
+endmodule
+```
+
+### Explanation
+
+TODO
+
+
+---
+## `keyword_forbidden_unique0`
+
+### Hint
+
+`unique0` is forbidden
+
+### Reason
+
+this causes mismatch between simulation and synthesis
+
+### Pass Example
+
+```SystemVerilog
+module A();
+initial begin
+    case (a)
+        default: b = 1;
+    endcase
+end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A();
+initial begin
+    unique0 case (a)
+        default: b = 1;
+    endcase
+end
+endmodule
+```
+
+### Explanation
+
+TODO
+
+
+---
+## `keyword_forbidden_wire_reg`
+
+### Hint
+
+`wire`/`reg` must be replaced to `logic`/`tri`
+
+### Reason
+
+`logic` can detect multi-drive
+
+### Pass Example
+
+```SystemVerilog
+module A;
+logic a;
+logic b;
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+wire a;
+reg b;
+endmodule
+```
+
+### Explanation
+
+TODO
+
+
+---
+## `keyword_required_generate`
+
+### Hint
+
+Use `generate`/`endgenerate` keywords to define generate regions.
+
+### Reason
+
+Omitting `generate`/`endgenerate` keywords may cause issues with non-compliant tools.
+
+### Pass Example
+
+```SystemVerilog
+module A;
+generate
+if (a) begin
+end
+case (a)
+    default: a;
+endcase
+for(i=0; i<10; i++) begin
+end
+endgenerate
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+if (a) begin
+end
+case (a)
+    default: a;
+endcase
+for(i=0; i<10; i++) begin
+end
+endmodule
+```
+
+### Explanation
+
+The `generate`/`endgenerate` keywords may be used in a module, interface,
+program, or checker to define a generate region.
+A generate region is a textual span in the module description where generate
+constructs may appear.
+Use of generate regions is optional.
+There is no semantic difference in the module when a generate region is used.
+A parser may choose to recognize the generate region to produce different error
+messages for misused generate construct keywords.
+
+Some non-compliant tools may require the use of these keywords.
+Therefore, this rule is designed to mandate their use.
+
+NOTE: The visual noise introduced by these keywords provides an argument
+against this rule.
+
+See also:
+  - **keyword_forbidden_generate** - Opposite reasoning.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 27.3 Generate construct syntax
 
 
 ---
@@ -2389,46 +2543,6 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
-
-
----
-## `priority_keyword`
-
-### Hint
-
-`priority` is forbidden
-
-### Reason
-
-this causes mismatch between simulation and synthesis
-
-### Pass Example
-
-```SystemVerilog
-module A();
-initial begin
-    case (a)
-        default: b = 1;
-    endcase
-end
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A();
-initial begin
-    priority case (a)
-        default: b = 1;
-    endcase
-end
-endmodule
-```
-
-### Explanation
-
-TODO
 
 
 ---
@@ -3959,86 +4073,6 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
-## `unique0_keyword`
-
-### Hint
-
-`unique0` is forbidden
-
-### Reason
-
-this causes mismatch between simulation and synthesis
-
-### Pass Example
-
-```SystemVerilog
-module A();
-initial begin
-    case (a)
-        default: b = 1;
-    endcase
-end
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A();
-initial begin
-    unique0 case (a)
-        default: b = 1;
-    endcase
-end
-endmodule
-```
-
-### Explanation
-
-TODO
-
-
----
-## `unique_keyword`
-
-### Hint
-
-`unique` is forbidden
-
-### Reason
-
-this causes mismatch between simulation and synthesis
-
-### Pass Example
-
-```SystemVerilog
-module A();
-initial begin
-    case (a)
-        default: b = 1;
-    endcase
-end
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A();
-initial begin
-    unique case (a)
-        default: b = 1;
-    endcase
-end
-endmodule
-```
-
-### Explanation
-
-TODO
-
-
----
 ## `uppercamelcase_interface`
 
 ### Hint
@@ -4175,39 +4209,5 @@ See also:
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
 
-
-
----
-## `wire_reg`
-
-### Hint
-
-`wire`/`reg` must be replaced to `logic`/`tri`
-
-### Reason
-
-`logic` can detect multi-drive
-
-### Pass Example
-
-```SystemVerilog
-module A;
-logic a;
-logic b;
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A;
-wire a;
-reg b;
-endmodule
-```
-
-### Explanation
-
-TODO
 
 

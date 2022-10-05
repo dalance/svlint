@@ -8,8 +8,8 @@ use walkdir::WalkDir;
 const RENAMED_RULES: &[(&str, &str, &str)] = &[
     (
         "generate_keyword",
-        "generate_keyword_forbidden",
-        "GenerateKeywordForbidden",
+        "keyword_forbidden_generate",
+        "KeywordForbiddenGenerate",
     ),
     ("tab_charactor", "tab_character", "TabCharacter"),
     (
@@ -19,6 +19,41 @@ const RENAMED_RULES: &[(&str, &str, &str)] = &[
     ),
     ("if_with_begin", "multiline_if_begin", "MultilineIfBegin"),
     ("for_with_begin", "multiline_for_begin", "MultilineForBegin"),
+    (
+        "legacy_always",
+        "keyword_forbidden_always",
+        "KeywordForbiddenAlways",
+    ),
+    (
+        "generate_keyword_forbidden",
+        "keyword_forbidden_generate",
+        "KeywordForbiddenGenerate",
+    ),
+    (
+        "priority_keyword",
+        "keyword_forbidden_priority",
+        "KeywordForbiddenPriority",
+    ),
+    (
+        "unique_keyword",
+        "keyword_forbidden_unique",
+        "KeywordForbiddenUnique",
+    ),
+    (
+        "unique0_keyword",
+        "keyword_forbidden_unique0",
+        "KeywordForbiddenUnique0",
+    ),
+    (
+        "wire_reg",
+        "keyword_forbidden_wire_reg",
+        "KeywordForbiddenWireReg",
+    ),
+    (
+        "generate_keyword_required",
+        "keyword_required_generate",
+        "KeywordRequiredGenerate",
+    ),
 ];
 
 fn main() {
