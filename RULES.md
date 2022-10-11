@@ -3712,7 +3712,6 @@ This rule checks the whitespace immediately following these keywords:
 , `always_ff`
 , `and`
 , `assert`
-, `assign`
 , `assume`
 , `automatic`
 , `before`
@@ -3952,6 +3951,7 @@ endmodule
 This rule checks the whitespace immediately following these keywords:
 `always_comb`
 , `always_latch`
+, `assign`
 , `else`
 , `final`
 , `generate`
@@ -3975,6 +3975,13 @@ always_comb
     z = 5;
   else // Followed by 1 space then this comment.
     z = 6;
+
+// Assign to a concatenation.
+assign // You could use `always_comb` instead.
+  { foo
+  , bar
+  , baz[i][j][k]
+  } = '0;
 ```
 
 See also:

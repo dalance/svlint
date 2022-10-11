@@ -5,7 +5,6 @@ This rule checks the whitespace immediately following these keywords:
 , `always_ff`
 , `and`
 , `assert`
-, `assign`
 , `assume`
 , `automatic`
 , `before`
