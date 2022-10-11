@@ -32,6 +32,7 @@ impl Rule for StyleKeywordConstruct {
             let keywords =
                 [ "always_comb" // {{{
                 , "always_latch"
+                , "assign"
                 , "else"
                 , "final"
                 , "generate"

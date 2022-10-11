@@ -21,7 +21,7 @@ impl Rule for StyleKeyword1Space {
         re_split extracts keyword from anything following it.
         re_kw is used to selectively apply this rule to specific keywords.
         re_succ matches what is allowed after the keyword.
-            - exactly 1space
+            - exactly 1space, then nothing
         */
         if self.re_split.is_none() {
             self.re_split = Some(Regex::new(r"(?P<kw>[a-z_01]+)(?P<succ>(?s:.)*)").unwrap());
@@ -34,7 +34,6 @@ impl Rule for StyleKeyword1Space {
                 , "always_ff"
                 , "and"
                 , "assert"
-                , "assign"
                 , "assume"
                 , "automatic"
                 , "before"
