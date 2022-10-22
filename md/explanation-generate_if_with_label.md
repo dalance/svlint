@@ -13,10 +13,10 @@ IEEE1800-2017 clause 27.6.
 
 These implicit names are not intuitive for human readers, so this rule is
 designed to check three things:
-  1. The generate block uses `begin`/`end` delimiters.
-  2. The generate block has been given a label, e.g. `begin: mylabel`.
-  3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
-    the string `l_`.
+1. The generate block uses `begin`/`end` delimiters.
+2. The generate block has been given a label, e.g. `begin: mylabel`.
+3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
+  the string `l_`.
 
 The prefix is useful to when reading hierarchical paths to distinguish between
 module/interface instances and generate blocks.

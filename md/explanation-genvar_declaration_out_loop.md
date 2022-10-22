@@ -12,10 +12,10 @@ loop generate constructs.
 That is, using syntax like `genvar i; for (i=0; ...)`.
 However, several examples of declarations inside loop generate constructs are
 present in other areas of the LRM like `for (genvar i=0; ...`:
-  - Clause 11.12 Let construct, example d, page 295.
-  - Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
-  - Clause 20.11 Elaboration system tasks, page 607.
-  - Clause 23.3.3.5 Unpacked array ports and arrays of instances, page 717.
+- Clause 11.12 Let construct, example d, page 295.
+- Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
+- Clause 20.11 Elaboration system tasks, page 607.
+- Clause 23.3.3.5 Unpacked array ports and arrays of instances, page 717.
 
 This rule assumes a strict interpretation of the LRM and checks that
 declarations must be separate from the generate loop syntax.

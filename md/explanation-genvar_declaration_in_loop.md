@@ -12,10 +12,10 @@ loop generate constructs.
 That is, using syntax like `genvar i; for (i=0; ...)`.
 However, several examples of declarations inside loop generate constructs are
 present in other areas of the LRM like `for (genvar i=0; ...`:
-  - Clause 11.12 Let construct, example d, page 295.
-  - Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
-  - Clause 20.11 Elaboration system tasks, page 607.
-  - Clause 23.3.3.5 Unpacked array ports and arrays of instances, page 717.
+- Clause 11.12 Let construct, example d, page 295.
+- Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
+- Clause 20.11 Elaboration system tasks, page 607.
+- Clause 23.3.3.5 Unpacked array ports and arrays of instances, page 717.
 
 Although it is not explicitly stated, a reasonable interpretation is that a
 genvar declared inside a generate loop may only be used within that specific
@@ -24,20 +24,20 @@ This interpretation matches C99 (ISO/IEC 9899:1999), while a requirement for
 the genvar to be declared outside would match ANSI C (ISO/IEC 9899:1990).
 This rule checks that genvars are declared in a C99-like style so that the
 identifier is declared beside its use which has several advantages:
-  - The purpose of the genvar is immediately clear, e.g. it is easy to read
-    that the `i` in `for (genvar i=0; i < N_BITS; i++) ...` refers to a bit
-    index.
-    In contrast, `genvar j; ...many lines... for (j=0; j < N_BITS; j++) ...`
-    requires the reader to keep `j` in their head for a longer time.
-  - Only one comment is necessary, rather than splitting or duplicating the
-    information.
-  - When a future revision of your code removes a generate loop, the genvar
-    declaration is implictly removed too, which avoids lingering useless and
-    distracting statements.
-  - A subsequent generate loop cannot accidentally use a "leftover" genvar
-    which is intended for use only by a previous generate loop.
-    The LRM only requires that "A genvar shall not be referenced anywhere other
-    than in a loop generate scheme.".
+- The purpose of the genvar is immediately clear, e.g. it is easy to read
+  that the `i` in `for (genvar i=0; i < N_BITS; i++) ...` refers to a bit
+  index.
+  In contrast, `genvar j; ...many lines... for (j=0; j < N_BITS; j++) ...`
+  requires the reader to keep `j` in their head for a longer time.
+- Only one comment is necessary, rather than splitting or duplicating the
+  information.
+- When a future revision of your code removes a generate loop, the genvar
+  declaration is implictly removed too, which avoids lingering useless and
+  distracting statements.
+- A subsequent generate loop cannot accidentally use a "leftover" genvar
+  which is intended for use only by a previous generate loop.
+  The LRM only requires that "A genvar shall not be referenced anywhere other
+  than in a loop generate scheme.".
 
 Given the lack of clarity in the LRM, it is unsurprising that some tools might
 not support both ways of declaring genvars, so the related rule
