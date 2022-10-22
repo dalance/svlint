@@ -108,6 +108,29 @@ Each rule is documented with 5 pieces of information:
 - Explanation: A full explanation of the rule's purpose with references to any
   other relevant information sources.
 
+In each rule's explanation there is a "see also" list of other rules, each with
+a short reason why it should be seen.
+- "suggested companion" - Suggestions are given for rules which do not check
+  semantics, i.e suggestions are for style and naming conventions only.
+- "potential companion" - These are noted where the named rule is given
+  primarily out of completeness, but their use may cause other issues.
+  For example, **style_keyword_datatype** exists to ensure all SystemVerilog
+  keywords are captured in the `style_keyword_*` set, but its use is not
+  suggested because it is visually appealing (and common practice) to align
+  the identifiers in declarations.
+- "useful companion" - Enabling the named rule provides an additional set of
+  properties which are useful for reasoning about the function and semantics of
+  code which passes.
+  For example, the conjunction of **localparam_type_twostate** and
+  **localparam_explicit_type** allows for stronger confidence that the author
+  has properly considered the type of each constant.
+- "alternative" - The named rule *should* not be used in conjunction, i.e.
+  enabling both rules is, at best, a waste compute power.
+- "mutually exclusive alternative" - The named rule *can* not be used in
+  conjunction, i.e. enabling both rules is nonsensical because a failure on one
+  implies a pass on the other rule.
+
+
 ---
 ## `blocking_assignment_in_always_ff`
 
@@ -146,16 +169,21 @@ endmodule
 ### Explanation
 
 Simulator event ordering between blocking and non-blocking assignments
-is undefined, so observed behavior simulator-dependent.
+is undefined, so observed behavior is simulator-dependent.
 As all examples in IEEE1800-2017 show, `always_ff` should only contain
 non-blocking assignments in order for sampling and variable evaluation
 to operate in a defined order.
 
 Specifically, `always_ff` constructs should not contain blocking assignments:
-  - Blocking assignment operator, e.g. `foo = 123;`
-  - Increment/decrement operators, e.g. `foo++;`, `foo--;`.
+- Blocking assignment operator, e.g. `foo = 123;`
+- Increment/decrement operators, e.g. `foo++;`, `foo--;`.
+
+See also:
+  - **non_blocking_assignment_in_always_comb** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
+  - 4.9.3 Blocking assignment
+  - 4.9.4 Non-blocking assignment
   - 9.2.2.4 Sequential logic always_ff procedure
   - 9.4.2 Event control
   - 10.4.1 Blocking procedural assignments
@@ -223,11 +251,17 @@ e.g: `always_comb case (foo) '0: a = 5; endcase`.
 Only the case where `foo == 0` is specified, to update variable `a` to the
 value `5`.
 When `foo` is non-zero, this example may be interpreted in at least two ways:
-  - `a = 'x;` - As the new value is not specified, it is unknown.
-    A synthesis tool may allow node `a` to be undriven, or choose to drive
-    `a` equivalently to one of the explicitly specified case expressions.
-  - `a = a;` - As the new value is not specified, do not change `a`.
-    A synthesis tool may produce a latching circuit.
+- `a = 'x;` - As the new value is not specified, it is unknown.
+  A synthesis tool may allow node `a` to be undriven, or choose to drive
+  `a` equivalently to one of the explicitly specified case expressions.
+- `a = a;` - As the new value is not specified, do not change `a`.
+  A synthesis tool may produce a latching circuit.
+
+See also:
+  - **explicit_case_default** - Useful companion rule.
+  - **explicit_if_else** - Useful companion rule.
+  - **legacy_always** - Useful companion rule.
+  - **sequential_block_in_always_comb** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
   - 9.2.2.2 Combinational logic `always_comb` procedure
@@ -272,7 +306,7 @@ IEEE1800-2017 clause 22.8 stipulates "When no `` `default_nettype`` directive
 is present or if the `` `resetall`` directive is specified, implicit nets are of
 type `wire`."
 
-SystemVerilog makes a distiction between variables (only 0 or 1 drivers)
+SystemVerilog makes a distinction between variables (only 0 or 1 drivers)
 and nets (0 or more drivers).
 IEEE1364-2001 (Verilog) uses variables as abstractions for data storage
 elements (`reg`, `integer`, `real`, `time`, `realtime`).
@@ -283,17 +317,22 @@ evaluating the strength of all drivers.
 To keep compatibility with Verilog, the default net type of an undeclared net
 in SystemVerilog is `wire` (a net, not a variable), which requires evaluating a
 list of values with strengths, rather than simply looking up a value.
-The distiction between data storage elements and physical wires is therefore
+The distinction between data storage elements and physical wires is therefore
 made in using `always_comb`, `always_ff`, and (less commonly) `always_latch`
 keywords.
 
 Variables are preferred over nets for most digital logic for 2 reasons:
-  - Only 0 or 1 drivers allowed, so an accidental multi-driving is caught by
-    a compile time error.
-  - Simulator performance (dependent on implemetation).
-    Value can be found by lookup, rather than evaluation of drivers.
+- Only 0 or 1 drivers allowed, so an accidental multi-driving is caught by
+  a compile time error.
+- Simulator performance (dependent on implemetation).
+  Value can be found by lookup, rather than evaluation of drivers.
 When `` `default_nettype none`` is used, all signals must be declared, thus
 forcing the author to consider whether they mean a variable or a net.
+
+See also:
+  - **inout_with_tri** - Useful companion rule.
+  - **input_with_var** - Useful companion rule.
+  - **output_with_var** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
   - 6.5 Nets and variables
@@ -366,7 +405,7 @@ flip-flops have no reset, i.e., you want to be *able* to see x's when a mistake
 is made even if you don't want to see x's.
 
 An `enum` is a set of named values of a single type.
-If no data type is specified, then the default `int` (32b, 2-state) is implied.
+If no datatype is specified, then the default `int` (32b, 2-state) is implied.
 For example, `enum {RED, BLACK} m; assign m = foo ? BLACK : RED;`
 describes a multiplexor, but a simulator is unable to sufficiently model the
 behavior of `m` when the value of `foo` is unknown.
@@ -375,6 +414,12 @@ A more appropriate declaration is
 
 Note: Comparison of 4-state variables against 2-state constants/enums *is*
 appropriate, e.g. `logic a; a = (m == RED);`.
+
+See also:
+  - **localparam_explicit_type** - Useful companion rule.
+  - **localparam_type_twostate** - Useful companion rule.
+  - **parameter_explicit_type** - Useful companion rule.
+  - **parameter_type_twostate** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
   - 6.8 Variable declarations
@@ -574,6 +619,9 @@ Additionally, some tools may (wrongly) confuse user-defined functions with the
 built-in system of the same name (except of the leading `$`) which may lead
 to inconsistent results between tools.
 
+See also:
+  - **function_with_automatic** - Useful companion rule.
+
 The most relevant clauses of IEEE1800-2017 are:
   - 13.7 Task and function names
   - 20 Utility system tasks and system functions
@@ -686,6 +734,9 @@ keyword as part of the function declaration, i.e. in simulation each use of a
 function is allocated dynamically for each concurrent function call.
 This behavior can be accurately inferred in synthesis.
 
+See also:
+  - **function_same_as_system_function** - Useful companion rule.
+
 The most relevant clauses of IEEE1800-2017 are:
   - 13.4.2 Static and automatic functions
 
@@ -748,10 +799,10 @@ IEEE1800-2017 clause 27.6.
 
 These implicit names are not intuitive for human readers, so this rule is
 designed to check three things:
-  1. The generate block uses `begin`/`end` delimiters.
-  2. The generate block has been given a label, e.g. `begin: mylabel`.
-  3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
-    the string `l_`.
+1. The generate block uses `begin`/`end` delimiters.
+2. The generate block has been given a label, e.g. `begin: mylabel`.
+3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
+  the string `l_`.
 
 The prefix is useful to when reading hierarchical paths to distinguish between
 module/interface instances and generate blocks.
@@ -815,10 +866,10 @@ IEEE1800-2017 clause 27.6.
 
 These implicit names are not intuitive for human readers, so this rule is
 designed to check three things:
-  1. The generate block uses `begin`/`end` delimiters.
-  2. The generate block has been given a label, e.g. `begin: mylabel`.
-  3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
-    the string `l_`.
+1. The generate block uses `begin`/`end` delimiters.
+2. The generate block has been given a label, e.g. `begin: mylabel`.
+3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
+  the string `l_`.
 
 The prefix is useful to when reading hierarchical paths to distinguish between
 module/interface instances and generate blocks.
@@ -894,10 +945,10 @@ IEEE1800-2017 clause 27.6.
 
 These implicit names are not intuitive for human readers, so this rule is
 designed to check three things:
-  1. The generate block uses `begin`/`end` delimiters.
-  2. The generate block has been given a label, e.g. `begin: mylabel`.
-  3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
-    the string `l_`.
+1. The generate block uses `begin`/`end` delimiters.
+2. The generate block has been given a label, e.g. `begin: mylabel`.
+3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
+  the string `l_`.
 
 The prefix is useful to when reading hierarchical paths to distinguish between
 module/interface instances and generate blocks.
@@ -960,10 +1011,10 @@ loop generate constructs.
 That is, using syntax like `genvar i; for (i=0; ...)`.
 However, several examples of declarations inside loop generate constructs are
 present in other areas of the LRM like `for (genvar i=0; ...`:
-  - Clause 11.12 Let construct, example d, page 295.
-  - Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
-  - Clause 20.11 Elaboration system tasks, page 607.
-  - Clause 23.3.3.5 Unpacked array ports and arrays of instances, page 717.
+- Clause 11.12 Let construct, example d, page 295.
+- Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
+- Clause 20.11 Elaboration system tasks, page 607.
+- Clause 23.3.3.5 Unpacked array ports and arrays of instances, page 717.
 
 Although it is not explicitly stated, a reasonable interpretation is that a
 genvar declared inside a generate loop may only be used within that specific
@@ -972,20 +1023,20 @@ This interpretation matches C99 (ISO/IEC 9899:1999), while a requirement for
 the genvar to be declared outside would match ANSI C (ISO/IEC 9899:1990).
 This rule checks that genvars are declared in a C99-like style so that the
 identifier is declared beside its use which has several advantages:
-  - The purpose of the genvar is immediately clear, e.g. it is easy to read
-    that the `i` in `for (genvar i=0; i < N_BITS; i++) ...` refers to a bit
-    index.
-    In contrast, `genvar j; ...many lines... for (j=0; j < N_BITS; j++) ...`
-    requires the reader to keep `j` in their head for a longer time.
-  - Only one comment is necessary, rather than splitting or duplicating the
-    information.
-  - When a future revision of your code removes a generate loop, the genvar
-    declaration is implictly removed too, which avoids lingering useless and
-    distracting statements.
-  - A subsequent generate loop cannot accidentally use a "leftover" genvar
-    which is intended for use only by a previous generate loop.
-    The LRM only requires that "A genvar shall not be referenced anywhere other
-    than in a loop generate scheme.".
+- The purpose of the genvar is immediately clear, e.g. it is easy to read
+  that the `i` in `for (genvar i=0; i < N_BITS; i++) ...` refers to a bit
+  index.
+  In contrast, `genvar j; ...many lines... for (j=0; j < N_BITS; j++) ...`
+  requires the reader to keep `j` in their head for a longer time.
+- Only one comment is necessary, rather than splitting or duplicating the
+  information.
+- When a future revision of your code removes a generate loop, the genvar
+  declaration is implictly removed too, which avoids lingering useless and
+  distracting statements.
+- A subsequent generate loop cannot accidentally use a "leftover" genvar
+  which is intended for use only by a previous generate loop.
+  The LRM only requires that "A genvar shall not be referenced anywhere other
+  than in a loop generate scheme.".
 
 Given the lack of clarity in the LRM, it is unsurprising that some tools might
 not support both ways of declaring genvars, so the related rule
@@ -1045,10 +1096,10 @@ loop generate constructs.
 That is, using syntax like `genvar i; for (i=0; ...)`.
 However, several examples of declarations inside loop generate constructs are
 present in other areas of the LRM like `for (genvar i=0; ...`:
-  - Clause 11.12 Let construct, example d, page 295.
-  - Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
-  - Clause 20.11 Elaboration system tasks, page 607.
-  - Clause 23.3.3.5 Unpacked array ports and arrays of instances, page 717.
+- Clause 11.12 Let construct, example d, page 295.
+- Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
+- Clause 20.11 Elaboration system tasks, page 607.
+- Clause 23.3.3.5 Unpacked array ports and arrays of instances, page 717.
 
 This rule assumes a strict interpretation of the LRM and checks that
 declarations must be separate from the generate loop syntax.
@@ -1069,11 +1120,11 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-`inout` must have `tri`
+Specify `tri` datakind on `inout` ports.
 
 ### Reason
 
-
+Explicit datakind of bi-directional ports should be consistent with input ports.
 
 ### Pass Example
 
@@ -1095,7 +1146,47 @@ endmodule
 
 ### Explanation
 
-TODO
+This check mandates that each `inout` port must be explicitly declared as a
+tri-state net, rather than the default nettype.
+
+The rules for determining port kind, datatype, and direction are specified in
+IEEE1800-2017 Clause 23.2.2.3 and facilitate various shorthand notations which
+are backwards compatible with the semantics of Verilog (IEEE1364-1995):
+- `inout a` -> `inout tri logic a` The implicit datatype is `logic` and the
+  default nettype is `tri` (without overriding via the `` `default_nettype ``
+  compiler directive).
+- `inout wire a` -> `inout tri logic a` Again, using the implicit datatype of
+  `logic`;
+  As `wire` is an alias for `tri`, this is equivalent to the above example.
+- `inout logic a` -> `inout tri logic a` This time using an explicit datatype
+  (`logic`) but relying on the default nettype for its datakind.
+- `inout wire logic a` -> `inout tri logic a` Again, even with an explicit
+  datatype (`logic`), the `wire` keyword is simply an alias for the datakind
+  `tri`.
+
+When the default nettype is overridden to none, i.e. with the compiler
+directive `` `default_nettype none ``, inout ports require an explicit
+datakind.
+
+Although the semantics of `inout a` are equivalent in IEEE1364-1995, the intent
+is not clearly described.
+An author should use `inout` to declare ports which are driven both internally
+and externally, but `input` to declare ports which should only be driven
+externally.
+In order to describe the intended bi-directional behavior, `inout` ports must
+be declared with an explicit `tri` datakind.
+
+See also:
+  - **default_nettype_none** - Useful companion rule.
+  - **input_with_var** - Suggested companion rule.
+  - **output_with_var** - Suggested companion rule.
+  - **prefix_inout** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 6.5 Nets and variables
+  - 6.6 Net types
+  - 22.8 default nettype
+  - 23.2.2 Port declarations
 
 
 ---
@@ -1103,11 +1194,11 @@ TODO
 
 ### Hint
 
-`input` must have `var`
+Specify `var` datakind on `input` ports.
 
 ### Reason
 
-`input wire` can be assigned by mistake. `input logic` becomes error with `default nettype none` because it doesn't have net type.
+Default datakind of input port is a tri-state net.
 
 ### Pass Example
 
@@ -1129,7 +1220,48 @@ endmodule
 
 ### Explanation
 
-TODO
+This check mandates that each `input` port must be explicitly declared as a
+variable, rather than the default nettype.
+
+The rules for determining port kind, datatype, and direction are specified in
+IEEE1800-2017 Clause 23.2.2.3 and facilitate various shorthand notations which
+are backwards compatible with the semantics of Verilog (IEEE1364-1995):
+- `input a` -> `input tri logic a` The implicit datatype is `logic` and the
+  default nettype is `tri` (without overriding via the `` `default_nettype ``
+  compiler directive).
+- `input wire a` -> `input tri logic a` Again, using the implicit datatype of
+  `logic`;
+  As `wire` is an alias for `tri`, this is equivalent to the above example.
+- `input logic a` -> `input tri logic a` This time using an explicit datatype
+  (`logic`) but relying on the default nettype for its datakind.
+- `input wire logic a` -> `input tri logic a` Again, even with an explicit
+  datatype (`logic`), the `wire` keyword is simply an alias for the datakind
+  `tri`.
+
+When the default nettype is overridden to none, i.e. with the compiler
+directive `` `default_nettype none ``, input ports require an explicit
+datakind.
+
+Although the semantics of `input a` are equivalent in IEEE1364-1995, the intent
+is not clearly described.
+An author should use `input` to declare ports which should only be driven
+externally, and `inout` to declare ports which may also be driven internally.
+In order to describe the intended uni-directional behavior, `input` ports must
+be declared with an explicit `var` datakind, thus requiring the compiler to
+check that the input is not driven from within the module (and if so, emit an
+error).
+
+See also:
+  - **default_nettype_none** - Useful companion rule.
+  - **inout_with_tri** - Suggested companion rule.
+  - **output_with_var** - Suggested companion rule.
+  - **prefix_input** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 6.5 Nets and variables
+  - 6.6 Net types
+  - 22.8 default nettype
+  - 23.2.2 Port declarations
 
 
 ---
@@ -1137,11 +1269,11 @@ TODO
 
 ### Hint
 
-interface port must have modport
+Specify the modport on the interface port.
 
 ### Reason
 
-interface port without modport maybe `inout` at synthesis
+Without a modport, the interface port signals are all implictly `inout`.
 
 ### Pass Example
 
@@ -1167,17 +1299,27 @@ endmodule
 
 TODO
 
+See also:
+  - **inout_with_tri** - Useful companion rule.
+  - **input_with_var** - Useful companion rule.
+  - **non_ansi_module** - Useful companion rule.
+  - **output_with_var** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 25.4 Ports in interfaces
+  - 25.5 Modports
+
 
 ---
 ## `keyword_forbidden_always`
 
 ### Hint
 
-`always_comb`/`always_ff`/`always_latch` must be used
+Use `always_comb`/`always_ff`/`always_latch` instead of `always`.
 
 ### Reason
 
-`always` can't detect blocking/non-blocking mistake
+General-purpose `always` cannot detect combinatorial/stateful (non-)blocking mistakes.
 
 ### Pass Example
 
@@ -1200,6 +1342,16 @@ endmodule
 ### Explanation
 
 TODO
+
+See also:
+  - **level_sensitive_always** - Useful companion rule.
+  - **sequential_block_in_always_comb** - Useful companion rule.
+  - **sequential_block_in_always_if** - Useful companion rule.
+  - **sequential_block_in_always_latch** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 9.2.2 Always procedures
+  - 9.5 Process execution threads
 
 
 ---
@@ -1260,11 +1412,11 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-`priority` is forbidden
+Remove `priority` keyword, perhaps replace with an assertion.
 
 ### Reason
 
-this causes mismatch between simulation and synthesis
+Priority-case/if constructs may mismatch between simulation and synthesis.
 
 ### Pass Example
 
@@ -1294,17 +1446,26 @@ endmodule
 
 TODO
 
+See also:
+  - **case_default** - Useful companion rule.
+  - **explicit_case_default** - Useful companion rule.
+  - **keyword_forbidden_unique** - Useful companion rule.
+  - **keyword_forbidden_unique0** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 12.5 Case statement
+
 
 ---
 ## `keyword_forbidden_unique`
 
 ### Hint
 
-`unique` is forbidden
+Remove `unique` keyword, perhaps replace with an assertion.
 
 ### Reason
 
-this causes mismatch between simulation and synthesis
+Unique-case/if constructs may mismatch between simulation and synthesis.
 
 ### Pass Example
 
@@ -1334,17 +1495,26 @@ endmodule
 
 TODO
 
+See also:
+  - **case_default** - Useful companion rule.
+  - **explicit_case_default** - Useful companion rule.
+  - **keyword_forbidden_priority** - Useful companion rule.
+  - **keyword_forbidden_unique0** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 12.5 Case statement
+
 
 ---
 ## `keyword_forbidden_unique0`
 
 ### Hint
 
-`unique0` is forbidden
+Remove `unique0` keyword, perhaps replace with an assertion.
 
 ### Reason
 
-this causes mismatch between simulation and synthesis
+Unique0-case/if constructs may mismatch between simulation and synthesis.
 
 ### Pass Example
 
@@ -1374,17 +1544,26 @@ endmodule
 
 TODO
 
+See also:
+  - **case_default** - Useful companion rule.
+  - **explicit_case_default** - Useful companion rule.
+  - **keyword_forbidden_priority** - Useful companion rule.
+  - **keyword_forbidden_unique** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 12.5 Case statement
+
 
 ---
 ## `keyword_forbidden_wire_reg`
 
 ### Hint
 
-`wire`/`reg` must be replaced to `logic`/`tri`
+Replace `wire` or `reg` keywords with `logic`, `tri` and/or `var`.
 
 ### Reason
 
-`logic` can detect multi-drive
+Explicit datatype `logic` and/or datakind `var`/`tri` better describes intent.
 
 ### Pass Example
 
@@ -1406,7 +1585,30 @@ endmodule
 
 ### Explanation
 
-TODO
+The keywords `wire` and `reg` are present in SystemVerilog primarily for
+backwards compatibility with Verilog (IEEE1364-1995).
+In SystemVerilog, there are additional keywords, such as `logic` and `tri`
+with more refined semantics to better express the programmer's intent.
+
+The LRM covers the use of `wire`:
+> The net types `wire` and `tri` shall be identical in their syntax and
+> functions; two names are provided so that the name of a net can indicate the
+> purpose of the net in that model.
+
+The LRM covers the use of `reg`:
+> The keyword `reg` does not always accurately describe user intent, as it
+> could be perceived to imply a hardware register. The keyword `logic` is a
+> more descriptive term. `logic` and `reg` denote the same type.
+
+See also:
+  - **default_nettype** - Useful companion rule.
+  - **inout_with_tri** - Useful companion rule.
+  - **input_with_var** - Useful companion rule.
+  - **output_with_var** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 6.6.1 Wire and tri nets
+  - 6.11.2 2-state (two-value) and 4-state (four-value) data types
 
 
 ---
@@ -1479,11 +1681,11 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-level sensitive `always` must be `always_comb`
+Replace level sensitive `always` with `always_comb`.
 
 ### Reason
 
-`always` can't detect blocking/non-blocking mistake
+General-purpose `always` cannot detect combinatorial/stateful (non-)blocking mistakes.
 
 ### Pass Example
 
@@ -1515,17 +1717,27 @@ endmodule
 
 TODO
 
+See also:
+  - **keyword_forbidden_always** - Useful companion rule.
+  - **sequential_block_in_always_comb** - Useful companion rule.
+  - **sequential_block_in_always_if** - Useful companion rule.
+  - **sequential_block_in_always_latch** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 9.2.2 Always procedures
+  - 9.5 Process execution threads
+
 
 ---
 ## `localparam_explicit_type`
 
 ### Hint
 
-`localparam` must be have an explicit type
+Provide an explicit type in `localparam` declaration.
 
 ### Reason
 
-parameter types show intent and improve readability
+Explicit parameter types clarify intent and improve readability.
 
 ### Pass Example
 
@@ -1546,6 +1758,17 @@ endmodule
 ### Explanation
 
 TODO
+
+See also:
+  - **localparam_type_twostate** - Useful companion rule.
+  - **parameter_explicit_type** - Useful companion rule.
+  - **parameter_type_twostate** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 6.3 Value set
+  - 6.11 Integer data types
+  - 6.20.2 Value parameters
+  - 6.20.4 Local parameters (localparam)
 
 
 ---
@@ -1597,9 +1820,9 @@ between simulation and synthesis.
 
 The relevant quote about implicit conversion of packed structure members from
 2-state to 4-state is found on page 140 of IEEE1800-2017:
-If all data types within a packed structure are 2-state, the structure as a
+If all datatypes within a packed structure are 2-state, the structure as a
 whole is treated as a 2-state vector.
-If any data type within a packed structure is 4-state, the structure as a whole
+If any datatype within a packed structure is 4-state, the structure as a whole
 is treated as a 4-state vector.
 If there are also 2-state members in the structure, there is an implicit
 conversion from 4-state to 2-state when reading those members and from 2-state
@@ -1677,11 +1900,11 @@ NOTE: The reasoning behind this rule invites the creation of some new rules:
 
 ### Hint
 
-loop variable must be declared in loop
+Declare the loop variable within the loop, i.e. `for (int i`.
 
 ### Reason
 
-the scope of variable should be minimized
+Minimizing the variable's scope avoids common coding errors.
 
 ### Pass Example
 
@@ -1708,7 +1931,18 @@ endmodule
 
 ### Explanation
 
-TODO
+A loop variable may be declared either inside the loop, e.g.
+`for (int i = 0; i < 5; i++)`, or outside the loop, e.g.
+`int i; ... for (i = 0; i < 5; i++)`.
+This rule mandates that the scope of a loop variable, e.g. `i`, is minimized to
+avoid a common class of coding mistake where `i` is erronously used outside the
+loop.
+
+See also:
+  - **function_with_automatic** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 12.7 Loop statements
 
 
 ---
@@ -1986,11 +2220,11 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-module declaration must be ANSI-style
+Declare `module` header in ANSI style.
 
 ### Reason
 
-non-ANSI-style has duplicated port declaration
+Non-ANSI module headers are visually noisy and error-prone.
 
 ### Pass Example
 
@@ -2018,17 +2252,23 @@ endmodule
 
 TODO
 
+See also:
+  - None applicable
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 23.2 Module definitions
+
 
 ---
 ## `non_blocking_assignment_in_always_comb`
 
 ### Hint
 
-non-blocking assignment is forbidden in`always_comb`
+Remove non-blocking assignment in `always_comb`.
 
 ### Reason
 
-non-blocking assignment in `always_comb` causes elaboration error
+Scheduling between blocking and non-blocking assignments is non-deterministic.
 
 ### Pass Example
 
@@ -2054,17 +2294,28 @@ endmodule
 
 TODO
 
+See also:
+  - **blocking_assignment_in_always_ff** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 4.9.3 Blocking assignment
+  - 4.9.4 Non-blocking assignment
+  - 9.2.2.2 Combinational logic `always_comb` procedure
+  - 9.4.2 Event control
+  - 10.4.1 Blocking procedural assignments
+  - 10.4.2 Nonblocking procedural assignments
+
 
 ---
 ## `output_with_var`
 
 ### Hint
 
-`output` must have `var`
+Specify `var` datakind on `output` ports.
 
 ### Reason
 
-
+Explicit datakind of output ports should be consistent with input ports.
 
 ### Pass Example
 
@@ -2086,7 +2337,49 @@ endmodule
 
 ### Explanation
 
-TODO
+This check mandates that each `output` port must be explicitly declared as a
+variable, rather than the default nettype or implict datakind.
+
+The rules for determining port kind, datatype, and direction are specified in
+IEEE1800-2017 Clause 23.2.2.3 and facilitate various shorthand notations which
+are backwards compatible with the semantics of Verilog (IEEE1364-1995):
+- `output a` -> `output tri logic a` The implicit datatype is `logic` and the
+  default nettype is `tri` (without overriding via the `` `default_nettype ``
+  compiler directive).
+- `output wire a` -> `output tri logic a` Again, using the implicit datatype of
+  `logic`;
+  As `wire` is an alias for `tri`, this is equivalent to the above example.
+- `output wire logic a` -> `output tri logic a` Again, even with an explicit
+  datatype (`logic`), the `wire` keyword is simply an alias for the datakind
+  `tri`.
+- `output logic a` -> `output var logic a` This time the datakind is implicit,
+  but the datatype is *explicit*, so the inferred datakind is `var`.
+
+When the datatype is implicit and the default nettype is overridden to none,
+i.e. with the compiler directive `` `default_nettype none ``,  output ports
+require an explicit datakind.
+
+Although the semantics of `output a` are equivalent in IEEE1364-1995, the
+intent is not clearly described, and the difference to `output logic a` is
+unintuitive.
+An author should use `output` to declare ports which should only be driven
+internally, and `inout` to declare ports which may also be driven externally.
+In order to describe the intended uni-directional behavior, `output` ports must
+be declared with an explicit `var` datakind, thus requiring the compiler to
+check that the output is only driven from within the module (otherwise, emit an
+error).
+
+See also:
+  - **default_nettype_none** - Useful companion rule.
+  - **inout_with_tri** - Suggested companion rule.
+  - **output_with_var** - Suggested companion rule.
+  - **prefix_output** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 6.5 Nets and variables
+  - 6.6 Net types
+  - 22.8 default nettype
+  - 23.2.2 Port declarations
 
 
 ---
@@ -2094,11 +2387,11 @@ TODO
 
 ### Hint
 
-`parameter` must be have an explicit type
+Provide an explicit type in `parameter` declaration.
 
 ### Reason
 
-parameter types show intent and improve readability
+Explicit parameter types clarify intent and improve readability.
 
 ### Pass Example
 
@@ -2118,17 +2411,28 @@ endmodule
 
 TODO
 
+See also:
+  - **localparam_explicit_type** - Useful companion rule.
+  - **localparam_type_twostate** - Useful companion rule.
+  - **parameter_type_twostate** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 6.3 Value set
+  - 6.11 Integer data types
+  - 6.20.2 Value parameters
+  - 23.2.3 Parameterized modules
+
 
 ---
 ## `parameter_in_package`
 
 ### Hint
 
-`parameter` must be replaced to `localparam` in `package`
+Replace `parameter` keyword with `localparam`.
 
 ### Reason
 
-some tools can't take `parameter` in `package`
+In a package, `localparam` properly describes the non-overridable semantics.
 
 ### Pass Example
 
@@ -2148,7 +2452,17 @@ endpackage
 
 ### Explanation
 
-TODO
+In the context of a package, the `parameter` keyword is a synonym for the
+`localparam` keyword.
+This rule encourages the author to consider that the constant may not be
+overridden and convey that explictly.
+
+See also:
+  - None applicable.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 6.20.4 Local parameters (localparam)
+  - 26 Packages
 
 
 ---
