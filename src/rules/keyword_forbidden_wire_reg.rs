@@ -30,10 +30,10 @@ impl Rule for KeywordForbiddenWireReg {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`wire`/`reg` must be replaced to `logic`/`tri`")
+        String::from("Replace `wire` or `reg` keywords with `logic`, `tri` and/or `var`.")
     }
 
     fn reason(&self) -> String {
-        String::from("`logic` can detect multi-drive")
+        String::from("Explicit datatype `logic` and/or datakind `var`/`tri` better describes intent.")
     }
 }
