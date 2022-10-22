@@ -5,7 +5,7 @@ IEEE1800-2017 clause 22.8 stipulates "When no `` `default_nettype`` directive
 is present or if the `` `resetall`` directive is specified, implicit nets are of
 type `wire`."
 
-SystemVerilog makes a distiction between variables (only 0 or 1 drivers)
+SystemVerilog makes a distinction between variables (only 0 or 1 drivers)
 and nets (0 or more drivers).
 IEEE1364-2001 (Verilog) uses variables as abstractions for data storage
 elements (`reg`, `integer`, `real`, `time`, `realtime`).
@@ -16,7 +16,7 @@ evaluating the strength of all drivers.
 To keep compatibility with Verilog, the default net type of an undeclared net
 in SystemVerilog is `wire` (a net, not a variable), which requires evaluating a
 list of values with strengths, rather than simply looking up a value.
-The distiction between data storage elements and physical wires is therefore
+The distinction between data storage elements and physical wires is therefore
 made in using `always_comb`, `always_ff`, and (less commonly) `always_latch`
 keywords.
 
