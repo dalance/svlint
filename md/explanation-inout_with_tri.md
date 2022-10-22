@@ -29,10 +29,10 @@ In order to describe the intended bi-directional behavior, `inout` ports must
 be declared with an explicit `tri` datakind.
 
 See also:
-  - **default_nettype_none** - Suggested companion rule.
+  - **default_nettype_none** - Useful companion rule.
   - **input_with_var** - Suggested companion rule.
   - **output_with_var** - Suggested companion rule.
-  - **prefix_inout** - Suggested companion rule.
+  - **prefix_inout** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
   - 6.5 Nets and variables

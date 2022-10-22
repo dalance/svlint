@@ -31,10 +31,10 @@ check that the output is only driven from within the module (otherwise, emit an
 error).
 
 See also:
-  - **default_nettype_none** - Suggested companion rule.
+  - **default_nettype_none** - Useful companion rule.
   - **inout_with_tri** - Suggested companion rule.
   - **output_with_var** - Suggested companion rule.
-  - **prefix_output** - Suggested companion rule.
+  - **prefix_output** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
   - 6.5 Nets and variables

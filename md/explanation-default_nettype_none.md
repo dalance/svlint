@@ -28,6 +28,11 @@ Variables are preferred over nets for most digital logic for 2 reasons:
 When `` `default_nettype none`` is used, all signals must be declared, thus
 forcing the author to consider whether they mean a variable or a net.
 
+See also:
+  - **inout_with_tri** - Useful companion rule.
+  - **input_with_var** - Useful companion rule.
+  - **output_with_var** - Useful companion rule.
+
 The most relevant clauses of IEEE1800-2017 are:
   - 6.5 Nets and variables
   - 22.8 default nettype
