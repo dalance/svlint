@@ -29,10 +29,10 @@ impl Rule for KeywordForbiddenPriority {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`priority` is forbidden")
+        String::from("Remove `priority` keyword, perhaps replace with an assertion.")
     }
 
     fn reason(&self) -> String {
-        String::from("this causes mismatch between simulation and synthesis")
+        String::from("Priority-case/if constructs may mismatch between simulation and synthesis.")
     }
 }

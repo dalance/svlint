@@ -29,10 +29,10 @@ impl Rule for NonAnsiModule {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("module declaration must be ANSI-style")
+        String::from("Declare `module` header in ANSI style.")
     }
 
     fn reason(&self) -> String {
-        String::from("non-ANSI-style has duplicated port declaration")
+        String::from("Non-ANSI module headers are visually noisy and error-prone.")
     }
 }

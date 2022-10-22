@@ -29,10 +29,10 @@ impl Rule for KeywordForbiddenUnique0 {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`unique0` is forbidden")
+        String::from("Remove `unique0` keyword, perhaps replace with an assertion.")
     }
 
     fn reason(&self) -> String {
-        String::from("this causes mismatch between simulation and synthesis")
+        String::from("Unique0-case/if constructs may mismatch between simulation and synthesis.")
     }
 }

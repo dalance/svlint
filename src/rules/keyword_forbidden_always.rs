@@ -29,10 +29,10 @@ impl Rule for KeywordForbiddenAlways {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`always_comb`/`always_ff`/`always_latch` must be used")
+        String::from("Use `always_comb`/`always_ff`/`always_latch` instead of `always`.")
     }
 
     fn reason(&self) -> String {
-        String::from("`always` can't detect blocking/non-blocking mistake")
+        String::from("General-purpose `always` cannot detect combinatorial/stateful (non-)blocking mistakes.")
     }
 }
