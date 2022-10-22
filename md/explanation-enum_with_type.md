@@ -22,7 +22,7 @@ flip-flops have no reset, i.e., you want to be *able* to see x's when a mistake
 is made even if you don't want to see x's.
 
 An `enum` is a set of named values of a single type.
-If no data type is specified, then the default `int` (32b, 2-state) is implied.
+If no datatype is specified, then the default `int` (32b, 2-state) is implied.
 For example, `enum {RED, BLACK} m; assign m = foo ? BLACK : RED;`
 describes a multiplexor, but a simulator is unable to sufficiently model the
 behavior of `m` when the value of `foo` is unknown.

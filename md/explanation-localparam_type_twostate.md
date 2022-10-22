@@ -12,9 +12,9 @@ between simulation and synthesis.
 
 The relevant quote about implicit conversion of packed structure members from
 2-state to 4-state is found on page 140 of IEEE1800-2017:
-If all data types within a packed structure are 2-state, the structure as a
+If all datatypes within a packed structure are 2-state, the structure as a
 whole is treated as a 2-state vector.
-If any data type within a packed structure is 4-state, the structure as a whole
+If any datatype within a packed structure is 4-state, the structure as a whole
 is treated as a 4-state vector.
 If there are also 2-state members in the structure, there is an implicit
 conversion from 4-state to 2-state when reading those members and from 2-state
