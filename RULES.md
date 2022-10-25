@@ -1444,7 +1444,33 @@ endmodule
 
 ### Explanation
 
-TODO
+The keyword `priority` may be used on `if`/`else` or `case` statements to
+enable *violation checks* in simulation, and describe design intent for
+synthesis.
+
+A `priority if` statement without an explicit `else` clause will produce a
+*violation report* in simulation if the implicit `else` condition is matched.
+A `priority if` statement with an explicit `else` clause cannot produce a
+violation report.
+In synthesis, the `priority` keyword makes no difference to an `if`/`else`
+statement, because the semantics of bare `if`/`else` statements already imply
+priority logic.
+
+A `priority case` statement without a `default` arm will produce a
+violation report in simulation if the `default` condition is matched.
+A `priority case` statement with an explicit `default` arm cannot produce a
+violation report.
+In synthesis, the `priority` keyword indicates that the designer has manually
+checked that all of the possible cases are specified in the non-default arms.
+This is equivalent to the use of the informal `full_case` directive comment
+commonly seen in older Verilog code.
+
+Violation checks only apply in simulation, not in synthesized hardware, which
+allows for mismatches to occur.
+For example, where violation reports are produced but ignored for whatever
+reason, but the simulation does not otherwise check for the erroneous
+condition, the synthesis tool may produce a netlist with the invalid assumption
+that the condition cannot be met.
 
 See also:
   - **case_default** - Useful companion rule.
@@ -1453,6 +1479,7 @@ See also:
   - **keyword_forbidden_unique0** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
+  - 12.4 Conditional if-else statement
   - 12.5 Case statement
 
 
@@ -1493,7 +1520,43 @@ endmodule
 
 ### Explanation
 
-TODO
+The keyword `unique` may be used on `if`/`else` or `case` statements to
+enable *violation checks* in simulation, describe design intent for synthesis,
+and change the semantics of condition priority.
+
+A `unique if` statement without an explicit `else` clause will produce a
+*violation report* in simulation if the implicit `else` condition is matched,
+or more than one `if` conditions are matched.
+A `unique if` statement with an explicit `else` clause will produce a violation
+report when more than one of the `if` conditions are matched.
+Thus, the conditions in a `unique if` statement may be evaluated in any order.
+A `unique case` statement will produce a violation report if multiple arms
+match the case expression.
+
+In synthesis, the `unique` keyword on an `if`/`else` statement specifies that
+priority logic (between the conditions) is not required - a significant change
+in semantics vs a bare `if`/`else` statement.
+Similarly, priority logic is not required between arms of a `unique case`
+statement.
+The `unique` keyword indicates that the designer has manually checked that
+exactly 1 of the specified conditions must be met, so all conditions may be
+safely calculated in parallel.
+This is equivalent to the use of the informal `parallel_case` and `full_case`
+directive comments commonly seen in older Verilog code.
+
+In simulation, after finding a uniqueness violation in a `unique if`, the
+simulator is not required to evaluate or compare the rest of the conditions.
+However, in a `unique case`, all case item expressions must be evaluated even
+once a matching arm is found.
+These attributes mean that the presence of side effects, e.g. `$display()` or
+`foo++`, may cause non-deterministic results.
+
+Violation checks only apply in simulation, not in synthesized hardware, which
+allows for mismatches to occur.
+For example, where violation reports are produced but ignored for whatever
+reason, but the simulation does not otherwise check for the erroneous
+condition, the synthesis tool may produce a netlist with the invalid assumption
+that the conditions can be safely evaluated in parallel.
 
 See also:
   - **case_default** - Useful companion rule.
@@ -1502,6 +1565,7 @@ See also:
   - **keyword_forbidden_unique0** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
+  - 12.4 Conditional if-else statement
   - 12.5 Case statement
 
 
@@ -1542,7 +1606,41 @@ endmodule
 
 ### Explanation
 
-TODO
+The keyword `unique0` may be used on `if`/`else` or `case` statements to
+enable *violation checks* in simulation, describe design intent for synthesis,
+and change the semantics of condition priority.
+
+A `unique0 if` statement will produce a *violation report* in simulation if
+more than one `if` condition is matched.
+Thus, the conditions in a `unique0 if` statement may be evaluated in any order.
+In synthesis, the `unique0` keyword specifies that priority logic (between the
+conditions) is not required - a significant change in semantics vs a bare
+`if`/`else` statement.
+
+In synthesis, the `unique0` keyword on an `if`/`else` statement specifies that
+priority logic (between the conditions) is not required - a significant change
+in semantics vs a bare `if`/`else` statement.
+Similarly, priority logic is not required between arms of a `unique0 case`
+statement.
+The `unique0` keyword indicates that the designer has manually checked that
+exactly 0 or 1 of the specified conditions must be met, so all conditions may
+be safely calculated in parallel.
+This is equivalent to the use of the informal `parallel_case` and `full_case`
+directive comments commonly seen in older Verilog code.
+
+In simulation, after finding a uniqueness violation in a `unique0 if`, the
+simulator is not required to evaluate or compare the rest of the conditions.
+However, in a `unique0 case`, all case item expressions must be evaluated even
+once a matching arm is found.
+These attributes mean that the presence of side effects, e.g. `$display()` or
+`foo++`, may cause non-deterministic results.
+
+Violation checks only apply in simulation, not in synthesized hardware, which
+allows for mismatches to occur.
+For example, where violation reports are produced but ignored for whatever
+reason, but the simulation does not otherwise check for the erroneous
+condition, the synthesis tool may produce a netlist with the invalid assumption
+that the conditions can be safely evaluated in parallel.
 
 See also:
   - **case_default** - Useful companion rule.
@@ -1551,6 +1649,7 @@ See also:
   - **keyword_forbidden_unique** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
+  - 12.4 Conditional if-else statement
   - 12.5 Case statement
 
 
@@ -1935,8 +2034,8 @@ A loop variable may be declared either inside the loop, e.g.
 `for (int i = 0; i < 5; i++)`, or outside the loop, e.g.
 `int i; ... for (i = 0; i < 5; i++)`.
 This rule mandates that the scope of a loop variable, e.g. `i`, is minimized to
-avoid a common class of coding mistake where `i` is erronously used outside the
-loop.
+avoid a common class of coding mistake where `i` is erroneously used outside
+the loop.
 
 See also:
   - **function_with_automatic** - Useful companion rule.
@@ -2250,7 +2349,18 @@ endmodule
 
 ### Explanation
 
-TODO
+There are two ways to declare a module header in SystemVerilog:
+1. ANSI style - newer, neater, more succinct, compatible with IEEE1364-2001.
+2. non-ANSI style - additionally compatible with older Verilog (IEEE1364-1995).
+Examples of both styles are given in IEEE1364-2001 (e.g. pages 180 vs 182) and
+IEEE1800-2017 (e.g. pages 702 vs 700).
+
+The non-ANSI style separates the declaration of ports, their direction, and
+their datatype.
+In addition to requiring more text, and visual noise, to convey the same
+information, the non-ANSI style encourages simple coding mistakes where
+essential attributes may be forgotten.
+This rule requires that module headers are declared using the ANSI style.
 
 See also:
   - None applicable
