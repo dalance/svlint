@@ -1,6 +1,10 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.4...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.5...Unreleased) - ReleaseDate
+
+## [v0.5.5](https://github.com/dalance/svlint/compare/v0.5.4...v0.5.5) - 2022-07-06
+
+* [Added] Print preprocessor output to STDOUT with -E. [#175](https://github.com/dalance/svlint/pull/175)
 
 ## [v0.5.4](https://github.com/dalance/svlint/compare/v0.5.3...v0.5.4) - 2022-06-07
 

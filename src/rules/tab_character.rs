@@ -26,6 +26,13 @@ impl Rule for TabCharacter {
                     None => RuleResult::Pass,
                 }
             }
+            RefNode::WhiteSpace(WhiteSpace::Newline(x)) => {
+                let text = syntax_tree.get_str(x).unwrap();
+                match text.find('\t') {
+                    Some(x) => RuleResult::FailAt(x, 1),
+                    None => RuleResult::Pass,
+                }
+            }
             _ => RuleResult::Pass,
         }
     }
