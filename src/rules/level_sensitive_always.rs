@@ -43,10 +43,10 @@ impl Rule for LevelSensitiveAlways {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("Replace level sensitive `always` with `always_comb`.")
+        String::from("Replace level-sensitive `always` with `always_comb`.")
     }
 
     fn reason(&self) -> String {
-        String::from("General-purpose `always` cannot detect combinatorial/stateful (non-)blocking mistakes.")
+        String::from("Level-sensitive `always` cannot detect combinatorial/stateful (non-)blocking mistakes.")
     }
 }
