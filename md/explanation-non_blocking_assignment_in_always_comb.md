@@ -1,4 +1,12 @@
-TODO
+Simulator event ordering between blocking and non-blocking assignments
+is undefined, so observed behavior is simulator-dependent.
+This rule forbids the use of non-blocking assigments (using the `<=` operator)
+in `always_comb` blocks.
+Instead, use the blocking assignment operator `=`.
+
+An excellent paper detailing the semantics of Verilog blocking and non-blocking
+assignments is written by Clifford E Cummings and presented at SNUG-2000,
+"Nonblocking Assignments in Verilog Synthesis, Coding Styles that Kill".
 
 See also:
   - **blocking_assignment_in_always_ff** - Useful companion rule.
