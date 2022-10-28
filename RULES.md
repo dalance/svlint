@@ -87,11 +87,28 @@ SystemVerilog is between tools for simulation and tools for synthesis.
 The SystemVerilog language is specifed in IEEE1800-2017, also known as the
 Language Reference Manual (LRM).
 The LRM is clear that the specification is written in terms of simulation, but
-that some of it's constructs may be synthesized into physical hardware.
+that some of its constructs may be synthesized into physical hardware.
 This distinction is the basis for a class of functional rules which aim to
 minimize the risk of introducing a mismatch between simulation and synthesis.
 Another class of functional rules is those which check for datatypes and
 constructs that avoid compiler checks for legacy compatibility.
+
+## How It Works
+
+This tool (svlint) works in a series of well-defined steps:
+1. On startup, search for a configuration file or use a default configuration.
+2. Examine the configuration to determine which rules should be enabled and
+  load them into memory.
+3. Parse a whole file for preprocessor constructs like `` `ifdef `` and
+  `` `include ``.
+4. Apply the preprocessor semantics to produce a source descrition text.
+5. Parse the source description into a syntax tree.
+  The grammatical structure of a syntax tree is described in IEEE1800-2017
+  Annex A using Backus-Naur Form.
+6. Iterate over each node of the syntax tree in order.
+7. For each node, apply each rule independently.
+8. If a rule detects an undesirable quality in the syntax tree, then return a
+  failure, otherwise return a pass.
 
 
 # Rules
