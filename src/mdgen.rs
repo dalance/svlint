@@ -25,9 +25,6 @@ pub fn main() {
     let p: String = format!("md/manual-introduction.md");
     println!("{}\n", file_contents(&p));
 
-    // TODO: manual-classes
-    // TODO: classes-* via build.rs to extract list of all rules belonging to each class.
-
     let p: String = format!("md/manual-rules.md");
     println!("{}\n", file_contents(&p));
     for rule in rules {
