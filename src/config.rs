@@ -60,47 +60,38 @@ fn default_as_false() -> bool {
     false
 }
 
-#[allow(dead_code)]
 fn default_indent() -> usize {
     2
 }
 
-#[allow(dead_code)]
 fn default_prefix_inout() -> String {
     String::from("b_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_input() -> String {
     String::from("i_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_output() -> String {
     String::from("o_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_label() -> String {
     String::from("l_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_instance() -> String {
     String::from("u_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_module() -> String {
     String::from("mod_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_package() -> String {
     String::from("pkg_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_interface() -> String {
     String::from("ifc_")
 }
