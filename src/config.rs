@@ -34,6 +34,12 @@ pub struct ConfigOption {
     pub prefix_package: String,
     #[serde(default = "default_prefix_interface")]
     pub prefix_interface: String,
+
+    #[serde(default = "default_re_mixedcase")]
+    pub re_required_module_ansi: String,
+
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_module_ansi: String,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));

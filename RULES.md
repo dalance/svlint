@@ -1370,6 +1370,54 @@ end
 endmodule
 ```
 
+## re_forbidden_module_ansi
+
+### Description
+
+Use a module identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module foo; // Identifier matches default forbidden regex.
+endmodule
+```
+
+## re_required_module_ansi
+
+### Description
+
+Use a module identifier matching regex "^[a-z]+[a-zA-Z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module aB3; // Identifier matches default required regex (mixed-case).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module Ab3; // Identifier doesn't match default required regex (mixed-case).
+endmodule
+```
+
 ## sequential_block_in_always_comb
 
 ### Description
