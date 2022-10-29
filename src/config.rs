@@ -96,4 +96,24 @@ fn default_prefix_interface() -> String {
     String::from("ifc_")
 }
 
+fn default_re_lowercase() -> String {
+    String::from(r"^[a-z]+[a-z0-9_]*$")
+}
+
+fn default_re_mixedcase() -> String {
+    String::from(r"^[a-z]+[a-zA-Z0-9_]*$")
+}
+
+fn default_re_uppercase() -> String {
+    String::from(r"^[A-Z]+[A-Z0-9_]*$")
+}
+
+fn default_re_unconfigured() -> String {
+    // Match all strings which don't begin with "X".
+    // The "UNCONFIGURED" portion is an informative message, but functionally
+    // redundant.
+    // A special prefix "X" is required only for the testcases.
+    String::from(r"^[^X](UNCONFIGURED|.*)$")
+}
+
 include!(concat!(env!("OUT_DIR"), "/impl_config.rs"));
