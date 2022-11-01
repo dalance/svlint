@@ -3318,10 +3318,10 @@ always_ff @(posedge clk) begin
   bar_q <= bar_d;         // What happens to bar_q?
 end
 ```
-By forbidding sequential blocks, you enforce that only one signal is assigned to
+By forbidding sequential blocks, you enforce that exactly signal is assigned to
 per leaf condition.
-A nice consequence is that exactly one signal is updated each evaluation of the
-`always_ff` block is evaluated.
+A nice consequence is that exactly one signal is updated on each evaluation of
+the `always_ff` block.
 IEEE1800-2017 specifies that if a signal is assigned to in an `always_ff` block,
 then it shall not be assigned to by any other block (compile error).
 
