@@ -990,22 +990,31 @@ non-ANSI-style has duplicated port declaration
 ### Pass example
 
 ```SystemVerilog
-module A(
-    input  a,
-    output b
-);
+module Mansi
+  ( input  a
+  , output b
+  );
+endmodule
+
+module Mansi_noPort;
+endmodule
+
+module Mansi_defaultInout
+  ( a
+  , b
+  );
 endmodule
 ```
 
 ### Fail example
 
 ```SystemVerilog
-module A(
-    a,
-    b
-);
-input  a;
-output b;
+module Mnonansi
+  ( a
+  , b
+  );
+  input  a;
+  output b;
 endmodule
 ```
 
@@ -1390,7 +1399,37 @@ endmodule
 ### Fail example
 
 ```SystemVerilog
-module foo; // Identifier matches default forbidden regex.
+module foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+## re_forbidden_module_nonansi
+
+### Description
+
+Use a module identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  ( a
+  );
+  input a;
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module foo // Unconfigured forbidden regex matches (almost) anything.
+  ( a
+  );
+  input a;
 endmodule
 ```
 
@@ -1407,14 +1446,44 @@ Identifiers must conform to the naming scheme.
 ### Pass example
 
 ```SystemVerilog
-module aB3; // Identifier matches default required regex (mixed-case).
+module mN3; // Identifier matches default required regex (mixed-case).
 endmodule
 ```
 
 ### Fail example
 
 ```SystemVerilog
-module Ab3; // Identifier doesn't match default required regex (mixed-case).
+module Mn3; // Identifier doesn't match default required regex (mixed-case).
+endmodule
+```
+
+## re_required_module_nonansi
+
+### Description
+
+Use a module identifier matching regex "^[A-Z]+[A-Z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module MN3 // Identifier matches default required regex (uppercase).
+  ( a
+  );
+  input a;
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module mn3 // Identifier doesn't match default required regex (uppercase).
+  ( a
+  );
+  input a;
 endmodule
 ```
 
