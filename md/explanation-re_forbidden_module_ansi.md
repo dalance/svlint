@@ -7,9 +7,12 @@ simpler naming rules are not sufficient.
 
 See also:
   - **re_required_module_ansi**
+  - **re_forbidden_module_nonansi**
+  - **re_required_module_nonansi**
   - **prefix_module**
   - **uppercamelcase_module**
   - **lowercamelcase_module**
+  - **non_ansi_module**
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.

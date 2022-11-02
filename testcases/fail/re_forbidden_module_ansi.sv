@@ -1,2 +1,2 @@
-module foo; // Identifier matches default forbidden regex.
+module foo; // Unconfigured forbidden regex matches (almost) anything.
 endmodule

@@ -1,2 +1,2 @@
-module aB3; // Identifier matches default required regex (mixed-case).
+module mN3; // Identifier matches default required regex (mixed-case).
 endmodule

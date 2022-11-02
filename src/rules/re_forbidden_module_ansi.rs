@@ -4,11 +4,11 @@ use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct ReForbiddenModule {
+pub struct ReForbiddenModuleAnsi {
     re: Option<Regex>,
 }
 
-impl Rule for ReForbiddenModule {
+impl Rule for ReForbiddenModuleAnsi {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
