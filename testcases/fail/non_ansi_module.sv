@@ -1,7 +1,7 @@
-module A(
-    a,
-    b
-);
-input  a;
-output b;
+module Mnonansi
+  ( a
+  , b
+  );
+  input  a;
+  output b;
 endmodule
