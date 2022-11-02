@@ -37,9 +37,13 @@ pub struct ConfigOption {
 
     #[serde(default = "default_re_mixedcase")]
     pub re_required_module_ansi: String,
+    #[serde(default = "default_re_uppercase")]
+    pub re_required_module_nonansi: String,
 
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_module_ansi: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_module_nonansi: String,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));
