@@ -36,22 +36,46 @@ pub struct ConfigOption {
     pub prefix_interface: String,
 
     #[serde(default = "default_re_lowercase")]
+    pub re_required_checker: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_class: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_function: String,
+    #[serde(default = "default_re_lowercase")]
     pub re_required_interface: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_modport: String,
     #[serde(default = "default_re_mixedcase")]
     pub re_required_module_ansi: String,
     #[serde(default = "default_re_uppercase")]
     pub re_required_module_nonansi: String,
     #[serde(default = "default_re_lowercase")]
     pub re_required_package: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_program: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_task: String,
 
     #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_checker: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_class: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_function: String,
+    #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_interface: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_modport: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_module_ansi: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_module_nonansi: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_package: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_program: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_task: String,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));

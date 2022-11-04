@@ -1379,6 +1379,82 @@ end
 endmodule
 ```
 
+## re_forbidden_checker
+
+### Description
+
+Use a checker identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+checker Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endchecker
+```
+
+### Fail example
+
+```SystemVerilog
+checker foo; // Unconfigured forbidden regex matches (almost) anything.
+endchecker
+```
+
+## re_forbidden_class
+
+### Description
+
+Use a class identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+class Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endclass
+```
+
+### Fail example
+
+```SystemVerilog
+class foo; // Unconfigured forbidden regex matches (almost) anything.
+endclass
+```
+
+## re_forbidden_function
+
+### Description
+
+Use a function identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+package P;
+  function Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+  endfunction
+endpackage
+```
+
+### Fail example
+
+```SystemVerilog
+package P;
+  function foo; // Unconfigured forbidden regex matches (almost) anything.
+  endfunction
+endpackage
+```
+
 ## re_forbidden_interface
 
 ### Description
@@ -1400,6 +1476,36 @@ endinterface
 
 ```SystemVerilog
 interface foo; // Unconfigured forbidden regex matches (almost) anything.
+endinterface
+```
+
+## re_forbidden_modport
+
+### Description
+
+Use a modport identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+interface I;
+  modport Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  ( input i
+  );
+endinterface
+```
+
+### Fail example
+
+```SystemVerilog
+interface I;
+  modport foo // Unconfigured forbidden regex matches (almost) anything.
+  ( input i
+  );
 endinterface
 ```
 
@@ -1481,6 +1587,134 @@ package foo; // Unconfigured forbidden regex matches (almost) anything.
 endpackage
 ```
 
+## re_forbidden_program
+
+### Description
+
+Use a program identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+program Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endprogram
+```
+
+### Fail example
+
+```SystemVerilog
+program foo; // Unconfigured forbidden regex matches (almost) anything.
+endprogram
+```
+
+## re_forbidden_task
+
+### Description
+
+Use a task identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M;
+  task Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+  endtask
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M;
+  task foo; // Unconfigured forbidden regex matches (almost) anything.
+  endtask
+endmodule
+```
+
+## re_required_checker
+
+### Description
+
+Use a checker identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+checker mn3; // Identifier matches default required regex (lowercase).
+endchecker
+```
+
+### Fail example
+
+```SystemVerilog
+checker Mn3; // Identifier doesn't match default required regex (lowercase).
+endchecker
+```
+
+## re_required_class
+
+### Description
+
+Use a class identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+class mn3; // Identifier matches default required regex (lowercase).
+endclass
+```
+
+### Fail example
+
+```SystemVerilog
+class Mn3; // Identifier doesn't match default required regex (lowercase).
+endclass
+```
+
+## re_required_function
+
+### Description
+
+Use a function identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+package P;
+  function mn3; // Identifier matches default required regex (lowercase).
+  endfunction
+endpackage
+```
+
+### Fail example
+
+```SystemVerilog
+package P;
+  function Mn3; // Identifier doesn't match default required regex (lowercase).
+  endfunction
+endpackage
+```
+
 ## re_required_interface
 
 ### Description
@@ -1502,6 +1736,36 @@ endinterface
 
 ```SystemVerilog
 interface Mn3; // Identifier doesn't match default required regex (lowercase).
+endinterface
+```
+
+## re_required_modport
+
+### Description
+
+Use a modport identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+interface I;
+  modport mn3 // Identifier matches default required regex (lowercase).
+  ( input i
+  );
+endinterface
+```
+
+### Fail example
+
+```SystemVerilog
+interface I;
+  modport Mn3 // Identifier doesn't match default required regex (lowercase).
+  ( input i
+  );
 endinterface
 ```
 
@@ -1581,6 +1845,58 @@ endpackage
 ```SystemVerilog
 package Mn3; // Identifier doesn't match default required regex (lowercase).
 endpackage
+```
+
+## re_required_program
+
+### Description
+
+Use a program identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+program mn3; // Identifier matches default required regex (lowercase).
+endprogram
+```
+
+### Fail example
+
+```SystemVerilog
+program Mn3; // Identifier doesn't match default required regex (lowercase).
+endprogram
+```
+
+## re_required_task
+
+### Description
+
+Use a task identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M;
+  task mn3; // Identifier matches default required regex (lowercase).
+  endtask
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M;
+  task Mn3; // Identifier doesn't match default required regex (lowercase).
+  endtask
+endmodule
 ```
 
 ## sequential_block_in_always_comb
