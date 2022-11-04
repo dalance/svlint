@@ -1,5 +1,5 @@
 Modules declared with a non-ANSI header must not have identifiers matching the
-regex configured via the `re_required_module_nonansi` option.
+regex configured via the `re_forbidden_module_nonansi` option.
 Non-ANSI modules are commonly used where compatability with classic Verilog
 (IEEE1364-1995) is required, such as low-level cells and macros.
 
