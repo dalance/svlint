@@ -1433,6 +1433,30 @@ module foo // Unconfigured forbidden regex matches (almost) anything.
 endmodule
 ```
 
+## re_forbidden_package
+
+### Description
+
+Use a package identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+package Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endpackage
+```
+
+### Fail example
+
+```SystemVerilog
+package foo; // Unconfigured forbidden regex matches (almost) anything.
+endpackage
+```
+
 ## re_required_module_ansi
 
 ### Description
@@ -1485,6 +1509,30 @@ module mn3 // Identifier doesn't match default required regex (uppercase).
   );
   input a;
 endmodule
+```
+
+## re_required_package
+
+### Description
+
+Use a package identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+package mn3; // Identifier matches default required regex (lowercase).
+endpackage
+```
+
+### Fail example
+
+```SystemVerilog
+package Mn3; // Identifier doesn't match default required regex (lowercase).
+endpackage
 ```
 
 ## sequential_block_in_always_comb
