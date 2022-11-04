@@ -1379,6 +1379,30 @@ end
 endmodule
 ```
 
+## re_forbidden_interface
+
+### Description
+
+Use a interface identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+interface Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endinterface
+```
+
+### Fail example
+
+```SystemVerilog
+interface foo; // Unconfigured forbidden regex matches (almost) anything.
+endinterface
+```
+
 ## re_forbidden_module_ansi
 
 ### Description
@@ -1455,6 +1479,30 @@ endpackage
 ```SystemVerilog
 package foo; // Unconfigured forbidden regex matches (almost) anything.
 endpackage
+```
+
+## re_required_interface
+
+### Description
+
+Use a interface identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+interface mn3; // Identifier matches default required regex (lowercase).
+endinterface
+```
+
+### Fail example
+
+```SystemVerilog
+interface Mn3; // Identifier doesn't match default required regex (lowercase).
+endinterface
 ```
 
 ## re_required_module_ansi
