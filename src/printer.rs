@@ -364,6 +364,26 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
+    pub fn print_preprocess_error(
+        &mut self,
+        path: &Path,
+        error_pos: usize,
+        single: bool,
+    ) -> Result<(), Error> {
+        let mut f = File::open(path)
+            .with_context(|| format!("failed to open: '{}'", path.to_string_lossy()))?;
+        let mut s = String::new();
+        let _ = f.read_to_string(&mut s);
+
+        if single {
+            self.print_single(&s, error_pos, "Error", path, Some("preprocess error"));
+        } else {
+            self.print_pretty(&s, error_pos, 1, "Error", "preprocess error", path, None, None);
+        }
+        Ok(())
+    }
+
+    #[cfg_attr(tarpaulin, skip)]
     pub fn print_error(&mut self, error: &str) -> Result<(), Error> {
         self.write("Error", Color::BrightRed);
         self.write(&format!(": {}", error), Color::BrightWhite);
