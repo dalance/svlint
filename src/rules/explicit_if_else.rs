@@ -1,9 +1,11 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{unwrap_locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct ExplicitIfElse;
+pub struct ExplicitIfElse {
+    under_always_construct: bool,
+}
 
 impl Rule for ExplicitIfElse {
     fn check(
@@ -13,25 +15,31 @@ impl Rule for ExplicitIfElse {
         _option: &ConfigOption,
     ) -> RuleResult {
         let node = match event {
-            NodeEvent::Enter(x) => x,
-            NodeEvent::Leave(_) => {
+            NodeEvent::Enter(x) => {
+                match x {
+                    RefNode::AlwaysConstruct(_) => {
+                        self.under_always_construct = true;
+                    }
+                    _ => ()
+                }
+                x
+            }
+            NodeEvent::Leave(x) => {
+                match x {
+                    RefNode::AlwaysConstruct(_) => {
+                        self.under_always_construct = false;
+                    }
+                    _ => ()
+                }
                 return RuleResult::Pass;
             }
         };
-        match node {
-            RefNode::AlwaysConstruct(x) => {
-                if let Some(x) = unwrap_node!(*x, ConditionalStatement) {
-                    if let RefNode::ConditionalStatement(y) = x {
-                        let (_, ref b, _, _, _, ref f) = &y.nodes;
-                        let loc = unwrap_locate!(b).unwrap();
-                        if f.is_none() {
-                            RuleResult::FailLocate(*loc)
-                        } else {
-                            RuleResult::Pass
-                        }
-                    } else {
-                        RuleResult::Pass
-                    }
+        match (self.under_always_construct, node) {
+            (true, RefNode::ConditionalStatement(y)) => {
+                let (_, ref b, _, _, _, ref f) = &y.nodes;
+                let loc = unwrap_locate!(b).unwrap();
+                if f.is_none() {
+                    RuleResult::FailLocate(*loc)
                 } else {
                     RuleResult::Pass
                 }
