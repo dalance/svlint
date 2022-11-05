@@ -35,8 +35,8 @@ impl Rule for ExplicitIfElse {
             }
         };
         match (self.under_always_construct, node) {
-            (true, RefNode::ConditionalStatement(y)) => {
-                let (_, ref b, _, _, _, ref f) = &y.nodes;
+            (true, RefNode::ConditionalStatement(x)) => {
+                let (_, ref b, _, _, _, ref f) = &x.nodes;
                 let loc = unwrap_locate!(b).unwrap();
                 if f.is_none() {
                     RuleResult::FailLocate(*loc)
