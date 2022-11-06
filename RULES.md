@@ -1587,6 +1587,206 @@ package foo; // Unconfigured forbidden regex matches (almost) anything.
 endpackage
 ```
 
+## re_forbidden_port_inout
+
+### Description
+
+Use a port identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  ( inout Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  );
+endmodule
+
+module M_nonansi
+  ( Xfoo
+  );
+  inout Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  ( inout foo // Unconfigured forbidden regex matches (almost) anything.
+  );
+endmodule
+
+module M_nonansi
+  ( foo
+  );
+  inout foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+## re_forbidden_port_input
+
+### Description
+
+Use a port identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  ( input Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  );
+endmodule
+
+module M_nonansi
+  ( Xfoo
+  );
+  input Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  ( input foo // Unconfigured forbidden regex matches (almost) anything.
+  );
+endmodule
+
+module M_nonansi
+  ( foo
+  );
+  input foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+## re_forbidden_port_interface
+
+### Description
+
+Use a port identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  ( I Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  );
+endmodule
+
+module M_nonansi
+  ( Xfoo
+  );
+  I.i Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  ( I.i foo // Unconfigured forbidden regex matches (almost) anything.
+  );
+endmodule
+
+module M_nonansi
+  ( foo
+  );
+  I.i foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+## re_forbidden_port_output
+
+### Description
+
+Use a port identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  ( output Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  );
+endmodule
+
+module M_nonansi
+  ( Xfoo
+  );
+  output Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  ( output foo // Unconfigured forbidden regex matches (almost) anything.
+  );
+endmodule
+
+module M_nonansi
+  ( foo
+  );
+  output foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+## re_forbidden_port_ref
+
+### Description
+
+Use a port identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  ( ref Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  );
+endmodule
+
+module M_nonansi
+  ( Xfoo
+  );
+  ref var Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  ( ref foo // Unconfigured forbidden regex matches (almost) anything.
+  );
+endmodule
+
+module M_nonansi
+  ( foo
+  );
+  ref var foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
 ## re_forbidden_program
 
 ### Description
@@ -1845,6 +2045,206 @@ endpackage
 ```SystemVerilog
 package Mn3; // Identifier doesn't match default required regex (lowercase).
 endpackage
+```
+
+## re_required_port_inout
+
+### Description
+
+Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  ( inout mn3 // Identifier matches default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( mn3
+  );
+  inout mn3; // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  ( inout Mn3 // Identifier doesn't match default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( Mn3
+  );
+  inout Mn3; // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+## re_required_port_input
+
+### Description
+
+Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  ( input mn3 // Identifier matches default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( mn3
+  );
+  input mn3; // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  ( input Mn3 // Identifier doesn't match default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( Mn3
+  );
+  input Mn3; // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+## re_required_port_interface
+
+### Description
+
+Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  ( I.i mn3 // Identifier matches default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( mn3
+  );
+  I.i mn3; // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  ( I.i Mn3 // Identifier doesn't match default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( Mn3
+  );
+  I.i Mn3; // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+## re_required_port_output
+
+### Description
+
+Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  ( output mn3 // Identifier matches default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( mn3
+  );
+  output mn3; // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  ( output Mn3 // Identifier doesn't match default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( Mn3
+  );
+  output Mn3; // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+## re_required_port_ref
+
+### Description
+
+Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  ( ref mn3 // Identifier matches default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( mn3
+  );
+  ref var mn3; // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  ( ref Mn3 // Identifier doesn't match default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( Mn3
+  );
+  ref var Mn3; // Identifier doesn't match default required regex (lowercase).
+endmodule
 ```
 
 ## re_required_program

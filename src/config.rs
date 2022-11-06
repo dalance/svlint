@@ -52,6 +52,16 @@ pub struct ConfigOption {
     #[serde(default = "default_re_lowercase")]
     pub re_required_package: String,
     #[serde(default = "default_re_lowercase")]
+    pub re_required_port_inout: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_port_input: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_port_output: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_port_ref: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_port_interface: String,
+    #[serde(default = "default_re_lowercase")]
     pub re_required_program: String,
     #[serde(default = "default_re_lowercase")]
     pub re_required_task: String,
@@ -72,6 +82,16 @@ pub struct ConfigOption {
     pub re_forbidden_module_nonansi: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_package: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_port_inout: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_port_input: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_port_output: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_port_ref: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_port_interface: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_program: String,
     #[serde(default = "default_re_unconfigured")]
