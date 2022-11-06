@@ -57,11 +57,7 @@ impl Rule for ReRequiredPortInterface {
                 check_regex(true, unwrap_node!(*x, Identifier),
                             &syntax_tree, &self.re.as_ref().unwrap())
             }
-            _ => {
-                println!("{:?}", node);
-                println!();
-                RuleResult::Pass
-            }
+            _ => RuleResult::Pass
         }
     }
 

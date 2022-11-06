@@ -57,11 +57,7 @@ impl Rule for ReForbiddenPortInterface {
                 check_regex(false, unwrap_node!(*x, Identifier),
                             &syntax_tree, &self.re.as_ref().unwrap())
             }
-            _ => {
-                println!("{:?}", node);
-                println!();
-                RuleResult::Pass
-            }
+            _ => RuleResult::Pass
         }
     }
 
