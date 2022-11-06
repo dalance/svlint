@@ -69,6 +69,10 @@ pub struct ConfigOption {
     pub re_required_program: String,
     #[serde(default = "default_re_lowercase")]
     pub re_required_task: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_var_class: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_var_classmethod: String,
 
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_checker: String,
@@ -104,6 +108,10 @@ pub struct ConfigOption {
     pub re_forbidden_program: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_task: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_var_class: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_var_classmethod: String,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));

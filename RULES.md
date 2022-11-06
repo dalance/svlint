@@ -1893,6 +1893,62 @@ module M;
 endmodule
 ```
 
+## re_forbidden_var_class
+
+### Description
+
+Use a class-scoped variable identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+class C;
+  int Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endclass
+```
+
+### Fail example
+
+```SystemVerilog
+class C;
+  int foo; // Unconfigured forbidden regex matches (almost) anything.
+endclass
+```
+
+## re_forbidden_var_classmethod
+
+### Description
+
+Use a method-scoped variable identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+class C;
+  function F;
+    int Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+  endfunction
+endclass
+```
+
+### Fail example
+
+```SystemVerilog
+class C;
+  function F;
+    int foo; // Unconfigured forbidden regex matches (almost) anything.
+  endfunction
+endclass
+```
+
 ## re_required_checker
 
 ### Description
@@ -2405,6 +2461,62 @@ module M;
   task Mn3; // Identifier doesn't match default required regex (lowercase).
   endtask
 endmodule
+```
+
+## re_required_var_class
+
+### Description
+
+Use a class-scoped variable identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+class C;
+  int mn3; // Identifier matches default required regex (lowercase).
+endclass
+```
+
+### Fail example
+
+```SystemVerilog
+class C;
+  int Mn3; // Identifier doesn't match default required regex (lowercase).
+endclass
+```
+
+## re_required_var_classmethod
+
+### Description
+
+Use a method-scoped variable identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+class C;
+  function F;
+    int mn3; // Identifier matches default required regex (lowercase).
+  endfunction
+endclass
+```
+
+### Fail example
+
+```SystemVerilog
+class C;
+  function F;
+    int Mn3; // Identifier doesn't match default required regex (lowercase).
+  endfunction
+endclass
 ```
 
 ## sequential_block_in_always_comb
