@@ -1479,6 +1479,32 @@ interface foo; // Unconfigured forbidden regex matches (almost) anything.
 endinterface
 ```
 
+## re_forbidden_localparam
+
+### Description
+
+Use a localparam identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+package P;
+  localparam Xfoo = 0; // Identifier doesn't match default forbidden regex (X prefix).
+endpackage
+```
+
+### Fail example
+
+```SystemVerilog
+package P;
+  localparam foo = 0; // Unconfigured forbidden regex matches (almost) anything.
+endpackage
+```
+
 ## re_forbidden_modport
 
 ### Description
@@ -1585,6 +1611,34 @@ endpackage
 ```SystemVerilog
 package foo; // Unconfigured forbidden regex matches (almost) anything.
 endpackage
+```
+
+## re_forbidden_parameter
+
+### Description
+
+Use a parameter identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  #( Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  ) ();
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  #( foo // Unconfigured forbidden regex matches (almost) anything.
+  ) ();
+endmodule
 ```
 
 ## re_forbidden_port_inout
@@ -1939,6 +1993,32 @@ interface Mn3; // Identifier doesn't match default required regex (lowercase).
 endinterface
 ```
 
+## re_required_localparam
+
+### Description
+
+Use a localparam identifier matching regex "^[A-Z]+[A-Z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+package P;
+  localparam MN3 = 0; // Identifier matches default required regex (uppercase).
+endpackage
+```
+
+### Fail example
+
+```SystemVerilog
+package P;
+  localparam Mn3 = 0; // Identifier doesn't match default required regex (uppercase).
+endpackage
+```
+
 ## re_required_modport
 
 ### Description
@@ -2045,6 +2125,34 @@ endpackage
 ```SystemVerilog
 package Mn3; // Identifier doesn't match default required regex (lowercase).
 endpackage
+```
+
+## re_required_parameter
+
+### Description
+
+Use a parameter identifier matching regex "^[A-Z]+[A-Z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass example
+
+```SystemVerilog
+module M
+  #( MN3 // Identifier matches default required regex (uppercase).
+  ) ();
+endmodule
+```
+
+### Fail example
+
+```SystemVerilog
+module M
+  #( Mn3 // Identifier doesn't match default required regex (uppercase).
+  ) ();
+endmodule
 ```
 
 ## re_required_port_inout
