@@ -41,10 +41,10 @@ impl Rule for ExplicitCaseDefault {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`case` must have `default` in `always*`")
+        String::from("Add a `default` arm to the `case` statement.")
     }
 
     fn reason(&self) -> String {
-        String::from("explicit `default` makes design intent clearer")
+        String::from("Fully-specified case clarifies design intent.")
     }
 }

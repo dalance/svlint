@@ -3,11 +3,11 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct GenerateKeywordRequired {
+pub struct KeywordRequiredGenerate {
     generate_region: Vec<()>,
 }
 
-impl Rule for GenerateKeywordRequired {
+impl Rule for KeywordRequiredGenerate {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -49,14 +49,14 @@ impl Rule for GenerateKeywordRequired {
     }
 
     fn name(&self) -> String {
-        String::from("generate_keyword_required")
+        String::from("keyword_required_generate")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`generate`/`endgenerate` is required")
+        String::from("Use `generate`/`endgenerate` keywords to define generate regions.")
     }
 
     fn reason(&self) -> String {
-        String::from("some tools don't support `generate`/`endgenerate` omitting")
+        String::from("Omitting `generate`/`endgenerate` keywords may cause issues with non-compliant tools.")
     }
 }

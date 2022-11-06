@@ -61,12 +61,12 @@ impl Rule for GenerateForWithLabel {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "`generate for` must have label with prefix \"{}\"",
+            "Use a label with prefix \"{}\" on loop generate block.",
             &option.prefix_label
         ))
     }
 
     fn reason(&self) -> String {
-        String::from("the hierarchiral path can't be determined")
+        String::from("Unnamed generate blocks imply unintuitive hierarchical paths.")
     }
 }

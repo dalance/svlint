@@ -51,7 +51,7 @@ impl Rule for PrefixPackage {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "`package` name must have prefix \"{}\"",
+            "Prefix `package` identifier with \"{}\".",
             &option.prefix_package
         ))
     }

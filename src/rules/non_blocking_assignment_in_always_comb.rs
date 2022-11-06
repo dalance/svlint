@@ -43,10 +43,10 @@ impl Rule for NonBlockingAssignmentInAlwaysComb {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("non-blocking assignment is forbidden in`always_comb`")
+        String::from("Remove non-blocking assignment in `always_comb`.")
     }
 
     fn reason(&self) -> String {
-        String::from("non-blocking assignment in `always_comb` causes elaboration error")
+        String::from("Scheduling between blocking and non-blocking assignments is non-deterministic.")
     }
 }

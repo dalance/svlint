@@ -45,10 +45,10 @@ impl Rule for ExplicitIfElse {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`if` must have `else` in `always*`")
+        String::from("Add an `else` clause to the `if` statement.")
     }
 
     fn reason(&self) -> String {
-        String::from("explicit `else` makes design intent clearer")
+        String::from("Fully-specified conditional clarifies design intent.")
     }
 }

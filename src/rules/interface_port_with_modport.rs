@@ -36,10 +36,10 @@ impl Rule for InterfacePortWithModport {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("interface port must have modport")
+        String::from("Specify the modport on the interface port.")
     }
 
     fn reason(&self) -> String {
-        String::from("interface port without modport maybe `inout` at synthesis")
+        String::from("Without a modport, the interface port signals are all implictly `inout`.")
     }
 }

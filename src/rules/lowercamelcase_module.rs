@@ -53,7 +53,7 @@ impl Rule for LowercamelcaseModule {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from(format!("Module name must begin with lowerCamelCase"))
+        String::from(format!("Begin `module` name with lowerCamelCase."))
     }
 
     fn reason(&self) -> String {

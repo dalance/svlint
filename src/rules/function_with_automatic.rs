@@ -138,10 +138,10 @@ impl Rule for FunctionWithAutomatic {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`function` must be `automatic`")
+        String::from("Add the `automatic` lifetime specifier to function.")
     }
 
     fn reason(&self) -> String {
-        String::from("this causes mismatch between simulation and synthesis")
+        String::from("Static lifetime of function items causes a simulation/synthesis mismatch.")
     }
 }

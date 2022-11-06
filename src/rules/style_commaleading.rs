@@ -37,11 +37,11 @@ impl Rule for StyleCommaleading {
 
     fn hint(&self, _option: &ConfigOption) -> String {
         String::from(format!(
-            "comma should be followed by a single space (comma-leading format)"
+            "Follow each comma with a single space (comma-leading format)."
         ))
     }
 
     fn reason(&self) -> String {
-        String::from("consistent style enhances readability")
+        String::from("Consistent style enhances readability.")
     }
 }

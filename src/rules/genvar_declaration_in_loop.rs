@@ -36,10 +36,10 @@ impl Rule for GenvarDeclarationInLoop {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`genvar` must be declared in loop")
+        String::from("Declare `genvar` inside a loop generate construct.")
     }
 
     fn reason(&self) -> String {
-        String::from("the scope of variable should be minimized")
+        String::from("Minimized `genvar` scope makes code easier to read and review.")
     }
 }
