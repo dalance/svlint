@@ -460,36 +460,40 @@ Fully-specified case clarifies design intent.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-always_comb begin
+module M;
+  always_comb
     case (x)
-        1: y = 0;
-        default: y = 0;
+      1: y = 0;
+      default: y = 0;
     endcase
-end
-always_ff begin
+
+  always_ff @(clk)
     case (x)
-        1: y = 0;
-        default: y = 0;
+      1: y = 0;
+      default: y = 0;
     endcase
-end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-always_comb begin
+module M;
+  always_comb
     case (x)
-        1: y = 0;
+      1: y = 0; // Incompletely specified case implies memory.
     endcase
-end
-always_ff begin
+
+  always_ff @(clk) begin
     case (x)
-        1: y = 0;
+      1: y = 0;
+      default: y = 0; // Explicit default arm is good.
     endcase
-end
+
+    case (y)
+      1: y = 0; // Implicit default arm.
+    endcase
+  end
 endmodule
 ```
 
@@ -544,22 +548,33 @@ Fully-specified conditional clarifies design intent.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-always_ff
-  if (x) y <= 0;
-  else   y <= z;
-always_comb
-  if (x) y = 0;
-  else   y = z;
+module M;
+  always_ff @(clk)
+    if (x) y <= 0;
+    else   y <= z;
+
+  always_comb
+    if (x) y = 0;
+    else   y = z;
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-always_ff if (x) y <= 0;
-always_comb if (x) y = 0;
+module M;
+  always_comb
+    if (x) y = 0; // Incompletely specified condition implies memory.
+
+  always_ff @(clk) begin
+    if (a)
+      b <= c;
+    else // Explicit else clause is good.
+      b <= d;
+
+    if (b)
+      c <= d; // Implicit else clause.
+  end
 endmodule
 ```
 
