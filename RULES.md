@@ -3253,6 +3253,53 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
+## `re_forbidden_genvar`
+
+### Hint
+
+Use a genvar identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  genvar Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+
+  // Identifier doesn't match default forbidden regex (X prefix).
+  for (genvar Xbar=0; Xbar < 5; Xbar++) begin
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  genvar foo; // Unconfigured forbidden regex matches (almost) anything.
+
+  // Unconfigured forbidden regex matches (almost) anything.
+  for (genvar bar=0; bar < 5; bar++) begin
+  end
+endmodule
+```
+
+### Explanation
+
+Genvars must not have identifiers matching the regex configured via the
+`re_forbidden_genvar` option.
+
+See also:
+  - **re_required_genvar**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
 ## `re_forbidden_interface`
 
 ### Hint
@@ -4045,6 +4092,53 @@ Functions must have identifiers matching the regex configured via the
 See also:
   - **re_forbidden_function**
   - **function_same_as_system_function**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `re_required_genvar`
+
+### Hint
+
+Use a genvar identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  genvar mn3; // Identifier matches default required regex (lowercase).
+
+  // Identifier matches default required regex (lowercase).
+  for (genvar mn4=0; mn4 < 5; mn4++) begin
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  genvar Mn3; // Identifier doesn't match default required regex (lowercase).
+
+  // Identifier doesn't match default required regex (lowercase).
+  for (genvar Mn4=0; Mn4 < 5; Mn4++) begin
+  end
+endmodule
+```
+
+### Explanation
+
+Genvars must have identifiers matching the regex configured via the
+`re_required_genvar` option.
+
+See also:
+  - **re_forbidden_genvar**
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
