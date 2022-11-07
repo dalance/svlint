@@ -3,9 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct LegacyAlways;
+pub struct KeywordForbiddenAlways;
 
-impl Rule for LegacyAlways {
+impl Rule for KeywordForbiddenAlways {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -25,14 +25,14 @@ impl Rule for LegacyAlways {
     }
 
     fn name(&self) -> String {
-        String::from("legacy_always")
+        String::from("keyword_forbidden_always")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`always_comb`/`always_ff`/`always_latch` must be used")
+        String::from("Use `always_comb`/`always_ff`/`always_latch` instead of `always`.")
     }
 
     fn reason(&self) -> String {
-        String::from("`always` can't detect blocking/non-blocking mistake")
+        String::from("General-purpose `always` cannot detect combinatorial/stateful (non-)blocking mistakes.")
     }
 }

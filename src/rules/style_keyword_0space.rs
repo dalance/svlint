@@ -78,10 +78,10 @@ impl Rule for StyleKeyword0Space {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("keyword should be followed by no space before symbol")
+        String::from("Remove all whitespace between keyword and following symbol.")
     }
 
     fn reason(&self) -> String {
-        String::from("consistent style enhances readability")
+        String::from("Consistent use of whitespace enhances readability by reducing visual noise.")
     }
 }

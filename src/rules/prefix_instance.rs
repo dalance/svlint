@@ -51,12 +51,12 @@ impl Rule for PrefixInstance {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Module instance must have prefix \"{}\"",
+            "Prefix instance identifier with \"{}\".",
             &option.prefix_instance
         ))
     }
 
     fn reason(&self) -> String {
-        String::from("Naming convention simplifies audit.")
+        String::from("Naming convention helps investigation using hierarchical paths.")
     }
 }

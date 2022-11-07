@@ -21,7 +21,8 @@ impl Rule for StyleKeywordDatatype {
         re_split extracts keyword from anything following it.
         re_kw is used to selectively apply this rule to specific keywords.
         re_succ matches what is allowed after the keyword.
-            - exactly 1space
+            - nothing, immediately followed by symbol
+            - exactly 1space, then identifier
         */
         if self.re_split.is_none() {
             self.re_split = Some(Regex::new(r"(?P<kw>[a-z_01]+)(?P<succ>(?s:.)*)").unwrap());
@@ -62,7 +63,7 @@ impl Rule for StyleKeywordDatatype {
             self.re_kw = Some(Regex::new(format!("^({})$", keywords).as_str()).unwrap());
         }
         if self.re_succ.is_none() {
-            self.re_succ = Some(Regex::new(r"^ $").unwrap());
+            self.re_succ = Some(Regex::new(r"^[ ]?$").unwrap());
         }
 
         let node = match event {
@@ -100,10 +101,10 @@ impl Rule for StyleKeywordDatatype {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("keyword should be followed by a single space")
+        String::from("Follow datatype keyword with a symbol or exactly 1 space.")
     }
 
     fn reason(&self) -> String {
-        String::from("consistent style enhances readability")
+        String::from("Consistent use of whitespace enhances readability by reducing visual noise.")
     }
 }

@@ -3,9 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
 #[derive(Default)]
-pub struct ForWithBegin;
+pub struct MultilineForBegin;
 
-impl Rule for ForWithBegin {
+impl Rule for MultilineForBegin {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
@@ -44,14 +44,14 @@ impl Rule for ForWithBegin {
     }
 
     fn name(&self) -> String {
-        String::from("for_with_begin")
+        String::from("multiline_for_begin")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("multiline `for` statement must have `begin`")
+        String::from("Add `begin`/`end` around multi-line `for` statement.")
     }
 
     fn reason(&self) -> String {
-        String::from("if there is not `begin`, the second statement are confusing")
+        String::from("Without `begin`/`end`, the loop statement may be confusing.")
     }
 }

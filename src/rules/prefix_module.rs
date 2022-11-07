@@ -37,7 +37,7 @@ impl Rule for PrefixModule {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "`module` name must have prefix \"{}\"",
+            "Prefix `module` identifier with \"{}\".",
             &option.prefix_module
         ))
     }

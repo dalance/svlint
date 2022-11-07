@@ -3,9 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 
 #[derive(Default)]
-pub struct PriorityKeyword;
+pub struct KeywordForbiddenPriority;
 
-impl Rule for PriorityKeyword {
+impl Rule for KeywordForbiddenPriority {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -25,14 +25,14 @@ impl Rule for PriorityKeyword {
     }
 
     fn name(&self) -> String {
-        String::from("priority_keyword")
+        String::from("keyword_forbidden_priority")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`priority` is forbidden")
+        String::from("Remove `priority` keyword, perhaps replace with an assertion.")
     }
 
     fn reason(&self) -> String {
-        String::from("this causes mismatch between simulation and synthesis")
+        String::from("Priority-case/if constructs may mismatch between simulation and synthesis.")
     }
 }

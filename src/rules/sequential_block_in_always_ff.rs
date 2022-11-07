@@ -43,10 +43,10 @@ impl Rule for SequentialBlockInAlwaysFf {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("begin/end forbidden within `always_ff` constuct")
+        String::from("Keywords `begin` and `end` are forbidden within `always_ff`.")
     }
 
     fn reason(&self) -> String {
-        String::from("prevent introducing sequential dependencies")
+        String::from("Sequential blocks within `always_ff` may encourage overly-complex code.")
     }
 }

@@ -53,7 +53,7 @@ impl Rule for LowercamelcasePackage {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from(format!("Package name must begin with lowerCamelCase"))
+        String::from(format!("Begin `package` name with lowerCamelCase."))
     }
 
     fn reason(&self) -> String {

@@ -56,10 +56,10 @@ impl Rule for LocalparamTypeTwostate {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`localparam` must be have a twostate type")
+        String::from("Declare `localparam` with an explicit 2-state type.")
     }
 
     fn reason(&self) -> String {
-        String::from("design constants should not contain X or Z bits.")
+        String::from("Design constants with Xs or Zs may cause simulation/synthesis mismatch.")
     }
 }
