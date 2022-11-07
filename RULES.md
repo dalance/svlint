@@ -3300,6 +3300,52 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
+## `re_forbidden_instance`
+
+### Hint
+
+Use an instance identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  A #(
+  ) Xfoo (); // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  A #(
+  ) foo (); // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+### Explanation
+
+Instances must not have identifiers matching the regex configured via the
+`re_forbidden_instance` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_package**
+  - **prefix_instance**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
 ## `re_forbidden_interface`
 
 ### Hint
@@ -4139,6 +4185,52 @@ Genvars must have identifiers matching the regex configured via the
 
 See also:
   - **re_forbidden_genvar**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `re_required_instance`
+
+### Hint
+
+Use an instance identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  A #(
+  ) mn3 (); // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  A #(
+  ) Mn3 (); // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+### Explanation
+
+Instances must have identifiers matching the regex configured via the
+`re_required_instance` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_instance**
+  - **prefix_instance**
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.

@@ -44,6 +44,8 @@ pub struct ConfigOption {
     #[serde(default = "default_re_lowercase")]
     pub re_required_genvar: String,
     #[serde(default = "default_re_lowercase")]
+    pub re_required_instance: String,
+    #[serde(default = "default_re_lowercase")]
     pub re_required_interface: String,
     #[serde(default = "default_re_uppercase")]
     pub re_required_localparam: String,
@@ -80,6 +82,8 @@ pub struct ConfigOption {
     pub re_forbidden_function: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_genvar: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_instance: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_interface: String,
     #[serde(default = "default_re_unconfigured")]
