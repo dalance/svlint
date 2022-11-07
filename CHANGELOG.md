@@ -2,6 +2,10 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.6...Unreleased) - ReleaseDate
 
+* [Changed] Relax style rule on assign keyword. [#191](https://github.com/dalance/svlint/pull/191)
+* [Changed] Add fuller explanations about each rule. [#170](https://github.com/dalance/svlint/pull/170)
+* [Fixed] Bugfix #182 explicit_if_else, explicit_case_default [#197](https://github.com/dalance/svlint/pull/197)
+
 ## [v0.5.6](https://github.com/dalance/svlint/compare/v0.5.5...v0.5.6) - 2022-08-01
 
 * [Fixed] renamed rules in example [#180](https://github.com/dalance/svlint/issues/180)
