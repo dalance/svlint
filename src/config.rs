@@ -42,6 +42,8 @@ pub struct ConfigOption {
     #[serde(default = "default_re_lowercase")]
     pub re_required_function: String,
     #[serde(default = "default_re_lowercase")]
+    pub re_required_generateblock: String,
+    #[serde(default = "default_re_lowercase")]
     pub re_required_genvar: String,
     #[serde(default = "default_re_lowercase")]
     pub re_required_instance: String,
@@ -80,6 +82,8 @@ pub struct ConfigOption {
     pub re_forbidden_class: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_function: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_generateblock: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_genvar: String,
     #[serde(default = "default_re_unconfigured")]
