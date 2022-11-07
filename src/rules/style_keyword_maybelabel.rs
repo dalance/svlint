@@ -92,10 +92,10 @@ impl Rule for StyleKeywordMaybelabel {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("keyword should be followed by newline or colon, not spaces")
+        String::from("Follow keyword with a colon, newline, or exactly 1 space plus comment.")
     }
 
     fn reason(&self) -> String {
-        String::from("consistent style enhances readability")
+        String::from("Consistent use of whitespace enhances readability by reducing visual noise.")
     }
 }

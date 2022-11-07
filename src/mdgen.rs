@@ -9,31 +9,44 @@ use crate::config::{Config, ConfigOption};
 use std::fs::File;
 use std::io::{BufReader, Read};
 
+fn file_contents(path: &str) -> String {
+    let file: File = File::open(path).unwrap();
+    let mut buf_reader: BufReader<File> = BufReader::new(file);
+    let mut contents: String = String::new();
+    buf_reader.read_to_string(&mut contents).unwrap();
+
+    contents
+}
+
 #[cfg_attr(tarpaulin, skip)]
 pub fn main() {
     let rules = Config::gen_all_rules();
-    println!("# Rules\n");
-    for rule in rules {
-        println!("## {}\n", rule.name());
 
-        println!("### Description\n");
+    let p: String = format!("md/manual-introduction.md");
+    println!("{}\n", file_contents(&p));
+
+    let p: String = format!("md/manual-rules.md");
+    println!("{}\n", file_contents(&p));
+    for rule in rules {
+        println!("---");
+        println!("## `{}`\n", rule.name());
+
+        println!("### Hint\n");
         println!("{}\n", rule.hint(&ConfigOption::default()));
 
         println!("### Reason\n");
         println!("{}\n", rule.reason());
 
-        println!("### Pass example\n");
-        let f = File::open(format!("testcases/pass/{}.sv", rule.name())).unwrap();
-        let mut f = BufReader::new(f);
-        let mut s = String::new();
-        let _ = f.read_to_string(&mut s);
-        println!("```SystemVerilog\n{}```\n", s);
+        println!("### Pass Example\n");
+        let p: String = format!("testcases/pass/{}.sv", rule.name());
+        println!("```SystemVerilog\n{}```\n", file_contents(&p));
 
-        println!("### Fail example\n");
-        let f = File::open(format!("testcases/fail/{}.sv", rule.name())).unwrap();
-        let mut f = BufReader::new(f);
-        let mut s = String::new();
-        let _ = f.read_to_string(&mut s);
-        println!("```SystemVerilog\n{}```\n", s);
+        println!("### Fail Example\n");
+        let p: String = format!("testcases/fail/{}.sv", rule.name());
+        println!("```SystemVerilog\n{}```\n", file_contents(&p));
+
+        println!("### Explanation\n");
+        let p: String = format!("md/explanation-{}.md", rule.name());
+        println!("{}\n", file_contents(&p));
     }
 }

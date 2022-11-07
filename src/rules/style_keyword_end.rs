@@ -75,10 +75,10 @@ impl Rule for StyleKeywordEnd {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("keyword should be followed by newline, colon, or exactly 1 space")
+        String::from("Follow keyword with a colon, newline, or exactly 1 space.")
     }
 
     fn reason(&self) -> String {
-        String::from("consistent style enhances readability")
+        String::from("Consistent use of whitespace enhances readability by reducing visual noise.")
     }
 }

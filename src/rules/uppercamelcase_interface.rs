@@ -53,7 +53,7 @@ impl Rule for UppercamelcaseInterface {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from(format!("Interface name must begin with UpperCamelCase"))
+        String::from(format!("Begin `interface` name with UpperCamelCase."))
     }
 
     fn reason(&self) -> String {

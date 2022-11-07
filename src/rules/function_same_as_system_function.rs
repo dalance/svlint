@@ -172,10 +172,10 @@ impl Rule for FunctionSameAsSystemFunction {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("the name of `function` must not be the same as system function")
+        String::from("Rename `function` to something other than the name of a built-in function.")
     }
 
     fn reason(&self) -> String {
-        String::from("some tools confuse function with system function")
+        String::from("Name clashes may cause confusion amongst tools and readers.")
     }
 }

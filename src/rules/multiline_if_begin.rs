@@ -3,9 +3,9 @@ use crate::linter::{Rule, RuleResult};
 use sv_parser::{unwrap_locate, NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
 #[derive(Default)]
-pub struct IfWithBegin;
+pub struct MultilineIfBegin;
 
-impl Rule for IfWithBegin {
+impl Rule for MultilineIfBegin {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
@@ -94,14 +94,14 @@ impl Rule for IfWithBegin {
     }
 
     fn name(&self) -> String {
-        String::from("if_with_begin")
+        String::from("multiline_if_begin")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("multiline `if` statement must have `begin`")
+        String::from("Add `begin`/`end` around multi-line `if` statement.")
     }
 
     fn reason(&self) -> String {
-        String::from("if there is not `begin`, the second statement are confusing")
+        String::from("Without `begin`/`end`, the conditional statement may be confusing.")
     }
 }

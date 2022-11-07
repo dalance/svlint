@@ -36,7 +36,7 @@ impl Rule for StyleKeyword1Or2Space {
             self.re_kw = Some(Regex::new(format!("^({})$", keywords).as_str()).unwrap());
         }
         if self.re_succ.is_none() {
-            self.re_succ = Some(Regex::new(r"^( |  )$").unwrap());
+            self.re_succ = Some(Regex::new(r"^ [ ]?$").unwrap());
         }
 
         let node = match event {
@@ -74,10 +74,10 @@ impl Rule for StyleKeyword1Or2Space {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("keyword should be followed by exactly 1 or 2 spaces")
+        String::from("Follow keyword with exactly 1 or 2 spaces.")
     }
 
     fn reason(&self) -> String {
-        String::from("consistent style enhances readability")
+        String::from("Consistent use of whitespace enhances readability by reducing visual noise.")
     }
 }

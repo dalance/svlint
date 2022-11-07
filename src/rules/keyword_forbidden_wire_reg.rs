@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{IntegerVectorType, NetType, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct GenerateKeywordForbidden;
+pub struct KeywordForbiddenWireReg;
 
-impl Rule for GenerateKeywordForbidden {
+impl Rule for KeywordForbiddenWireReg {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -19,20 +19,21 @@ impl Rule for GenerateKeywordForbidden {
             }
         };
         match node {
-            RefNode::GenerateRegion(_) => RuleResult::Fail,
+            RefNode::NetType(NetType::Wire(_)) => RuleResult::Fail,
+            RefNode::IntegerVectorType(IntegerVectorType::Reg(_)) => RuleResult::Fail,
             _ => RuleResult::Pass,
         }
     }
 
     fn name(&self) -> String {
-        String::from("generate_keyword_forbidden")
+        String::from("keyword_forbidden_wire_reg")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`generate`/`endgenerate` must be omitted")
+        String::from("Replace `wire` or `reg` keywords with `logic`, `tri` and/or `var`.")
     }
 
     fn reason(&self) -> String {
-        String::from("")
+        String::from("Explicit datatype `logic` and/or datakind `var`/`tri` better describes intent.")
     }
 }

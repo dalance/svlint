@@ -36,10 +36,10 @@ impl Rule for ParameterExplicitType {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`parameter` must be have an explicit type")
+        String::from("Provide an explicit type in `parameter` declaration.")
     }
 
     fn reason(&self) -> String {
-        String::from("parameter types show intent and improve readability")
+        String::from("Explicit parameter types clarify intent and improve readability.")
     }
 }

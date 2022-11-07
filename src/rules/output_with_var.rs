@@ -41,10 +41,10 @@ impl Rule for OutputWithVar {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`output` must have `var`")
+        String::from("Specify `var` datakind on `output` ports.")
     }
 
     fn reason(&self) -> String {
-        String::from("")
+        String::from("Explicit datakind of output ports should be consistent with input ports.")
     }
 }

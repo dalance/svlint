@@ -56,10 +56,10 @@ impl Rule for ParameterTypeTwostate {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`parameter` must be have a twostate type")
+        String::from("Declare `parameter` with an explicit 2-state type.")
     }
 
     fn reason(&self) -> String {
-        String::from("design constants should not contain X or Z bits.")
+        String::from("Design constants with Xs or Zs may cause simulation/synthesis mismatch.")
     }
 }

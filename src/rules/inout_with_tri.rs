@@ -45,10 +45,10 @@ impl Rule for InoutWithTri {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`inout` must have `tri`")
+        String::from("Specify `tri` datakind on `inout` ports.")
     }
 
     fn reason(&self) -> String {
-        String::from("")
+        String::from("Explicit datakind of bi-directional ports should be consistent with input ports.")
     }
 }

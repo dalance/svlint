@@ -37,10 +37,10 @@ impl Rule for ParameterInPackage {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`parameter` must be replaced to `localparam` in `package`")
+        String::from("Replace `parameter` keyword with `localparam`.")
     }
 
     fn reason(&self) -> String {
-        String::from("some tools can't take `parameter` in `package`")
+        String::from("In a package, `localparam` properly describes the non-overridable semantics.")
     }
 }
