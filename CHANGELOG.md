@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.5.6...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.6.0...Unreleased) - ReleaseDate
+
+## [v0.6.0](https://github.com/dalance/svlint/compare/v0.5.6...v0.6.0) - 2022-11-07
 
 * [Changed] Relax style rule on assign keyword. [#191](https://github.com/dalance/svlint/pull/191)
 * [Changed] Add fuller explanations about each rule. [#170](https://github.com/dalance/svlint/pull/170)
