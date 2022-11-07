@@ -107,12 +107,12 @@ impl Rule for GenerateIfWithLabel {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "`generate if` must have label with prefix \"{}\"",
+            "Use a label with prefix \"{}\" on conditional generate block.",
             &option.prefix_label
         ))
     }
 
     fn reason(&self) -> String {
-        String::from("the hierarchiral path can't be determined")
+        String::from("Unnamed generate blocks imply unintuitive hierarchical paths.")
     }
 }

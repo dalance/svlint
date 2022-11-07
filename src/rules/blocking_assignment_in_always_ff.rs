@@ -44,10 +44,10 @@ impl Rule for BlockingAssignmentInAlwaysFf {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("blocking assignment is forbidden in `always_ff`")
+        String::from("Do not use blocking assignments within `always_ff`.")
     }
 
     fn reason(&self) -> String {
-        String::from("blocking assignment in `always_ff` causes elaboration error")
+        String::from("Blocking assignment in `always_ff` may cause undefined event ordering.")
     }
 }

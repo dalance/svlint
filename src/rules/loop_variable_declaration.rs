@@ -31,10 +31,10 @@ impl Rule for LoopVariableDeclaration {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("loop variable must be declared in loop")
+        String::from("Declare the loop variable within the loop, i.e. `for (int i`.")
     }
 
     fn reason(&self) -> String {
-        String::from("the scope of variable should be minimized")
+        String::from("Minimizing the variable's scope avoids common coding errors.")
     }
 }

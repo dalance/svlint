@@ -43,10 +43,10 @@ impl Rule for SequentialBlockInAlwaysComb {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("begin/end forbidden within `always_comb` constuct")
+        String::from("Keywords `begin` and `end` are forbidden within `always_comb`.")
     }
 
     fn reason(&self) -> String {
-        String::from("prevent introducing sequential dependencies")
+        String::from("Sequential blocks within `always_comb` introduce sequential dependencies.")
     }
 }

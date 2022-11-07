@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{IntegerVectorType, NetType, NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct WireReg;
+pub struct KeywordForbiddenGenerate;
 
-impl Rule for WireReg {
+impl Rule for KeywordForbiddenGenerate {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -19,21 +19,20 @@ impl Rule for WireReg {
             }
         };
         match node {
-            RefNode::NetType(NetType::Wire(_)) => RuleResult::Fail,
-            RefNode::IntegerVectorType(IntegerVectorType::Reg(_)) => RuleResult::Fail,
+            RefNode::GenerateRegion(_) => RuleResult::Fail,
             _ => RuleResult::Pass,
         }
     }
 
     fn name(&self) -> String {
-        String::from("wire_reg")
+        String::from("keyword_forbidden_generate")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`wire`/`reg` must be replaced to `logic`/`tri`")
+        String::from("Remove `generate`/`endgenerate` keywords.")
     }
 
     fn reason(&self) -> String {
-        String::from("`logic` can detect multi-drive")
+        String::from("Keywords `generate`/`endgenerate` do not change semantics of generate blocks.")
     }
 }

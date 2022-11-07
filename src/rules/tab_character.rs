@@ -42,10 +42,10 @@ impl Rule for TabCharacter {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("tab character is forbidden")
+        String::from("Replace tab characters with spaces.")
     }
 
     fn reason(&self) -> String {
-        String::from("may cause misalignment depending on editor setting")
+        String::from("Tabs may cause misalignment depending on editor setup.")
     }
 }

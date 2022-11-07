@@ -47,12 +47,12 @@ impl Rule for StyleIndent {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "newline should be followed by a multiple of {} spaces",
+            "Follow each newline with an integer multiple of {} spaces.",
             &option.indent
         ))
     }
 
     fn reason(&self) -> String {
-        String::from("consistent style enhances readability")
+        String::from("Consistent indentation is essential for readability.")
     }
 }

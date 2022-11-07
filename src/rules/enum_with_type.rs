@@ -36,10 +36,10 @@ impl Rule for EnumWithType {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`enum` must have data type")
+        String::from("Specify an explicit `enum` base type.")
     }
 
     fn reason(&self) -> String {
-        String::from("the default data type is `int`")
+        String::from("The default `enum` base type is `int` (32b, 2-state).")
     }
 }

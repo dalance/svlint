@@ -53,7 +53,7 @@ impl Rule for LowercamelcaseInterface {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from(format!("Interface name must begin with lowerCamelCase"))
+        String::from(format!("Begin `interface` name with lowerCamelCase."))
     }
 
     fn reason(&self) -> String {

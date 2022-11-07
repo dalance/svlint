@@ -60,10 +60,10 @@ impl Rule for CaseDefault {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`case` must have `default` in `always_comb` or `function`")
+        String::from("Use a `default` expression in `case` statements.")
     }
 
     fn reason(&self) -> String {
-        String::from("'not full case' causes mismatch between simulation and synthesis")
+        String::from("Incomplete case may cause simulation/synthesis mismatch in `always_comb` and `function`.")
     }
 }

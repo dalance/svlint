@@ -58,12 +58,12 @@ impl Rule for PrefixOutput {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "`output` must have prefix \"{}\"",
+            "Prefix `output` port identifier with \"{}\".",
             &option.prefix_output
         ))
     }
 
     fn reason(&self) -> String {
-        String::from("Naming convention simplifies audit.")
+        String::from("Port prefixes help readers to follow signals through modules.")
     }
 }

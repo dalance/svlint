@@ -51,7 +51,7 @@ impl Rule for PrefixInterface {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "`interface` name must have prefix \"{}\"",
+            "Prefix `interface` identifier with \"{}\".",
             &option.prefix_interface
         ))
     }

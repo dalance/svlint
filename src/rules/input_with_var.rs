@@ -41,10 +41,11 @@ impl Rule for InputWithVar {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`input` must have `var`")
+        String::from("Specify `var` datakind on `input` ports.")
     }
 
     fn reason(&self) -> String {
-        String::from("`input wire` can be assigned by mistake. `input logic` becomes error with `default nettype none` because it doesn't have net type.")
+        String::from("Default datakind of input port is a tri-state net.")
+
     }
 }

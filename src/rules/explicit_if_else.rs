@@ -1,9 +1,11 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{unwrap_locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct ExplicitIfElse;
+pub struct ExplicitIfElse {
+    under_always_construct: bool,
+}
 
 impl Rule for ExplicitIfElse {
     fn check(
@@ -13,25 +15,31 @@ impl Rule for ExplicitIfElse {
         _option: &ConfigOption,
     ) -> RuleResult {
         let node = match event {
-            NodeEvent::Enter(x) => x,
-            NodeEvent::Leave(_) => {
+            NodeEvent::Enter(x) => {
+                match x {
+                    RefNode::AlwaysConstruct(_) => {
+                        self.under_always_construct = true;
+                    }
+                    _ => ()
+                }
+                x
+            }
+            NodeEvent::Leave(x) => {
+                match x {
+                    RefNode::AlwaysConstruct(_) => {
+                        self.under_always_construct = false;
+                    }
+                    _ => ()
+                }
                 return RuleResult::Pass;
             }
         };
-        match node {
-            RefNode::AlwaysConstruct(x) => {
-                if let Some(x) = unwrap_node!(*x, ConditionalStatement) {
-                    if let RefNode::ConditionalStatement(y) = x {
-                        let (_, ref b, _, _, _, ref f) = &y.nodes;
-                        let loc = unwrap_locate!(b).unwrap();
-                        if f.is_none() {
-                            RuleResult::FailLocate(*loc)
-                        } else {
-                            RuleResult::Pass
-                        }
-                    } else {
-                        RuleResult::Pass
-                    }
+        match (self.under_always_construct, node) {
+            (true, RefNode::ConditionalStatement(x)) => {
+                let (_, ref b, _, _, _, ref f) = &x.nodes;
+                let loc = unwrap_locate!(b).unwrap();
+                if f.is_none() {
+                    RuleResult::FailLocate(*loc)
                 } else {
                     RuleResult::Pass
                 }
@@ -45,10 +53,10 @@ impl Rule for ExplicitIfElse {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("`if` must have `else` in `always*`")
+        String::from("Add an `else` clause to the `if` statement.")
     }
 
     fn reason(&self) -> String {
-        String::from("explicit `else` makes design intent clearer")
+        String::from("Fully-specified conditional clarifies design intent.")
     }
 }

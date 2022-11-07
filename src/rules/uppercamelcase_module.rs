@@ -53,7 +53,7 @@ impl Rule for UppercamelcaseModule {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from(format!("Module name must begin with UpperCamelCase"))
+        String::from(format!("Begin `module` name with UpperCamelCase."))
     }
 
     fn reason(&self) -> String {
