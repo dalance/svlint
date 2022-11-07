@@ -56,7 +56,7 @@ impl Rule for ReForbiddenInstance {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use an instance identifier matching regex \"{}\".",
+            "Use an instance identifier not matching regex \"{}\".",
             &option.re_forbidden_instance
         ))
     }

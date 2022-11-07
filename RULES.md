@@ -3253,11 +3253,101 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
+## `re_forbidden_generateblock`
+
+### Hint
+
+Use a generate block identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  if (0) begin: Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+    assign a = 0;
+  end: Xfoo
+  else begin: Xbar // Identifier doesn't match default forbidden regex (X prefix).
+    assign a = 1;
+  end: Xbar
+
+  // Identifier doesn't match default forbidden regex (X prefix).
+  for (genvar i=0; i < 5; i++) begin: Xfoo
+    assign b[i] = 0;
+  end: Xfoo
+
+  case (0)
+    0: begin: Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+      assign c = 0;
+    end: Xfoo
+    1: begin: Xbar // Identifier doesn't match default forbidden regex (X prefix).
+      assign c = 1;
+    end: Xbar
+    default: begin: Xbaz // Identifier doesn't match default forbidden regex (X prefix).
+      assign c = 2;
+    end: Xbaz
+  endcase
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  if (0) begin: foo // Unconfigured forbidden regex matches (almost) anything.
+    assign a = 0;
+  end: foo
+  else begin: bar // Unconfigured forbidden regex matches (almost) anything.
+    assign a = 1;
+  end: bar
+
+  // Unconfigured forbidden regex matches (almost) anything.
+  for (genvar i=0; i < 5; i++) begin: foo
+    assign b[i] = 0;
+  end: foo
+
+  case (0)
+    0: begin: foo // Unconfigured forbidden regex matches (almost) anything.
+      assign c = 0;
+    end: foo
+    1: begin: bar // Unconfigured forbidden regex matches (almost) anything.
+      assign c = 1;
+    end: bar
+    default: begin: baz // Unconfigured forbidden regex matches (almost) anything.
+      assign c = 2;
+    end: baz
+  endcase
+endmodule
+```
+
+### Explanation
+
+Generate blocks must not have identifiers matching the regex configured via the
+`re_forbidden_generateblock` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_generateblock**
+  - **generate_case_with_label**
+  - **generate_for_with_label**
+  - **generate_if_with_label**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
 ## `re_forbidden_genvar`
 
 ### Hint
 
-Use a genvar identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+Use a genvar identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 ### Reason
 
@@ -3304,7 +3394,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Use an instance identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+Use an instance identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 ### Reason
 
@@ -3394,7 +3484,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Use a localparam identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+Use a localparam identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 ### Reason
 
@@ -3628,7 +3718,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Use a parameter identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+Use a parameter identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 ### Reason
 
@@ -3674,7 +3764,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Use a port identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 ### Reason
 
@@ -3732,7 +3822,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Use a port identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 ### Reason
 
@@ -3790,7 +3880,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Use a port identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 ### Reason
 
@@ -3843,7 +3933,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Use a port identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 ### Reason
 
@@ -3901,7 +3991,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Use a port identifier matching regex "^[^X](UNCONFIGURED|.*)$".
+Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 ### Reason
 
@@ -4138,6 +4228,96 @@ Functions must have identifiers matching the regex configured via the
 See also:
   - **re_forbidden_function**
   - **function_same_as_system_function**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `re_required_generateblock`
+
+### Hint
+
+Use a generate block identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  if (0) begin: mn3 // Identifier matches default required regex (lowercase).
+    assign a = 0;
+  end: mn3
+  else begin: mn4 // Identifier matches default required regex (lowercase).
+    assign a = 1;
+  end: mn4
+
+  // Identifier matches default required regex (lowercase).
+  for (genvar i=0; i < 5; i++) begin: mn5
+    assign b[i] = 0;
+  end: mn5
+
+  case (0)
+    0: begin: mn6 // Identifier matches default required regex (lowercase).
+      assign c = 0;
+    end: mn6
+    1: begin: mn7 // Identifier matches default required regex (lowercase).
+      assign c = 1;
+    end: mn7
+    default: begin: mn8 // Identifier matches default required regex (lowercase).
+      assign c = 2;
+    end: mn8
+  endcase
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  if (0) begin: Mn3 // Identifier doesn't match default required regex (lowercase).
+    assign a = 0;
+  end: Mn3
+  else begin: Mn4 // Identifier doesn't match default required regex (lowercase).
+    assign a = 1;
+  end: Mn4
+
+  // Identifier doesn't match default required regex (lowercase).
+  for (genvar i=0; i < 5; i++) begin: Mn5
+    assign b[i] = 0;
+  end: Mn5
+
+  case (0)
+    0: begin: Mn6 // Identifier doesn't match default required regex (lowercase).
+      assign c = 0;
+    end: Mn6
+    1: begin: Mn7 // Identifier doesn't match default required regex (lowercase).
+      assign c = 1;
+    end: Mn7
+    default: begin: Mn8 // Identifier doesn't match default required regex (lowercase).
+      assign c = 2;
+    end: Mn8
+  endcase
+endmodule
+```
+
+### Explanation
+
+Generate blocks must have identifiers matching the regex configured via the
+`re_required_generateblock` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_generateblock**
+  - **generate_case_with_label**
+  - **generate_for_with_label**
+  - **generate_if_with_label**
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
