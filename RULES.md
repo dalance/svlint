@@ -110,8 +110,7 @@ This tool (svlint) works in a series of well-defined steps:
 8. If a rule detects an undesirable quality in the syntax tree, then return a
   failure, otherwise return a pass.
 
-
-# Rules
+## Rule Documentation
 
 Each rule is documented with 5 pieces of information:
 - Hint: A brief instruction on how to modify failing SystemVerilog.
@@ -134,7 +133,7 @@ a short reason why it should be seen.
   For example, **style_keyword_datatype** exists to ensure all SystemVerilog
   keywords are captured in the `style_keyword_*` set, but its use is not
   suggested because it is visually appealing (and common practice) to align
-  the identifiers in declarations.
+  the identifiers in adjacent declarations.
 - "useful companion" - Enabling the named rule provides an additional set of
   properties which are useful for reasoning about the function and semantics of
   code which passes.
@@ -146,6 +145,9 @@ a short reason why it should be seen.
 - "mutually exclusive alternative" - The named rule *can* not be used in
   conjunction, i.e. enabling both rules is nonsensical because a failure on one
   implies a pass on the other rule.
+
+
+# Functional Rules
 
 
 ---
@@ -771,230 +773,6 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
   - 13.4.2 Static and automatic functions
-
-
----
-## `generate_case_with_label`
-
-### Hint
-
-Use a label with prefix "l_" on conditional generate block.
-
-### Reason
-
-Unnamed generate blocks imply unintuitive hierarchical paths.
-
-### Pass Example
-
-```SystemVerilog
-module A;
-generate case (2'd3)
-  2'd1:     begin: l_nondefault wire c = 1'b0; end
-  default:  begin: l_default    wire c = 1'b0; end
-endcase endgenerate
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A;
-generate case (2'd0)
-  2'd1:     wire a = 1'b0; // nondefaultNoBegin
-  default:  wire a = 1'b0; // defaultNoBegin
-endcase endgenerate
-generate case (2'd1)
-  2'd1:     begin wire b = 1'b0; end // nondefaultNoLabel
-  default:  begin wire b = 1'b0; end // defaultNoLabel
-endcase endgenerate
-generate case (2'd2)
-  2'd1:     begin: nondefaultNoPrefix wire c = 1'b0; end
-  default:  begin: noPrefix           wire c = 1'b0; end
-endcase endgenerate
-endmodule
-```
-
-### Explanation
-
-Conditional generate constructs select zero or one blocks from a set of
-alternative generate blocks within a module, interface, program, or checker.
-The selection of which generate blocks are instantiated is decided during
-elaboration via evaluation of constant expressions.
-Generate blocks introduce hierarchy within a module, whether they are named or
-unnamed.
-Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
-can use and depend on.
-For example, to find a specific DFF in a netlist you could use a hierarchical
-path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
-The naming scheme for unnamed generated blocks is defined in
-IEEE1800-2017 clause 27.6.
-
-These implicit names are not intuitive for human readers, so this rule is
-designed to check three things:
-1. The generate block uses `begin`/`end` delimiters.
-2. The generate block has been given a label, e.g. `begin: mylabel`.
-3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
-  the string `l_`.
-
-The prefix is useful to when reading hierarchical paths to distinguish between
-module/interface instances and generate blocks.
-For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
-with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
-
-See also:
-  - **generate_for_with_label** - Similar reasoning, useful companion rule.
-  - **generate_if_with_label** - Equivalent reasoning, useful companion rule.
-  - **prefix_instance** - Useful companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 27.5 Conditional generate constructs
-  - 27.6 External names for unnamed generate blocks
-
-
----
-## `generate_for_with_label`
-
-### Hint
-
-Use a label with prefix "l_" on loop generate block.
-
-### Reason
-
-Unnamed generate blocks imply unintuitive hierarchical paths.
-
-### Pass Example
-
-```SystemVerilog
-module A;
-for(genvar i=0; i<10; i++) begin: l_a
-end
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A;
-for(genvar i=0; i<10; i++) foo[i] = i;// noBegin
-for(genvar i=0; i<10; i++) begin // noLabel
-end
-endmodule
-```
-
-### Explanation
-
-A loop generate construct allows a single generate block to be instantiated
-multiple times within a module, interface, program, or checker.
-The selection of which generate blocks are instantiated is decided during
-elaboration via evaluation of constant expressions.
-Generate blocks introduce hierarchy within a module, whether they are named or
-unnamed.
-Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
-can use and depend on.
-For example, to find a specific DFF in a netlist you could use a hierarchical
-path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
-The naming scheme for unnamed generated blocks is defined in
-IEEE1800-2017 clause 27.6.
-
-These implicit names are not intuitive for human readers, so this rule is
-designed to check three things:
-1. The generate block uses `begin`/`end` delimiters.
-2. The generate block has been given a label, e.g. `begin: mylabel`.
-3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
-  the string `l_`.
-
-The prefix is useful to when reading hierarchical paths to distinguish between
-module/interface instances and generate blocks.
-For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
-with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
-
-See also:
-  - **generate_case_with_label** - Similar reasoning, useful companion rule.
-  - **generate_if_with_label** - Similar reasoning, useful companion rule.
-  - **prefix_instance** - Useful companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 27.4 Loop generate constructs
-  - 27.6 External names for unnamed generate blocks
-
-
----
-## `generate_if_with_label`
-
-### Hint
-
-Use a label with prefix "l_" on conditional generate block.
-
-### Reason
-
-Unnamed generate blocks imply unintuitive hierarchical paths.
-
-### Pass Example
-
-```SystemVerilog
-module A;
-if (a) begin: l_abc
-end else if (b) begin: l_def
-end else begin: l_hij
-end
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module A;
-if (a) begin
-end else if (b) begin
-end else begin
-end
-
-if (c) begin: abc
-end else if (d) begin: def
-end else begin: hij
-end
-
-if (e) begin: l_klm
-end else begin: mno
-end
-endmodule
-```
-
-### Explanation
-
-Conditional generate constructs select zero or one blocks from a set of
-alternative generate blocks within a module, interface, program, or checker.
-The selection of which generate blocks are instantiated is decided during
-elaboration via evaluation of constant expressions.
-Generate blocks introduce hierarchy within a module, whether they are named or
-unnamed.
-Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
-can use and depend on.
-For example, to find a specific DFF in a netlist you could use a hierarchical
-path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
-The naming scheme for unnamed generated blocks is defined in
-IEEE1800-2017 clause 27.6.
-
-These implicit names are not intuitive for human readers, so this rule is
-designed to check three things:
-1. The generate block uses `begin`/`end` delimiters.
-2. The generate block has been given a label, e.g. `begin: mylabel`.
-3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
-  the string `l_`.
-
-The prefix is useful to when reading hierarchical paths to distinguish between
-module/interface instances and generate blocks.
-For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
-with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
-
-See also:
-  - **generate_case_with_label** - Equivalent reasoning, useful companion rule.
-  - **generate_for_with_label** - Similar reasoning, useful companion rule.
-  - **prefix_instance** - Useful companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 27.5 Conditional generate constructs
-  - 27.6 External names for unnamed generate blocks
 
 
 ---
@@ -2176,144 +1954,6 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
-## `lowercamelcase_interface`
-
-### Hint
-
-Begin `interface` name with lowerCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-interface fooBar; endinterface
-```
-
-### Fail Example
-
-```SystemVerilog
-interface FooBar; endinterface
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with a lowercase letter, and packages should start with an
-uppercase letter.
-
-See also:
-  - **lowercamelcase_module** - Suggested companion rule.
-  - **lowercamelcase_package** - Potential companion rule.
-  - **prefix_interface** - Alternative rule.
-  - **uppercamelcase_interface** - Mutually exclusive alternative rule.
-  - **uppercamelcase_module** - Potential companion rule.
-  - **uppercamelcase_package** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `lowercamelcase_module`
-
-### Hint
-
-Begin `module` name with lowerCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-module fooBar; endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module FooBar; endmodule
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with a lowercase letter, and packages should start with an
-uppercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Suggested companion rule.
-  - **lowercamelcase_package** - Potential companion rule.
-  - **prefix_module** - Alternative rule.
-  - **uppercamelcase_interface** - Potential companion rule.
-  - **uppercamelcase_module** - Mutually exclusive alternative rule.
-  - **uppercamelcase_package** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `lowercamelcase_package`
-
-### Hint
-
-Begin `package` name with lowerCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-package fooBar; endpackage
-```
-
-### Fail Example
-
-```SystemVerilog
-package FooBar; endpackage
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with an uppercase letter, and packages should start with an
-lowercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Potential companion rule.
-  - **lowercamelcase_module** - Potential companion rule.
-  - **prefix_package** - Alternative rule.
-  - **uppercamelcase_interface** - Suggested companion rule.
-  - **uppercamelcase_module** - Suggested companion rule.
-  - **uppercamelcase_package** - Mutually exclusive alternative rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
 ## `multiline_for_begin`
 
 ### Hint
@@ -2794,6 +2434,877 @@ The most relevant clauses of IEEE1800-2017 are:
   - 7.2.1 Packed structures
   - 11.4.5 Equality operators
   - 11.4.6 Wildcard equality operators
+
+
+---
+## `sequential_block_in_always_comb`
+
+### Hint
+
+Keywords `begin` and `end` are forbidden within `always_comb`.
+
+### Reason
+
+Sequential blocks within `always_comb` introduce sequential dependencies.
+
+### Pass Example
+
+```SystemVerilog
+module a;
+  always_comb
+    e = z;
+
+  always_comb
+    if (foo) f = z;
+    else     f = z;
+
+  always_comb
+    case (foo)
+      one:     g = z;
+      two:     g = z;
+      default: g = z;
+    endcase
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module a;
+  always_comb begin
+    a = z;
+  end
+
+  always_comb
+    if (bar) begin
+      b = z;
+    end
+
+  always_comb
+    if (bar) c = z;
+    else begin
+      c = z;
+    end
+
+  always_comb
+    case (bar)
+      one: begin
+        d = z;
+      end
+      two: d = z;
+      default: d = z;
+    endcase
+endmodule
+```
+
+### Explanation
+
+This rule has two purposes:
+1. Prevent mismatches between simulation and synthesis.
+2. Avoid unnecessarily restricting the simulator's scheduler.
+
+An `always_comb` block is scheduled for execution whenever any of the RHS
+variables (or nets) change value, which can lead to unnecessary sequential
+dependencies.
+For example, the following block is requires that the "expensive" (in terms
+of CPU time) function must be called to update `a` whenever `z` changes value,
+in addition to whenever `y` changes value.
+```systemverilog
+always_comb begin
+  a = expensive(y);
+  b = z;
+end
+```
+
+The above example can be reformed to allow the simulator more flexibility in
+how it schedules processes.
+Logical equivalence is maintained, and a synthesis tool will interpret these
+examples equivalently.
+Note that continuous assignment (using `assign`) is not sensitive to changes in
+`y` because functions are not transparent.
+```systemverilog
+always_comb a = expensive(y);
+assign b = z;
+```
+
+This rule is intended for synthesisable code only, not testbench code.
+Testbenches often necessarily rely on sequential dependencies, but a synthesis
+tool for digital synchronous logic will produce a netlist without sequential
+dependencies.
+That can lead to a mismatch between simulation and synthesis.
+
+See also:
+  - **style_indent** - Useful companion rule.
+  - **sequential_block_in_always_ff** - Similar rule, different purpose.
+  - **sequential_block_in_always_latch** - Similar rule, different purpose.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 4.6 Determinisim
+  - 9.2.2.2 Combinational logic always_comb procedure
+  - 9.3.1 Sequential blocks
+  - 10.3 Continuous assignments
+  - 10.4 Procedural assignments
+
+
+---
+## `sequential_block_in_always_ff`
+
+### Hint
+
+Keywords `begin` and `end` are forbidden within `always_ff`.
+
+### Reason
+
+Sequential blocks within `always_ff` may encourage overly-complex code.
+
+### Pass Example
+
+```SystemVerilog
+module a;
+  always_ff @(posedge clk)
+    d <= z;
+
+  always_ff @(posedge clk)
+    if (foo) e <= z;
+
+  always_ff @(posedge clk)
+    if (foo) f <= z;
+    else     f <= z;
+
+  always_ff @(posedge clk)
+    case (foo)
+      one:     g <= z;
+      two:     g <= z;
+      default: g <= z;
+    endcase
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module a;
+  always_ff @(posedge clk) begin
+    a <= z;
+  end
+
+  always_ff @(posedge clk)
+    if (bar) begin
+      b <= z;
+    end
+
+  always_ff @(posedge clk)
+    if (bar) c <= z;
+    else begin
+      c <= z;
+    end
+
+  always_ff @(posedge clk)
+    case (bar)
+      one: begin
+        d <= z;
+      end
+      two: d <= z;
+      default: d <= z;
+    endcase
+endmodule
+```
+
+### Explanation
+
+The consequences/purposes of this rule are perhaps subtle, particulaly in how
+it works with companion rules **default_nettype_none**, **explicit_case_default**,
+**explicit_if_else**, **style_indent**, and a guideline to avoid `for` within
+`always_ff`.
+
+In conjunction with these companion rules and guidelines, a nice consequence is
+that editing code after the fact is "safe", i.e. not error prone.
+Without `begin`/`end` adding another statement to a single-statement conditional
+block may be error prone.
+This is why coding styles for C-style languages often forbid writing
+`if (a) foo;`, instead requiring `if (a) { foo; }` - because it's easy to forget
+to add braces with an additional statement like `if (a) { foo; bar; }`.
+While a simple rule is to require the use of `begin` and `end` (or `{` and `}`),
+this introduces visual noise.
+The goal is to guard programmers from making a simple and easy mistake.
+This rule, in conjunction with the companion rules, achieves the same goal using
+a different approach, in addition to providing other nice properties.
+
+With a sequential block (marked by `begin` and `end`) you can assign to multiple
+signals in a leaf conditon which can easily result in difficult-to-comprehend
+logic, e.g.:
+```systemverilog
+always_ff @(posedge clk) begin
+  if (cond) begin
+    foo_q <= foo_d;       // Block was originally written for foo.
+    bar_q <= bar_d;       // This was added later.
+  end
+  bar_q <= bar_d;         // What happens to bar_q?
+end
+```
+By forbidding sequential blocks, you enforce that exactly signal is assigned to
+per leaf condition.
+A nice consequence is that exactly one signal is updated on each evaluation of
+the `always_ff` block.
+IEEE1800-2017 specifies that if a signal is assigned to in an `always_ff` block,
+then it shall not be assigned to by any other block (compile error).
+
+An example with multiple signals in the `always_ff` is a ping-pong buffer (AKA
+shunt buffer, storage of a 2-entry fifo).
+Due to the construction, you can be sure that you never update both entries at
+the same time, except when that is clearly explicit.
+```systemverilog
+  // Enforced exclusive updates, with reset and clockgate.
+  always_ff @(posedge clk)
+    if (rst)
+      {ping_q, pong_q} <= '0; // Assignment to multiple signals is explicit.
+    else if (clkgate)
+      if (foo) ping_q <= foo;
+      else     pong_q <= foo;
+    else // Optional explicit else.
+      {ping_q, pong_q} <= {ping_q, pong_q};
+```
+
+Another example with multiple signals is an address decoder.
+Due to the construction, you can be sure that you aren't accidentally updating
+multiple registers on a write to one address.
+```systemverilog
+  // Enforced exclusivity of address decode.
+  always_ff @(posedge clk)
+    if (write)
+      case (addr)
+        123:        red_q   <= foo;
+        456:        blue_q  <= foo;
+        789:        green_q <= foo;
+        default:    black_q <= foo; // Optional explicit default.
+      endcase
+```
+
+When you don't need those exclusivity properties, only one signal should be
+updated per `always_ff`.
+That ensures that the code doesn't get too deep/complex/unintuitive and
+drawing a logical diagram is straightforward.
+This is the expected form for most signals.
+```systemverilog
+  always_ff @(posedge clk)
+    if (rst)          ctrl_q <= '0;
+    else if (clkgate) ctrl_q <= ctrl_d;
+    else              ctrl_q <= ctrl_q; // Optional explicit else.
+```
+
+See also:
+  - **default_nettype_none** - Useful companion rule.
+  - **explicit_case_default** - Useful companion rule.
+  - **explicit_if_else** - Useful companion rule.
+  - **style_indent** - Useful companion rule.
+  - **sequential_block_in_always_comb** - Similar rule, different purpose.
+  - **sequential_block_in_always_latch** - Similar rule, different purpose.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 4.6 Determinisim
+  - 9.2.2.4 Sequential logic always_ff procedure
+  - 9.3.1 Sequential blocks
+  - 9.4.2 Event control
+  - 12.4 Conditional if-else statement
+  - 12.5 Case statement
+  - 12.7 Loop statements
+
+
+---
+## `sequential_block_in_always_latch`
+
+### Hint
+
+Keywords `begin` and `end` are forbidden within `always_latch`.
+
+### Reason
+
+Sequential blocks within `always_latch` may encourage overly-complex code.
+
+### Pass Example
+
+```SystemVerilog
+module a;
+  always_latch
+    if (foo) e <= z;
+
+  always_latch
+    if (foo) f <= z;
+    else     f <= z;
+
+  always_latch
+    case (foo)
+      one:     g <= z;
+      two:     g <= z;
+      default: g <= z;
+    endcase
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module a;
+  always_latch begin
+    a <= z;
+  end
+
+  always_latch
+    if (bar) begin
+      b <= z;
+    end
+
+  always_latch
+    if (bar) c <= z;
+    else begin
+      c <= z;
+    end
+
+  always_latch
+    case (bar)
+      one: begin
+        d <= z;
+      end
+      two: d <= z;
+      default: d <= z;
+    endcase
+endmodule
+```
+
+### Explanation
+
+The explanation of **sequential_block_in_always_ff**, and much of the explanation
+of **sequential_block_in_always_comb**, also applies to this rule.
+Main points are that avoiding `begin`/`end` helps protect the programmer against
+simple mistakes, provides exclusivity properties by construction, and avoids
+restricting simulator scheduling decisions.
+
+See also:
+  - **default_nettype_none** - Useful companion rule.
+  - **explicit_case_default** - Useful companion rule.
+  - **explicit_if_else** - Useful companion rule.
+  - **style_indent** - Useful companion rule.
+  - **sequential_block_in_always_comb** - Similar rule, different purpose.
+  - **sequential_block_in_always_ff** - Similar rule, different purpose.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 4.6 Determinisim
+  - 9.2.2.3 Latched logic always_latch procedure
+  - 9.3.1 Sequential blocks
+  - 9.4.2 Event control
+  - 12.4 Conditional if-else statement
+  - 12.5 Case statement
+  - 12.7 Loop statements
+
+
+---
+## `uppercamelcase_interface`
+
+### Hint
+
+Begin `interface` name with UpperCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+interface FooBar; endinterface
+```
+
+### Fail Example
+
+```SystemVerilog
+interface fooBar; endinterface
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with an uppercase letter, and packages should start with an
+lowercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Mutually exclusive alternative rule.
+  - **lowercamelcase_module** - Potential companion rule.
+  - **lowercamelcase_package** - Suggested companion rule.
+  - **prefix_interface** - Alternative rule.
+  - **uppercamelcase_module** - Suggested companion rule.
+  - **uppercamelcase_package** - Potential companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `uppercamelcase_module`
+
+### Hint
+
+Begin `module` name with UpperCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+module FooBar; endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module fooBar; endmodule
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with an uppercase letter, and packages should start with an
+lowercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Potential companion rule.
+  - **lowercamelcase_module** - Mutually exclusive alternative rule.
+  - **lowercamelcase_package** - Suggested companion rule.
+  - **prefix_module** - Alternative rule.
+  - **uppercamelcase_interface** - Suggested companion rule.
+  - **uppercamelcase_package** - Potential companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `uppercamelcase_package`
+
+### Hint
+
+Begin `package` name with UpperCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+package FooBar; endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package fooBar; endpackage
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with a lowercase letter, and packages should start with an
+uppercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Suggested companion rule.
+  - **lowercamelcase_module** - Suggested companion rule.
+  - **lowercamelcase_package** - Mutually exclusive alternative rule.
+  - **prefix_package** - Alternative rule.
+  - **uppercamelcase_interface** - Potential companion rule.
+  - **uppercamelcase_module** - Potential companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+
+# Naming Convention Rules
+
+Rules for checking against naming conventions are named with either the suffix
+`_with_label` or one of these prefixes:
+- `prefix_`
+- `(lower|upper)camelcase_`
+- `re_(forbidden|required)_`
+
+
+---
+## `generate_case_with_label`
+
+### Hint
+
+Use a label with prefix "l_" on conditional generate block.
+
+### Reason
+
+Unnamed generate blocks imply unintuitive hierarchical paths.
+
+### Pass Example
+
+```SystemVerilog
+module A;
+generate case (2'd3)
+  2'd1:     begin: l_nondefault wire c = 1'b0; end
+  default:  begin: l_default    wire c = 1'b0; end
+endcase endgenerate
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+generate case (2'd0)
+  2'd1:     wire a = 1'b0; // nondefaultNoBegin
+  default:  wire a = 1'b0; // defaultNoBegin
+endcase endgenerate
+generate case (2'd1)
+  2'd1:     begin wire b = 1'b0; end // nondefaultNoLabel
+  default:  begin wire b = 1'b0; end // defaultNoLabel
+endcase endgenerate
+generate case (2'd2)
+  2'd1:     begin: nondefaultNoPrefix wire c = 1'b0; end
+  default:  begin: noPrefix           wire c = 1'b0; end
+endcase endgenerate
+endmodule
+```
+
+### Explanation
+
+Conditional generate constructs select zero or one blocks from a set of
+alternative generate blocks within a module, interface, program, or checker.
+The selection of which generate blocks are instantiated is decided during
+elaboration via evaluation of constant expressions.
+Generate blocks introduce hierarchy within a module, whether they are named or
+unnamed.
+Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
+can use and depend on.
+For example, to find a specific DFF in a netlist you could use a hierarchical
+path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
+The naming scheme for unnamed generated blocks is defined in
+IEEE1800-2017 clause 27.6.
+
+These implicit names are not intuitive for human readers, so this rule is
+designed to check three things:
+1. The generate block uses `begin`/`end` delimiters.
+2. The generate block has been given a label, e.g. `begin: mylabel`.
+3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
+  the string `l_`.
+
+The prefix is useful to when reading hierarchical paths to distinguish between
+module/interface instances and generate blocks.
+For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
+with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
+
+See also:
+  - **generate_for_with_label** - Similar reasoning, useful companion rule.
+  - **generate_if_with_label** - Equivalent reasoning, useful companion rule.
+  - **prefix_instance** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 27.5 Conditional generate constructs
+  - 27.6 External names for unnamed generate blocks
+
+
+---
+## `generate_for_with_label`
+
+### Hint
+
+Use a label with prefix "l_" on loop generate block.
+
+### Reason
+
+Unnamed generate blocks imply unintuitive hierarchical paths.
+
+### Pass Example
+
+```SystemVerilog
+module A;
+for(genvar i=0; i<10; i++) begin: l_a
+end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+for(genvar i=0; i<10; i++) foo[i] = i;// noBegin
+for(genvar i=0; i<10; i++) begin // noLabel
+end
+endmodule
+```
+
+### Explanation
+
+A loop generate construct allows a single generate block to be instantiated
+multiple times within a module, interface, program, or checker.
+The selection of which generate blocks are instantiated is decided during
+elaboration via evaluation of constant expressions.
+Generate blocks introduce hierarchy within a module, whether they are named or
+unnamed.
+Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
+can use and depend on.
+For example, to find a specific DFF in a netlist you could use a hierarchical
+path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
+The naming scheme for unnamed generated blocks is defined in
+IEEE1800-2017 clause 27.6.
+
+These implicit names are not intuitive for human readers, so this rule is
+designed to check three things:
+1. The generate block uses `begin`/`end` delimiters.
+2. The generate block has been given a label, e.g. `begin: mylabel`.
+3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
+  the string `l_`.
+
+The prefix is useful to when reading hierarchical paths to distinguish between
+module/interface instances and generate blocks.
+For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
+with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
+
+See also:
+  - **generate_case_with_label** - Similar reasoning, useful companion rule.
+  - **generate_if_with_label** - Similar reasoning, useful companion rule.
+  - **prefix_instance** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 27.4 Loop generate constructs
+  - 27.6 External names for unnamed generate blocks
+
+
+---
+## `generate_if_with_label`
+
+### Hint
+
+Use a label with prefix "l_" on conditional generate block.
+
+### Reason
+
+Unnamed generate blocks imply unintuitive hierarchical paths.
+
+### Pass Example
+
+```SystemVerilog
+module A;
+if (a) begin: l_abc
+end else if (b) begin: l_def
+end else begin: l_hij
+end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module A;
+if (a) begin
+end else if (b) begin
+end else begin
+end
+
+if (c) begin: abc
+end else if (d) begin: def
+end else begin: hij
+end
+
+if (e) begin: l_klm
+end else begin: mno
+end
+endmodule
+```
+
+### Explanation
+
+Conditional generate constructs select zero or one blocks from a set of
+alternative generate blocks within a module, interface, program, or checker.
+The selection of which generate blocks are instantiated is decided during
+elaboration via evaluation of constant expressions.
+Generate blocks introduce hierarchy within a module, whether they are named or
+unnamed.
+Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
+can use and depend on.
+For example, to find a specific DFF in a netlist you could use a hierarchical
+path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
+The naming scheme for unnamed generated blocks is defined in
+IEEE1800-2017 clause 27.6.
+
+These implicit names are not intuitive for human readers, so this rule is
+designed to check three things:
+1. The generate block uses `begin`/`end` delimiters.
+2. The generate block has been given a label, e.g. `begin: mylabel`.
+3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
+  the string `l_`.
+
+The prefix is useful to when reading hierarchical paths to distinguish between
+module/interface instances and generate blocks.
+For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
+with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
+
+See also:
+  - **generate_case_with_label** - Equivalent reasoning, useful companion rule.
+  - **generate_for_with_label** - Similar reasoning, useful companion rule.
+  - **prefix_instance** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 27.5 Conditional generate constructs
+  - 27.6 External names for unnamed generate blocks
+
+
+---
+## `lowercamelcase_interface`
+
+### Hint
+
+Begin `interface` name with lowerCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+interface fooBar; endinterface
+```
+
+### Fail Example
+
+```SystemVerilog
+interface FooBar; endinterface
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with a lowercase letter, and packages should start with an
+uppercase letter.
+
+See also:
+  - **lowercamelcase_module** - Suggested companion rule.
+  - **lowercamelcase_package** - Potential companion rule.
+  - **prefix_interface** - Alternative rule.
+  - **uppercamelcase_interface** - Mutually exclusive alternative rule.
+  - **uppercamelcase_module** - Potential companion rule.
+  - **uppercamelcase_package** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `lowercamelcase_module`
+
+### Hint
+
+Begin `module` name with lowerCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+module fooBar; endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module FooBar; endmodule
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with a lowercase letter, and packages should start with an
+uppercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Suggested companion rule.
+  - **lowercamelcase_package** - Potential companion rule.
+  - **prefix_module** - Alternative rule.
+  - **uppercamelcase_interface** - Potential companion rule.
+  - **uppercamelcase_module** - Mutually exclusive alternative rule.
+  - **uppercamelcase_package** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `lowercamelcase_package`
+
+### Hint
+
+Begin `package` name with lowerCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+package fooBar; endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package FooBar; endpackage
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with an uppercase letter, and packages should start with an
+lowercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Potential companion rule.
+  - **lowercamelcase_module** - Potential companion rule.
+  - **prefix_package** - Alternative rule.
+  - **uppercamelcase_interface** - Suggested companion rule.
+  - **uppercamelcase_module** - Suggested companion rule.
+  - **uppercamelcase_package** - Mutually exclusive alternative rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
 
 
 ---
@@ -5098,365 +5609,9 @@ The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
 
 
----
-## `sequential_block_in_always_comb`
+# Style/Whitespace Convention Rules
 
-### Hint
-
-Keywords `begin` and `end` are forbidden within `always_comb`.
-
-### Reason
-
-Sequential blocks within `always_comb` introduce sequential dependencies.
-
-### Pass Example
-
-```SystemVerilog
-module a;
-  always_comb
-    e = z;
-
-  always_comb
-    if (foo) f = z;
-    else     f = z;
-
-  always_comb
-    case (foo)
-      one:     g = z;
-      two:     g = z;
-      default: g = z;
-    endcase
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module a;
-  always_comb begin
-    a = z;
-  end
-
-  always_comb
-    if (bar) begin
-      b = z;
-    end
-
-  always_comb
-    if (bar) c = z;
-    else begin
-      c = z;
-    end
-
-  always_comb
-    case (bar)
-      one: begin
-        d = z;
-      end
-      two: d = z;
-      default: d = z;
-    endcase
-endmodule
-```
-
-### Explanation
-
-This rule has two purposes:
-1. Prevent mismatches between simulation and synthesis.
-2. Avoid unnecessarily restricting the simulator's scheduler.
-
-An `always_comb` block is scheduled for execution whenever any of the RHS
-variables (or nets) change value, which can lead to unnecessary sequential
-dependencies.
-For example, the following block is requires that the "expensive" (in terms
-of CPU time) function must be called to update `a` whenever `z` changes value,
-in addition to whenever `y` changes value.
-```systemverilog
-always_comb begin
-  a = expensive(y);
-  b = z;
-end
-```
-
-The above example can be reformed to allow the simulator more flexibility in
-how it schedules processes.
-Logical equivalence is maintained, and a synthesis tool will interpret these
-examples equivalently.
-Note that continuous assignment (using `assign`) is not sensitive to changes in
-`y` because functions are not transparent.
-```systemverilog
-always_comb a = expensive(y);
-assign b = z;
-```
-
-This rule is intended for synthesisable code only, not testbench code.
-Testbenches often necessarily rely on sequential dependencies, but a synthesis
-tool for digital synchronous logic will produce a netlist without sequential
-dependencies.
-That can lead to a mismatch between simulation and synthesis.
-
-See also:
-  - **style_indent** - Useful companion rule.
-  - **sequential_block_in_always_ff** - Similar rule, different purpose.
-  - **sequential_block_in_always_latch** - Similar rule, different purpose.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 4.6 Determinisim
-  - 9.2.2.2 Combinational logic always_comb procedure
-  - 9.3.1 Sequential blocks
-  - 10.3 Continuous assignments
-  - 10.4 Procedural assignments
-
-
----
-## `sequential_block_in_always_ff`
-
-### Hint
-
-Keywords `begin` and `end` are forbidden within `always_ff`.
-
-### Reason
-
-Sequential blocks within `always_ff` may encourage overly-complex code.
-
-### Pass Example
-
-```SystemVerilog
-module a;
-  always_ff @(posedge clk)
-    d <= z;
-
-  always_ff @(posedge clk)
-    if (foo) e <= z;
-
-  always_ff @(posedge clk)
-    if (foo) f <= z;
-    else     f <= z;
-
-  always_ff @(posedge clk)
-    case (foo)
-      one:     g <= z;
-      two:     g <= z;
-      default: g <= z;
-    endcase
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module a;
-  always_ff @(posedge clk) begin
-    a <= z;
-  end
-
-  always_ff @(posedge clk)
-    if (bar) begin
-      b <= z;
-    end
-
-  always_ff @(posedge clk)
-    if (bar) c <= z;
-    else begin
-      c <= z;
-    end
-
-  always_ff @(posedge clk)
-    case (bar)
-      one: begin
-        d <= z;
-      end
-      two: d <= z;
-      default: d <= z;
-    endcase
-endmodule
-```
-
-### Explanation
-
-The consequences/purposes of this rule are perhaps subtle, particulaly in how
-it works with companion rules **default_nettype_none**, **explicit_case_default**,
-**explicit_if_else**, **style_indent**, and a guideline to avoid `for` within
-`always_ff`.
-
-In conjunction with these companion rules and guidelines, a nice consequence is
-that editing code after the fact is "safe", i.e. not error prone.
-Without `begin`/`end` adding another statement to a single-statement conditional
-block may be error prone.
-This is why coding styles for C-style languages often forbid writing
-`if (a) foo;`, instead requiring `if (a) { foo; }` - because it's easy to forget
-to add braces with an additional statement like `if (a) { foo; bar; }`.
-While a simple rule is to require the use of `begin` and `end` (or `{` and `}`),
-this introduces visual noise.
-The goal is to guard programmers from making a simple and easy mistake.
-This rule, in conjunction with the companion rules, achieves the same goal using
-a different approach, in addition to providing other nice properties.
-
-With a sequential block (marked by `begin` and `end`) you can assign to multiple
-signals in a leaf conditon which can easily result in difficult-to-comprehend
-logic, e.g.:
-```systemverilog
-always_ff @(posedge clk) begin
-  if (cond) begin
-    foo_q <= foo_d;       // Block was originally written for foo.
-    bar_q <= bar_d;       // This was added later.
-  end
-  bar_q <= bar_d;         // What happens to bar_q?
-end
-```
-By forbidding sequential blocks, you enforce that exactly signal is assigned to
-per leaf condition.
-A nice consequence is that exactly one signal is updated on each evaluation of
-the `always_ff` block.
-IEEE1800-2017 specifies that if a signal is assigned to in an `always_ff` block,
-then it shall not be assigned to by any other block (compile error).
-
-An example with multiple signals in the `always_ff` is a ping-pong buffer (AKA
-shunt buffer, storage of a 2-entry fifo).
-Due to the construction, you can be sure that you never update both entries at
-the same time, except when that is clearly explicit.
-```systemverilog
-  // Enforced exclusive updates, with reset and clockgate.
-  always_ff @(posedge clk)
-    if (rst)
-      {ping_q, pong_q} <= '0; // Assignment to multiple signals is explicit.
-    else if (clkgate)
-      if (foo) ping_q <= foo;
-      else     pong_q <= foo;
-    else // Optional explicit else.
-      {ping_q, pong_q} <= {ping_q, pong_q};
-```
-
-Another example with multiple signals is an address decoder.
-Due to the construction, you can be sure that you aren't accidentally updating
-multiple registers on a write to one address.
-```systemverilog
-  // Enforced exclusivity of address decode.
-  always_ff @(posedge clk)
-    if (write)
-      case (addr)
-        123:        red_q   <= foo;
-        456:        blue_q  <= foo;
-        789:        green_q <= foo;
-        default:    black_q <= foo; // Optional explicit default.
-      endcase
-```
-
-When you don't need those exclusivity properties, only one signal should be
-updated per `always_ff`.
-That ensures that the code doesn't get too deep/complex/unintuitive and
-drawing a logical diagram is straightforward.
-This is the expected form for most signals.
-```systemverilog
-  always_ff @(posedge clk)
-    if (rst)          ctrl_q <= '0;
-    else if (clkgate) ctrl_q <= ctrl_d;
-    else              ctrl_q <= ctrl_q; // Optional explicit else.
-```
-
-See also:
-  - **default_nettype_none** - Useful companion rule.
-  - **explicit_case_default** - Useful companion rule.
-  - **explicit_if_else** - Useful companion rule.
-  - **style_indent** - Useful companion rule.
-  - **sequential_block_in_always_comb** - Similar rule, different purpose.
-  - **sequential_block_in_always_latch** - Similar rule, different purpose.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 4.6 Determinisim
-  - 9.2.2.4 Sequential logic always_ff procedure
-  - 9.3.1 Sequential blocks
-  - 9.4.2 Event control
-  - 12.4 Conditional if-else statement
-  - 12.5 Case statement
-  - 12.7 Loop statements
-
-
----
-## `sequential_block_in_always_latch`
-
-### Hint
-
-Keywords `begin` and `end` are forbidden within `always_latch`.
-
-### Reason
-
-Sequential blocks within `always_latch` may encourage overly-complex code.
-
-### Pass Example
-
-```SystemVerilog
-module a;
-  always_latch
-    if (foo) e <= z;
-
-  always_latch
-    if (foo) f <= z;
-    else     f <= z;
-
-  always_latch
-    case (foo)
-      one:     g <= z;
-      two:     g <= z;
-      default: g <= z;
-    endcase
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module a;
-  always_latch begin
-    a <= z;
-  end
-
-  always_latch
-    if (bar) begin
-      b <= z;
-    end
-
-  always_latch
-    if (bar) c <= z;
-    else begin
-      c <= z;
-    end
-
-  always_latch
-    case (bar)
-      one: begin
-        d <= z;
-      end
-      two: d <= z;
-      default: d <= z;
-    endcase
-endmodule
-```
-
-### Explanation
-
-The explanation of **sequential_block_in_always_ff**, and much of the explanation
-of **sequential_block_in_always_comb**, also applies to this rule.
-Main points are that avoiding `begin`/`end` helps protect the programmer against
-simple mistakes, provides exclusivity properties by construction, and avoids
-restricting simulator scheduling decisions.
-
-See also:
-  - **default_nettype_none** - Useful companion rule.
-  - **explicit_case_default** - Useful companion rule.
-  - **explicit_if_else** - Useful companion rule.
-  - **style_indent** - Useful companion rule.
-  - **sequential_block_in_always_comb** - Similar rule, different purpose.
-  - **sequential_block_in_always_ff** - Similar rule, different purpose.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 4.6 Determinisim
-  - 9.2.2.3 Latched logic always_latch procedure
-  - 9.3.1 Sequential blocks
-  - 9.4.2 Event control
-  - 12.4 Conditional if-else statement
-  - 12.5 Case statement
-  - 12.7 Loop statements
+Most rules for checking style/whitespace are named with the prefix `style_`.
 
 
 ---
@@ -6630,144 +6785,5 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
-
-
----
-## `uppercamelcase_interface`
-
-### Hint
-
-Begin `interface` name with UpperCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-interface FooBar; endinterface
-```
-
-### Fail Example
-
-```SystemVerilog
-interface fooBar; endinterface
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with an uppercase letter, and packages should start with an
-lowercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Mutually exclusive alternative rule.
-  - **lowercamelcase_module** - Potential companion rule.
-  - **lowercamelcase_package** - Suggested companion rule.
-  - **prefix_interface** - Alternative rule.
-  - **uppercamelcase_module** - Suggested companion rule.
-  - **uppercamelcase_package** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `uppercamelcase_module`
-
-### Hint
-
-Begin `module` name with UpperCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-module FooBar; endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module fooBar; endmodule
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with an uppercase letter, and packages should start with an
-lowercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Potential companion rule.
-  - **lowercamelcase_module** - Mutually exclusive alternative rule.
-  - **lowercamelcase_package** - Suggested companion rule.
-  - **prefix_module** - Alternative rule.
-  - **uppercamelcase_interface** - Suggested companion rule.
-  - **uppercamelcase_package** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `uppercamelcase_package`
-
-### Hint
-
-Begin `package` name with UpperCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-package FooBar; endpackage
-```
-
-### Fail Example
-
-```SystemVerilog
-package fooBar; endpackage
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with a lowercase letter, and packages should start with an
-uppercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Suggested companion rule.
-  - **lowercamelcase_module** - Suggested companion rule.
-  - **lowercamelcase_package** - Mutually exclusive alternative rule.
-  - **prefix_package** - Alternative rule.
-  - **uppercamelcase_interface** - Potential companion rule.
-  - **uppercamelcase_module** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 

@@ -9,6 +9,7 @@ use crate::config::{Config, ConfigOption};
 use crate::linter::Rule;
 use std::fs::File;
 use std::io::{BufReader, Read};
+use regex::Regex;
 
 fn file_contents(path: &str) -> String {
     let file: File = File::open(path).unwrap();
@@ -44,14 +45,52 @@ fn print_rules(rules: Vec<Box<dyn Rule>>) -> () {
     }
 }
 
+fn partition_rules(rules: Vec<Box<dyn Rule>>) ->
+    (Vec<Box<dyn Rule>>, Vec<Box<dyn Rule>>, Vec<Box<dyn Rule>>) {
+
+    let style_prefixes =
+        [ "style"
+        , "tab"
+        ].join("_|");
+    let re_style: Regex = Regex::new(format!("^({})", style_prefixes).as_str()).unwrap();
+
+    let naming_prefixes =
+        [ "prefix"
+        , "lowercamelcase"
+        , "upperercamelcase"
+        , "re"
+        ].join("_|");
+    let re_naming: Regex = Regex::new(format!("(^({})|_with_label$)", naming_prefixes).as_str()).unwrap();
+
+    let mut ruleset_style: Vec<Box<dyn Rule>> = Vec::new();
+    let mut ruleset_naming: Vec<Box<dyn Rule>> = Vec::new();
+    let mut ruleset_functional: Vec<Box<dyn Rule>> = Vec::new();
+
+    for rule in rules {
+        if re_style.is_match(&rule.name()) {
+            ruleset_style.push(rule);
+        } else if re_naming.is_match(&rule.name()) {
+            ruleset_naming.push(rule);
+        } else {
+            ruleset_functional.push(rule);
+        }
+    }
+
+    (ruleset_functional, ruleset_naming, ruleset_style)
+}
+
 #[cfg_attr(tarpaulin, skip)]
 pub fn main() {
-    let rules: Vec<Box<dyn Rule>> = Config::gen_all_rules();
+    let (functional_rules, naming_rules, style_rules) = partition_rules(Config::gen_all_rules());
 
-    let p: String = format!("md/manual-introduction.md");
-    println!("{}\n", file_contents(&p));
+    println!("{}\n", file_contents(format!("md/manual-introduction.md").as_str()));
 
-    let p: String = format!("md/manual-rules.md");
-    println!("{}\n", file_contents(&p));
-    print_rules(rules);
+    println!("{}\n", file_contents(format!("md/manual-functional_rules.md").as_str()));
+    print_rules(functional_rules);
+
+    println!("{}\n", file_contents(format!("md/manual-naming_convention_rules.md").as_str()));
+    print_rules(naming_rules);
+
+    println!("{}\n", file_contents(format!("md/manual-style_convention_rules.md").as_str()));
+    print_rules(style_rules);
 }
