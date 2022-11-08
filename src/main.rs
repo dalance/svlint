@@ -92,6 +92,10 @@ pub struct Opt {
     #[clap(long = "dump-filelist")]
     pub dump_filelist: bool,
 
+    /// Print syntax trees
+    #[clap(long = "dump-syntaxtree")]
+    pub dump_syntaxtree: bool,
+
     /// Print preprocessor output instead of performing checks
     #[clap(short = 'E')]
     pub preprocess_only: bool,
@@ -249,6 +253,10 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                         }
                     }
                     defines = new_defines;
+
+                    if !opt.dump_syntaxtree {
+                        println!("{:?}", &syntax_tree);
+                    }
                 }
                 Err(x) => {
                     print_parse_error(&mut printer, x, opt.single)?;
