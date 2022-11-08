@@ -6,6 +6,7 @@ mod printer;
 mod rules;
 
 use crate::config::{Config, ConfigOption};
+use crate::linter::Rule;
 use std::fs::File;
 use std::io::{BufReader, Read};
 
@@ -18,15 +19,7 @@ fn file_contents(path: &str) -> String {
     contents
 }
 
-#[cfg_attr(tarpaulin, skip)]
-pub fn main() {
-    let rules = Config::gen_all_rules();
-
-    let p: String = format!("md/manual-introduction.md");
-    println!("{}\n", file_contents(&p));
-
-    let p: String = format!("md/manual-rules.md");
-    println!("{}\n", file_contents(&p));
+fn print_rules(rules: Vec<Box<dyn Rule>>) -> () {
     for rule in rules {
         println!("---");
         println!("## `{}`\n", rule.name());
@@ -49,4 +42,16 @@ pub fn main() {
         let p: String = format!("md/explanation-{}.md", rule.name());
         println!("{}\n", file_contents(&p));
     }
+}
+
+#[cfg_attr(tarpaulin, skip)]
+pub fn main() {
+    let rules: Vec<Box<dyn Rule>> = Config::gen_all_rules();
+
+    let p: String = format!("md/manual-introduction.md");
+    println!("{}\n", file_contents(&p));
+
+    let p: String = format!("md/manual-rules.md");
+    println!("{}\n", file_contents(&p));
+    print_rules(rules);
 }
