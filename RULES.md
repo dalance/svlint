@@ -1877,8 +1877,6 @@ Level-sensitive `always` cannot detect combinatorial/stateful (non-)blocking mis
 module A;
 always_comb begin
 end
-always_comb begin
-end
 always @ ( posedge a ) begin
 end
 endmodule
@@ -1891,8 +1889,6 @@ module A;
 always @* begin
 end
 always @ ( a or b ) begin
-end
-always @ ( posedge a ) begin
 end
 endmodule
 ```
