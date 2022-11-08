@@ -4625,6 +4625,90 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
+## `re_forbidden_var_class`
+
+### Hint
+
+Use a class-scoped variable identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+class C;
+  int Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endclass
+```
+
+### Fail Example
+
+```SystemVerilog
+class C;
+  int foo; // Unconfigured forbidden regex matches (almost) anything.
+endclass
+```
+
+### Explanation
+
+Class-scoped variables must not have identifiers matching the regex configured
+via the `re_forbidden_var_class` option.
+
+See also:
+  - **re_required_var_class**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `re_forbidden_var_classmethod`
+
+### Hint
+
+Use a method-scoped variable identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+class C;
+  function F;
+    int Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+  endfunction
+endclass
+```
+
+### Fail Example
+
+```SystemVerilog
+class C;
+  function F;
+    int foo; // Unconfigured forbidden regex matches (almost) anything.
+  endfunction
+endclass
+```
+
+### Explanation
+
+Method-scoped variables must not have identifiers matching the regex configured
+via the `re_forbidden_var_classmethod` option.
+
+See also:
+  - **re_required_var_classmethod**
+  - **re_required_var_class**
+  - **re_forbidden_var_class**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
 ## `re_required_checker`
 
 ### Hint
@@ -5600,6 +5684,90 @@ Tasks must have identifiers matching the regex configured via the
 
 See also:
   - **re_forbidden_task**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `re_required_var_class`
+
+### Hint
+
+Use a class-scoped variable identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+class C;
+  int mn3; // Identifier matches default required regex (lowercase).
+endclass
+```
+
+### Fail Example
+
+```SystemVerilog
+class C;
+  int Mn3; // Identifier doesn't match default required regex (lowercase).
+endclass
+```
+
+### Explanation
+
+Class-scoped variables must have identifiers matching the regex configured via
+the `re_required_var_class` option.
+
+See also:
+  - **re_forbidden_var_class**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `re_required_var_classmethod`
+
+### Hint
+
+Use a method-scoped variable identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+class C;
+  function F;
+    int mn3; // Identifier matches default required regex (lowercase).
+  endfunction
+endclass
+```
+
+### Fail Example
+
+```SystemVerilog
+class C;
+  function F;
+    int Mn3; // Identifier doesn't match default required regex (lowercase).
+  endfunction
+endclass
+```
+
+### Explanation
+
+Method-scoped variables must have identifiers matching the regex configured via
+the `re_required_var_classmethod` option.
+
+See also:
+  - **re_forbidden_var_classmethod**
+  - **re_forbidden_var_class**
+  - **re_required_var_class**
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
