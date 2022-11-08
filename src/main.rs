@@ -38,7 +38,7 @@ pub struct Opt {
     )]
     pub defines: Vec<String>,
 
-    /// Include path
+    /// Include directory path
     #[clap(
         short = 'i',
         long = "include",
@@ -47,7 +47,7 @@ pub struct Opt {
     )]
     pub includes: Vec<PathBuf>,
 
-    /// Config file
+    /// TOML configuration file
     #[clap(short = 'c', long = "config", default_value = ".svlint.toml")]
     pub config: PathBuf,
 
@@ -64,31 +64,31 @@ pub struct Opt {
     #[clap(long = "ignore-include")]
     pub ignore_include: bool,
 
-    /// Prints results by single line
+    /// Print results by single line
     #[clap(short = '1')]
     pub single: bool,
 
-    /// Suppresses message
+    /// Suppress messages
     #[clap(short = 's', long = "silent")]
     pub silent: bool,
 
-    /// Prints verbose message
+    /// Print verbose messages
     #[clap(short = 'v', long = "verbose")]
     pub verbose: bool,
 
-    /// Prints message for GitHub Actions
+    /// Print message for GitHub Actions
     #[clap(long = "github-actions")]
     pub github_actions: bool,
 
-    /// Updates config
+    /// Update configuration
     #[clap(long = "update")]
     pub update_config: bool,
 
-    /// Prints config example
+    /// Print TOML configuration example
     #[clap(long = "example")]
     pub example: bool,
 
-    /// Prints data from filelists
+    /// Print data from filelists
     #[clap(long = "dump-filelist")]
     pub dump_filelist: bool,
 
