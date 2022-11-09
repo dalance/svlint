@@ -55,11 +55,11 @@ fn partition_rules(rules: Vec<Box<dyn Rule>>) ->
     let re_style: Regex = Regex::new(format!("^({})", style_prefixes).as_str()).unwrap();
 
     let naming_prefixes =
-        [ "prefix"
-        , "lowercamelcase"
-        , "upperercamelcase"
-        , "re"
-        ].join("_|");
+        [ "prefix_"
+        , "lowercamelcase_"
+        , "uppercamelcase_"
+        , "re_"
+        ].join("|");
     let re_naming: Regex = Regex::new(format!("(^({})|_with_label$)", naming_prefixes).as_str()).unwrap();
 
     let mut ruleset_style: Vec<Box<dyn Rule>> = Vec::new();

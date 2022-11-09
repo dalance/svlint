@@ -2862,145 +2862,6 @@ The most relevant clauses of IEEE1800-2017 are:
   - 12.7 Loop statements
 
 
----
-## `uppercamelcase_interface`
-
-### Hint
-
-Begin `interface` name with UpperCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-interface FooBar; endinterface
-```
-
-### Fail Example
-
-```SystemVerilog
-interface fooBar; endinterface
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with an uppercase letter, and packages should start with an
-lowercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Mutually exclusive alternative rule.
-  - **lowercamelcase_module** - Potential companion rule.
-  - **lowercamelcase_package** - Suggested companion rule.
-  - **prefix_interface** - Alternative rule.
-  - **uppercamelcase_module** - Suggested companion rule.
-  - **uppercamelcase_package** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `uppercamelcase_module`
-
-### Hint
-
-Begin `module` name with UpperCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-module FooBar; endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module fooBar; endmodule
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with an uppercase letter, and packages should start with an
-lowercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Potential companion rule.
-  - **lowercamelcase_module** - Mutually exclusive alternative rule.
-  - **lowercamelcase_package** - Suggested companion rule.
-  - **prefix_module** - Alternative rule.
-  - **uppercamelcase_interface** - Suggested companion rule.
-  - **uppercamelcase_package** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `uppercamelcase_package`
-
-### Hint
-
-Begin `package` name with UpperCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-package FooBar; endpackage
-```
-
-### Fail Example
-
-```SystemVerilog
-package fooBar; endpackage
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with a lowercase letter, and packages should start with an
-uppercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Suggested companion rule.
-  - **lowercamelcase_module** - Suggested companion rule.
-  - **lowercamelcase_package** - Mutually exclusive alternative rule.
-  - **prefix_package** - Alternative rule.
-  - **uppercamelcase_interface** - Potential companion rule.
-  - **uppercamelcase_module** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
-
 # Naming Convention Rules
 
 Rules for checking against naming conventions are named with either the suffix
@@ -5840,6 +5701,145 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
+
+
+---
+## `uppercamelcase_interface`
+
+### Hint
+
+Begin `interface` name with UpperCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+interface FooBar; endinterface
+```
+
+### Fail Example
+
+```SystemVerilog
+interface fooBar; endinterface
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with an uppercase letter, and packages should start with an
+lowercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Mutually exclusive alternative rule.
+  - **lowercamelcase_module** - Potential companion rule.
+  - **lowercamelcase_package** - Suggested companion rule.
+  - **prefix_interface** - Alternative rule.
+  - **uppercamelcase_module** - Suggested companion rule.
+  - **uppercamelcase_package** - Potential companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `uppercamelcase_module`
+
+### Hint
+
+Begin `module` name with UpperCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+module FooBar; endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module fooBar; endmodule
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with an uppercase letter, and packages should start with an
+lowercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Potential companion rule.
+  - **lowercamelcase_module** - Mutually exclusive alternative rule.
+  - **lowercamelcase_package** - Suggested companion rule.
+  - **prefix_module** - Alternative rule.
+  - **uppercamelcase_interface** - Suggested companion rule.
+  - **uppercamelcase_package** - Potential companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `uppercamelcase_package`
+
+### Hint
+
+Begin `package` name with UpperCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+package FooBar; endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package fooBar; endpackage
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with a lowercase letter, and packages should start with an
+uppercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Suggested companion rule.
+  - **lowercamelcase_module** - Suggested companion rule.
+  - **lowercamelcase_package** - Mutually exclusive alternative rule.
+  - **prefix_package** - Alternative rule.
+  - **uppercamelcase_interface** - Potential companion rule.
+  - **uppercamelcase_module** - Potential companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
 
 
 # Style/Whitespace Convention Rules
