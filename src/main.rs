@@ -254,7 +254,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                     }
                     defines = new_defines;
 
-                    if !opt.dump_syntaxtree {
+                    if opt.dump_syntaxtree {
                         println!("{:?}", &syntax_tree);
                     }
                 }
