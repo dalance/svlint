@@ -4613,6 +4613,295 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
+## `style_operator_arithmetic`
+
+### Hint
+
+Follow operator with a symbol, identifier, newline, or exactly 1 space.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  localparam bit [a-1:0] P1 = b; // No space around `-`.
+
+  localparam int P2 = a + b; // Single space around `+`.
+
+  localparam int P3 =
+    a *
+    b; // Newline following `*`.
+
+  localparam int P4 =
+    a * // Single space then comment following `*`.
+    b;
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  localparam int P2 = a  +  b; // Multiple spaces around `+`.
+
+  localparam int P3 =
+    a *
+
+    b; // Multiple newlines following `*`.
+
+  localparam int P4 =
+    a *  // Multiple spaces then comment following `*`.
+    b;
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following any arithmetic operator:
+`+`
+, `-`
+, `*`
+, `/`
+, `%`
+, and `**`.
+Uses of these operators may have a single space or newline between the
+operator's symbol and the following symbol or identifier, e.g.
+`a + b`,
+, or `a+b`.
+
+In relation to Annex A of IEEE1800-2017, this rule applies to the specific
+variants of `binary_operator` specified in Table 11-3.
+
+See also:
+  - **style_operator_boolean** - Suggested companion rule.
+  - **style_operator_integer** - Suggested companion rule.
+  - **style_operator_unary** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `style_operator_boolean`
+
+### Hint
+
+Follow operator with a exactly 1 space.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  localparam bit P1 = a && b; // Single space around `&&`.
+
+  localparam bit P2 = a < b; // Single space around `<`.
+
+  for (genvar i=0; i < 5; i++) begin // Single space around `<`.
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  localparam bit P1 = a&&b; // No space around `&&`.
+
+  localparam bit P2 =
+    a <
+    b; // Newline after `<`.
+
+  for (genvar i=0; i<5; i++) begin // No space around `<`.
+  end
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following any binary operator whose
+operation returns a boolean:
+`==`
+, `!=`
+, `===`
+, `!==`
+, `==?`
+, `!=?`
+, `&&`
+, `||`
+, `<`
+, `<=`
+, `>`
+, `>=`
+, `->`
+, and `<->`.
+Uses of these operators must have a single space between the operator's symbol
+and the following symbol or identifier, e.g.
+`a && b`,
+, `c !== d`
+, or `0 < 5`.
+
+In relation to Annex A of IEEE1800-2017, this rule applies to specific variants
+of `binary_operator` and `binary_module_path_operator`.
+
+See also:
+  - **style_operator_arithmetic** - Suggested companion rule.
+  - **style_operator_integer** - Suggested companion rule.
+  - **style_operator_unary** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `style_operator_integer`
+
+### Hint
+
+Follow operator with a newline or exactly 1 space.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  localparam int P1 = a | b; // Single space around `|`.
+
+  localparam int P2 =
+    a &
+    aMask; // Newline following `&`.
+
+  localparam int P3 =
+    a & // Single space then comment following `&`.
+    aMask;
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  localparam int P1 = a|b; // No space around `|`.
+
+  localparam int P2 =
+    a &
+
+    aMask; // Multiple newlines following `&`.
+
+  localparam int P3 =
+    a &  // Multiple spaces then comment following `&`.
+    aMask;
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following any binary operator whose
+operation returns an integer (except arithmetic operators):
+`&`
+, `|`
+, `^`
+, `^~`
+, `~^`
+, `>>`
+, `<<`
+, `>>>`
+, and `<<<`.
+Uses of these operators must have single space or a newline between the
+operator's symbol and the following symbol or identifier, e.g.
+`1 << 5`,
+, or `8'hAA | 8'h55`.
+
+In relation to Annex A of IEEE1800-2017, this rule applies to specific variants
+of `binary_operator` and `binary_module_path_operator`.
+
+See also:
+  - **style_operator_arithmetic** - Suggested companion rule.
+  - **style_operator_boolean** - Suggested companion rule.
+  - **style_operator_unary** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `style_operator_unary`
+
+### Hint
+
+Remove all whitespace following the operator.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  localparam bit P1 = &{a, b}; // No space after `&`.
+
+  for (genvar i=0; i < 5; i++) begin // No space after `++`.
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  localparam bit P1 = & {a, b}; // No space after `&`.
+
+  for (genvar i=0; i < 5; i++ ) begin // Space after `++`.
+  end
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following any unary operator:
+`++`
+, `--`
+, `+`
+, `-`
+, `!`
+, `~`
+, `&`
+, `~&`
+, `|`
+, `~|`
+, `^`
+, `~^`
+, and `^~`.
+Uses of these operators must never have any whitespace between the operator's
+symbol and the following symbol or identifier, e.g.
+`i++`,
+`!FOO`,
+, `&{a, b, c}`
+, or `$info("%d", -5);`.
+
+In relation to Annex A of IEEE1800-2017, this rule applies to all variants of
+`unary_operator`, `unary_module_path_operator`, and `inc_or_dec_operator`.
+
+See also:
+  - **style_operator_arithmetic** - Suggested companion rule.
+  - **style_operator_boolean** - Suggested companion rule.
+  - **style_operator_integer** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
 ## `style_trailingwhitespace`
 
 ### Hint
@@ -4634,6 +4923,11 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
+module M;
+                
+// End of line ^
+endmodule
+
 module M;       
 // End of line ^
 endmodule
