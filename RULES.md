@@ -2757,6 +2757,82 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
+## `parameter_in_generate`
+
+### Hint
+
+Replace `parameter` keyword with `localparam`.
+
+### Reason
+
+In a generate block, `localparam` properly describes the non-overridable semantics.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  for (genvar i=0; i < 5; i++) begin
+    localparam int P1 = 1;
+  end
+
+  if (1) begin
+    localparam int P2 = 2;
+  end else begin
+    localparam int P3 = 3;
+  end
+
+  case (1)
+    0: begin
+      localparam int P4 = 4;
+    end
+    default: begin
+      localparam int P5 = 5;
+    end
+  endcase
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  for (genvar i=0; i < 5; i++) begin
+    parameter int P1 = 1;
+  end
+
+  if (1) begin
+    parameter int P2 = 2;
+  end else begin
+    parameter int P3 = 3;
+  end
+
+  case (1)
+    0: begin
+      parameter int P4 = 4;
+    end
+    default: begin
+      parameter int P5 = 5;
+    end
+  endcase
+endmodule
+```
+
+### Explanation
+
+In the context of a generate block, the `parameter` keyword is a synonym for
+the `localparam` keyword.
+This rule encourages the author to consider that the constant may not be
+overridden and convey that explictly.
+
+See also:
+  - **parameter_in_package**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 6.20.4 Local parameters (localparam)
+  - 27 Generate constructs, particularly 27.2 Overview.
+
+
+---
 ## `parameter_in_package`
 
 ### Hint
@@ -2770,16 +2846,16 @@ In a package, `localparam` properly describes the non-overridable semantics.
 ### Pass Example
 
 ```SystemVerilog
-package A;
-localparam A = 1;
+package P;
+  localparam int A = 1;
 endpackage
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-package A;
-parameter A = 1;
+package P;
+  parameter int A = 1;
 endpackage
 ```
 
@@ -2791,7 +2867,7 @@ This rule encourages the author to consider that the constant may not be
 overridden and convey that explictly.
 
 See also:
-  - None applicable.
+  - **parameter_in_generate**
 
 The most relevant clauses of IEEE1800-2017 are:
   - 6.20.4 Local parameters (localparam)
