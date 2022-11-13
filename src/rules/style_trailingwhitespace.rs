@@ -1,11 +1,12 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
 use regex::Regex;
-use sv_parser::{NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{NodeEvent, RefNode, SyntaxTree, WhiteSpace};
 
 #[derive(Default)]
 pub struct StyleTrailingwhitespace {
     re: Option<Regex>,
+    buffer: String,
 }
 
 impl Rule for StyleTrailingwhitespace {
@@ -16,20 +17,56 @@ impl Rule for StyleTrailingwhitespace {
         _option: &ConfigOption,
     ) -> RuleResult {
         if self.re.is_none() {
-            self.re = Some(Regex::new(r"[ ]+[\n\v\f\r]").unwrap());
+            self.re = Some(Regex::new(r"[ \t]+[\n\v\f\r]").unwrap());
         }
 
         let node = match event {
-            NodeEvent::Enter(x) => x,
+            NodeEvent::Enter(n) => {
+                match n {
+                    RefNode::WhiteSpace(WhiteSpace::Comment(_)) |
+                    RefNode::WhiteSpace(WhiteSpace::Newline(_)) |
+                    RefNode::WhiteSpace(WhiteSpace::Space(_)) => {
+                        // Keep only the final character from the previous element.
+                        let last_char: Option<char> = self.buffer.pop();
+                        self.buffer.clear();
+                        if let Some(c) = last_char {
+                            self.buffer.push(c);
+                        }
+                    }
+                    RefNode::Comment(_) |
+                    RefNode::Locate(_) => {
+                        // No change to buffer within Vec<WhiteSpace> elements.
+                    }
+                    _ => {
+                        // Clear the buffer on exit from Vec<WhiteSpace>.
+                        self.buffer.clear();
+                    }
+                }
+
+                // Append this node's string to buffer.
+                match n {
+                    RefNode::WhiteSpace(WhiteSpace::Space(x)) => {
+                        self.buffer.push_str(syntax_tree.get_str(x).unwrap());
+                    }
+                    RefNode::WhiteSpace(WhiteSpace::Newline(x)) => {
+                        self.buffer.push_str(syntax_tree.get_str(x).unwrap());
+                    }
+                    RefNode::WhiteSpace(WhiteSpace::Comment(x)) => {
+                        self.buffer.push_str(syntax_tree.get_str(x).unwrap());
+                    }
+                    _ => {}
+                }
+
+                n
+            }
             NodeEvent::Leave(_) => {
                 return RuleResult::Pass;
             }
         };
         match node {
-            RefNode::WhiteSpace(x) => {
+            RefNode::WhiteSpace(_) => {
                 let re = self.re.as_ref().unwrap();
-                let t = syntax_tree.get_str(*x).unwrap();
-                if re.is_match(&t) {
+                if re.is_match(&self.buffer) {
                     RuleResult::Fail
                 } else {
                     RuleResult::Pass
