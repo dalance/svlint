@@ -1,3 +1,3 @@
-package A;
-parameter A = 1;
+package P;
+  parameter int A = 1;
 endpackage
