@@ -230,9 +230,20 @@ impl Config {{
         } else {
             "true"
         };
+
         let _ = write!(out_test, "#[test]\n");
-        let _ = write!(out_test, "fn test_{}() {{\n", file_name);
-        let _ = write!(out_test, "    test(\"{}\", {});\n", file_name, silent);
+        let _ = write!(out_test, "fn pass_{}() {{\n", file_name);
+        let _ = write!(out_test, "    test(\"{}\", true, {}, false);\n", file_name, silent);
+        let _ = write!(out_test, "}}\n");
+
+        let _ = write!(out_test, "#[test]\n");
+        let _ = write!(out_test, "fn fail_{}() {{\n", file_name);
+        let _ = write!(out_test, "    test(\"{}\", false, {}, false);\n", file_name, silent);
+        let _ = write!(out_test, "}}\n");
+
+        let _ = write!(out_test, "#[test]\n");
+        let _ = write!(out_test, "fn fail1_{}() {{\n", file_name);
+        let _ = write!(out_test, "    test(\"{}\", false, {}, true);\n", file_name, silent);
         let _ = write!(out_test, "}}\n");
     }
 }
