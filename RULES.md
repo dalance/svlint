@@ -151,6 +151,90 @@ a short reason why it should be seen.
 
 
 ---
+## `action_block_with_side_effect`
+
+### Hint
+
+Do not specify side effects within `assert` or `wait_order` action blocks.
+
+### Reason
+
+Side effects may cause undefined event ordering.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  always @(posedge clk)
+    assert (A)
+      else $error("A should be high.");
+
+  // Simulator must report line number, label, and time on each violation.
+  asrt_b1: assert property (@(posedge clk) B1)
+    else $error("B1 should be high.");
+  asrt_b2: assert property (@(posedge clk) B2)
+    else $error("B2 should be high.");
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  always @(posedge clk)
+    assert (A) // These are legal, but potentially confusing.
+    else begin
+      $display("A should be high."); // Write to STDOUT.
+
+      // Update global variable.
+      errorId = 5; // What value if multiple immediate assertions fail?
+      errorCount++; // Hopefully simulator blocks between processes.
+    end
+
+  // In what order do these action blocks occur?
+  asrt_b1: assert property (@(posedge clk) B1)
+    else begin
+      $display("B1 should be high.");
+      errorId = 1;
+      errorCount++;
+    end;
+  asrt_b2: assert property (@(posedge clk) B2)
+    else begin
+      $display("B2 should be high.");
+      errorId = 2;
+      errorCount++;
+    end;
+endmodule
+```
+
+### Explanation
+
+Simulator event ordering between concurrent action blocks is undefined, so
+observed behavior is simulator-dependent.
+While assertions with side-effects may appear to work on a single-threaded
+simulator, they may interact in unexpected ways on a multi-threaded simulator.
+On encountering side-effect code in action blocks, a simulator can either
+implement inter-thread locking (with a hit to performance) or allow a
+race-condition to occur, neither of which are desirable.
+
+Specifically, action blocks should not contain blocking assignments:
+- Blocking assignment operator, e.g. `foo = 123;`
+- Increment/decrement operators, e.g. `foo++;`, `foo--;`.
+- Sequential IO, e.g. `$display();`, `$write();`.
+  The full list of IO system tasks and system functions is given on page 624 of
+  IEEE1800-2017.
+
+See also:
+  - **non_blocking_assignment_in_always_comb** - Useful companion rule.
+  - **blocking_assignment_in_always_ff** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 15.5.4 Event sequencing: wait\_order()
+  - 16 Assertions
+  - 21 Input/output system tasks and system functions
+
+
+---
 ## `blocking_assignment_in_always_ff`
 
 ### Hint
@@ -2406,6 +2490,82 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
+## `parameter_in_generate`
+
+### Hint
+
+Replace `parameter` keyword with `localparam`.
+
+### Reason
+
+In a generate block, `localparam` properly describes the non-overridable semantics.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  for (genvar i=0; i < 5; i++) begin
+    localparam int P1 = 1;
+  end
+
+  if (1) begin
+    localparam int P2 = 2;
+  end else begin
+    localparam int P3 = 3;
+  end
+
+  case (1)
+    0: begin
+      localparam int P4 = 4;
+    end
+    default: begin
+      localparam int P5 = 5;
+    end
+  endcase
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  for (genvar i=0; i < 5; i++) begin
+    parameter int P1 = 1;
+  end
+
+  if (1) begin
+    parameter int P2 = 2;
+  end else begin
+    parameter int P3 = 3;
+  end
+
+  case (1)
+    0: begin
+      parameter int P4 = 4;
+    end
+    default: begin
+      parameter int P5 = 5;
+    end
+  endcase
+endmodule
+```
+
+### Explanation
+
+In the context of a generate block, the `parameter` keyword is a synonym for
+the `localparam` keyword.
+This rule encourages the author to consider that the constant may not be
+overridden and convey that explictly.
+
+See also:
+  - **parameter_in_package**
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 6.20.4 Local parameters (localparam)
+  - 27 Generate constructs, particularly 27.2 Overview.
+
+
+---
 ## `parameter_in_package`
 
 ### Hint
@@ -2419,16 +2579,16 @@ In a package, `localparam` properly describes the non-overridable semantics.
 ### Pass Example
 
 ```SystemVerilog
-package A;
-localparam A = 1;
+package P;
+  localparam int A = 1;
 endpackage
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-package A;
-parameter A = 1;
+package P;
+  parameter int A = 1;
 endpackage
 ```
 
@@ -2440,7 +2600,7 @@ This rule encourages the author to consider that the constant may not be
 overridden and convey that explictly.
 
 See also:
-  - None applicable.
+  - **parameter_in_generate**
 
 The most relevant clauses of IEEE1800-2017 are:
   - 6.20.4 Local parameters (localparam)
@@ -6970,6 +7130,348 @@ See also:
   - **style_keyword_datatype** - Potential companion rule.
   - **style_keyword_end** - Suggested companion rule.
   - **style_keyword_maybelabel** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `style_operator_arithmetic`
+
+### Hint
+
+Follow operator with a symbol, identifier, newline, or exactly 1 space.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  localparam bit [a-1:0] P1 = b; // No space around `-`.
+
+  localparam int P2 = a + b; // Single space around `+`.
+
+  localparam int P3 =
+    a *
+    b; // Newline following `*`.
+
+  localparam int P4 =
+    a * // Single space then comment following `*`.
+    b;
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  localparam int P2 = a  +  b; // Multiple spaces around `+`.
+
+  localparam int P3 =
+    a *
+
+    b; // Multiple newlines following `*`.
+
+  localparam int P4 =
+    a *  // Multiple spaces then comment following `*`.
+    b;
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following any arithmetic operator:
+`+`
+, `-`
+, `*`
+, `/`
+, `%`
+, and `**`.
+Uses of these operators may have a single space or newline between the
+operator's symbol and the following symbol or identifier, e.g.
+`a + b`,
+, or `a+b`.
+
+In relation to Annex A of IEEE1800-2017, this rule applies to the specific
+variants of `binary_operator` specified in Table 11-3.
+
+See also:
+  - **style_operator_boolean** - Suggested companion rule.
+  - **style_operator_integer** - Suggested companion rule.
+  - **style_operator_unary** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `style_operator_boolean`
+
+### Hint
+
+Follow operator with a exactly 1 space.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  localparam bit P1 = a && b; // Single space around `&&`.
+
+  localparam bit P2 = a < b; // Single space around `<`.
+
+  for (genvar i=0; i < 5; i++) begin // Single space around `<`.
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  localparam bit P1 = a&&b; // No space around `&&`.
+
+  localparam bit P2 =
+    a <
+    b; // Newline after `<`.
+
+  for (genvar i=0; i<5; i++) begin // No space around `<`.
+  end
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following any binary operator whose
+operation returns a boolean:
+`==`
+, `!=`
+, `===`
+, `!==`
+, `==?`
+, `!=?`
+, `&&`
+, `||`
+, `<`
+, `<=`
+, `>`
+, `>=`
+, `->`
+, and `<->`.
+Uses of these operators must have a single space between the operator's symbol
+and the following symbol or identifier, e.g.
+`a && b`,
+, `c !== d`
+, or `0 < 5`.
+
+In relation to Annex A of IEEE1800-2017, this rule applies to specific variants
+of `binary_operator` and `binary_module_path_operator`.
+
+See also:
+  - **style_operator_arithmetic** - Suggested companion rule.
+  - **style_operator_integer** - Suggested companion rule.
+  - **style_operator_unary** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `style_operator_integer`
+
+### Hint
+
+Follow operator with a newline or exactly 1 space.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  localparam int P1 = a | b; // Single space around `|`.
+
+  localparam int P2 =
+    a &
+    aMask; // Newline following `&`.
+
+  localparam int P3 =
+    a & // Single space then comment following `&`.
+    aMask;
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  localparam int P1 = a|b; // No space around `|`.
+
+  localparam int P2 =
+    a &
+
+    aMask; // Multiple newlines following `&`.
+
+  localparam int P3 =
+    a &  // Multiple spaces then comment following `&`.
+    aMask;
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following any binary operator whose
+operation returns an integer (except arithmetic operators):
+`&`
+, `|`
+, `^`
+, `^~`
+, `~^`
+, `>>`
+, `<<`
+, `>>>`
+, and `<<<`.
+Uses of these operators must have single space or a newline between the
+operator's symbol and the following symbol or identifier, e.g.
+`1 << 5`,
+, or `8'hAA | 8'h55`.
+
+In relation to Annex A of IEEE1800-2017, this rule applies to specific variants
+of `binary_operator` and `binary_module_path_operator`.
+
+See also:
+  - **style_operator_arithmetic** - Suggested companion rule.
+  - **style_operator_boolean** - Suggested companion rule.
+  - **style_operator_unary** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `style_operator_unary`
+
+### Hint
+
+Remove all whitespace following the operator.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  localparam bit P1 = &{a, b}; // No space after `&`.
+
+  for (genvar i=0; i < 5; i++) begin // No space after `++`.
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  localparam bit P1 = & {a, b}; // No space after `&`.
+
+  for (genvar i=0; i < 5; i++ ) begin // Space after `++`.
+  end
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following any unary operator:
+`++`
+, `--`
+, `+`
+, `-`
+, `!`
+, `~`
+, `&`
+, `~&`
+, `|`
+, `~|`
+, `^`
+, `~^`
+, and `^~`.
+Uses of these operators must never have any whitespace between the operator's
+symbol and the following symbol or identifier, e.g.
+`i++`,
+`!FOO`,
+, `&{a, b, c}`
+, or `$info("%d", -5);`.
+
+In relation to Annex A of IEEE1800-2017, this rule applies to all variants of
+`unary_operator`, `unary_module_path_operator`, and `inc_or_dec_operator`.
+
+See also:
+  - **style_operator_arithmetic** - Suggested companion rule.
+  - **style_operator_boolean** - Suggested companion rule.
+  - **style_operator_integer** - Suggested companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - Not applicable.
+
+
+---
+## `style_trailingwhitespace`
+
+### Hint
+
+Remove trailing whitespace.
+
+### Reason
+
+Trailing whitespace leads to unnecessary awkwardness with version control.
+
+### Pass Example
+
+```SystemVerilog
+module        M;
+// End of line ^
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+                
+// End of line ^
+endmodule
+
+module M;       
+// End of line ^
+endmodule
+```
+
+### Explanation
+
+Trailing whitespace, i.e. space characters immediately followed by a newline,
+lead to unnecessary differences in version control because some/many/most
+developer's editors are setup to remove this on writing to disk.
+This rule simply checks that any newline (outside of string literals) is
+not immediately preceeded by a space character.
+You can
+
+See also:
+  - **style_indent** - Suggested companion rule.
+  - **tab_character** - Suggested companion rule.
+  - Vim: <https://vimtricks.com/p/vim-remove-trailing-whitespace/>
+  - Emacs: <https://www.emacswiki.org/emacs/WhiteSpace>
+  - VSCode: `files.trimTrailingWhitespace: true,`
+  - Notepad++: "Trim Trailing Space" on <https://npp-user-manual.org/docs/editing/>
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
