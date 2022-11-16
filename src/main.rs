@@ -237,7 +237,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                     defines = new_defines;
                 }
                 Err(x) => {
-                    print_parse_error(&mut printer, x, opt.single)?;
+                    print_parser_error(&mut printer, x, opt.single)?;
                     pass = false;
                 }
             }
@@ -259,7 +259,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                     }
                 }
                 Err(x) => {
-                    print_parse_error(&mut printer, x, opt.single)?;
+                    print_parser_error(&mut printer, x, opt.single)?;
                     pass = false;
                 }
             }
@@ -278,7 +278,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
 }
 
 #[cfg_attr(tarpaulin, skip)]
-fn print_parse_error(
+fn print_parser_error(
     printer: &mut Printer,
     error: SvParserError,
     single: bool,
@@ -286,6 +286,9 @@ fn print_parse_error(
     match error {
         SvParserError::Parse(Some((path, pos))) => {
             printer.print_parse_error(&path, pos, single)?;
+        }
+        SvParserError::Preprocess(Some((path, pos))) => {
+            printer.print_preprocess_error(&path, pos, single)?;
         }
         SvParserError::Include { source: x } => {
             if let SvParserError::File { path: x, .. } = *x {
