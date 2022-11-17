@@ -1,12 +1,6 @@
 module A;
-always_comb begin
+  always_comb
     case (x)
-        1: y = 0;
+      1: a = 0;
     endcase
-end
-always_ff begin
-    case (x)
-        1: y = 0;
-    endcase
-end
 endmodule

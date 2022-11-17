@@ -392,15 +392,9 @@ fn dump_filelist(
 mod tests {
     use super::*;
 
-    fn test(name: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
-        let s = format!("[rules]\n{} = true", name);
+    fn test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
+        let s = format!("[rules]\n{} = true", rulename);
         let config: Config = toml::from_str(&s).unwrap();
-
-        let file = if pass_not_fail {
-            format!("testcases/pass/{}.sv", name)
-        } else {
-            format!("testcases/fail/{}.sv", name)
-        };
 
         let mut args = vec!["svlint"];
         if silent {
@@ -409,7 +403,7 @@ mod tests {
         if oneline {
             args.push("-1");
         }
-        args.push(&file);
+        args.push(filename);
         let opt = Opt::parse_from(args.iter());
 
         let ret = run_opt_config(&opt, config.clone());
