@@ -1,4 +1,4 @@
-module A;
-generate
-endgenerate
+module M;
+  generate
+  endgenerate
 endmodule

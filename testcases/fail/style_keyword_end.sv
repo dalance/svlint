@@ -1,14 +1,14 @@
-module A;
+module M;
   initial begin
     if (foo) begin: l_foo
       a = b;
-    end   : l_foo           // spaces between `end` and colon.
+    end   : l_foo           // Spaces between `end` and colon.
 
     if (foo) begin
       a = c;
-    end   else begin       // multiple spaces after `end`.
+    end   else begin       // Multiple spaces after `end`.
       a = d;
     end
-  end   // multiple spaces then comment after `end`.
+  end   // Multiple spaces then comment after `end`.
 endmodule
 

@@ -1,1 +1,2 @@
-module fooBar; endmodule
+module fooBar;
+endmodule

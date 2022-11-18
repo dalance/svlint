@@ -1,19 +1,22 @@
 module M
-#( bit FOO = 1 // space after `#(` causes misalignment
-, int BAR = 2
-,  bit [31:0] BAZ = 2 // too many spaces after comma
-)
-(input  var logic i_abc // missing space after `(`
-,output var logic o_ghi // missing space after comma
-);
-  assign {foo, bar} = { // brace not followed by a single space
+  #( bit FOO = 1 // Space after `#(` causes misalignment.
+  , int BAR = 2
+  ,  bit [31:0] BAZ = 2 // Too many spaces after comma.
+  )
+  (input  var logic i_abc // Missing space after `(` causes misalignment.
+  ,output var logic o_ghi // Missing space after comma.
+  );
+
+  assign {foo, bar} = { // One-line style is okay.
       i_abc
-    ,12'h345 // missing space after `(`
-    ,  b_def // too many spaces after comma
+    ,12'h345 // Missing space.
+    ,  b_def // Too many spaces after comma.
     };
+
   function foo
-  (input a // missing space after `(`
-  ,  input b // too many spaces after comma
+  (input a // Missing space after `(` causes misalignment.
+  ,  input b // Too many spaces after comma.
   );
   endfunction
+
 endmodule

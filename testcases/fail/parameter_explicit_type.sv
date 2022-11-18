@@ -1,2 +1,9 @@
-module A #(parameter a = 0) ();
+module M
+  #(parameter a = 0
+  ) ();
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  #(parameter a = int'(0)
+  ) ();
 endmodule

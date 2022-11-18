@@ -1,25 +1,31 @@
-module a;
+module M;
   always_latch begin
     a <= z;
   end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_latch
-    if (bar) begin
-      b <= z;
+    if (x) begin
+      a <= z;
     end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_latch
-    if (bar) c <= z;
+    if (x) a <= z;
     else begin
-      c <= z;
+      a <= z;
     end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_latch
-    case (bar)
-      one: begin
-        d <= z;
+    case (x)
+      foo: begin
+        a <= z;
       end
-      two: d <= z;
-      default: d <= z;
+      bar: a <= z;
+      default: a <= z;
     endcase
 endmodule

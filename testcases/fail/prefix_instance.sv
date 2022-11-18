@@ -1,3 +1,3 @@
 module A;
-Foo #() foo (a, b, c);
+  Foo #() foo (a, b, c);
 endmodule
