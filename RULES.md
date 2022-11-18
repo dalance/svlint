@@ -2879,7 +2879,7 @@ In a package, `localparam` properly describes the non-overridable semantics.
 ### Pass Example
 
 ```SystemVerilog
-package M;
+package P;
   localparam int A = 1;
 endpackage
 ```
