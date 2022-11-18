@@ -1,4 +1,4 @@
-module A;
+module M;
   always_comb
     case (x)
       1: a = 0;

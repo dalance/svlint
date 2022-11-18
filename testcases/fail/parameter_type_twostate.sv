@@ -1,14 +1,14 @@
-module A
+module M
   #(parameter integer A = 32'b0
   ) ();
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
-module A
+module M
   #(parameter logic B = 1'b0
   ) ();
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
-module A
+module M
   #(parameter reg C = 1'b0
   , logic         Z = 1'b0 // TODO: Z isn't caught.
   ) ();
