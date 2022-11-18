@@ -1,4 +1,4 @@
-module A;
-always_comb begin
-end
+module M;
+  always_comb begin
+  end
 endmodule

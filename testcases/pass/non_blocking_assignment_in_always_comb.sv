@@ -1,5 +1,4 @@
-module A;
-always_comb begin
+module M;
+  always_comb
     x = 0;
-end
 endmodule

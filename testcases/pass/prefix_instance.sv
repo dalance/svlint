@@ -1,3 +1,3 @@
-module A;
-Foo #() u_foo (a, b, c);
+module M;
+  I #() u_foo (a, b, c);
 endmodule

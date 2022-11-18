@@ -1,5 +1,5 @@
-module A;
-typedef enum logic {
-    C
-} B;
+module M;
+  typedef enum int {
+    i
+  } E;
 endmodule

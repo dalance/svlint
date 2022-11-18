@@ -1,7 +1,6 @@
-module A();
-initial begin
+module M;
+  initial
     case (a)
-        default: b = 1;
+      default: b = 1;
     endcase
-end
 endmodule

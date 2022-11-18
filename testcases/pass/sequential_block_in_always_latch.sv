@@ -1,15 +1,15 @@
-module a;
+module M;
   always_latch
-    if (foo) e <= z;
+    if (foo) a <= b;
 
   always_latch
-    if (foo) f <= z;
-    else     f <= z;
+    if (foo) b <= y;
+    else     b <= z;
 
   always_latch
     case (foo)
-      one:     g <= z;
-      two:     g <= z;
-      default: g <= z;
+      one:     a <= x;
+      two:     b <= y;
+      default: c <= z;
     endcase
 endmodule

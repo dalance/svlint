@@ -1,3 +1,3 @@
-package A;
-localparam A = 1;
+package M;
+  localparam int A = 1;
 endpackage
