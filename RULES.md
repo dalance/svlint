@@ -875,30 +875,49 @@ endmodule
 
 ```SystemVerilog
 module M;
-  generate case (2'd0)
-    2'd1:     logic a = 1'b0; // nondefaultNoBegin
-    default:  logic a = 1'b0; // defaultNoBegin
-  endcase endgenerate
+  case (2'd0)             // No begin/end delimiters.
+    2'd1:
+      logic a = 1'b0;
+    default:
+      logic a = 1'b0;
+  endcase
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  generate case (2'd1)
-    2'd1:     begin logic b = 1'b0; end // nondefaultNoLabel
-    default:  begin logic b = 1'b0; end // defaultNoLabel
-  endcase endgenerate
+  case (2'd1)             // begin/end delimiters, but no label.
+    2'd1: begin
+      logic b = 1'b0;
+    end
+    default: begin
+      logic b = 1'b0;
+    end
+  endcase
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  generate case (2'd2)
-    2'd1:     begin: nondefaultNoPrefix logic c = 1'b0; end
-    default:  begin: noPrefix           logic c = 1'b0; end
-  endcase endgenerate
+  case (2'd2)             // With label, but no prefix.
+    2'd1: begin: foo
+      logic c = 1'b0;
+    end: foo              // NOTE: With optional label on end.
+    default: begin: bar
+      logic c = 1'b0;
+    end                   // NOTE: Without optional label on end.
+  endcase
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  case (2'd3) // No need for the generate/endgenerate keywords.
-    2'd1:     begin: nondefaultNoPrefix logic d = 1'b0; end
-    default:  begin: noPrefix           logic d = 1'b0; end
+  case (2'd4)             // Without default arm.
+    2'd1: begin: foo
+      logic e = 1'b0;
+    end
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (2'd5)             // Without non-default arm.
+    default: begin: bar
+      logic f = 1'b0;
+    end
   endcase
 endmodule
 ```
@@ -964,8 +983,19 @@ endmodule
 
 ```SystemVerilog
 module M;
-  for (genvar i=0; i < 10; i++) foo[i] = i;// noBegin
-  for (genvar i=0; i < 10; i++) begin // noLabel
+  for (genvar i=0; i < 10; i++) // No begin/end delimeters.
+    assign a[i] = i;
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  for (genvar i=0; i < 10; i++) begin // begin/end delimiters, but no label.
+    assign a[i] = i;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  for (genvar i=0; i < 10; i++) begin: foo // With label, but no prefix.
+    assign a[i] = i;
   end
 endmodule
 ```
@@ -1033,44 +1063,92 @@ endmodule
 
 ```SystemVerilog
 module M;
-  if (a) begin // No label
-  end else if (b) begin: l_def
+  if (x)                        // No begin/end delimeters.
+    assign a = 0;               // if condition.
+  else if (x) begin: l_def
+    assign a = 1;
   end else begin: l_hij
+    assign a = 2;
   end
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  if (a) begin: l_abc
-  end else if (b) begin // No label
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x)               // No begin/end delimeters.
+    assign a = 1;               // else-if condition.
+  else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+
+// TODO: This isn't caught.
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else                      // No begin/end delimeters.
+    assign a = 2;               // else condition
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin                  // begin/end delimiters, but no label.
+    assign a = 0;               // if condition.
+  end else if (x) begin: l_def
+    assign a = 1;
   end else begin: l_hij
+    assign a = 2;
   end
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  if (a) begin: l_abc
-  end else if (b) begin: l_def
-  end else begin // No label
-  end
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  if (c) begin: abc // No prefix
-  end else if (d) begin: l_def
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin         // begin/end delimiters, but no label.
+    assign a = 1;               // else-if condition.
   end else begin: l_hij
+    assign a = 2;
   end
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  if (c) begin: l_abc
-  end else if (d) begin: def // No prefix
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else begin                // begin/end delimiters, but no label.
+    assign a = 2;               // else condition
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: foo             // With label, but no prefix.
+    assign a = 0;               // if condition.
+  end else if (x) begin: l_def
+    assign a = 1;
   end else begin: l_hij
+    assign a = 2;
   end
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  if (c) begin: l_abc
-  end else if (d) begin: l_def
-  end else begin: hij // No prefix
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: foo    // With label, but no prefix.
+    assign a = 1;               // else-if condition.
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else begin: foo           // With label, but no prefix.
+    assign a = 2;               // else condition
   end
 endmodule
 ```
@@ -1726,6 +1804,16 @@ module M;
       default: b = 1;
     endcase
 endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial
+    unique if (a)
+      b = 1;
+    else if (a)
+      b = 2;
+    else
+      b = 3;
+endmodule
 ```
 
 ### Explanation
@@ -1810,6 +1898,16 @@ module M;
       default: b = 1;
     endcase
   end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial
+    unique0 if (a)
+      b = 1;
+    else if (a)
+      b = 2;
+    else
+      b = 3;
 endmodule
 ```
 
