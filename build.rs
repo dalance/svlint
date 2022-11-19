@@ -255,26 +255,26 @@ impl Config {{
                 .into_iter()
                 .enumerate()
                 .map(|(i, x)| (i + 1, x)) {
-                let subtest_name = format!("{rulename}_{passfail}_{t}of{n_testcases}");
-                let subtest_path = Path::new(&out_dir).join(format!("{rulename}.{passfail}.{t}of{n_testcases}.sv"));
-                let p = subtest_path.display();
-
-                let _ = write!(out_test, "#[test]\n");
-                let _ = write!(out_test, "fn {}() {{\n", subtest_name);
-                if *pass_not_fail {
-                    let _ = write!(out_test, "    test(\"{rulename}\", \"{p}\", true, {silent}, false);\n");
-                } else {
-                    let _ = write!(out_test, "    test(\"{rulename}\", \"{p}\", false, {silent}, false);\n");
-                    let _ = write!(out_test, "    test(\"{rulename}\", \"{p}\", false, {silent}, true);\n");
-                }
-                let _ = write!(out_test, "}}\n");
-
                 // Write subtest to its own file.
-                let out_subtest = subtest_path;
-                let mut out_subtest = File::create(&out_subtest).unwrap();
+                let subtest_path = Path::new(&out_dir)
+                    .join(format!("{rulename}.{passfail}.{t}of{n_testcases}.sv"));
+                let mut out_subtest = File::create(&subtest_path).unwrap();
                 for line in testcase {
                     let _ = write!(out_subtest, "{}\n", line);
                 }
+
+                // Create call to `main.rs::tests::test()` via `tests.rs`.
+                let subtest_name = format!("{rulename}_{passfail}_{t}of{n_testcases}");
+                let _ = write!(out_test, "#[test]\n");
+                let _ = write!(out_test, "fn {}() {{\n", subtest_name);
+                if *pass_not_fail {
+                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, true, {silent}, false);\n");
+                } else {
+                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, false);\n");
+                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, true);\n");
+                }
+                let _ = write!(out_test, "}}\n");
+
             }
         }
     }
