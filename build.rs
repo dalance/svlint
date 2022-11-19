@@ -255,21 +255,22 @@ impl Config {{
                 .into_iter()
                 .enumerate()
                 .map(|(i, x)| (i + 1, x)) {
-                let subtest_filename = format!("{out_dir}/{rulename}.{passfail}.{t}of{n_testcases}.sv");
                 let subtest_name = format!("{rulename}_{passfail}_{t}of{n_testcases}");
+                let subtest_path = Path::new(&out_dir).join(format!("{rulename}.{passfail}.{t}of{n_testcases}.sv"));
+                let p = subtest_path.display();
 
                 let _ = write!(out_test, "#[test]\n");
                 let _ = write!(out_test, "fn {}() {{\n", subtest_name);
                 if *pass_not_fail {
-                    let _ = write!(out_test, "    test(\"{rulename}\", \"{subtest_filename}\", true, {silent}, false);\n");
+                    let _ = write!(out_test, "    test(\"{rulename}\", \"{p}\", true, {silent}, false);\n");
                 } else {
-                    let _ = write!(out_test, "    test(\"{rulename}\", \"{subtest_filename}\", false, {silent}, false);\n");
-                    let _ = write!(out_test, "    test(\"{rulename}\", \"{subtest_filename}\", false, {silent}, true);\n");
+                    let _ = write!(out_test, "    test(\"{rulename}\", \"{p}\", false, {silent}, false);\n");
+                    let _ = write!(out_test, "    test(\"{rulename}\", \"{p}\", false, {silent}, true);\n");
                 }
                 let _ = write!(out_test, "}}\n");
 
                 // Write subtest to its own file.
-                let out_subtest = Path::new(&subtest_filename);
+                let out_subtest = subtest_path;
                 let mut out_subtest = File::create(&out_subtest).unwrap();
                 for line in testcase {
                     let _ = write!(out_subtest, "{}\n", line);
