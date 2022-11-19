@@ -1,27 +1,46 @@
 module M;
-  generate case (2'd0)
-    2'd1:     logic a = 1'b0; // nondefaultNoBegin
-    default:  logic a = 1'b0; // defaultNoBegin
-  endcase endgenerate
+  case (2'd0)             // No begin/end delimiters.
+    2'd1:
+      logic a = 1'b0;
+    default:
+      logic a = 1'b0;
+  endcase
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  generate case (2'd1)
-    2'd1:     begin logic b = 1'b0; end // nondefaultNoLabel
-    default:  begin logic b = 1'b0; end // defaultNoLabel
-  endcase endgenerate
+  case (2'd1)             // begin/end delimiters, but no label.
+    2'd1: begin
+      logic b = 1'b0;
+    end
+    default: begin
+      logic b = 1'b0;
+    end
+  endcase
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  generate case (2'd2)
-    2'd1:     begin: nondefaultNoPrefix logic c = 1'b0; end
-    default:  begin: noPrefix           logic c = 1'b0; end
-  endcase endgenerate
+  case (2'd2)             // With label, but no prefix.
+    2'd1: begin: foo
+      logic c = 1'b0;
+    end: foo              // NOTE: With optional label on end.
+    default: begin: bar
+      logic c = 1'b0;
+    end                   // NOTE: Without optional label on end.
+  endcase
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  case (2'd3) // No need for the generate/endgenerate keywords.
-    2'd1:     begin: nondefaultNoPrefix logic d = 1'b0; end
-    default:  begin: noPrefix           logic d = 1'b0; end
+  case (2'd4)             // Without default arm.
+    2'd1: begin: foo
+      logic e = 1'b0;
+    end
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (2'd5)             // Without non-default arm.
+    default: begin: bar
+      logic f = 1'b0;
+    end
   endcase
 endmodule
