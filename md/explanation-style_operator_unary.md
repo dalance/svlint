@@ -26,6 +26,3 @@ See also:
   - **style_operator_arithmetic** - Suggested companion rule.
   - **style_operator_boolean** - Suggested companion rule.
   - **style_operator_integer** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
