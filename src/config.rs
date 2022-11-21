@@ -36,6 +36,10 @@ pub struct ConfigOption {
     pub prefix_interface: String,
 
     #[serde(default = "default_re_lowercase")]
+    pub re_required_assert: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_assert_property: String,
+    #[serde(default = "default_re_lowercase")]
     pub re_required_checker: String,
     #[serde(default = "default_re_lowercase")]
     pub re_required_class: String,
@@ -74,12 +78,20 @@ pub struct ConfigOption {
     #[serde(default = "default_re_lowercase")]
     pub re_required_program: String,
     #[serde(default = "default_re_lowercase")]
+    pub re_required_property: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_sequence: String,
+    #[serde(default = "default_re_lowercase")]
     pub re_required_task: String,
     #[serde(default = "default_re_lowercase")]
     pub re_required_var_class: String,
     #[serde(default = "default_re_lowercase")]
     pub re_required_var_classmethod: String,
 
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_assert: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_assert_property: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_checker: String,
     #[serde(default = "default_re_unconfigured")]
@@ -118,6 +130,10 @@ pub struct ConfigOption {
     pub re_forbidden_port_interface: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_program: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_property: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_sequence: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_task: String,
     #[serde(default = "default_re_unconfigured")]

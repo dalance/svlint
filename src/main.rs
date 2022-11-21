@@ -249,6 +249,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                         }
                     }
                     defines = new_defines;
+                    println!("{:?}", syntax_tree);
                 }
                 Err(x) => {
                     print_parser_error(&mut printer, x, opt.single)?;
