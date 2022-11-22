@@ -150,21 +150,22 @@ ARGS:
     <FILES>...    Source file
 
 OPTIONS:
-    -1                           Prints results by single line
-    -c, --config <CONFIG>        Config file [default: .svlint.toml]
+    -1                           Print results by single line
+    -c, --config <CONFIG>        TOML configuration file [default: .svlint.toml]
     -d, --define <DEFINES>       Define
-        --dump-filelist          Prints data from filelists
+        --dump-filelist          Print data from filelists
+        --dump-syntaxtree        Print syntax trees
     -E                           Print preprocessor output instead of performing checks
-        --example                Prints config example
+        --example                Print TOML configuration example
     -f, --filelist <FILELIST>    File list
-        --github-actions         Prints message for GitHub Actions
+        --github-actions         Print message for GitHub Actions
     -h, --help                   Print help information
-    -i, --include <INCLUDES>     Include path
+    -i, --include <INCLUDES>     Include directory path
         --ignore-include         Ignore any include
     -p, --plugin <PLUGINS>       Plugin file
-    -s, --silent                 Suppresses message
-        --update                 Updates config
-    -v, --verbose                Prints verbose message
+    -s, --silent                 Suppress messages
+        --update                 Update configuration
+    -v, --verbose                Print verbose messages
     -V, --version                Print version information
 ```
 
