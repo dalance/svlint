@@ -14,6 +14,3 @@ See also:
   - **prefix_interface** - Alternative rule.
   - **uppercamelcase_module** - Suggested companion rule.
   - **uppercamelcase_package** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
