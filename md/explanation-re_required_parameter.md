@@ -8,6 +8,3 @@ See also:
   - **parameter_explicit_type**
   - **parameter_in_package**
   - **parameter_type_twostate**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.

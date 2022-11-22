@@ -10,6 +10,3 @@ See also:
   - **generate_case_with_label**
   - **generate_for_with_label**
   - **generate_if_with_label**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.

@@ -8,6 +8,3 @@ simpler naming rules are not sufficient.
 See also:
   - **re_forbidden_input**
   - **prefix_input**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.

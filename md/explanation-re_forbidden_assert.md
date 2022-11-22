@@ -3,6 +3,3 @@ identifiers matching the regex configured via the `re_forbidden_assert` option.
 
 See also:
   - **re_required_assert**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.

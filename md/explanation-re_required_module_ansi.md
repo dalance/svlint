@@ -13,6 +13,3 @@ See also:
   - **uppercamelcase_module**
   - **lowercamelcase_module**
   - **non_ansi_module**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.

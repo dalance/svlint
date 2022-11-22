@@ -10,6 +10,3 @@ See also:
   - **prefix_package**
   - **uppercamelcase_package**
   - **lowercamelcase_package**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.

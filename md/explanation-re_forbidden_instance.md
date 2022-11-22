@@ -8,6 +8,3 @@ simpler naming rules are not sufficient.
 See also:
   - **re_required_package**
   - **prefix_instance**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
