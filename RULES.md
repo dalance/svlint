@@ -3352,9 +3352,6 @@ See also:
   - **uppercamelcase_module** - Potential companion rule.
   - **uppercamelcase_package** - Suggested companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `lowercamelcase_module`
@@ -3397,9 +3394,6 @@ See also:
   - **uppercamelcase_interface** - Potential companion rule.
   - **uppercamelcase_module** - Mutually exclusive alternative rule.
   - **uppercamelcase_package** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -3444,9 +3438,6 @@ See also:
   - **uppercamelcase_module** - Suggested companion rule.
   - **uppercamelcase_package** - Mutually exclusive alternative rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `prefix_inout`
@@ -3483,7 +3474,7 @@ endmodule
 
 There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
 though `ref` is not generally used for synthesisable code.
-For a new reader, unfamiliar with a large module, it is useful to be able to 
+For a new reader, unfamiliar with a large module, it is useful to be able to
 distinguish at a glance between which signals are ports and internal ones.
 This is especially useful for an integrator who needs to read and understand the
 boundaries of many modules quickly and accurately.
@@ -3496,9 +3487,6 @@ See also:
   - **prefix_input** - Suggested companion rule.
   - **prefix_instance** - Suggested companion rule.
   - **prefix_output** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -3536,7 +3524,7 @@ endmodule
 
 There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
 though `ref` is not generally used for synthesisable code.
-For a new reader, unfamiliar with a large module, it is useful to be able to 
+For a new reader, unfamiliar with a large module, it is useful to be able to
 distinguish at a glance between which signals are ports and internal ones.
 This is especially useful for an integrator who needs to read and understand the
 boundaries of many modules quickly and accurately.
@@ -3548,9 +3536,6 @@ See also:
   - **prefix_inout** - Suggested companion rule.
   - **prefix_instance** - Suggested companion rule.
   - **prefix_output** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -3601,9 +3586,6 @@ See also:
   - **prefix_output** - Suggested companion rule.
   - <https://en.wikipedia.org/wiki/Reference_designator>
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `prefix_interface`
@@ -3642,9 +3624,6 @@ See also:
   - **prefix_module** - Potential companion rule.
   - **prefix_package** - Suggested companion rule.
   - **uppercamelcase_interface** - Alternative rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -3688,9 +3667,6 @@ See also:
   - **prefix_package** - Suggested companion rule.
   - **uppercamelcase_module** - Alternative rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `prefix_output`
@@ -3727,7 +3703,7 @@ endmodule
 
 There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
 though `ref` is not generally used for synthesisable code.
-For a new reader, unfamiliar with a large module, it is useful to be able to 
+For a new reader, unfamiliar with a large module, it is useful to be able to
 distinguish at a glance between which signals are ports and internal ones.
 This is especially useful for an integrator who needs to read and understand the
 boundaries of many modules quickly and accurately.
@@ -3739,9 +3715,6 @@ See also:
   - **prefix_inout** - Suggested companion rule.
   - **prefix_input** - Suggested companion rule.
   - **prefix_instance** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -3784,8 +3757,123 @@ See also:
   - **prefix_module** - Potential companion rule.
   - **uppercamelcase_package** - Alternative rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
+
+---
+## `re_forbidden_assert`
+
+### Hint
+
+Use an immediate assertion identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  initial begin
+    Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
+      assert (p) else $error(); // Simple immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
+      assert #0 (p) else $error(); // Deferred immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
+    assert #0 (p) else $error(); // Deferred immmediate assertion item.
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  initial begin
+    foo: // Unconfigured forbidden regex matches (almost) anything.
+      assert (p) else $error(); // Simple immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    foo: // Unconfigured forbidden regex matches (almost) anything.
+      assert #0 (p) else $error(); // Deferred immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  foo: // Unconfigured forbidden regex matches (almost) anything.
+    assert #0 (p) else $error(); // Deferred immmediate assertion item.
+endmodule
+```
+
+### Explanation
+
+Immediate assertions, including deferred immediate assertions, must not have
+identifiers matching the regex configured via the `re_forbidden_assert` option.
+
+See also:
+  - **re_required_assert**
+
+
+---
+## `re_forbidden_assert_property`
+
+### Hint
+
+Use a concurrent assertion identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
+    assert property (@(posedge c) p); // Concurrent assertion.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
+      assert property (@(posedge c) p); // Concurrent assertion.
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  foo: // Unconfigured forbidden regex matches (almost) anything.
+    assert property (@(posedge c) p); // Concurrent assertion.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    foo: // Unconfigured forbidden regex matches (almost) anything.
+      assert property (@(posedge c) p); // Concurrent assertion.
+  end
+endmodule
+```
+
+### Explanation
+
+Concurrent assertions must not have identifiers matching the regex configured
+via the `re_forbidden_assert_property` option.
+
+See also:
+  - **re_required_assert_property**
 
 
 ---
@@ -3821,9 +3909,6 @@ Checkers must not have identifiers matching the regex configured via the
 See also:
   - **re_required_checker**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_class`
@@ -3857,9 +3942,6 @@ Classes must not have identifiers matching the regex configured via the
 
 See also:
   - **re_required_class**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -3899,9 +3981,6 @@ Functions must not have identifiers matching the regex configured via the
 See also:
   - **re_required_function**
   - **function_same_as_system_function**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -3990,9 +4069,6 @@ See also:
   - **generate_for_with_label**
   - **generate_if_with_label**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_genvar`
@@ -4037,9 +4113,6 @@ Genvars must not have identifiers matching the regex configured via the
 See also:
   - **re_required_genvar**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_instance`
@@ -4083,9 +4156,6 @@ See also:
   - **re_required_package**
   - **prefix_instance**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_interface`
@@ -4126,9 +4196,6 @@ See also:
   - **prefix_interface**
   - **uppercamelcase_interface**
   - **lowercamelcase_interface**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4171,9 +4238,6 @@ See also:
   - **parameter_in_package**
   - **parameter_type_twostate**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_modport`
@@ -4214,9 +4278,6 @@ Modports must not have identifiers matching the regex configured via the
 See also:
   - **re_required_modport**
   - **interface_port_with_modport**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4261,9 +4322,6 @@ See also:
   - **uppercamelcase_module**
   - **lowercamelcase_module**
   - **non_ansi_module**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4317,9 +4375,6 @@ See also:
   - **lowercamelcase_module**
   - **non_ansi_module**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_package`
@@ -4360,9 +4415,6 @@ See also:
   - **prefix_package**
   - **uppercamelcase_package**
   - **lowercamelcase_package**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4406,9 +4458,6 @@ See also:
   - **parameter_explicit_type**
   - **parameter_in_package**
   - **parameter_type_twostate**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4465,9 +4514,6 @@ See also:
   - **re_required_port_inout**
   - **prefix_inout**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_port_input`
@@ -4523,9 +4569,6 @@ See also:
   - **re_required_port_input**
   - **prefix_input**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_port_interface`
@@ -4575,9 +4618,6 @@ Interface ports must not have identifiers matching the regex configured via the
 
 See also:
   - **re_required_port_interface**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4634,9 +4674,6 @@ See also:
   - **re_required_port_output**
   - **prefix_output**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_port_ref`
@@ -4687,9 +4724,6 @@ Reference ports must not have identifiers matching the regex configured via the
 See also:
   - **re_required_port_ref**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_program`
@@ -4724,8 +4758,85 @@ Programs must not have identifiers matching the regex configured via the
 See also:
   - **re_required_program**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
+
+---
+## `re_forbidden_property`
+
+### Hint
+
+Use a property identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  property Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+    @(posedge c) p; // Concurrent assertion.
+  endproperty
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  property foo; // Unconfigured forbidden regex matches (almost) anything.
+    @(posedge c) p; // Concurrent assertion.
+  endproperty
+endmodule
+```
+
+### Explanation
+
+Properties must not have identifiers matching the regex configured via the
+`re_forbidden_property` option.
+
+See also:
+  - **re_required_property**
+
+
+---
+## `re_forbidden_sequence`
+
+### Hint
+
+Use a sequence identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  sequence Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+    @(posedge c) a ##1 b
+  endsequence
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  sequence foo; // Unconfigured forbidden regex matches (almost) anything.
+    @(posedge c) a ##1 b
+  endsequence
+endmodule
+```
+
+### Explanation
+
+Sequences must not have identifiers matching the regex configured via the
+`re_forbidden_sequence` option.
+
+See also:
+  - **re_required_sequence**
 
 
 ---
@@ -4765,9 +4876,6 @@ Tasks must not have identifiers matching the regex configured via the
 See also:
   - **re_required_task**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_forbidden_var_class`
@@ -4803,9 +4911,6 @@ via the `re_forbidden_var_class` option.
 
 See also:
   - **re_required_var_class**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4849,8 +4954,123 @@ See also:
   - **re_required_var_class**
   - **re_forbidden_var_class**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
+
+---
+## `re_required_assert`
+
+### Hint
+
+Use an immediate assertion identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  initial begin
+    mn3: // Identifier matches default required regex (lowercase).
+      assert (p) else $error(); // Simple immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    mn3: // Identifier matches default required regex (lowercase).
+      assert #0 (p) else $error(); // Deferred immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  mn3: // Identifier matches default required regex (lowercase).
+    assert #0 (p) else $error(); // Deferred immmediate assertion item.
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  initial begin
+    Mn3: // Identifier doesn't match default required regex (lowercase).
+      assert (p) else $error(); // Simple immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    Mn3: // Identifier doesn't match default required regex (lowercase).
+      assert #0 (p) else $error(); // Deferred immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  Mn3: // Identifier doesn't match default required regex (lowercase).
+    assert #0 (p) else $error(); // Deferred immmediate assertion item.
+endmodule
+```
+
+### Explanation
+
+Immediate assertions, including deferred immediate assertions, must have
+identifiers matching the regex configured via the `re_required_assert` option.
+
+See also:
+  - **re_forbidden_assert**
+
+
+---
+## `re_required_assert_property`
+
+### Hint
+
+Use a concurrent assertion identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  mn3: // Identifier matches default required regex (lowercase).
+    assert property (@(posedge c) p); // Concurrent assertion.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    mn3: // Identifier matches default required regex (lowercase).
+      assert property (@(posedge c) p); // Concurrent assertion.
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  Mn3: // Identifier doesn't match default required regex (lowercase).
+    assert property (@(posedge c) p); // Concurrent assertion.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    Mn3: // Identifier doesn't match default required regex (lowercase).
+      assert property (@(posedge c) p); // Concurrent assertion.
+  end
+endmodule
+```
+
+### Explanation
+
+Concurrent assertions must have identifiers matching the regex configured via
+the `re_required_assert_property` option.
+
+See also:
+  - **re_forbidden_assert_property**
 
 
 ---
@@ -4886,9 +5106,6 @@ Checkers must have identifiers matching the regex configured via the
 See also:
   - **re_forbidden_checker**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_class`
@@ -4922,9 +5139,6 @@ Classes must have identifiers matching the regex configured via the
 
 See also:
   - **re_forbidden_class**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4964,9 +5178,6 @@ Functions must have identifiers matching the regex configured via the
 See also:
   - **re_forbidden_function**
   - **function_same_as_system_function**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5055,9 +5266,6 @@ See also:
   - **generate_for_with_label**
   - **generate_if_with_label**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_genvar`
@@ -5102,9 +5310,6 @@ Genvars must have identifiers matching the regex configured via the
 See also:
   - **re_forbidden_genvar**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_instance`
@@ -5148,9 +5353,6 @@ See also:
   - **re_forbidden_instance**
   - **prefix_instance**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_interface`
@@ -5191,9 +5393,6 @@ See also:
   - **prefix_interface**
   - **uppercamelcase_interface**
   - **lowercamelcase_interface**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5236,9 +5435,6 @@ See also:
   - **parameter_in_package**
   - **parameter_type_twostate**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_modport`
@@ -5279,9 +5475,6 @@ Modports must have identifiers matching the regex configured via the
 See also:
   - **re_forbidden_modport**
   - **interface_port_with_modport**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5326,9 +5519,6 @@ See also:
   - **uppercamelcase_module**
   - **lowercamelcase_module**
   - **non_ansi_module**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5382,9 +5572,6 @@ See also:
   - **lowercamelcase_module**
   - **non_ansi_module**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_package`
@@ -5425,9 +5612,6 @@ See also:
   - **prefix_package**
   - **uppercamelcase_package**
   - **lowercamelcase_package**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5471,9 +5655,6 @@ See also:
   - **parameter_explicit_type**
   - **parameter_in_package**
   - **parameter_type_twostate**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5530,9 +5711,6 @@ See also:
   - **re_forbidden_inout**
   - **prefix_inout**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_port_input`
@@ -5588,9 +5766,6 @@ See also:
   - **re_forbidden_input**
   - **prefix_input**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_port_interface`
@@ -5640,9 +5815,6 @@ Interface ports must have identifiers matching the regex configured via the
 
 See also:
   - **re_forbidden_interface**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5699,9 +5871,6 @@ See also:
   - **re_forbidden_output**
   - **prefix_output**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_port_ref`
@@ -5752,9 +5921,6 @@ Reference ports must have identifiers matching the regex configured via the
 See also:
   - **re_forbidden_ref**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_program`
@@ -5789,8 +5955,85 @@ Programs must have identifiers matching the regex configured via the
 See also:
   - **re_forbidden_program**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
+
+---
+## `re_required_property`
+
+### Hint
+
+Use a property identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  property mn3; // Identifier matches default required regex (lowercase).
+    @(posedge c) p; // Concurrent assertion.
+  endproperty
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  property Mn3; // Identifier doesn't match default required regex (lowercase).
+    @(posedge c) p; // Concurrent assertion.
+  endproperty
+endmodule
+```
+
+### Explanation
+
+Properties must have identifiers matching the regex configured via the
+`re_required_property` option.
+
+See also:
+  - **re_forbidden_property**
+
+
+---
+## `re_required_sequence`
+
+### Hint
+
+Use a sequence identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  sequence mn3; // Identifier matches default required regex (lowercase).
+    @(posedge c) a ##1 b
+  endsequence
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  sequence Mn3; // Identifier doesn't match default required regex (lowercase).
+    @(posedge c) a ##1 b
+  endsequence
+endmodule
+```
+
+### Explanation
+
+Sequences must have identifiers matching the regex configured via the
+`re_required_sequence` option.
+
+See also:
+  - **re_forbidden_sequence**
 
 
 ---
@@ -5830,9 +6073,6 @@ Tasks must have identifiers matching the regex configured via the
 See also:
   - **re_forbidden_task**
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `re_required_var_class`
@@ -5868,9 +6108,6 @@ the `re_required_var_class` option.
 
 See also:
   - **re_forbidden_var_class**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5913,9 +6150,6 @@ See also:
   - **re_forbidden_var_classmethod**
   - **re_forbidden_var_class**
   - **re_required_var_class**
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5960,9 +6194,6 @@ See also:
   - **uppercamelcase_module** - Suggested companion rule.
   - **uppercamelcase_package** - Potential companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `uppercamelcase_module`
@@ -6006,9 +6237,6 @@ See also:
   - **uppercamelcase_interface** - Suggested companion rule.
   - **uppercamelcase_package** - Potential companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `uppercamelcase_package`
@@ -6051,10 +6279,6 @@ See also:
   - **prefix_package** - Alternative rule.
   - **uppercamelcase_interface** - Potential companion rule.
   - **uppercamelcase_module** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 
 # Style/Whitespace Convention Rules
