@@ -4,12 +4,12 @@ use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct ReRequiredAssert {
+pub struct ReForbiddenAssert {
     re: Option<Regex>,
     under_statement: Option<RuleResult>,
 }
 
-impl Rule for ReRequiredAssert {
+impl Rule for ReForbiddenAssert {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
@@ -17,7 +17,7 @@ impl Rule for ReRequiredAssert {
         option: &ConfigOption,
     ) -> RuleResult {
         if self.re.is_none() {
-            self.re = Some(Regex::new(&option.re_required_assert).unwrap());
+            self.re = Some(Regex::new(&option.re_forbidden_assert).unwrap());
         }
 
         let node = match event {
@@ -26,7 +26,7 @@ impl Rule for ReRequiredAssert {
                     RefNode::Statement(x) => {
                         self.under_statement =
                             if let (Some(_id), _, _) = &x.nodes {
-                                Some(check_regex(true, unwrap_node!(*x, BlockIdentifier),
+                                Some(check_regex(false, unwrap_node!(*x, BlockIdentifier),
                                                  &syntax_tree, &self.re.as_ref().unwrap()))
                             } else {
                                 None // No check on anonymous statements.
@@ -50,7 +50,7 @@ impl Rule for ReRequiredAssert {
         match node {
             RefNode::DeferredImmediateAssetionItem(x) => {
                 if let (Some(_id), _) = &x.nodes {
-                    check_regex(true, unwrap_node!(*x, BlockIdentifier),
+                    check_regex(false, unwrap_node!(*x, BlockIdentifier),
                                 &syntax_tree, &self.re.as_ref().unwrap())
                 } else {
                     RuleResult::Pass // No check on anonymous immediate assertions.
@@ -68,13 +68,13 @@ impl Rule for ReRequiredAssert {
     }
 
     fn name(&self) -> String {
-        String::from("re_required_assert")
+        String::from("re_forbidden_assert")
     }
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use an immediate assertion identifier matching regex \"{}\".",
-            &option.re_required_assert
+            "Use an immediate assertion identifier not matching regex \"{}\".",
+            &option.re_forbidden_assert
         ))
     }
 
