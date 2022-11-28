@@ -158,3 +158,109 @@ ARGS:
     <files>...    Source file
 ```
 
+## Rulesets
+
+Some pre-configured rulesets are provided in `rulesets/toml`.
+A pre-configured ruleset can be used in the 3 standard ways (rename to
+`.svlint.toml` and place in the project root, the `--config` argument, or via
+the `SVLINT_CONFIG` environment variable).
+Another possibility for pre-configured rulesets is to use a wrapper script.
+If you only ever use one configuration, this isn't much benefit, i.e. the
+benefits appear when you regularly use several configurations.
+For example, say you work on two projects called "A" and "B", and each project
+has its own preferences for naming conventions.
+This situation can be troublesome because there are many ways to get confused
+about which configuration file should be used on which files.
+Wrapper scripts help this situation by providing convenient commands such as
+`svlint-A` and `svlint-B`.
+Another usecase for convenient access to specific rulesets is where you want to
+check that some files adhere to a particular set of rules, e.g. rules to
+reduce synthesis/simulation mismatches should apply to `design/*.sv` but not to
+`verif/*.sv`.
+
+### Implementation of Ruleset Scripts
+
+If you have your preferred configuration (let's name it "foo") and
+you work in a Unix-like environment, you can use a POSIX shell script called
+`svlint-foo` like this:
+```sh
+#!/usr/bin/env sh
+env SVLINT_CONFIG="/path/to/foo.toml" svlint $*
+```
+This is compatible with `/usr/bin/env sh` returning almost any common shell
+including bash, dash, ksh, sh, zsh, and tcsh.
+Alternatively, if you work in a Windows environment, you can use a batch script
+called `svlint-foo.bat` or `svlint-foo.cmd` like this:
+```winbatch
+@echo off
+set "SVLINT_CONFIG=C:\path\to\foo.toml"
+svlint %*
+```
+
+Your wrapper script can then be used with svlint's usual arguments like
+`svlint-foo path/to/design/*.sv`.
+Note that this style of wrapper script allows you to use `PATH` environment
+variable in the usual way, and that the wrapper scripts will simply use the
+first version of `svlint` found on your `PATH`.
+
+Wrapper scripts are built by `cargo build` for each configuration under
+`rulesets/toml/*.toml`.
+Each configuration has wrapper scripts for the following cases:
+- `svlint-foo` Use svlint in a Unix-like environment.
+- `svlint-foo.cmd` Use svlint in a Windows environment (only Windows XP and
+  later).
+- `svls-foo` Use svls in a Unix-like environment, assuming that svls is also
+  installed.
+- `svls-foo.cmd` Use svls in a Windows environment.
+
+### Specification of Rulesets
+
+Pre-configured rulesets reside in `rulesets/toml/*.toml`.
+There are two methods of specifying those TOML files:
+1. Simply copy your existing `.svlint.toml` configuration into that directory.
+  Ideally, add some comments to explain the background of the configuration and
+  open a [pull request](https://github.com/dalance/svlint/pulls) to have it
+  included as part of this project.
+  This is the (initially) low-effort approach, best suited to small personal
+  projects with low requirements for documentation.
+2. Create a definition in Markdown to compose a ruleset from a sequence of
+  subsets , i.e. write `rulesets/foo.md` to describe how files in
+  `rulesets/subsets/*.toml` should be merged.
+  Again, please open a [pull request](https://github.com/dalance/svlint/pulls)
+  to have it included as part of this project.
+  This approach is initially high-effort but on larger projects, users will
+  appreciate a good explanation of why configurations are necessary.
+The rest of this section refers to the 2nd method.
+
+Each ruleset specification (in `rulesets/*.md`) is processed individually.
+In a ruleset specification, the first lines specify a list of subsets.
+No content is allowed to preceed the list of subsets.
+Each subset is listed without a directory name or file extension, i.e. this
+specifies a ruleset created by initialising as `rulesets/subsets/foo.toml` then
+merging in `rulesets/subsets/bar.toml`:
+```markdown
+- foo
+- bar
+Other content below the list of subsets.
+```
+After the list of subsets, all other content is arbitrary Markdown which should
+describe the purpose and reasoning behind the configuration.
+For a pair of instructive examples, see `rulesets/dave-design.md` and
+`rulesets/dave-verif.md`.
+
+The process of merging rulesets is as follows:
+First, a default configuration object is created, as per `src/config.rs`.
+Next, each name in the list of subsets is processed in order.
+A file with the corresponding name is read from `rulesets/subsets/*.toml` and
+any explicitly given values are used to override the configuration object.
+That allows, for example, `indent` which is 2 by default, to be overridden in
+`foo.toml` to 3, then overridden (again) in `bar.toml` to 4.
+Once all of the named subsets have been merged in, the configuration object is
+serialized into a TOML file, i.e. `rulesets/hello.md` is processed to create
+`rulesets/toml/hello.toml`.
+This process, defined in `build.rs`, is deterministic so both the Markdown
+specifications and the TOML configurations are tracked by versions control.
+
+Convenient [documentation](./RULESETS.md) is created by applying a template to
+the ruleset specifications in a similar way to how `RULES.md` is created, i.e.
+via `src/mdgen.rs`.
