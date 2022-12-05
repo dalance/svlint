@@ -1,9 +1,0 @@
-
-# Merging this subset "empty" into a configuration C will produce a
-# configuration which is equivalent to C.
-
-# All options are implicitly set to their default values.
-[option]
-
-# All rules are implicitly disabled.
-[rules]
