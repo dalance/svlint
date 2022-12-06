@@ -1,4 +1,4 @@
-module A;
-wire a;
-reg b;
+module M;
+  wire a;
+  reg b;
 endmodule

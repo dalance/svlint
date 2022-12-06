@@ -1,1 +1,2 @@
-package FooBar; endpackage
+package FooBar;
+endpackage

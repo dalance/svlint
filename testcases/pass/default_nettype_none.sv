@@ -1,4 +1,3 @@
 `default_nettype none
-module A;
+module M;
 endmodule
-

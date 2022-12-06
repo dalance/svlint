@@ -1,1 +1,2 @@
-package pkg_withPrefix; endpackage
+package pkg_withPrefix;
+endpackage

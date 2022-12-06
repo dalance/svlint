@@ -1,4 +1,4 @@
-module A (
-    input var a
-);
+module M
+  ( input var a
+  );
 endmodule

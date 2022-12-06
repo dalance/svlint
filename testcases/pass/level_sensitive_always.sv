@@ -1,6 +1,6 @@
-module A;
-always_comb begin
-end
-always @ ( posedge a ) begin
-end
+module M;
+  always_comb begin
+  end
+  always @(posedge a) begin
+  end
 endmodule

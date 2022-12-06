@@ -1,4 +1,4 @@
-module A ();
+module M;
   initial begin
     if (foo) begin: l_foo
       a = b;

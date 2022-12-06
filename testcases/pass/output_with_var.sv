@@ -1,4 +1,4 @@
-module A (
-    output var a
-);
+module M
+  ( output var logic a
+  );
 endmodule

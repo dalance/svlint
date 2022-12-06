@@ -1,2 +1,4 @@
-module M #(parameter int P = 0) ();
+module M
+  #(parameter int P = 0
+  ) ();
 endmodule

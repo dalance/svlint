@@ -1,15 +1,17 @@
-module a;
+module M;
   always_comb
-    e = z;
+    a = b;
 
   always_comb
-    if (foo) f = z;
-    else     f = z;
+    if (x)
+      a = b;
+    else
+      a = c;
 
   always_comb
-    case (foo)
-      one:     g = z;
-      two:     g = z;
-      default: g = z;
+    case (x)
+      one:     a = x;
+      two:     a = y;
+      default: a = z;
     endcase
 endmodule

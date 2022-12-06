@@ -1,5 +1,5 @@
-module A;
-typedef enum {
-    C
-} B;
+module M;
+  typedef enum
+    { i
+    } E;
 endmodule

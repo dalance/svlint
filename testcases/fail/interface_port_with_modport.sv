@@ -1,5 +1,9 @@
-module A (
-    test_if a,
-    interface b
-);
+module M
+  ( test_if a
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  ( interface b
+  );
 endmodule
