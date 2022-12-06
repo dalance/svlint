@@ -1,5 +1,5 @@
-module A;
-  function foo();
+module M;
+  function F;
     if (a)
       return; // semicolon immediately after `return`.
     else

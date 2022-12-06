@@ -1,5 +1,5 @@
 module M
-( input var foo
-, input var logic [FOO-1:0] bar
-);
+  ( input var foo
+  , input var logic [FOO-1:0] bar
+  );
 endmodule

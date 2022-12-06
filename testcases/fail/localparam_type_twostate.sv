@@ -1,5 +1,11 @@
-module A;
-  localparam integer a = 0; // 32b
-  localparam logic   b = 0; // 1b
-  localparam reg     c = 0; // 1b
+module M;
+  localparam integer A = 32'b0; // 32b
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  localparam logic B = 1'b0; // 1b
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  localparam reg C = 1'b0; // 1b
 endmodule

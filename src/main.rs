@@ -403,39 +403,22 @@ fn dump_filelist(
 mod tests {
     use super::*;
 
-    fn test(name: &str, silent: bool) {
-        let s = format!("[rules]\n{} = true", name);
+    fn test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
+        let s = format!("[rules]\n{} = true", rulename);
         let config: Config = toml::from_str(&s).unwrap();
 
-        let file = format!("testcases/pass/{}.sv", name);
-        let args = if silent {
-            vec!["svlint", "--silent", &file]
-        } else {
-            vec!["svlint", &file]
-        };
+        let mut args = vec!["svlint"];
+        if silent {
+            args.push("--silent");
+        }
+        if oneline {
+            args.push("-1");
+        }
+        args.push(filename);
         let opt = Opt::parse_from(args.iter());
-        let ret = run_opt_config(&opt, config.clone());
-        assert_eq!(ret.unwrap(), true);
 
-        let file = format!("testcases/fail/{}.sv", name);
-        let args = if silent {
-            vec!["svlint", "--silent", &file]
-        } else {
-            vec!["svlint", &file]
-        };
-        let opt = Opt::parse_from(args.iter());
         let ret = run_opt_config(&opt, config.clone());
-        assert_eq!(ret.unwrap(), false);
-
-        let file = format!("testcases/fail/{}.sv", name);
-        let args = if silent {
-            vec!["svlint", "-1", "--silent", &file]
-        } else {
-            vec!["svlint", "-1", &file]
-        };
-        let opt = Opt::parse_from(args.iter());
-        let ret = run_opt_config(&opt, config.clone());
-        assert_eq!(ret.unwrap(), false);
+        assert_eq!(ret.unwrap(), pass_not_fail);
     }
 
     include!(concat!(env!("OUT_DIR"), "/test.rs"));

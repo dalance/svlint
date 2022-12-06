@@ -1,4 +1,4 @@
-module A;
-always @* begin
-end
+module M;
+  always @* begin
+  end
 endmodule

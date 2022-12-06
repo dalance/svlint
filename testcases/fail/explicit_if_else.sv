@@ -1,7 +1,9 @@
 module M;
   always_comb
     if (x) y = 0; // Incompletely specified condition implies memory.
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_ff @(clk) begin
     if (a)
       b <= c;

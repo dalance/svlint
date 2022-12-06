@@ -1,7 +1,9 @@
-module A;
-endmodule  : A // spaces immediately after `endmodule`
-package A;
+module M;
+endmodule  : M // spaces immediately after `endmodule`
+////////////////////////////////////////////////////////////////////////////////
+package P;
 endpackage  // multiple spaces then comment after `endpackage`
-interface A;
-endinterface interface B; // space instead of newline after `endinterface`
+////////////////////////////////////////////////////////////////////////////////
+interface I;
+endinterface interface J; // space instead of newline after `endinterface`
 endinterface

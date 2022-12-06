@@ -1,6 +1,15 @@
-module A #(
-  parameter integer a = 0, // 32b
-  parameter logic   b = 0, // 1b
-  parameter reg     c = 0  // 1b
-) ();
+module M
+  #(parameter integer A = 32'b0
+  ) ();
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  #(parameter logic B = 1'b0
+  ) ();
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  #(parameter reg C = 1'b0
+  , logic         Z = 1'b0 // TODO: Z isn't caught.
+  ) ();
 endmodule

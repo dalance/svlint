@@ -1,4 +1,3 @@
-module A;
-logic a;
-logic b;
+module M;
+  logic a;
 endmodule

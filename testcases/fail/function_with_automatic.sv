@@ -1,4 +1,4 @@
-module A;
-function A;
-endfunction
+module M;
+  function F;
+  endfunction
 endmodule

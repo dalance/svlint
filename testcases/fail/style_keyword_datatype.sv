@@ -1,9 +1,9 @@
 module M;
-  localparam bit  A = 0;  // multiple spaces after `bit`.
+  localparam bit  A = 0;  // Multiple spaces after `bit`.
   localparam int
-    B = 0;                // newline after `int`.
+    B = 0;                // Newline after `int`.
   logic // foo
-    a;                    // single-line comment after `logic`.
-  reg /* bar */ b;        // multi-line after `reg`.
-  wire        c;          // multiple spaces after `wire`.
+    a;                    // Single-line comment after `logic`.
+  reg /* bar */ b;        // Multi-line after `reg`.
+  wire        c;          // Multiple spaces after `wire`.
 endmodule

@@ -247,11 +247,11 @@ Blocking assignment in `always_ff` may cause undefined event ordering.
 
 ```SystemVerilog
 module M;
-always_ff @(posedge clk) q1 <= d; // Correct.
+  always_ff @(posedge clk) q1 <= d; // Correct.
 
-/* svlint off blocking_assignment_in_always_ff */
-always_ff @(posedge clk) q2 = d;  // Control comments avoid failure.
-/* svlint on blocking_assignment_in_always_ff */
+  /* svlint off blocking_assignment_in_always_ff */
+  always_ff @(posedge clk) q2 = d;  // Control comments avoid failure.
+  /* svlint on blocking_assignment_in_always_ff */
 endmodule
 ```
 
@@ -306,35 +306,28 @@ Incomplete case may cause simulation/synthesis mismatch in `always_comb` and `fu
 ### Pass Example
 
 ```SystemVerilog
-module A;
-always_comb begin
+module M;
+  always_comb
     case (x)
-        1: y = 0;
-        default: y = 0;
+      1: y = 0;
+      default: y = 0;
     endcase
-end
-always_ff begin
+
+  always_ff
     case (x)
-        1: y = 0;
+      1: y = 0;
     endcase
-end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-always_comb begin
+module M;
+  always_comb
     case (x)
-        1: y = 0;
+      1: a = 0;
     endcase
-end
-always_ff begin
-    case (x)
-        1: y = 0;
-    endcase
-end
 endmodule
 ```
 
@@ -385,17 +378,15 @@ Compiler directive `` `default_nettype none`` detects unintentional implicit wir
 
 ```SystemVerilog
 `default_nettype none
-module A;
+module M;
 endmodule
-
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
+module M;
 endmodule
-
 ```
 
 ### Explanation
@@ -463,20 +454,20 @@ The default `enum` base type is `int` (32b, 2-state).
 ### Pass Example
 
 ```SystemVerilog
-module A;
-typedef enum logic {
-    C
-} B;
+module M;
+  typedef enum int {
+    i
+  } E;
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-typedef enum {
-    C
-} B;
+module M;
+  typedef enum
+    { i
+    } E;
 endmodule
 ```
 
@@ -565,17 +556,19 @@ endmodule
 module M;
   always_comb
     case (x)
-      1: y = 0; // Incompletely specified case implies memory.
+      1: a = 0; // Incompletely specified case implies memory.
     endcase
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_ff @(clk) begin
     case (x)
-      1: y = 0;
-      default: y = 0; // Explicit default arm is good.
+      1: a = 0;
+      default: a = 0; // Explicit default arm is good.
     endcase
 
     case (y)
-      1: y = 0; // Implicit default arm.
+      1: b = 0; // Implicit default arm.
     endcase
   end
 endmodule
@@ -649,7 +642,9 @@ endmodule
 module M;
   always_comb
     if (x) y = 0; // Incompletely specified condition implies memory.
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_ff @(clk) begin
     if (a)
       b <= c;
@@ -710,18 +705,18 @@ Name clashes may cause confusion amongst tools and readers.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-function my_clog2;
-endfunction
+module M;
+  function my_clog2;
+  endfunction
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-function clog2;
-endfunction
+module M;
+  function clog2;
+  endfunction
 endmodule
 ```
 
@@ -758,82 +753,79 @@ Static lifetime of function items causes a simulation/synthesis mismatch.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-function automatic A;
-endfunction
+module M;
+  function automatic F;
+  endfunction
 endmodule
 
-// default lifetime
-module automatic A;
-function A;
-endfunction
+module automatic M; // Default lifetime.
+  function F;
+  endfunction
 endmodule
 
-interface automatic A;
-function A;
-endfunction
+interface automatic I;
+  function F;
+  endfunction
 endinterface
 
-program automatic A;
-function A;
-endfunction
+program automatic P;
+  function F;
+  endfunction
 endprogram
 
-package automatic A;
-function A;
-endfunction
+package automatic P;
+  function F;
+  endfunction
 endpackage
 
-// override default lifetime
-module static A;
-function automatic A;
-endfunction
+module static M;
+  function automatic F; // Override default lifetime.
+  endfunction
 endmodule
 
-interface static A;
-function automatic A;
-endfunction
+interface static I;
+  function automatic F;
+  endfunction
 endinterface
 
-program static A;
-function automatic A;
-endfunction
+program static P;
+  function automatic F;
+  endfunction
 endprogram
 
-package static A;
-function automatic A;
-endfunction
+package static P;
+  function automatic F;
+  endfunction
 endpackage
 
-// function in class is automatic
-module A;
-class A;
-function A;
-endfunction
-endclass
+module M;
+  class C;
+    function F; // Function in class is automatic.
+    endfunction
+  endclass
 endmodule
 
-module automatic A;
-class A;
-function A;
-endfunction
-endclass
+module automatic M;
+  class C;
+    function F;
+    endfunction
+  endclass
 endmodule
 
-module static A;
-class A;
-function A;
-endfunction
-endclass
+module static M;
+  class C;
+    function F;
+    endfunction
+  endclass
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-function A;
-endfunction
+module M;
+  function F;
+  endfunction
 endmodule
 ```
 
@@ -872,29 +864,61 @@ Unnamed generate blocks imply unintuitive hierarchical paths.
 
 ```SystemVerilog
 module A;
-generate case (2'd3)
-  2'd1:     begin: l_nondefault wire c = 1'b0; end
-  default:  begin: l_default    wire c = 1'b0; end
-endcase endgenerate
+  generate case (2'd3)
+    2'd1:     begin: l_nondefault wire c = 1'b0; end
+    default:  begin: l_default    wire c = 1'b0; end
+  endcase endgenerate
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-generate case (2'd0)
-  2'd1:     wire a = 1'b0; // nondefaultNoBegin
-  default:  wire a = 1'b0; // defaultNoBegin
-endcase endgenerate
-generate case (2'd1)
-  2'd1:     begin wire b = 1'b0; end // nondefaultNoLabel
-  default:  begin wire b = 1'b0; end // defaultNoLabel
-endcase endgenerate
-generate case (2'd2)
-  2'd1:     begin: nondefaultNoPrefix wire c = 1'b0; end
-  default:  begin: noPrefix           wire c = 1'b0; end
-endcase endgenerate
+module M;
+  case (2'd0)             // No begin/end delimiters.
+    2'd1:
+      logic a = 1'b0;
+    default:
+      logic a = 1'b0;
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (2'd1)             // begin/end delimiters, but no label.
+    2'd1: begin
+      logic b = 1'b0;
+    end
+    default: begin
+      logic b = 1'b0;
+    end
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (2'd2)             // With label, but no prefix.
+    2'd1: begin: foo
+      logic c = 1'b0;
+    end: foo              // NOTE: With optional label on end.
+    default: begin: bar
+      logic c = 1'b0;
+    end                   // NOTE: Without optional label on end.
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (2'd4)             // Without default arm.
+    2'd1: begin: foo
+      logic e = 1'b0;
+    end
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (2'd5)             // Without non-default arm.
+    default: begin: bar
+      logic f = 1'b0;
+    end
+  endcase
 endmodule
 ```
 
@@ -949,19 +973,30 @@ Unnamed generate blocks imply unintuitive hierarchical paths.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-for(genvar i=0; i<10; i++) begin: l_a
-end
+module M;
+  for(genvar i=0; i < 10; i++) begin: l_a
+  end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-for(genvar i=0; i<10; i++) foo[i] = i;// noBegin
-for(genvar i=0; i<10; i++) begin // noLabel
-end
+module M;
+  for (genvar i=0; i < 10; i++) // No begin/end delimeters.
+    assign a[i] = i;
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  for (genvar i=0; i < 10; i++) begin // begin/end delimiters, but no label.
+    assign a[i] = i;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  for (genvar i=0; i < 10; i++) begin: foo // With label, but no prefix.
+    assign a[i] = i;
+  end
 endmodule
 ```
 
@@ -1016,31 +1051,105 @@ Unnamed generate blocks imply unintuitive hierarchical paths.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-if (a) begin: l_abc
-end else if (b) begin: l_def
-end else begin: l_hij
-end
+module M;
+  if (a) begin: l_abc
+  end else if (b) begin: l_def
+  end else begin: l_hij
+  end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-if (a) begin
-end else if (b) begin
-end else begin
-end
+module M;
+  if (x)                        // No begin/end delimeters.
+    assign a = 0;               // if condition.
+  else if (x) begin: l_def
+    assign a = 1;
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x)               // No begin/end delimeters.
+    assign a = 1;               // else-if condition.
+  else begin: l_hij
+    assign a = 2;
+  end
+endmodule
 
-if (c) begin: abc
-end else if (d) begin: def
-end else begin: hij
-end
-
-if (e) begin: l_klm
-end else begin: mno
-end
+// TODO: This isn't caught.
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else                      // No begin/end delimeters.
+    assign a = 2;               // else condition
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin                  // begin/end delimiters, but no label.
+    assign a = 0;               // if condition.
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin         // begin/end delimiters, but no label.
+    assign a = 1;               // else-if condition.
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else begin                // begin/end delimiters, but no label.
+    assign a = 2;               // else condition
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: foo             // With label, but no prefix.
+    assign a = 0;               // if condition.
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: foo    // With label, but no prefix.
+    assign a = 1;               // else-if condition.
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else begin: foo           // With label, but no prefix.
+    assign a = 2;               // else condition
+  end
 endmodule
 ```
 
@@ -1095,19 +1204,19 @@ Minimized `genvar` scope makes code easier to read and review.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-for(genvar i=0;i<10;i++) begin: a
-end
+module M;
+  for(genvar i=0; i < 10; i++) begin: a
+  end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-genvar i;
-for(i=0;i<10;i++) begin
-end
+module M;
+  genvar i;
+  for (i=0; i < 10; i++) begin
+  end
 endmodule
 ```
 
@@ -1180,19 +1289,19 @@ Some tools don't support `genvar` declarations inside loop generate constructs.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-genvar i;
-for(i=0;i<10;i++) begin: a
-end
+module M;
+  genvar i;
+  for (i=0; i < 10; i++) begin: a
+  end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-for(genvar i=0;i<10;i++) begin
-end
+module M;
+  for (genvar i=0; i < 10; i++) begin: l_foo
+  end: l_foo
 endmodule
 ```
 
@@ -1245,18 +1354,18 @@ Explicit datakind of bi-directional ports should be consistent with input ports.
 ### Pass Example
 
 ```SystemVerilog
-module A (
-    inout tri a
-);
+module M
+  ( inout tri a
+  );
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A (
-    inout wire a
-);
+module M
+  ( inout wire a
+  );
 endmodule
 ```
 
@@ -1319,18 +1428,18 @@ Default datakind of input port is a tri-state net.
 ### Pass Example
 
 ```SystemVerilog
-module A (
-    input var a
-);
+module M
+  ( input var a
+  );
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A (
-    input logic a
-);
+module M
+  ( input logic a
+  );
 endmodule
 ```
 
@@ -1394,20 +1503,24 @@ Without a modport, the interface port signals are all implictly `inout`.
 ### Pass Example
 
 ```SystemVerilog
-module A (
-    test_if.a a,
-    interface.b b
-);
+module M
+  ( test_if.a a
+  , interface.b b
+  );
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A (
-    test_if a,
-    interface b
-);
+module M
+  ( test_if a
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  ( interface b
+  );
 endmodule
 ```
 
@@ -1457,18 +1570,18 @@ General-purpose `always` cannot detect combinatorial/stateful (non-)blocking mis
 ### Pass Example
 
 ```SystemVerilog
-module A;
-always_comb begin
-end
+module M;
+  always_comb begin
+  end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-always @* begin
-end
+module M;
+  always @* begin
+  end
 endmodule
 ```
 
@@ -1537,16 +1650,16 @@ Keywords `generate`/`endgenerate` do not change semantics of generate blocks.
 ### Pass Example
 
 ```SystemVerilog
-module A;
+module M;
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-generate
-endgenerate
+module M;
+  generate
+  endgenerate
 endmodule
 ```
 
@@ -1590,24 +1703,32 @@ Priority-case/if constructs may mismatch between simulation and synthesis.
 ### Pass Example
 
 ```SystemVerilog
-module A();
-initial begin
+module M;
+  initial
     case (a)
-        default: b = 1;
+      default: b = 1;
     endcase
-end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A();
-initial begin
+module M;
+  initial
     priority case (a)
-        default: b = 1;
+      default: b = 1;
     endcase
-end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial
+    priority if (a)
+      b = 1;
+    else if (a)
+      b = 2;
+    else
+      b = 3;
 endmodule
 ```
 
@@ -1666,24 +1787,32 @@ Unique-case/if constructs may mismatch between simulation and synthesis.
 ### Pass Example
 
 ```SystemVerilog
-module A();
-initial begin
+module M;
+  initial
     case (a)
-        default: b = 1;
+      default: b = 1;
     endcase
-end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A();
-initial begin
+module M;
+  initial
     unique case (a)
-        default: b = 1;
+      default: b = 1;
     endcase
-end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial
+    unique if (a)
+      b = 1;
+    else if (a)
+      b = 2;
+    else
+      b = 3;
 endmodule
 ```
 
@@ -1752,24 +1881,33 @@ Unique0-case/if constructs may mismatch between simulation and synthesis.
 ### Pass Example
 
 ```SystemVerilog
-module A();
-initial begin
+module M;
+  initial
     case (a)
-        default: b = 1;
+      default: b = 1;
     endcase
-end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A();
-initial begin
+module M;
+  initial begin
     unique0 case (a)
-        default: b = 1;
+      default: b = 1;
     endcase
-end
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial
+    unique0 if (a)
+      b = 1;
+    else if (a)
+      b = 2;
+    else
+      b = 3;
 endmodule
 ```
 
@@ -1836,18 +1974,17 @@ Explicit datatype `logic` and/or datakind `var`/`tri` better describes intent.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-logic a;
-logic b;
+module M;
+  logic a;
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-wire a;
-reg b;
+module M;
+  wire a;
+  reg b;
 endmodule
 ```
 
@@ -1893,30 +2030,40 @@ Omitting `generate`/`endgenerate` keywords may cause issues with non-compliant t
 ### Pass Example
 
 ```SystemVerilog
-module A;
-generate
-if (a) begin
-end
-case (a)
-    default: a;
-endcase
-for(i=0; i<10; i++) begin
-end
-endgenerate
+module M;
+  generate
+
+  if (a) begin
+  end
+
+  case (a)
+      default: a;
+  endcase
+
+  for(i=0; i < 10; i++) begin
+  end
+
+  endgenerate
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-if (a) begin
-end
-case (a)
-    default: a;
-endcase
-for(i=0; i<10; i++) begin
-end
+module M;
+  if (a) begin
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (a)
+      default: a;
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  for (genvar i=0; i < 10; i++) begin
+  end
 endmodule
 ```
 
@@ -1958,22 +2105,25 @@ Level-sensitive `always` cannot detect combinatorial/stateful (non-)blocking mis
 ### Pass Example
 
 ```SystemVerilog
-module A;
-always_comb begin
-end
-always @ ( posedge a ) begin
-end
+module M;
+  always_comb begin
+  end
+  always @(posedge a) begin
+  end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-always @* begin
-end
-always @ ( a or b ) begin
-end
+module M;
+  always @* begin // No sensitivity list.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always @ (a or b) begin // No sensitivity to posedge, negedge, or edge.
+  end
 endmodule
 ```
 
@@ -2033,16 +2183,16 @@ Explicit parameter types clarify intent and improve readability.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-localparam int a = 0;
+module M;
+  localparam int A = 0;
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-localparam a = 0;
+module M;
+  localparam L = 0;
 endmodule
 ```
 
@@ -2095,22 +2245,28 @@ Design constants with Xs or Zs may cause simulation/synthesis mismatch.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-  localparam byte     a = 0; // 8b
-  localparam shortint b = 0; // 16b
-  localparam int      c = 0; // 32b
-  localparam longint  d = 0; // 64b
-  localparam bit      e = 0; // 1b
+module M;
+  localparam byte     A = 8'b0;
+  localparam shortint B = 16'b0;
+  localparam int      C = 32'b0;
+  localparam longint  D = 64'b0;
+  localparam bit      E = 1'b0;
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-  localparam integer a = 0; // 32b
-  localparam logic   b = 0; // 1b
-  localparam reg     c = 0; // 1b
+module M;
+  localparam integer A = 32'b0; // 32b
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  localparam logic B = 1'b0; // 1b
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  localparam reg C = 1'b0; // 1b
 endmodule
 ```
 
@@ -2219,23 +2375,22 @@ Minimizing the variable's scope avoids common coding errors.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-initial begin
-for(int i=0;i<10;i++) begin
-end
-end
+module M;
+  initial
+    for(int i=0; i < 10; i++) begin
+    end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-initial begin
-int i;
-for(i=0;i<10;i++) begin
-end
-end
+module M;
+  initial begin
+    int i;
+    for(i=0; i < 10; i++) begin
+    end
+  end
 endmodule
 ```
 
@@ -2269,13 +2424,15 @@ Naming convention simplifies audit.
 ### Pass Example
 
 ```SystemVerilog
-interface fooBar; endinterface
+interface fooBar;
+endinterface
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-interface FooBar; endinterface
+interface FooBar;
+endinterface
 ```
 
 ### Explanation
@@ -2315,13 +2472,15 @@ Naming convention simplifies audit.
 ### Pass Example
 
 ```SystemVerilog
-module fooBar; endmodule
+module fooBar;
+endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module FooBar; endmodule
+module FooBar;
+endmodule
 ```
 
 ### Explanation
@@ -2361,13 +2520,15 @@ Naming convention simplifies audit.
 ### Pass Example
 
 ```SystemVerilog
-package fooBar; endpackage
+package fooBar;
+endpackage
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-package FooBar; endpackage
+package FooBar;
+endpackage
 ```
 
 ### Explanation
@@ -2407,25 +2568,34 @@ Without `begin`/`end`, the loop statement may be confusing.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-always_comb begin
-    for (int a=0; a<10; a++) begin
-        a = 0;
+module M;
+  always_comb begin
+    for (int a=0; a < 10; a++) begin
+      a = 0;
     end
-    for (int a=0; a<10; a++) a = 0;
-end
+
+    for (int a=0; a < 10; a++) a = 0;
+  end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-always_comb begin
-    for (int a=0; a<10; a++)
-        a = 0;
-    for (int a=0; a<10; a++) a = 0;
-end
+module M;
+  always_comb begin
+    for (int i=0; i < 10; i++)
+      a = 0;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_comb begin
+    for (int i=0; i < 10; i++) a = 0; // This is okay.
+
+    for (int i=0; i < 10; i++) // Catch any for-loop, not only the first.
+      a = 0;
+  end
 endmodule
 ```
 
@@ -2457,8 +2627,8 @@ Without `begin`/`end`, the conditional statement may be confusing.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-always_comb begin
+module M;
+  always_comb begin
     if (a) begin
         a = 0;
     end
@@ -2480,34 +2650,53 @@ always_comb begin
     if (a) a = 0;
     else if (a) a = 0;
     else a = 0;
-end
+  end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-always_comb begin
+module M;
+  always_comb
     if (a)
-        a = 0;
-
+      a = 0; // Missing begin/end.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_comb
     if (a) begin
-        a = 0;
+      a = 0;
     end else if (a)
-        a = 0;
-
+      a = 0; // Missing begin/end.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_comb
     if (a) begin
-        a = 0;
+      a = 0;
     end else if (a) begin
-        a = 0;
+      a = 0;
     end else
-        a = 0;
-
-    if (a) a = 0;
+      a = 0; // Missing begin/end.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_comb begin
+    if (a)
+      a = 0; // Missing begin/end.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_comb begin
+    if (a) a = 0; // This conditional statement is okay.
     else if (a) a = 0;
     else a = 0;
-end
+
+    if (a)   // Check all if-statements, not only the first.
+      a = 0; // Missing begin/end.
+  end
 endmodule
 ```
 
@@ -2539,22 +2728,22 @@ Non-ANSI module headers are visually noisy and error-prone.
 ### Pass Example
 
 ```SystemVerilog
-module A(
-    input  a,
-    output b
-);
+module M
+  ( input  a
+  , output b
+  );
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A(
-    a,
-    b
-);
-input  a;
-output b;
+module M
+  ( a
+  , b
+  );
+  input  a;
+  output b;
 endmodule
 ```
 
@@ -2594,20 +2783,18 @@ Scheduling between blocking and non-blocking assignments is non-deterministic.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-always_comb begin
+module M;
+  always_comb
     x = 0;
-end
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-always_comb begin
+module M;
+  always_comb
     x <= 0;
-end
 endmodule
 ```
 
@@ -2649,18 +2836,18 @@ Explicit datakind of output ports should be consistent with input ports.
 ### Pass Example
 
 ```SystemVerilog
-module A (
-    output var a
-);
+module M
+  ( output var logic a
+  );
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A (
-    output logic a
-);
+module M
+  ( output logic a
+  );
 endmodule
 ```
 
@@ -2725,7 +2912,9 @@ Default values are required by some tools and clarify intent.
 ### Pass Example
 
 ```SystemVerilog
-module M #(parameter int P = 0) ();
+module M
+  #(parameter int P = 0
+  ) ();
 endmodule
 ```
 
@@ -2734,7 +2923,16 @@ endmodule
 ```SystemVerilog
 module M
   #(parameter int P // Type is specified (good), but default value isn't (bad).
-  , parameter Q // Neither type or default value are specified (very bad).
+  ) ();
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  #(parameter Q // Neither type or default value are specified (very bad).
+  ) ();
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  #(parameter int P = 0
   , R // Legal, but even less clear about the author's intention.
   ) ();
 endmodule
@@ -2794,14 +2992,23 @@ Explicit parameter types clarify intent and improve readability.
 ### Pass Example
 
 ```SystemVerilog
-module A #(parameter int a = 0) ();
+module M
+  #(parameter int a = 0
+  ) ();
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A #(parameter a = 0) ();
+module M
+  #(parameter a = 0
+  ) ();
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  #(parameter a = int'(0)
+  ) ();
 endmodule
 ```
 
@@ -2972,24 +3179,33 @@ Design constants with Xs or Zs may cause simulation/synthesis mismatch.
 ### Pass Example
 
 ```SystemVerilog
-module A #(
-  parameter byte     a = 0, // 8b
-  parameter shortint b = 0, // 16b
-  parameter int      c = 0, // 32b
-  parameter longint  d = 0, // 64b
-  parameter bit      e = 0  // 1b
-) ();
+module M
+  #(parameter byte     A = 8'b0
+  , parameter shortint B = 16'b0
+  , parameter int      C = 32'b0
+  , parameter longint  D = 64'b0
+  , parameter bit      E = 1'b0
+  ) ();
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A #(
-  parameter integer a = 0, // 32b
-  parameter logic   b = 0, // 1b
-  parameter reg     c = 0  // 1b
-) ();
+module M
+  #(parameter integer A = 32'b0
+  ) ();
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  #(parameter logic B = 1'b0
+  ) ();
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  #(parameter reg C = 1'b0
+  , logic         Z = 1'b0 // TODO: Z isn't caught.
+  ) ();
 endmodule
 ```
 
@@ -3027,9 +3243,9 @@ Port prefixes help readers to follow signals through modules.
 
 ```SystemVerilog
 module M
-( inout var b_foo
-, input var logic [FOO-1:0] b_bar
-);
+  ( inout var b_foo
+  , input var logic [FOO-1:0] b_bar
+  );
 endmodule
 ```
 
@@ -3037,9 +3253,19 @@ endmodule
 
 ```SystemVerilog
 module M
-( inout var foo
-, inout var logic [FOO-1:0] bar
-);
+  ( inout var foo // `foo` is missing prefix.
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  ( inout var logic [A-1:0] bar // `bar` is missing prefix, not `A`.
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  ( inout var i_foo
+  , inout var bar // `bar` is missing prefix.
+  );
 endmodule
 ```
 
@@ -3080,9 +3306,9 @@ Port prefixes help readers to follow signals through modules.
 
 ```SystemVerilog
 module M
-( input var i_foo
-, input var logic [FOO-1:0] i_bar
-);
+  ( input var i_foo
+  , input var logic [FOO-1:0] i_bar
+  );
 endmodule
 ```
 
@@ -3090,9 +3316,9 @@ endmodule
 
 ```SystemVerilog
 module M
-( input var foo
-, input var logic [FOO-1:0] bar
-);
+  ( input var foo
+  , input var logic [FOO-1:0] bar
+  );
 endmodule
 ```
 
@@ -3131,16 +3357,16 @@ Naming convention helps investigation using hierarchical paths.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-Foo #() u_foo (a, b, c);
+module M;
+  I #() u_foo (a, b, c);
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module A;
-Foo #() foo (a, b, c);
+module M;
+  Foo #() foo (a, b, c);
 endmodule
 ```
 
@@ -3183,13 +3409,15 @@ Naming convention simplifies audit.
 ### Pass Example
 
 ```SystemVerilog
-interface ifc_withPrefix; endinterface
+interface ifc_withPrefix;
+endinterface
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-interface noPrefix; endinterface
+interface noPrefix;
+endinterface
 ```
 
 ### Explanation
@@ -3226,7 +3454,7 @@ Naming convention simplifies audit.
 
 ```SystemVerilog
 module mod_withPrefix; // Module identifier of declaration has prefix.
-  M #(.A(1)) u_M (.a); // Module identifier of instance doesn't require prefix.
+  I #(.A(1)) u_M (.a); // Module identifier of instance doesn't require prefix.
 endmodule
 ```
 
@@ -3271,9 +3499,9 @@ Port prefixes help readers to follow signals through modules.
 
 ```SystemVerilog
 module M
-( output var o_foo
-, output var logic [FOO-1:0] o_bar
-);
+  ( output var o_foo
+  , output var logic [FOO-1:0] o_bar
+  );
 endmodule
 ```
 
@@ -3281,9 +3509,9 @@ endmodule
 
 ```SystemVerilog
 module M
-( output var foo
-, output var logic [FOO-1:0] bar
-);
+  ( output var foo
+  , output var logic [FOO-1:0] bar
+  );
 endmodule
 ```
 
@@ -3322,13 +3550,15 @@ Naming convention simplifies audit.
 ### Pass Example
 
 ```SystemVerilog
-package pkg_withPrefix; endpackage
+package pkg_withPrefix;
+endpackage
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-package noPrefix; endpackage
+package noPrefix;
+endpackage
 ```
 
 ### Explanation
@@ -3366,19 +3596,21 @@ Sequential blocks within `always_comb` introduce sequential dependencies.
 ### Pass Example
 
 ```SystemVerilog
-module a;
+module M;
   always_comb
-    e = z;
+    a = b;
 
   always_comb
-    if (foo) f = z;
-    else     f = z;
+    if (x)
+      a = b;
+    else
+      a = c;
 
   always_comb
-    case (foo)
-      one:     g = z;
-      two:     g = z;
-      default: g = z;
+    case (x)
+      one:     a = x;
+      two:     a = y;
+      default: a = z;
     endcase
 endmodule
 ```
@@ -3386,22 +3618,28 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
-module a;
+module M;
   always_comb begin
     a = z;
   end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_comb
     if (bar) begin
       b = z;
     end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_comb
     if (bar) c = z;
     else begin
       c = z;
     end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_comb
     case (bar)
       one: begin
@@ -3476,22 +3714,22 @@ Sequential blocks within `always_ff` may encourage overly-complex code.
 ### Pass Example
 
 ```SystemVerilog
-module a;
+module M;
   always_ff @(posedge clk)
-    d <= z;
+    q <= d;
 
   always_ff @(posedge clk)
-    if (foo) e <= z;
+    if (x) q <= d;
 
   always_ff @(posedge clk)
-    if (foo) f <= z;
-    else     f <= z;
+    if (rst) q <= 0;
+    else     q <= d;
 
   always_ff @(posedge clk)
     case (foo)
-      one:     g <= z;
-      two:     g <= z;
-      default: g <= z;
+      one:     q <= x;
+      two:     r <= y;
+      default: s <= z;
     endcase
 endmodule
 ```
@@ -3499,29 +3737,35 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
-module a;
+module M;
   always_ff @(posedge clk) begin
     a <= z;
   end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_ff @(posedge clk)
-    if (bar) begin
-      b <= z;
+    if (x) begin
+      a <= z;
     end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_ff @(posedge clk)
-    if (bar) c <= z;
+    if (x) a <= z;
     else begin
-      c <= z;
+      a <= z;
     end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_ff @(posedge clk)
-    case (bar)
-      one: begin
-        d <= z;
+    case (x)
+      foo: begin
+        a <= z;
       end
-      two: d <= z;
-      default: d <= z;
+      bar: a <= z;
+      default: a <= z;
     endcase
 endmodule
 ```
@@ -3640,19 +3884,19 @@ Sequential blocks within `always_latch` may encourage overly-complex code.
 ### Pass Example
 
 ```SystemVerilog
-module a;
+module M;
   always_latch
-    if (foo) e <= z;
+    if (foo) a <= b;
 
   always_latch
-    if (foo) f <= z;
-    else     f <= z;
+    if (foo) b <= y;
+    else     b <= z;
 
   always_latch
     case (foo)
-      one:     g <= z;
-      two:     g <= z;
-      default: g <= z;
+      one:     a <= x;
+      two:     b <= y;
+      default: c <= z;
     endcase
 endmodule
 ```
@@ -3660,29 +3904,35 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
-module a;
+module M;
   always_latch begin
     a <= z;
   end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_latch
-    if (bar) begin
-      b <= z;
+    if (x) begin
+      a <= z;
     end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_latch
-    if (bar) c <= z;
+    if (x) a <= z;
     else begin
-      c <= z;
+      a <= z;
     end
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   always_latch
-    case (bar)
-      one: begin
-        d <= z;
+    case (x)
+      foo: begin
+        a <= z;
       end
-      two: d <= z;
-      default: d <= z;
+      bar: a <= z;
+      default: a <= z;
     endcase
 endmodule
 ```
@@ -3728,24 +3978,27 @@ Consistent style enhances readability.
 
 ```SystemVerilog
 module M
-#(bit FOO = 1 // comment
-, int BAR = 2 /* comment */
-, bit [31:0] BAZ = 2
-)
-( input  var logic i_abc // comment
-, output var logic o_ghi /* comment */
-);
+  #(bit FOO = 1 // comment
+  , int BAR = 2 /* comment */
+  , bit [31:0] BAZ = 2
+  )
+  ( input  var logic i_abc // comment
+  , output var logic o_ghi /* comment */
+  );
+
   assign {foo, bar} =
     { i_abc
     , 12'h345
     , b_def     // comment
     , 16'h3456  /* comment */
     };
+
   assign singleline2D = {{foo, bar}, {foo, bar}, {foo, bar}};
-  function foo
-  ( input a
-  , input b
-  );
+
+  function F
+    ( input a
+    , input b
+    );
   endfunction
 endmodule
 ```
@@ -3754,23 +4007,26 @@ endmodule
 
 ```SystemVerilog
 module M
-#( bit FOO = 1 // space after `#(` causes misalignment
-, int BAR = 2
-,  bit [31:0] BAZ = 2 // too many spaces after comma
-)
-(input  var logic i_abc // missing space after `(`
-,output var logic o_ghi // missing space after comma
-);
-  assign {foo, bar} = { // brace not followed by a single space
+  #( bit FOO = 1 // Space after `#(` causes misalignment.
+  , int BAR = 2
+  ,  bit [31:0] BAZ = 2 // Too many spaces after comma.
+  )
+  (input  var logic i_abc // Missing space after `(` causes misalignment.
+  ,output var logic o_ghi // Missing space after comma.
+  );
+
+  assign {foo, bar} = { // One-line style is okay.
       i_abc
-    ,12'h345 // missing space after `(`
-    ,  b_def // too many spaces after comma
+    ,12'h345 // Missing space.
+    ,  b_def // Too many spaces after comma.
     };
+
   function foo
-  (input a // missing space after `(`
-  ,  input b // too many spaces after comma
+  (input a // Missing space after `(` causes misalignment.
+  ,  input b // Too many spaces after comma.
   );
   endfunction
+
 endmodule
 ```
 
@@ -3958,8 +4214,8 @@ Consistent use of whitespace enhances readability by reducing visual noise.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-  function foo();
+module M;
+  function F;
     if (a)
       return; // semicolon immediately after `return`.
     else
@@ -3972,10 +4228,10 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
-module A;
-  function foo();
+module M;
+  function F();
     if (a)
-      return  ; // multiple spaces after `return`.
+      return  ; // Multiple spaces after `return`.
   endfunction
 endmodule
 
@@ -4019,7 +4275,7 @@ Consistent use of whitespace enhances readability by reducing visual noise.
 ### Pass Example
 
 ```SystemVerilog
-module A;
+module M;
   always_comb
     case (a)
       123:
@@ -4027,9 +4283,11 @@ module A;
       default: // no space between `default` and colon.
         b = d;
     endcase
-  function foo ();
+
+  function F;
     for (;;)
-      if (a) break; // no space between `break` and semicolon.
+      if (a)
+        break; // no space between `break` and semicolon.
   endfunction
 endmodule
 ```
@@ -4037,17 +4295,17 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
-module A;
+module M;
   always_comb
     case (a)
       123:
         b = c;
-      default : // space between `default` and colon.
+      default : // Space between `default` and colon.
         b = d;
     endcase
   function foo ();
     for (;;)
-      if (a) break  ; // spaces between `break` and semicolon.
+      if (a) break  ; // Spaces between `break` and semicolon.
   endfunction
 endmodule
 ```
@@ -4100,25 +4358,25 @@ Consistent use of whitespace enhances readability by reducing visual noise.
 ### Pass Example
 
 ```SystemVerilog
-module M (
-  input a,
-  inout b,  // 1 space after `input` or `inout` keywords
-  output c, // makes port identifiers unaligned.
+module M
+  ( input a
+  , inout b  // 1 space after `input` or `inout` keywords
+  , output c // makes port identifiers unaligned.
 
-  input  d,
-  inout  e, // 2 spaces after `input` or `inout` keywords
-  output f  // makes port identifiers aligned.
-);
+  , input  d
+  , inout  e // 2 spaces after `input` or `inout` keywords
+  , output f // makes port identifiers aligned.
+  );
 endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module M (
-  input   a,
-  inout   b   // multiple spaces after `input` or `inout` keywords
-);
+module M
+  ( input   a
+  , inout   b // multiple spaces after `input` or `inout` keywords
+  );
 endmodule
 ```
 
@@ -4185,13 +4443,13 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
-module  M;                  // multiple spaces after `module`.
-  for(i = 0; i < 5; i++)    // no spaces after `for`.
-    assign  foo = bar;      // multiple spaces after `assign`.
-  always_ff@(posedge clk)   // no spaces after `always_ff`.
-    if  (a)                 // multiple spaces after `if`.
-      case(a)               // no spaces after `case`.
-        1: foo <= bar;
+module  M;                  // Multiple spaces after `module`.
+  for(genvar i = 0; i < 5; i++)    // No spaces after `for`.
+    assign  a = b;      // Multiple spaces after `assign`.
+  always_ff@(posedge clk)   // No spaces after `always_ff`.
+    if  (a)                 // Multiple spaces after `if`.
+      case(a)               // No spaces after `case`.
+        1: a <= b;
       endcase
 endmodule
 ```
@@ -4408,14 +4666,17 @@ Consistent use of whitespace enhances readability by reducing visual noise.
 ### Pass Example
 
 ```SystemVerilog
-module A;
+module M;
   always_comb a = b;  // 1 space after `always_comb`.
+
   initial begin       // 1 space after `initial`.
     foo = bar;
   end
+
   always_latch
     if (a) b = c;     // newline after `always_latch`.
     else d = e;       // 1 space after `else`.
+
   final // 1 space then comment after `final`.
     foo = bar;
 endmodule
@@ -4425,16 +4686,16 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
-module A;
-  always_comb   a = b;  // multiple spaces after `always_comb`.
-  initial     begin       // multiple spaces after `initial`.
-    foo = bar;
+module M;
+  always_comb   a = b;  // Multiple spaces after `always_comb`.
+  initial     begin       // Multiple spaces after `initial`.
+    a = b;
   end
   always_latch
     if (a) b = c;
-    else      d = e;  // multiple spaces after `else`.
-  final  // multiple spaces then comment after `final`.
-    foo = bar;
+    else      d = e;  // Multiple spaces after `else`.
+  final  // Multiple spaces then comment after `final`.
+    a = b;
 endmodule
 
 ```
@@ -4519,13 +4780,13 @@ endmodule
 
 ```SystemVerilog
 module M;
-  localparam bit  A = 0;  // multiple spaces after `bit`.
+  localparam bit  A = 0;  // Multiple spaces after `bit`.
   localparam int
-    B = 0;                // newline after `int`.
+    B = 0;                // Newline after `int`.
   logic // foo
-    a;                    // single-line comment after `logic`.
-  reg /* bar */ b;        // multi-line after `reg`.
-  wire        c;          // multiple spaces after `wire`.
+    a;                    // Single-line comment after `logic`.
+  reg /* bar */ b;        // Multi-line after `reg`.
+  wire        c;          // Multiple spaces after `wire`.
 endmodule
 ```
 
@@ -4593,7 +4854,7 @@ Consistent use of whitespace enhances readability by reducing visual noise.
 ### Pass Example
 
 ```SystemVerilog
-module A ();
+module M;
   initial begin
     if (foo) begin: l_foo
       a = b;
@@ -4613,18 +4874,18 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
-module A;
+module M;
   initial begin
     if (foo) begin: l_foo
       a = b;
-    end   : l_foo           // spaces between `end` and colon.
+    end   : l_foo           // Spaces between `end` and colon.
 
     if (foo) begin
       a = c;
-    end   else begin       // multiple spaces after `end`.
+    end   else begin       // Multiple spaces after `end`.
       a = d;
     end
-  end   // multiple spaces then comment after `end`.
+  end   // Multiple spaces then comment after `end`.
 endmodule
 
 ```
@@ -4686,10 +4947,10 @@ Consistent use of whitespace enhances readability by reducing visual noise.
 ### Pass Example
 
 ```SystemVerilog
-module A;
-endmodule: A // colon immediately after `endmodule`
-package A;
-    function foo();
+module M;
+endmodule: M // colon immediately after `endmodule`
+package P;
+    function F;
     endfunction
 //  ^^^^^^^^^^^ newline after `endfunction`
 endpackage // 1 space then comment after `endpackage`
@@ -4699,12 +4960,14 @@ endpackage // 1 space then comment after `endpackage`
 ### Fail Example
 
 ```SystemVerilog
-module A;
-endmodule  : A // spaces immediately after `endmodule`
-package A;
+module M;
+endmodule  : M // spaces immediately after `endmodule`
+////////////////////////////////////////////////////////////////////////////////
+package P;
 endpackage  // multiple spaces then comment after `endpackage`
-interface A;
-endinterface interface B; // space instead of newline after `endinterface`
+////////////////////////////////////////////////////////////////////////////////
+interface I;
+endinterface interface J; // space instead of newline after `endinterface`
 endinterface
 ```
 
@@ -4780,7 +5043,7 @@ Consistent use of whitespace enhances readability by reducing visual noise.
 ### Pass Example
 
 ```SystemVerilog
-module A;
+module M;
   generate
     case (foo)
       123: a = b;
@@ -4794,12 +5057,12 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
-module A;
+module M;
   generate
-    case (foo)
+    case (x)
       123: a = b;
-    endcase if (foo) a = b; // no newline after `endcase`
-  endgenerate   // multiple spaces then comment after `endgenerate`
+    endcase if (x) a = b; // No newline after `endcase`.
+  endgenerate   // Multiple spaces then comment after `endgenerate`.
 endmodule
 
 ```
@@ -5197,7 +5460,7 @@ Tabs may cause misalignment depending on editor setup.
 ### Pass Example
 
 ```SystemVerilog
-module A();
+module M;
   logic a;
 endmodule
 ```
@@ -5205,7 +5468,7 @@ endmodule
 ### Fail Example
 
 ```SystemVerilog
-module A();
+module M;
 	logic a;
 endmodule
 ```
@@ -5242,13 +5505,15 @@ Naming convention simplifies audit.
 ### Pass Example
 
 ```SystemVerilog
-interface FooBar; endinterface
+interface FooBar;
+endinterface
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-interface fooBar; endinterface
+interface fooBar;
+endinterface
 ```
 
 ### Explanation
@@ -5288,13 +5553,15 @@ Naming convention simplifies audit.
 ### Pass Example
 
 ```SystemVerilog
-module FooBar; endmodule
+module FooBar;
+endmodule
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-module fooBar; endmodule
+module fooBar;
+endmodule
 ```
 
 ### Explanation
@@ -5334,13 +5601,15 @@ Naming convention simplifies audit.
 ### Pass Example
 
 ```SystemVerilog
-package FooBar; endpackage
+package FooBar;
+endpackage
 ```
 
 ### Fail Example
 
 ```SystemVerilog
-package fooBar; endpackage
+package fooBar;
+endpackage
 ```
 
 ### Explanation

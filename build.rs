@@ -1,7 +1,7 @@
 use regex::Regex;
 use std::env;
 use std::fs::File;
-use std::io::{BufReader, Read, Write};
+use std::io::{BufReader, BufRead, Read, Write};
 use std::path::Path;
 use walkdir::WalkDir;
 
@@ -224,15 +224,58 @@ impl Config {{
     // so visibility is useful when running `cargo test`.
     let test_verbose = ["blocking_assignment_in_always_ff"];
 
-    for (file_name, _) in &rules {
-        let silent = if test_verbose.contains(&file_name.as_str()) {
+    for (rulename, _) in &rules {
+        let silent = if test_verbose.contains(&rulename.as_str()) {
             "false"
         } else {
             "true"
         };
-        let _ = write!(out_test, "#[test]\n");
-        let _ = write!(out_test, "fn test_{}() {{\n", file_name);
-        let _ = write!(out_test, "    test(\"{}\", {});\n", file_name, silent);
-        let _ = write!(out_test, "}}\n");
+
+        for pass_not_fail in [true, false].iter() {
+            let passfail = if *pass_not_fail {
+                "pass"
+            } else {
+                "fail"
+            };
+
+            let test_filename = format!("testcases/{}/{}.sv", passfail, rulename);
+            let lines = BufReader::new(File::open(test_filename).unwrap())
+                .lines()
+                .collect::<Result<Vec<_>, _>>()
+                .unwrap();
+
+            let sep = "/".repeat(80);
+            let testcases: Vec<&[String]> = lines
+                .as_slice()
+                .split(|l| l.contains(sep.as_str()))
+                .collect();
+            let n_testcases: usize = testcases.len();
+
+            for (t, testcase) in testcases
+                .into_iter()
+                .enumerate()
+                .map(|(i, x)| (i + 1, x)) {
+                // Write subtest to its own file.
+                let subtest_path = Path::new(&out_dir)
+                    .join(format!("{rulename}.{passfail}.{t}of{n_testcases}.sv"));
+                let mut out_subtest = File::create(&subtest_path).unwrap();
+                for line in testcase {
+                    let _ = write!(out_subtest, "{}\n", line);
+                }
+
+                // Create call to `main.rs::tests::test()` via `tests.rs`.
+                let subtest_name = format!("{rulename}_{passfail}_{t}of{n_testcases}");
+                let _ = write!(out_test, "#[test]\n");
+                let _ = write!(out_test, "fn {}() {{\n", subtest_name);
+                if *pass_not_fail {
+                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, true, {silent}, false);\n");
+                } else {
+                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, false);\n");
+                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, true);\n");
+                }
+                let _ = write!(out_test, "}}\n");
+
+            }
+        }
     }
 }

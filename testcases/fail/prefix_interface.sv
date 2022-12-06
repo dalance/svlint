@@ -1,1 +1,2 @@
-interface noPrefix; endinterface
+interface noPrefix;
+endinterface

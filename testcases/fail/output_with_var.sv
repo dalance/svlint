@@ -1,4 +1,4 @@
-module A (
-    output logic a
-);
+module M
+  ( output logic a
+  );
 endmodule
