@@ -1,3 +1,2 @@
-module A;
+module M;
 endmodule
-

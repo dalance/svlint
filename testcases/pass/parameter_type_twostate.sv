@@ -1,8 +1,8 @@
-module A #(
-  parameter byte     a = 0, // 8b
-  parameter shortint b = 0, // 16b
-  parameter int      c = 0, // 32b
-  parameter longint  d = 0, // 64b
-  parameter bit      e = 0  // 1b
-) ();
+module M
+  #(parameter byte     A = 8'b0
+  , parameter shortint B = 16'b0
+  , parameter int      C = 32'b0
+  , parameter longint  D = 64'b0
+  , parameter bit      E = 1'b0
+  ) ();
 endmodule

@@ -1,3 +1,3 @@
-module A();
+module M;
 	logic a;
 endmodule

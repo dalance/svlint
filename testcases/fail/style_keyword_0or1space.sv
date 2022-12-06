@@ -1,7 +1,7 @@
-module A;
-  function foo();
+module M;
+  function F();
     if (a)
-      return  ; // multiple spaces after `return`.
+      return  ; // Multiple spaces after `return`.
   endfunction
 endmodule
 

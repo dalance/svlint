@@ -1,8 +1,8 @@
-module A;
+module M;
   generate
-    case (foo)
+    case (x)
       123: a = b;
-    endcase if (foo) a = b; // no newline after `endcase`
-  endgenerate   // multiple spaces then comment after `endgenerate`
+    endcase if (x) a = b; // No newline after `endcase`.
+  endgenerate   // Multiple spaces then comment after `endgenerate`.
 endmodule
 

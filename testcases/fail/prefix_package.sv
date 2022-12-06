@@ -1,1 +1,2 @@
-package noPrefix; endpackage
+package noPrefix;
+endpackage

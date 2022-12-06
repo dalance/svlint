@@ -1,14 +1,14 @@
-module Mansi
+module M      // An ANSI module has ports declared in the module header.
   ( input  a
   , output b
   );
 endmodule
-
-module Mansi_noPort;
+////////////////////////////////////////////////////////////////////////////////
+module M;     // A module with no ports is also ANSI.
 endmodule
-
-module Mansi_defaultInout
-  ( a
+////////////////////////////////////////////////////////////////////////////////
+module M      // Declaring ports in the header with default direction (inout)
+  ( a         // also specifies an ANSI module.
   , b
   );
 endmodule

@@ -1,12 +1,12 @@
-module A;
-  always_comb   a = b;  // multiple spaces after `always_comb`.
-  initial     begin       // multiple spaces after `initial`.
-    foo = bar;
+module M;
+  always_comb   a = b;  // Multiple spaces after `always_comb`.
+  initial     begin       // Multiple spaces after `initial`.
+    a = b;
   end
   always_latch
     if (a) b = c;
-    else      d = e;  // multiple spaces after `else`.
-  final  // multiple spaces then comment after `final`.
-    foo = bar;
+    else      d = e;  // Multiple spaces after `else`.
+  final  // Multiple spaces then comment after `final`.
+    a = b;
 endmodule
 

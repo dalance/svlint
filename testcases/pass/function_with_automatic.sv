@@ -1,68 +1,65 @@
-module A;
-function automatic A;
-endfunction
+module M;
+  function automatic F;
+  endfunction
 endmodule
 
-// default lifetime
-module automatic A;
-function A;
-endfunction
+module automatic M; // Default lifetime.
+  function F;
+  endfunction
 endmodule
 
-interface automatic A;
-function A;
-endfunction
+interface automatic I;
+  function F;
+  endfunction
 endinterface
 
-program automatic A;
-function A;
-endfunction
+program automatic P;
+  function F;
+  endfunction
 endprogram
 
-package automatic A;
-function A;
-endfunction
+package automatic P;
+  function F;
+  endfunction
 endpackage
 
-// override default lifetime
-module static A;
-function automatic A;
-endfunction
+module static M;
+  function automatic F; // Override default lifetime.
+  endfunction
 endmodule
 
-interface static A;
-function automatic A;
-endfunction
+interface static I;
+  function automatic F;
+  endfunction
 endinterface
 
-program static A;
-function automatic A;
-endfunction
+program static P;
+  function automatic F;
+  endfunction
 endprogram
 
-package static A;
-function automatic A;
-endfunction
+package static P;
+  function automatic F;
+  endfunction
 endpackage
 
-// function in class is automatic
-module A;
-class A;
-function A;
-endfunction
-endclass
+module M;
+  class C;
+    function F; // Function in class is automatic.
+    endfunction
+  endclass
 endmodule
 
-module automatic A;
-class A;
-function A;
-endfunction
-endclass
+module automatic M;
+  class C;
+    function F;
+    endfunction
+  endclass
 endmodule
 
-module static A;
-class A;
-function A;
-endfunction
-endclass
+module static M;
+  class C;
+    function F;
+    endfunction
+  endclass
 endmodule

@@ -1,18 +1,18 @@
-module a;
+module M;
   always_ff @(posedge clk)
-    d <= z;
+    q <= d;
 
   always_ff @(posedge clk)
-    if (foo) e <= z;
+    if (x) q <= d;
 
   always_ff @(posedge clk)
-    if (foo) f <= z;
-    else     f <= z;
+    if (rst) q <= 0;
+    else     q <= d;
 
   always_ff @(posedge clk)
     case (foo)
-      one:     g <= z;
-      two:     g <= z;
-      default: g <= z;
+      one:     q <= x;
+      two:     r <= y;
+      default: s <= z;
     endcase
 endmodule

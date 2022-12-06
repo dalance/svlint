@@ -1,1 +1,2 @@
-interface ifc_withPrefix; endinterface
+interface ifc_withPrefix;
+endinterface

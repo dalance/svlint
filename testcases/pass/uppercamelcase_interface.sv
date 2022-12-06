@@ -1,1 +1,2 @@
-interface FooBar; endinterface
+interface FooBar;
+endinterface

@@ -1,4 +1,4 @@
-module A (
-    inout wire a
-);
+module M
+  ( inout wire a
+  );
 endmodule

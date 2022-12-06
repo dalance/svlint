@@ -1,3 +1,3 @@
-module A;
-localparam int a = 0;
+module M;
+  localparam int A = 0;
 endmodule
