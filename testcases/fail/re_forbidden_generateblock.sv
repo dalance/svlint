@@ -5,12 +5,16 @@ module M;
   else begin: bar // Unconfigured forbidden regex matches (almost) anything.
     assign a = 1;
   end: bar
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   // Unconfigured forbidden regex matches (almost) anything.
   for (genvar i=0; i < 5; i++) begin: foo
     assign b[i] = 0;
   end: foo
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   case (0)
     0: begin: foo // Unconfigured forbidden regex matches (almost) anything.
       assign c = 0;

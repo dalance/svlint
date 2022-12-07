@@ -4254,12 +4254,16 @@ module M;
   else begin: Xbar // Identifier doesn't match default forbidden regex (X prefix).
     assign a = 1;
   end: Xbar
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   // Identifier doesn't match default forbidden regex (X prefix).
   for (genvar i=0; i < 5; i++) begin: Xfoo
     assign b[i] = 0;
   end: Xfoo
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   case (0)
     0: begin: Xfoo // Identifier doesn't match default forbidden regex (X prefix).
       assign c = 0;
@@ -4284,12 +4288,16 @@ module M;
   else begin: bar // Unconfigured forbidden regex matches (almost) anything.
     assign a = 1;
   end: bar
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   // Unconfigured forbidden regex matches (almost) anything.
   for (genvar i=0; i < 5; i++) begin: foo
     assign b[i] = 0;
   end: foo
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   case (0)
     0: begin: foo // Unconfigured forbidden regex matches (almost) anything.
       assign c = 0;
@@ -4336,7 +4344,9 @@ Identifiers must conform to the naming scheme.
 ```SystemVerilog
 module M;
   genvar Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   // Identifier doesn't match default forbidden regex (X prefix).
   for (genvar Xbar=0; Xbar < 5; Xbar++) begin
   end
@@ -4348,7 +4358,9 @@ endmodule
 ```SystemVerilog
 module M;
   genvar foo; // Unconfigured forbidden regex matches (almost) anything.
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
   // Unconfigured forbidden regex matches (almost) anything.
   for (genvar bar=0; bar < 5; bar++) begin
   end
@@ -4728,7 +4740,7 @@ module M
   ( inout Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   );
 endmodule
-
+////////////////////////////////////////////////////////////////////////////////
 module M_nonansi
   ( Xfoo
   );
@@ -4743,7 +4755,7 @@ module M
   ( inout foo // Unconfigured forbidden regex matches (almost) anything.
   );
 endmodule
-
+////////////////////////////////////////////////////////////////////////////////
 module M_nonansi
   ( foo
   );
@@ -4783,7 +4795,7 @@ module M
   ( input Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   );
 endmodule
-
+////////////////////////////////////////////////////////////////////////////////
 module M_nonansi
   ( Xfoo
   );
@@ -4798,7 +4810,7 @@ module M
   ( input foo // Unconfigured forbidden regex matches (almost) anything.
   );
 endmodule
-
+////////////////////////////////////////////////////////////////////////////////
 module M_nonansi
   ( foo
   );
@@ -4838,7 +4850,7 @@ module M
   ( I Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   );
 endmodule
-
+////////////////////////////////////////////////////////////////////////////////
 module M_nonansi
   ( Xfoo
   );
@@ -4853,7 +4865,7 @@ module M
   ( I.i foo // Unconfigured forbidden regex matches (almost) anything.
   );
 endmodule
-
+////////////////////////////////////////////////////////////////////////////////
 module M_nonansi
   ( foo
   );
@@ -4888,7 +4900,7 @@ module M
   ( output Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   );
 endmodule
-
+////////////////////////////////////////////////////////////////////////////////
 module M_nonansi
   ( Xfoo
   );
@@ -4903,7 +4915,7 @@ module M
   ( output foo // Unconfigured forbidden regex matches (almost) anything.
   );
 endmodule
-
+////////////////////////////////////////////////////////////////////////////////
 module M_nonansi
   ( foo
   );
@@ -4943,12 +4955,6 @@ module M
   ( ref Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   );
 endmodule
-
-module M_nonansi
-  ( Xfoo
-  );
-  ref var Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
-endmodule
 ```
 
 ### Fail Example
@@ -4957,12 +4963,6 @@ endmodule
 module M
   ( ref foo // Unconfigured forbidden regex matches (almost) anything.
   );
-endmodule
-
-module M_nonansi
-  ( foo
-  );
-  ref var foo; // Unconfigured forbidden regex matches (almost) anything.
 endmodule
 ```
 
