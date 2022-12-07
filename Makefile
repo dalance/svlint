@@ -31,23 +31,3 @@ release_win:
 release_mac:
 	cargo build --release --target=x86_64-apple-darwin
 	zip -j ${BIN_NAME}-v${VERSION}-x86_64-mac.zip target/x86_64-apple-darwin/release/${BIN_NAME}
-
-MANUAL_TGT_MD := RULES.md
-MANUAL_DEPS := $(shell ls md/*.md)
-MANUAL_DEPS += $(shell ls testcases/fail/*.sv)
-MANUAL_DEPS += $(shell ls testcases/pass/*.sv)
-MANUAL_DEPS += $(shell ls src/rules/*.rs)
-MANUAL_DEPS += src/config.rs
-MANUAL_DEPS += src/mdgen.rs
-
-.PHONY: prepush
-prepush: ${MANUAL_TGT_MD}
-prepush: is_manual_updated
-prepush: test
-
-.PHONY: is_manual_updated
-is_manual_updated:
-	git diff --quiet ${MANUAL_TGT_MD}
-
-${MANUAL_TGT_MD}: ${MANUAL_DEPS}
-	cargo run --bin=mdgen > $@
