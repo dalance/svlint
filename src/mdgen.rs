@@ -49,9 +49,9 @@ fn partition_rules(rules: Vec<Box<dyn Rule>>) ->
     (Vec<Box<dyn Rule>>, Vec<Box<dyn Rule>>, Vec<Box<dyn Rule>>) {
 
     let style_prefixes =
-        [ "style"
-        , "tab"
-        ].join("_|");
+        [ "style_"
+        , "tab_"
+        ].join("|");
     let re_style: Regex = Regex::new(format!("^({})", style_prefixes).as_str()).unwrap();
 
     let naming_prefixes =
