@@ -56,8 +56,29 @@ const RENAMED_RULES: &[(&str, &str, &str)] = &[
     ),
 ];
 
-fn main() {
+fn write_rules_rs(rules: &Vec<(String, String)>) -> () {
     let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let out_dir = env::var("OUT_DIR").unwrap();
+
+    let o = Path::new(&out_dir).join("rules.rs");
+    let mut o = File::create(&o).unwrap();
+
+    for (rulename, _) in rules {
+        let _ = writeln!(
+            o,
+            "#[path = \"{}/src/rules/{}.rs\"]",
+            root_dir.replace("\\", "\\\\"),
+            rulename
+        );
+        let _ = writeln!(o, "pub mod {};", rulename);
+    }
+
+    for (rulename, _) in rules {
+        let _ = writeln!(o, "pub use {}::*;", rulename);
+    }
+}
+
+fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
 
     let re_struct = Regex::new(r"pub struct ([a-zA-Z0-9]*)").unwrap();
@@ -81,25 +102,8 @@ fn main() {
 
     rules.sort_by(|a, b| a.0.cmp(&b.0));
 
-    // -------------------------------------------------------------------------------------------------
-    // Output 'rules.rs'
-    // -------------------------------------------------------------------------------------------------
+    write_rules_rs(&rules);
 
-    let out_rules = Path::new(&out_dir).join("rules.rs");
-    let mut out_rules = File::create(&out_rules).unwrap();
-
-    for (file_name, _) in &rules {
-        let _ = write!(
-            out_rules,
-            "#[path = \"{}/src/rules/{}.rs\"]\n",
-            root_dir.replace("\\", "\\\\"),
-            file_name
-        );
-        let _ = write!(out_rules, "pub mod {};\n", file_name);
-    }
-    for (file_name, _) in &rules {
-        let _ = write!(out_rules, "pub use {}::*;\n", file_name);
-    }
 
     // -------------------------------------------------------------------------------------------------
     // Output 'config_rules.rs'
