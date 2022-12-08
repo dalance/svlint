@@ -177,46 +177,16 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "}} // impl Config");
 }
 
-fn main() {
+fn write_test_rs(rules: &Vec<(String, String)>) -> () {
     let out_dir = env::var("OUT_DIR").unwrap();
-
-    let re_struct = Regex::new(r"pub struct ([a-zA-Z0-9]*)").unwrap();
-
-    let mut rules = Vec::new();
-    for entry in WalkDir::new("src/rules") {
-        let entry = entry.unwrap();
-        if entry.file_type().is_file() {
-            let f = File::open(entry.path()).unwrap();
-            let mut f = BufReader::new(f);
-            let mut s = String::new();
-            let _ = f.read_to_string(&mut s);
-            let cap = re_struct.captures(&s);
-            if let Some(cap) = cap {
-                let struct_name = String::from(&cap[1]);
-                let file_name = String::from(entry.path().file_stem().unwrap().to_string_lossy());
-                rules.push((file_name, struct_name));
-            }
-        }
-    }
-
-    rules.sort_by(|a, b| a.0.cmp(&b.0));
-
-    write_rules_rs(&rules);
-    write_config_rules_rs(&rules);
-    write_impl_config_rs(&rules);
-
-    // -------------------------------------------------------------------------------------------------
-    // Output 'test.rs'
-    // -------------------------------------------------------------------------------------------------
-
-    let out_test = Path::new(&out_dir).join("test.rs");
-    let mut out_test = File::create(&out_test).unwrap();
+    let o = Path::new(&out_dir).join("test.rs");
+    let mut o = File::create(&o).unwrap();
 
     // blocking_assignment_in_always_ff testcases demonstrate comment control,
     // so visibility is useful when running `cargo test`.
     let test_verbose = ["blocking_assignment_in_always_ff"];
 
-    for (rulename, _) in &rules {
+    for (rulename, _) in rules {
         let silent = if test_verbose.contains(&rulename.as_str()) {
             "false"
         } else {
@@ -252,22 +222,50 @@ fn main() {
                     .join(format!("{rulename}.{passfail}.{t}of{n_testcases}.sv"));
                 let mut out_subtest = File::create(&subtest_path).unwrap();
                 for line in testcase {
-                    let _ = write!(out_subtest, "{}\n", line);
+                    let _ = writeln!(out_subtest, "{}", line);
                 }
 
                 // Create call to `main.rs::tests::test()` via `tests.rs`.
                 let subtest_name = format!("{rulename}_{passfail}_{t}of{n_testcases}");
-                let _ = write!(out_test, "#[test]\n");
-                let _ = write!(out_test, "fn {}() {{\n", subtest_name);
+                let _ = writeln!(o, "#[test]");
+                let _ = writeln!(o, "fn {}() {{", subtest_name);
                 if *pass_not_fail {
-                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, true, {silent}, false);\n");
+                    let _ = writeln!(o, "    test(\"{rulename}\", {subtest_path:?}, true, {silent}, false);");
                 } else {
-                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, false);\n");
-                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, true);\n");
+                    let _ = writeln!(o, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, false);");
+                    let _ = writeln!(o, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, true);");
                 }
-                let _ = write!(out_test, "}}\n");
+                let _ = writeln!(o, "}}");
 
             }
         }
     }
+}
+
+fn main() {
+    let re_struct = Regex::new(r"pub struct ([a-zA-Z0-9]*)").unwrap();
+
+    let mut rules = Vec::new();
+    for entry in WalkDir::new("src/rules") {
+        let entry = entry.unwrap();
+        if entry.file_type().is_file() {
+            let f = File::open(entry.path()).unwrap();
+            let mut f = BufReader::new(f);
+            let mut s = String::new();
+            let _ = f.read_to_string(&mut s);
+            let cap = re_struct.captures(&s);
+            if let Some(cap) = cap {
+                let struct_name = String::from(&cap[1]);
+                let file_name = String::from(entry.path().file_stem().unwrap().to_string_lossy());
+                rules.push((file_name, struct_name));
+            }
+        }
+    }
+
+    rules.sort_by(|a, b| a.0.cmp(&b.0));
+
+    write_rules_rs(&rules);
+    write_config_rules_rs(&rules);
+    write_impl_config_rs(&rules);
+    write_test_rs(&rules);
 }
