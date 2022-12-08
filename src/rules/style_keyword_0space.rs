@@ -24,7 +24,7 @@ impl Rule for StyleKeyword0Space {
             - nothing, immediately followed by a symbol
         */
         if self.re_split.is_none() {
-            self.re_split = Some(Regex::new(r"(?P<kw>[a-z_01]+)(?P<succ>(?s:.)*)").unwrap());
+            self.re_split = Some(Regex::new(r"(?P<kw>[\\$'BXZa-z_01]+)(?P<succ>(?s:.)*)").unwrap());
         }
         if self.re_kw.is_none() {
             let keywords =
