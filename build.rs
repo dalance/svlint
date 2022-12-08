@@ -103,6 +103,80 @@ fn write_config_rules_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "}}");
 }
 
+fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
+    let out_dir = env::var("OUT_DIR").unwrap();
+    let o = Path::new(&out_dir).join("impl_config.rs");
+    let mut o = File::create(&o).unwrap();
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "impl Config {{");
+    let _ = writeln!(o, "    pub fn new() -> Self {{");
+    let _ = writeln!(o, "        toml::from_str(\"\").unwrap()");
+    let _ = writeln!(o, "    }}");
+
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "    pub fn enable_all(mut self) -> Self {{");
+    for (rulename, _) in rules {
+        let _ = writeln!(o, "        self.rules.{} = true;", rulename);
+    }
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "        self");
+    let _ = writeln!(o, "    }}");
+
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "    pub fn gen_rules(&self) -> Vec<Box<dyn Rule>> {{");
+    let _ = writeln!(o, "        let mut ret: Vec<Box<dyn Rule>> = Vec::new();");
+    for (rulename, structname) in rules {
+        let _ = writeln!(o, "        if self.rules.{} {{", rulename);
+        let _ = writeln!(o, "            ret.push(Box::new({}::default()));", structname);
+        let _ = writeln!(o, "        }}");
+    }
+    for (original_rulename, _, structname) in RENAMED_RULES {
+        let _ = writeln!(o, "        if self.rules.{} {{", original_rulename);
+        let _ = writeln!(o, "            ret.push(Box::new({}::default()));", structname);
+        let _ = writeln!(o, "        }}");
+    }
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "        ret");
+    let _ = writeln!(o, "    }}");
+
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "    pub fn gen_all_rules() -> Vec<Box<dyn Rule>> {{");
+    let _ = writeln!(o, "        let mut ret: Vec<Box<dyn Rule>> = Vec::new();");
+    for (_, structname) in rules {
+        let _ = writeln!(o, "        ret.push(Box::new({}::default()));", structname);
+    }
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "        ret");
+    let _ = writeln!(o, "    }}");
+
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "    pub fn check_rename(&self) -> Vec<(String, String)> {{");
+    let _ = writeln!(o, "        let mut ret: Vec<(String, String)> = Vec::new();");
+    for (original_rulename, rulename, _) in RENAMED_RULES {
+        let _ = writeln!(o, "        if self.rules.{} {{", original_rulename);
+        let _ = writeln!(o, "            ret.push((String::from(\"{}\"), String::from(\"{}\")));", original_rulename, rulename);
+        let _ = writeln!(o, "        }}");
+    }
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "        ret");
+    let _ = writeln!(o, "    }}");
+
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "    pub fn migrate(&mut self) {{");
+    for (original_rulename, rulename, _) in RENAMED_RULES {
+        let _ = writeln!(o, "        self.rules.{} = self.rules.{};", rulename, original_rulename);
+    }
+    let _ = writeln!(o, "    }}");
+
+    let _ = writeln!(o, "}} // impl Config");
+}
+
 fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
 
@@ -129,88 +203,7 @@ fn main() {
 
     write_rules_rs(&rules);
     write_config_rules_rs(&rules);
-
-    // -------------------------------------------------------------------------------------------------
-    // Output 'impl_config.rs'
-    // -------------------------------------------------------------------------------------------------
-
-    let out_impl_config = Path::new(&out_dir).join("impl_config.rs");
-    let mut out_impl_config = File::create(&out_impl_config).unwrap();
-
-    let mut enable_all_body = String::new();
-    let mut gen_rules_body = String::new();
-    let mut gen_all_rules_body = String::new();
-    let mut check_rename_body = String::new();
-    let mut migrate_body = String::new();
-    for (file_name, struct_name) in &rules {
-        enable_all_body.push_str(&format!("        self.rules.{} = true;\n", file_name));
-        gen_rules_body.push_str(&format!("        if self.rules.{} {{\n", file_name));
-        gen_rules_body.push_str(&format!(
-            "            ret.push(Box::new({}::default()));\n",
-            struct_name
-        ));
-        gen_rules_body.push_str(&format!("        }}\n"));
-        gen_all_rules_body.push_str(&format!(
-            "        ret.push(Box::new({}::default()));\n",
-            struct_name
-        ));
-    }
-    for (org_name, file_name, struct_name) in RENAMED_RULES {
-        gen_rules_body.push_str(&format!("        if self.rules.{} {{\n", org_name));
-        gen_rules_body.push_str(&format!(
-            "            ret.push(Box::new({}::default()));\n",
-            struct_name
-        ));
-        gen_rules_body.push_str(&format!("        }}\n"));
-        check_rename_body.push_str(&format!("        if self.rules.{} {{\n", org_name));
-        check_rename_body.push_str(&format!(
-            "            ret.push((String::from(\"{}\"), String::from(\"{}\")));\n",
-            org_name, file_name
-        ));
-        check_rename_body.push_str(&format!("        }}\n"));
-        migrate_body.push_str(&format!(
-            "        self.rules.{} = self.rules.{};\n",
-            file_name, org_name
-        ));
-    }
-
-    let str_impl_config = format!(
-        r##"
-impl Config {{
-    pub fn new() -> Self {{
-        toml::from_str("").unwrap()
-    }}
-
-    pub fn enable_all(mut self) -> Self {{
-{}
-        self
-    }}
-
-    pub fn gen_rules(&self) -> Vec<Box<dyn Rule>> {{
-        let mut ret: Vec<Box<dyn Rule>> = Vec::new();
-{}
-        ret
-    }}
-
-    pub fn gen_all_rules() -> Vec<Box<dyn Rule>> {{
-        let mut ret: Vec<Box<dyn Rule>> = Vec::new();
-{}
-        ret
-    }}
-
-    pub fn check_rename(&self) -> Vec<(String, String)> {{
-        let mut ret: Vec<(String, String)> = Vec::new();
-{}
-        ret
-    }}
-
-    pub fn migrate(&mut self) {{
-{}
-    }}
-}}"##,
-        enable_all_body, gen_rules_body, gen_all_rules_body, check_rename_body, migrate_body
-    );
-    let _ = write!(out_impl_config, "{}", str_impl_config);
+    write_impl_config_rs(&rules);
 
     // -------------------------------------------------------------------------------------------------
     // Output 'test.rs'
