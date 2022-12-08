@@ -78,6 +78,31 @@ fn write_rules_rs(rules: &Vec<(String, String)>) -> () {
     }
 }
 
+fn write_config_rules_rs(rules: &Vec<(String, String)>) -> () {
+    let out_dir = env::var("OUT_DIR").unwrap();
+    let o = Path::new(&out_dir).join("config_rules.rs");
+    let mut o = File::create(&o).unwrap();
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "#[derive(Clone, Debug, Deserialize, Serialize)]");
+    let _ = writeln!(o, "#[serde(deny_unknown_fields)]");
+    let _ = writeln!(o, "pub struct ConfigRules {{");
+
+    for (rulename, _) in rules {
+        let _ = writeln!(o, "    #[serde(default = \"default_as_false\")]");
+        let _ = writeln!(o, "    pub {}: bool,", rulename);
+    }
+
+    let _ = writeln!(o, "");
+
+    for (original_rulename, _, _) in RENAMED_RULES {
+        let _ = writeln!(o, "    #[serde(default = \"default_as_false\", skip_serializing)]");
+        let _ = writeln!(o, "    pub {}: bool,", original_rulename);
+    }
+
+    let _ = writeln!(o, "}}");
+}
+
 fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
 
@@ -103,37 +128,7 @@ fn main() {
     rules.sort_by(|a, b| a.0.cmp(&b.0));
 
     write_rules_rs(&rules);
-
-
-    // -------------------------------------------------------------------------------------------------
-    // Output 'config_rules.rs'
-    // -------------------------------------------------------------------------------------------------
-
-    let out_config_rules = Path::new(&out_dir).join("config_rules.rs");
-    let mut out_config_rules = File::create(&out_config_rules).unwrap();
-
-    let mut body = String::new();
-    for (file_name, _) in &rules {
-        body.push_str(&format!("    #[serde(default = \"default_as_false\")]\n"));
-        body.push_str(&format!("    pub {}: bool,\n", file_name));
-    }
-    for (org_name, _, _) in RENAMED_RULES {
-        body.push_str(&format!(
-            "    #[serde(default = \"default_as_false\", skip_serializing)]\n"
-        ));
-        body.push_str(&format!("    pub {}: bool,\n", org_name));
-    }
-
-    let str_config_rules = format!(
-        r##"
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct ConfigRules {{
-{}
-}}"##,
-        body
-    );
-    let _ = write!(out_config_rules, "{}", str_config_rules);
+    write_config_rules_rs(&rules);
 
     // -------------------------------------------------------------------------------------------------
     // Output 'impl_config.rs'
