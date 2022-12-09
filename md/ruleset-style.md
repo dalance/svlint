@@ -7,6 +7,12 @@ of the **style_** rules.
 ### Motivation
 
 TODO
+- Remove visual noise.
+- Consistent readability on differently configured viewers.
+- Usability on differently viewers, GUI, terminal, webpage.
+- Readable diffs.
+
+TODO: Line width via shell script.
 
 ### Indentation
 
@@ -154,6 +160,8 @@ rules.style_trailingwhitespace = true
 
 ### Operators
 
+Consistent use of whitespace around operators makes it easier for new readers
+to understand expressions.
 TODO
 ```toml
 rules.style_operator_arithmetic = true
