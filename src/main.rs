@@ -216,15 +216,16 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                 defines.insert(k, v);
             }
         }
-        if opt.dump_filelist {
-            dump_filelist(&Path::new("."), &files, &includes, &defines);
-            return Ok(true);
-        }
 
         (files, includes)
     } else {
         (opt.files.clone(), opt.includes.clone())
     };
+
+    if opt.dump_filelist {
+        dump_filelist(&Path::new("."), &files, &includes, &defines);
+        return Ok(true);
+    }
 
     let mut all_pass = true;
 
@@ -422,4 +423,6 @@ mod tests {
     }
 
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
+
+    // TODO: Tests for --dump-filelist
 }
