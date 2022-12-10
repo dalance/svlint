@@ -157,7 +157,7 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
 
         ret
     } else {
-        if !opt.silent {
+        if !opt.silent && !opt.dump_filelist && !opt.preprocess_only {
             println!(
                 "Config file '{}' is not found. Enable all rules",
                 opt.config.to_string_lossy()
