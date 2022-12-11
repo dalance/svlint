@@ -108,7 +108,8 @@ pub struct Opt {
 #[cfg_attr(tarpaulin, skip)]
 pub fn main() {
     let opt = Parser::parse();
-    let exit_code = match run_opt(&opt) {
+    let mut printer = Printer::new();
+    let exit_code = match run_opt(&mut printer, &opt) {
         Ok(pass) => {
             if pass {
                 0
@@ -117,7 +118,6 @@ pub fn main() {
             }
         }
         Err(x) => {
-            let mut printer = Printer::new();
             let _ = printer.print_error_type(x);
             2
         }
@@ -127,14 +127,18 @@ pub fn main() {
 }
 
 #[cfg_attr(tarpaulin, skip)]
-pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
+pub fn run_opt(
+    printer: &mut Printer,
+    opt: &Opt,
+) -> Result<bool, Error> {
     if opt.example {
         let config = Config::new();
-        println!("{}", toml::to_string(&config).unwrap());
+        let config = format!("{}", toml::to_string(&config).unwrap());
+        printer.println(&config)?;
         return Ok(true);
     }
 
-    let config = search_config(&opt.config);
+    let config = search_config(printer, &opt.config);
 
     let config = if let Some(config) = config {
         let mut f = File::open(&config)
@@ -158,27 +162,31 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
         ret
     } else {
         if !opt.silent && !opt.dump_filelist && !opt.preprocess_only {
-            println!(
+            let msg = format!(
                 "Config file '{}' is not found. Enable all rules",
                 opt.config.to_string_lossy()
             );
+            printer.print_warning(&msg)?;
         }
         Config::new().enable_all()
     };
 
-    run_opt_config(opt, config)
+    run_opt_config(printer, opt, config)
 }
 
 #[cfg_attr(tarpaulin, skip)]
-pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
-    let mut printer = Printer::new();
-
+pub fn run_opt_config(
+    printer: &mut Printer,
+    opt: &Opt,
+    config: Config,
+) -> Result<bool, Error> {
     let mut not_obsolete = true;
     for (org_rule, renamed_rule) in config.check_rename() {
-        printer.print_warning(&format!(
+        let msg = format!(
             "Rule \"{}\" is obsolete. Please rename to \"{}\"",
             org_rule, renamed_rule,
-        ))?;
+        );
+        printer.print_warning(&msg)?;
         not_obsolete = false;
     }
 
@@ -208,7 +216,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         for filelist in &opt.filelist {
             let (mut f, mut i, d) = parse_filelist(filelist)?;
             if opt.dump_filelist {
-                dump_filelist(&mut printer, &filelist, &f, &i, &d);
+                dump_filelist(printer, &filelist, &f, &i, &d)?;
             }
             files.append(&mut f);
             includes.append(&mut i);
@@ -223,7 +231,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
     };
 
     if opt.dump_filelist {
-        dump_filelist(&mut printer, &Path::new("."), &files, &includes, &defines);
+        dump_filelist(printer, &Path::new("."), &files, &includes, &defines)?;
         return Ok(true);
     }
 
@@ -234,11 +242,12 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         if opt.preprocess_only {
             match preprocess(&path, &defines, &includes, false, opt.ignore_include) {
                 Ok((text, new_defines)) => {
-                    print!("{}", text.text());
+                    let msg = format!("{}", text.text());
+                    printer.print(&msg)?;
                     defines = new_defines;
                 }
                 Err(x) => {
-                    print_parser_error(&mut printer, x, opt.single)?;
+                    print_parser_error(printer, x, opt.single)?;
                     pass = false;
                 }
             }
@@ -256,11 +265,12 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                     defines = new_defines;
 
                     if opt.dump_syntaxtree {
-                        println!("{:?}", &syntax_tree);
+                        let msg = format!("{:?}", &syntax_tree);
+                        printer.println(&msg)?;
                     }
                 }
                 Err(x) => {
-                    print_parser_error(&mut printer, x, opt.single)?;
+                    print_parser_error(printer, x, opt.single)?;
                     pass = false;
                 }
             }
@@ -311,19 +321,20 @@ fn print_parser_error(
 }
 
 #[cfg_attr(tarpaulin, skip)]
-fn search_config(config: &Path) -> Option<PathBuf> {
+fn search_config(
+    printer: &mut Printer,
+    config: &Path,
+) -> Option<PathBuf> {
     if let Ok(c) = env::var("SVLINT_CONFIG") {
         let candidate = Path::new(&c);
         if candidate.exists() {
             return Some(candidate.to_path_buf());
         } else {
-            let mut printer = Printer::new();
-            printer
-                .print_warning(&format!(
-                    "SVLINT_CONFIG=\"{}\" does not exist. Searching hierarchically.",
-                    c,
-                ))
-                .ok()?;
+            let msg = format!(
+                "SVLINT_CONFIG=\"{}\" does not exist. Searching hierarchically.",
+                c,
+            );
+            printer.print_warning(&msg).ok()?;
         }
     }
 
@@ -376,29 +387,31 @@ fn dump_filelist(
     files: &Vec<PathBuf>,
     incdirs: &Vec<PathBuf>,
     defines: &HashMap<String, Option<Define>>,
-) -> () {
-    printer.println(format!("{:?}:", filename).as_str());
+) -> Result<(), Error> {
+    printer.println(&format!("{:?}:", filename))?;
 
-    printer.println(format!("  files:").as_str());
+    printer.println(&format!("  files:"))?;
     for f in files {
-        printer.println(format!("    - {:?}", f).as_str());
+        printer.println(&format!("    - {:?}", f))?;
     }
 
-    printer.println(format!("  incdirs:").as_str());
+    printer.println(&format!("  incdirs:"))?;
     for i in incdirs {
-        printer.println(format!("    - {:?}", i).as_str());
+        printer.println(&format!("    - {:?}", i))?;
     }
 
-    printer.println(format!("  defines:").as_str());
+    printer.println(&format!("  defines:"))?;
     for (k, v) in defines {
         match v {
-            None => printer.println(format!("    {:?}:", k).as_str()),
+            None => printer.println(&format!("    {:?}:", k)),
             Some(define) => match &define.text {
-                Some(definetext) => printer.println(format!("    {:?}: {:?}", k, definetext.text).as_str()),
-                None => printer.println(format!("    {:?}:", k).as_str()),
+                Some(definetext) => printer.println(&format!("    {:?}: {:?}", k, definetext.text)),
+                None => printer.println(&format!("    {:?}:", k)),
             },
-        };
+        }?;
     }
+
+    Ok(())
 }
 
 #[cfg(test)]
@@ -419,7 +432,8 @@ mod tests {
         args.push(filename);
         let opt = Opt::parse_from(args.iter());
 
-        let ret = run_opt_config(&opt, config.clone());
+        let mut printer = Printer::new();
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
         assert_eq!(ret.unwrap(), pass_not_fail);
     }
 

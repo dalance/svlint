@@ -384,25 +384,25 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    pub fn print_error(&mut self, error: &str) -> Result<(), Error> {
+    pub fn print_error(&mut self, msg: &str) -> Result<(), Error> {
         self.write("Error", Color::BrightRed);
-        self.write(&format!(": {}", error), Color::BrightWhite);
+        self.write(&format!(": {}", msg), Color::BrightWhite);
         self.write("\n", Color::Reset);
         Ok(())
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    pub fn print_warning(&mut self, error: &str) -> Result<(), Error> {
+    pub fn print_warning(&mut self, msg: &str) -> Result<(), Error> {
         self.write("Warning", Color::BrightYellow);
-        self.write(&format!(": {}", error), Color::BrightWhite);
+        self.write(&format!(": {}", msg), Color::BrightWhite);
         self.write("\n", Color::Reset);
         Ok(())
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    pub fn print_info(&mut self, error: &str) -> Result<(), Error> {
+    pub fn print_info(&mut self, msg: &str) -> Result<(), Error> {
         self.write("Info", Color::BrightGreen);
-        self.write(&format!(": {}", error), Color::BrightWhite);
+        self.write(&format!(": {}", msg), Color::BrightWhite);
         self.write("\n", Color::Reset);
         Ok(())
     }
@@ -420,8 +420,14 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    pub fn println(&mut self, line: &str) -> Result<(), Error> {
-        self.write(line, Color::Reset);
+    pub fn print(&mut self, msg: &str) -> Result<(), Error> {
+        self.write(msg, Color::Reset);
+        Ok(())
+    }
+
+    #[cfg_attr(tarpaulin, skip)]
+    pub fn println(&mut self, msg: &str) -> Result<(), Error> {
+        self.write(msg, Color::Reset);
         self.write("\n", Color::Reset);
         Ok(())
     }
