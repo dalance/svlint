@@ -108,7 +108,7 @@ pub struct Opt {
 #[cfg_attr(tarpaulin, skip)]
 pub fn main() {
     let opt = Parser::parse();
-    let mut printer = Printer::new();
+    let mut printer = Printer::new(false);
     let exit_code = match run_opt(&mut printer, &opt) {
         Ok(pass) => {
             if pass {
@@ -432,7 +432,7 @@ mod tests {
         args.push(filename);
         let opt = Opt::parse_from(args.iter());
 
-        let mut printer = Printer::new();
+        let mut printer = Printer::new(false);
         let ret = run_opt_config(&mut printer, &opt, config.clone());
         assert_eq!(ret.unwrap(), pass_not_fail);
     }

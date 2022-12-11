@@ -3,7 +3,7 @@ use anyhow::{Context, Error};
 use colored::*;
 use std::cmp;
 use std::fs::File;
-use std::io::Read;
+use std::io::{Read, Write};
 use std::path::Path;
 use term::{self, color, StdoutTerminal};
 
@@ -33,6 +33,11 @@ enum Color {
     Reset,
 }
 
+enum TermCapture<C, N> {
+    Capturable(C),
+    Noncapturable(N),
+}
+
 // -------------------------------------------------------------------------------------------------
 // Printer
 // -------------------------------------------------------------------------------------------------
@@ -41,66 +46,78 @@ static CHAR_CR: u8 = 0x0d;
 static CHAR_LF: u8 = 0x0a;
 
 pub struct Printer {
-    term: Option<Box<StdoutTerminal>>,
+    term: TermCapture<Vec<u8>, Option<Box<StdoutTerminal>>>,
 }
 
 impl Printer {
     #[cfg_attr(tarpaulin, skip)]
-    pub fn new() -> Printer {
+    pub fn new(capturable: bool) -> Printer {
         Printer {
-            term: term::stdout(),
+            term: if capturable {
+                TermCapture::Capturable(Vec::new())
+            } else {
+                TermCapture::Noncapturable(term::stdout())
+            },
         }
     }
 
     #[cfg_attr(tarpaulin, skip)]
     fn write(&mut self, dat: &str, color: Color) {
-        if let Some(ref mut term) = self.term {
-            let term_color = match color {
-                Color::Black => color::BLACK,
-                Color::Red => color::RED,
-                Color::Green => color::GREEN,
-                Color::Yellow => color::YELLOW,
-                Color::Blue => color::BLUE,
-                Color::Magenta => color::MAGENTA,
-                Color::Cyan => color::CYAN,
-                Color::White => color::WHITE,
-                Color::BrightBlack => color::BRIGHT_BLACK,
-                Color::BrightRed => color::BRIGHT_RED,
-                Color::BrightGreen => color::BRIGHT_GREEN,
-                Color::BrightYellow => color::BRIGHT_YELLOW,
-                Color::BrightBlue => color::BRIGHT_BLUE,
-                Color::BrightMagenta => color::BRIGHT_MAGENTA,
-                Color::BrightCyan => color::BRIGHT_CYAN,
-                Color::BrightWhite => color::BRIGHT_WHITE,
-                Color::Reset => color::BLACK,
-            };
-            if color == Color::Reset {
-                let _ = term.reset();
-            } else {
-                let _ = term.fg(term_color);
+        match self.term {
+            TermCapture::Noncapturable(Some(ref mut term)) => {
+                let term_color = match color {
+                    Color::Black => color::BLACK,
+                    Color::Red => color::RED,
+                    Color::Green => color::GREEN,
+                    Color::Yellow => color::YELLOW,
+                    Color::Blue => color::BLUE,
+                    Color::Magenta => color::MAGENTA,
+                    Color::Cyan => color::CYAN,
+                    Color::White => color::WHITE,
+                    Color::BrightBlack => color::BRIGHT_BLACK,
+                    Color::BrightRed => color::BRIGHT_RED,
+                    Color::BrightGreen => color::BRIGHT_GREEN,
+                    Color::BrightYellow => color::BRIGHT_YELLOW,
+                    Color::BrightBlue => color::BRIGHT_BLUE,
+                    Color::BrightMagenta => color::BRIGHT_MAGENTA,
+                    Color::BrightCyan => color::BRIGHT_CYAN,
+                    Color::BrightWhite => color::BRIGHT_WHITE,
+                    Color::Reset => color::BLACK,
+                };
+                if color == Color::Reset {
+                    let _ = term.reset();
+                } else {
+                    let _ = term.fg(term_color);
+                }
+                let _ = write!(term, "{}", dat);
             }
-            let _ = write!(term, "{}", dat);
-        } else {
-            let colored = match color {
-                Color::Black => dat.black(),
-                Color::Red => dat.red(),
-                Color::Green => dat.green(),
-                Color::Yellow => dat.yellow(),
-                Color::Blue => dat.blue(),
-                Color::Magenta => dat.magenta(),
-                Color::Cyan => dat.cyan(),
-                Color::White => dat.white(),
-                Color::BrightBlack => dat.bright_black(),
-                Color::BrightRed => dat.bright_red(),
-                Color::BrightGreen => dat.bright_green(),
-                Color::BrightYellow => dat.bright_yellow(),
-                Color::BrightBlue => dat.bright_blue(),
-                Color::BrightMagenta => dat.bright_magenta(),
-                Color::BrightCyan => dat.bright_cyan(),
-                Color::BrightWhite => dat.bright_white(),
-                Color::Reset => dat.clear(),
-            };
-            print!("{}", colored);
+            TermCapture::Noncapturable(None) => {
+                let colored = match color {
+                    Color::Black => dat.black(),
+                    Color::Red => dat.red(),
+                    Color::Green => dat.green(),
+                    Color::Yellow => dat.yellow(),
+                    Color::Blue => dat.blue(),
+                    Color::Magenta => dat.magenta(),
+                    Color::Cyan => dat.cyan(),
+                    Color::White => dat.white(),
+                    Color::BrightBlack => dat.bright_black(),
+                    Color::BrightRed => dat.bright_red(),
+                    Color::BrightGreen => dat.bright_green(),
+                    Color::BrightYellow => dat.bright_yellow(),
+                    Color::BrightBlue => dat.bright_blue(),
+                    Color::BrightMagenta => dat.bright_magenta(),
+                    Color::BrightCyan => dat.bright_cyan(),
+                    Color::BrightWhite => dat.bright_white(),
+                    Color::Reset => dat.clear(),
+                };
+                print!("{}", colored);
+            }
+            TermCapture::Capturable(ref mut buf) => {
+                // NOTE: Capturable terminal is only for unit testability,
+                // but no checks are made on color.
+                let _ = write!(buf, "{}", dat);
+            }
         }
     }
 
