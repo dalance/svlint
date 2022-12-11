@@ -419,6 +419,13 @@ impl Printer {
         Ok(())
     }
 
+    #[cfg_attr(tarpaulin, skip)]
+    pub fn println(&mut self, line: &str) -> Result<(), Error> {
+        self.write(line, Color::Reset);
+        self.write("\n", Color::Reset);
+        Ok(())
+    }
+
     //#[cfg_attr(tarpaulin, skip)]
     //fn print_summary(
     //    &mut self,

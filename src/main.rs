@@ -208,7 +208,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         for filelist in &opt.filelist {
             let (mut f, mut i, d) = parse_filelist(filelist)?;
             if opt.dump_filelist {
-                dump_filelist(&filelist, &f, &i, &d);
+                dump_filelist(&mut printer, &filelist, &f, &i, &d);
             }
             files.append(&mut f);
             includes.append(&mut i);
@@ -223,7 +223,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
     };
 
     if opt.dump_filelist {
-        dump_filelist(&Path::new("."), &files, &includes, &defines);
+        dump_filelist(&mut printer, &Path::new("."), &files, &includes, &defines);
         return Ok(true);
     }
 
@@ -371,30 +371,31 @@ fn parse_filelist(
 }
 
 fn dump_filelist(
+    printer: &mut Printer,
     filename: &Path,
     files: &Vec<PathBuf>,
     incdirs: &Vec<PathBuf>,
     defines: &HashMap<String, Option<Define>>,
 ) -> () {
-    println!("{:?}:", filename);
+    printer.println(format!("{:?}:", filename).as_str());
 
-    println!("  files:");
+    printer.println(format!("  files:").as_str());
     for f in files {
-        println!("    - {:?}", f);
+        printer.println(format!("    - {:?}", f).as_str());
     }
 
-    println!("  incdirs:");
+    printer.println(format!("  incdirs:").as_str());
     for i in incdirs {
-        println!("    - {:?}", i);
+        printer.println(format!("    - {:?}", i).as_str());
     }
 
-    println!("  defines:");
+    printer.println(format!("  defines:").as_str());
     for (k, v) in defines {
         match v {
-            None => println!("    {:?}:", k),
+            None => printer.println(format!("    {:?}:", k).as_str()),
             Some(define) => match &define.text {
-                Some(definetext) => println!("    {:?}: {:?}", k, definetext.text),
-                None => println!("    {:?}:", k),
+                Some(definetext) => printer.println(format!("    {:?}: {:?}", k, definetext.text).as_str()),
+                None => printer.println(format!("    {:?}:", k).as_str()),
             },
         };
     }
