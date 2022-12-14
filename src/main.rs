@@ -462,5 +462,79 @@ mod tests {
 
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
 
-    // TODO: Tests for --dump-filelist
+    #[test]
+    fn dump_filelist_1() {
+        let config: Config = toml::from_str("").unwrap();
+
+        // Files, not filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist");
+        let f_1 = Path::new("foo").join("bar").join("one.sv");
+        let f_2 = Path::new("foo").join("bar").join("two.sv");
+        args.push(f_1.to_str().unwrap());
+        args.push(f_2.to_str().unwrap());
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+		let stdout = printer.read_to_string().unwrap();
+        assert_eq!(
+            stdout,
+            testfile_contents("expected/dump_filelist_1")
+        );
+    }
+
+    #[test]
+    fn dump_filelist_2() {
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single flat filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist");
+        args.push("--filelist");
+        let f_1 = testfile_path("resources/child1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+		let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+		let stdout = printer.read_to_string().unwrap()
+			.replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
+        assert_eq!(
+            stdout,
+            testfile_contents("expected/dump_filelist_2")
+        );
+    }
+
+    #[test]
+    fn dump_filelist_3() {
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single non-flat filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist");
+        args.push("--filelist");
+        let f_1 = testfile_path("resources/parent1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+		let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+		let stdout = printer.read_to_string().unwrap()
+			.replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
+        assert_eq!(
+            stdout,
+            testfile_contents("expected/dump_filelist_3")
+        );
+    }
+
+    // TODO: Multiple filelists.
 }
