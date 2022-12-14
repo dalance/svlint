@@ -3,7 +3,7 @@ use clap::Parser;
 use enquote;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
-use std::io::{Read, Write};
+use std::io::{BufReader, Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use sv_filelist_parser;
@@ -421,6 +421,25 @@ fn dump_filelist(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn testfile_path(s: &str) -> String {
+        format!(
+            "{}/testcases/{}",
+            env::var("CARGO_MANIFEST_DIR").unwrap(),
+            s
+        )
+    }
+
+    fn testfile_contents(s: &str) -> String {
+        let path: String = testfile_path(s);
+
+        let file = File::open(path).unwrap();
+        let mut buf_reader = BufReader::new(file);
+        let mut contents = String::new();
+        buf_reader.read_to_string(&mut contents).unwrap();
+
+        contents
+    }
 
     fn test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
         let s = format!("[rules]\n{} = true", rulename);
