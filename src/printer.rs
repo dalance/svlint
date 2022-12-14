@@ -61,6 +61,13 @@ impl Printer {
         }
     }
 
+    pub fn read_to_string(&self) -> Option<String> {
+        match self.term {
+            TermCapture::Capturable(ref buf) => Some(String::from_utf8_lossy(buf).to_string()),
+            _ => None
+        }
+    }
+
     #[cfg_attr(tarpaulin, skip)]
     fn write(&mut self, dat: &str, color: Color) {
         match self.term {
