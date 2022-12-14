@@ -401,10 +401,10 @@ fn dump_filelist(
     }
 
     printer.println(&format!("  defines:"))?;
-	let mut keys: Vec<&String> = defines.keys().collect();
-	keys.sort_unstable();
+    let mut keys: Vec<&String> = defines.keys().collect();
+    keys.sort_unstable();
     for k in keys {
-		let v = defines.get(k).unwrap();
+        let v = defines.get(k).unwrap();
 
         match v {
             None => printer.println(&format!("    {:?}:", k)),
@@ -479,7 +479,7 @@ mod tests {
         let ret = run_opt_config(&mut printer, &opt, config.clone());
         assert_eq!(ret.unwrap(), true);
 
-		let stdout = printer.read_to_string().unwrap();
+        let stdout = printer.read_to_string().unwrap();
         assert_eq!(
             stdout,
             testfile_contents("expected/dump_filelist_1")
@@ -502,9 +502,9 @@ mod tests {
         let ret = run_opt_config(&mut printer, &opt, config.clone());
         assert_eq!(ret.unwrap(), true);
 
-		let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-		let stdout = printer.read_to_string().unwrap()
-			.replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
+        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let stdout = printer.read_to_string().unwrap()
+            .replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
         assert_eq!(
             stdout,
             testfile_contents("expected/dump_filelist_2")
@@ -527,9 +527,9 @@ mod tests {
         let ret = run_opt_config(&mut printer, &opt, config.clone());
         assert_eq!(ret.unwrap(), true);
 
-		let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-		let stdout = printer.read_to_string().unwrap()
-			.replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
+        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let stdout = printer.read_to_string().unwrap()
+            .replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
         assert_eq!(
             stdout,
             testfile_contents("expected/dump_filelist_3")
