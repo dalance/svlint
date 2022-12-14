@@ -401,7 +401,11 @@ fn dump_filelist(
     }
 
     printer.println(&format!("  defines:"))?;
-    for (k, v) in defines {
+	let mut keys: Vec<&String> = defines.keys().collect();
+	keys.sort_unstable();
+    for k in keys {
+		let v = defines.get(k).unwrap();
+
         match v {
             None => printer.println(&format!("    {:?}:", k)),
             Some(define) => match &define.text {
