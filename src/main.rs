@@ -463,7 +463,7 @@ mod tests {
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
 
     #[test]
-    fn dump_filelist_1() {
+    fn dump_filelist_1() { // {{{
         let config: Config = toml::from_str("").unwrap();
 
         // Files, not filelist.
@@ -484,10 +484,10 @@ mod tests {
             stdout,
             testfile_contents("expected/dump_filelist_1")
         );
-    }
+    } // }}}
 
     #[test]
-    fn dump_filelist_2() {
+    fn dump_filelist_2() { // {{{
         let config: Config = toml::from_str("").unwrap();
 
         // Single flat filelist.
@@ -509,10 +509,10 @@ mod tests {
             stdout,
             testfile_contents("expected/dump_filelist_2")
         );
-    }
+    } // }}}
 
     #[test]
-    fn dump_filelist_3() {
+    fn dump_filelist_3() { // {{{
         let config: Config = toml::from_str("").unwrap();
 
         // Single non-flat filelist.
@@ -534,7 +534,60 @@ mod tests {
             stdout,
             testfile_contents("expected/dump_filelist_3")
         );
-    }
+    } // }}}
 
-    // TODO: Multiple filelists.
+    #[test]
+    fn dump_filelist_4() { // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Muliple filelists.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist");
+        args.push("--filelist");
+        let f_1 = testfile_path("resources/child1.fl");
+        args.push(&f_1);
+        args.push("--filelist");
+        let f_2 = testfile_path("resources/child2.fl");
+        args.push(&f_2);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let stdout = printer.read_to_string().unwrap()
+            .replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
+        println!("{}", stdout);
+        assert_eq!(
+            stdout,
+            testfile_contents("expected/dump_filelist_4")
+        );
+    } // }}}
+
+    #[test]
+    fn dump_filelist_5() { // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single deeper filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist");
+        args.push("--filelist");
+        let f_1 = testfile_path("resources/grandparent1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let stdout = printer.read_to_string().unwrap()
+            .replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
+        println!("{}", stdout);
+        assert_eq!(
+            stdout,
+            testfile_contents("expected/dump_filelist_5")
+        );
+    } // }}}
 }
