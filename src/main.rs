@@ -421,24 +421,60 @@ fn dump_filelist(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use regex::Regex;
 
-    fn testfile_path(s: &str) -> String {
-        format!(
-            "{}/testcases/{}",
-            env::var("CARGO_MANIFEST_DIR").unwrap(),
-            s
-        )
+    fn resources_path(s: &str) -> String {
+        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let path = Path::new(cargo_manifest_dir.as_str())
+            .join("testcases")
+            .join("resources")
+            .join(s);
+
+        String::from(path.to_str().unwrap())
     }
 
-    fn testfile_contents(s: &str) -> String {
-        let path: String = testfile_path(s);
+    // Take contents from a file in `testcases/expected/` and convert them to
+    // the platform-specific format given on stdout.
+    // On Unix, return the files contents (mostly) unchanged.
+    // On Windows, change runtime paths, i.e. anything beginning with
+    // `$CARGO_MANIFEST_DIR`, to the Unix equivalent and replace Windows line
+    // endings (CRLF) with Unix line endings (LF).
+    fn expected_contents(s: &str) -> String {
+        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let path = Path::new(cargo_manifest_dir.as_str())
+            .join("testcases")
+            .join("expected")
+            .join(s);
 
         let file = File::open(path).unwrap();
         let mut buf_reader = BufReader::new(file);
         let mut contents = String::new();
         buf_reader.read_to_string(&mut contents).unwrap();
 
-        contents
+        if cfg!(windows) {
+            // 1. CRLF -> LF
+            let ret = contents.replace("\r\n", "\n");
+
+            // 2. "$CARGO_MANIFEST_DIR/foo/bar.baz" -> "$CARGO_MANIFEST_DIR\\foo\\bar.baz"
+            let expected_paths = Regex::new(r"\$CARGO_MANIFEST_DIR[a-zA-Z0-9_/]+").unwrap();
+            let mut r = ret.clone();
+            for cap in expected_paths.captures_iter(&ret) {
+                let expected_path = &cap[0];
+                let runtime_path = expected_path.replace("/", "\\\\");
+                r = r.replace(expected_path, &runtime_path);
+            }
+            let ret: String = r;
+
+            // 3. "$CARGO_MANIFEST_DIR\\foo\\bar.baz" -> "C:\\path\\svlint\\foo\\bar.baz"
+            let cargo_manifest_dir: String = cargo_manifest_dir
+                .escape_default()
+                .to_string();
+            let ret = ret.replace("$CARGO_MANIFEST_DIR", cargo_manifest_dir.as_str());
+
+            ret
+        } else {
+            contents.replace("$CARGO_MANIFEST_DIR", cargo_manifest_dir.as_str())
+        }
     }
 
     fn test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
@@ -469,10 +505,8 @@ mod tests {
         // Files, not filelist.
         let mut args = vec!["svlint"];
         args.push("--dump-filelist");
-        let f_1 = Path::new("foo").join("bar").join("one.sv");
-        let f_2 = Path::new("foo").join("bar").join("two.sv");
-        args.push(f_1.to_str().unwrap());
-        args.push(f_2.to_str().unwrap());
+        args.push("foo/bar/one.sv");
+        args.push("foo/bar/two.sv");
         let opt = Opt::parse_from(args.iter());
 
         let mut printer = Printer::new(true);
@@ -482,7 +516,7 @@ mod tests {
         let stdout = printer.read_to_string().unwrap();
         assert_eq!(
             stdout,
-            testfile_contents("expected/dump_filelist_1")
+            expected_contents("dump_filelist_1")
         );
     } // }}}
 
@@ -494,7 +528,7 @@ mod tests {
         let mut args = vec!["svlint"];
         args.push("--dump-filelist");
         args.push("--filelist");
-        let f_1 = testfile_path("resources/child1.fl");
+        let f_1 = resources_path("child1.fl");
         args.push(&f_1);
         let opt = Opt::parse_from(args.iter());
 
@@ -502,12 +536,10 @@ mod tests {
         let ret = run_opt_config(&mut printer, &opt, config.clone());
         assert_eq!(ret.unwrap(), true);
 
-        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-        let stdout = printer.read_to_string().unwrap()
-            .replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
+        let stdout = printer.read_to_string().unwrap();
         assert_eq!(
             stdout,
-            testfile_contents("expected/dump_filelist_2")
+            expected_contents("dump_filelist_2")
         );
     } // }}}
 
@@ -519,7 +551,7 @@ mod tests {
         let mut args = vec!["svlint"];
         args.push("--dump-filelist");
         args.push("--filelist");
-        let f_1 = testfile_path("resources/parent1.fl");
+        let f_1 = resources_path("parent1.fl");
         args.push(&f_1);
         let opt = Opt::parse_from(args.iter());
 
@@ -527,12 +559,10 @@ mod tests {
         let ret = run_opt_config(&mut printer, &opt, config.clone());
         assert_eq!(ret.unwrap(), true);
 
-        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-        let stdout = printer.read_to_string().unwrap()
-            .replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
+        let stdout = printer.read_to_string().unwrap();
         assert_eq!(
             stdout,
-            testfile_contents("expected/dump_filelist_3")
+            expected_contents("dump_filelist_3")
         );
     } // }}}
 
@@ -544,10 +574,10 @@ mod tests {
         let mut args = vec!["svlint"];
         args.push("--dump-filelist");
         args.push("--filelist");
-        let f_1 = testfile_path("resources/child1.fl");
+        let f_1 = resources_path("child1.fl");
         args.push(&f_1);
         args.push("--filelist");
-        let f_2 = testfile_path("resources/child2.fl");
+        let f_2 = resources_path("child2.fl");
         args.push(&f_2);
         let opt = Opt::parse_from(args.iter());
 
@@ -555,13 +585,10 @@ mod tests {
         let ret = run_opt_config(&mut printer, &opt, config.clone());
         assert_eq!(ret.unwrap(), true);
 
-        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-        let stdout = printer.read_to_string().unwrap()
-            .replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
-        println!("{}", stdout);
+        let stdout = printer.read_to_string().unwrap();
         assert_eq!(
             stdout,
-            testfile_contents("expected/dump_filelist_4")
+            expected_contents("dump_filelist_4")
         );
     } // }}}
 
@@ -573,7 +600,7 @@ mod tests {
         let mut args = vec!["svlint"];
         args.push("--dump-filelist");
         args.push("--filelist");
-        let f_1 = testfile_path("resources/grandparent1.fl");
+        let f_1 = resources_path("grandparent1.fl");
         args.push(&f_1);
         let opt = Opt::parse_from(args.iter());
 
@@ -581,13 +608,10 @@ mod tests {
         let ret = run_opt_config(&mut printer, &opt, config.clone());
         assert_eq!(ret.unwrap(), true);
 
-        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-        let stdout = printer.read_to_string().unwrap()
-            .replace(cargo_manifest_dir.as_str(), "$CARGO_MANIFEST_DIR");
-        println!("{}", stdout);
+        let stdout = printer.read_to_string().unwrap();
         assert_eq!(
             stdout,
-            testfile_contents("expected/dump_filelist_5")
+            expected_contents("dump_filelist_5")
         );
     } // }}}
 }
