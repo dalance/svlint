@@ -16,6 +16,3 @@ See also:
   - **prefix_input** - Suggested companion rule.
   - **prefix_output** - Suggested companion rule.
   - <https://en.wikipedia.org/wiki/Reference_designator>
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.

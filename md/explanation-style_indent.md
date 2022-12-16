@@ -5,6 +5,3 @@ followed by an integer multiple of 2 (configurable) space characters.
 
 See also:
   - **tab_character** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.

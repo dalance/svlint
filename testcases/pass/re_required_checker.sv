@@ -1,0 +1,2 @@
+checker mn3; // Identifier matches default required regex (lowercase).
+endchecker
