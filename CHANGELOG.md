@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.6.0...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.6.1...Unreleased) - ReleaseDate
+
+## [v0.6.1](https://github.com/dalance/svlint/compare/v0.6.0...v0.6.1) - 2022-12-16
 
 * [Changed] Distinguish between parse/preprocess errors. Bump sv-parser. [#196](https://github.com/dalance/svlint/pull/196)
 * [Added] New Rule: action_block_with_side_effect [#203](https://github.com/dalance/svlint/pull/203)
