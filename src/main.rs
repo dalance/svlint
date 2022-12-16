@@ -3,7 +3,7 @@ use clap::Parser;
 use enquote;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
-use std::io::{BufReader, Read, Write};
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use sv_filelist_parser;
@@ -127,10 +127,7 @@ pub fn main() {
 }
 
 #[cfg_attr(tarpaulin, skip)]
-pub fn run_opt(
-    printer: &mut Printer,
-    opt: &Opt,
-) -> Result<bool, Error> {
+pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
     if opt.example {
         let config = Config::new();
         let config = format!("{}", toml::to_string(&config).unwrap());
@@ -175,11 +172,7 @@ pub fn run_opt(
 }
 
 #[cfg_attr(tarpaulin, skip)]
-pub fn run_opt_config(
-    printer: &mut Printer,
-    opt: &Opt,
-    config: Config,
-) -> Result<bool, Error> {
+pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Result<bool, Error> {
     let mut not_obsolete = true;
     for (org_rule, renamed_rule) in config.check_rename() {
         let msg = format!(
@@ -321,10 +314,7 @@ fn print_parser_error(
 }
 
 #[cfg_attr(tarpaulin, skip)]
-fn search_config(
-    printer: &mut Printer,
-    config: &Path,
-) -> Option<PathBuf> {
+fn search_config(printer: &mut Printer, config: &Path) -> Option<PathBuf> {
     if let Ok(c) = env::var("SVLINT_CONFIG") {
         let candidate = Path::new(&c);
         if candidate.exists() {
@@ -422,6 +412,7 @@ fn dump_filelist(
 mod tests {
     use super::*;
     use regex::Regex;
+    use std::io::BufReader;
 
     fn resources_path(s: &str) -> String {
         let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
@@ -466,9 +457,7 @@ mod tests {
             let ret: String = r;
 
             // 3. "$CARGO_MANIFEST_DIR\\foo\\bar.baz" -> "C:\\path\\svlint\\foo\\bar.baz"
-            let cargo_manifest_dir: String = cargo_manifest_dir
-                .escape_default()
-                .to_string();
+            let cargo_manifest_dir: String = cargo_manifest_dir.escape_default().to_string();
             let ret = ret.replace("$CARGO_MANIFEST_DIR", cargo_manifest_dir.as_str());
 
             ret
@@ -499,7 +488,8 @@ mod tests {
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
 
     #[test]
-    fn dump_filelist_1() { // {{{
+    fn dump_filelist_1() {
+        // {{{
         let config: Config = toml::from_str("").unwrap();
 
         // Files, not filelist.
@@ -514,14 +504,12 @@ mod tests {
         assert_eq!(ret.unwrap(), true);
 
         let stdout = printer.read_to_string().unwrap();
-        assert_eq!(
-            stdout,
-            expected_contents("dump_filelist_1")
-        );
+        assert_eq!(stdout, expected_contents("dump_filelist_1"));
     } // }}}
 
     #[test]
-    fn dump_filelist_2() { // {{{
+    fn dump_filelist_2() {
+        // {{{
         let config: Config = toml::from_str("").unwrap();
 
         // Single flat filelist.
@@ -537,14 +525,12 @@ mod tests {
         assert_eq!(ret.unwrap(), true);
 
         let stdout = printer.read_to_string().unwrap();
-        assert_eq!(
-            stdout,
-            expected_contents("dump_filelist_2")
-        );
+        assert_eq!(stdout, expected_contents("dump_filelist_2"));
     } // }}}
 
     #[test]
-    fn dump_filelist_3() { // {{{
+    fn dump_filelist_3() {
+        // {{{
         let config: Config = toml::from_str("").unwrap();
 
         // Single non-flat filelist.
@@ -560,14 +546,12 @@ mod tests {
         assert_eq!(ret.unwrap(), true);
 
         let stdout = printer.read_to_string().unwrap();
-        assert_eq!(
-            stdout,
-            expected_contents("dump_filelist_3")
-        );
+        assert_eq!(stdout, expected_contents("dump_filelist_3"));
     } // }}}
 
     #[test]
-    fn dump_filelist_4() { // {{{
+    fn dump_filelist_4() {
+        // {{{
         let config: Config = toml::from_str("").unwrap();
 
         // Muliple filelists.
@@ -586,14 +570,12 @@ mod tests {
         assert_eq!(ret.unwrap(), true);
 
         let stdout = printer.read_to_string().unwrap();
-        assert_eq!(
-            stdout,
-            expected_contents("dump_filelist_4")
-        );
+        assert_eq!(stdout, expected_contents("dump_filelist_4"));
     } // }}}
 
     #[test]
-    fn dump_filelist_5() { // {{{
+    fn dump_filelist_5() {
+        // {{{
         let config: Config = toml::from_str("").unwrap();
 
         // Single deeper filelist.
@@ -609,9 +591,6 @@ mod tests {
         assert_eq!(ret.unwrap(), true);
 
         let stdout = printer.read_to_string().unwrap();
-        assert_eq!(
-            stdout,
-            expected_contents("dump_filelist_5")
-        );
+        assert_eq!(stdout, expected_contents("dump_filelist_5"));
     } // }}}
 }

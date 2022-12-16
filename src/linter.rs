@@ -197,7 +197,8 @@ pub fn check_regex(
     let loc: &Locate = match id {
         Some(x) => unwrap_locate!(x),
         _ => None,
-    }.unwrap();
+    }
+    .unwrap();
 
     let is_match: bool = re.is_match(syntax_tree.get_str(loc).unwrap());
 

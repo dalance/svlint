@@ -64,7 +64,7 @@ impl Printer {
     pub fn read_to_string(&self) -> Option<String> {
         match self.term {
             TermCapture::Capturable(ref buf) => Some(String::from_utf8_lossy(buf).to_string()),
-            _ => None
+            _ => None,
         }
     }
 
@@ -402,7 +402,16 @@ impl Printer {
         if single {
             self.print_single(&s, error_pos, "Error", path, Some("preprocess error"));
         } else {
-            self.print_pretty(&s, error_pos, 1, "Error", "preprocess error", path, None, None);
+            self.print_pretty(
+                &s,
+                error_pos,
+                1,
+                "Error",
+                "preprocess error",
+                path,
+                None,
+                None,
+            );
         }
         Ok(())
     }

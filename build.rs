@@ -1,7 +1,7 @@
 use regex::Regex;
 use std::env;
 use std::fs::File;
-use std::io::{BufReader, BufRead, Read, Write};
+use std::io::{BufRead, BufReader, Read, Write};
 use std::path::Path;
 use walkdir::WalkDir;
 
@@ -96,7 +96,10 @@ fn write_config_rules_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "");
 
     for (original_rulename, _, _) in RENAMED_RULES {
-        let _ = writeln!(o, "    #[serde(default = \"default_as_false\", skip_serializing)]");
+        let _ = writeln!(
+            o,
+            "    #[serde(default = \"default_as_false\", skip_serializing)]"
+        );
         let _ = writeln!(o, "    pub {}: bool,", original_rulename);
     }
 
@@ -114,7 +117,6 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "        toml::from_str(\"\").unwrap()");
     let _ = writeln!(o, "    }}");
 
-
     let _ = writeln!(o, "");
     let _ = writeln!(o, "    pub fn enable_all(mut self) -> Self {{");
     for (rulename, _) in rules {
@@ -124,24 +126,30 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "        self");
     let _ = writeln!(o, "    }}");
 
-
     let _ = writeln!(o, "");
     let _ = writeln!(o, "    pub fn gen_rules(&self) -> Vec<Box<dyn Rule>> {{");
     let _ = writeln!(o, "        let mut ret: Vec<Box<dyn Rule>> = Vec::new();");
     for (rulename, structname) in rules {
         let _ = writeln!(o, "        if self.rules.{} {{", rulename);
-        let _ = writeln!(o, "            ret.push(Box::new({}::default()));", structname);
+        let _ = writeln!(
+            o,
+            "            ret.push(Box::new({}::default()));",
+            structname
+        );
         let _ = writeln!(o, "        }}");
     }
     for (original_rulename, _, structname) in RENAMED_RULES {
         let _ = writeln!(o, "        if self.rules.{} {{", original_rulename);
-        let _ = writeln!(o, "            ret.push(Box::new({}::default()));", structname);
+        let _ = writeln!(
+            o,
+            "            ret.push(Box::new({}::default()));",
+            structname
+        );
         let _ = writeln!(o, "        }}");
     }
     let _ = writeln!(o, "");
     let _ = writeln!(o, "        ret");
     let _ = writeln!(o, "    }}");
-
 
     let _ = writeln!(o, "");
     let _ = writeln!(o, "    pub fn gen_all_rules() -> Vec<Box<dyn Rule>> {{");
@@ -153,24 +161,36 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "        ret");
     let _ = writeln!(o, "    }}");
 
-
     let _ = writeln!(o, "");
-    let _ = writeln!(o, "    pub fn check_rename(&self) -> Vec<(String, String)> {{");
-    let _ = writeln!(o, "        let mut ret: Vec<(String, String)> = Vec::new();");
+    let _ = writeln!(
+        o,
+        "    pub fn check_rename(&self) -> Vec<(String, String)> {{"
+    );
+    let _ = writeln!(
+        o,
+        "        let mut ret: Vec<(String, String)> = Vec::new();"
+    );
     for (original_rulename, rulename, _) in RENAMED_RULES {
         let _ = writeln!(o, "        if self.rules.{} {{", original_rulename);
-        let _ = writeln!(o, "            ret.push((String::from(\"{}\"), String::from(\"{}\")));", original_rulename, rulename);
+        let _ = writeln!(
+            o,
+            "            ret.push((String::from(\"{}\"), String::from(\"{}\")));",
+            original_rulename, rulename
+        );
         let _ = writeln!(o, "        }}");
     }
     let _ = writeln!(o, "");
     let _ = writeln!(o, "        ret");
     let _ = writeln!(o, "    }}");
 
-
     let _ = writeln!(o, "");
     let _ = writeln!(o, "    pub fn migrate(&mut self) {{");
     for (original_rulename, rulename, _) in RENAMED_RULES {
-        let _ = writeln!(o, "        self.rules.{} = self.rules.{};", rulename, original_rulename);
+        let _ = writeln!(
+            o,
+            "        self.rules.{} = self.rules.{};",
+            rulename, original_rulename
+        );
     }
     let _ = writeln!(o, "    }}");
 
@@ -194,11 +214,7 @@ fn write_test_rs(rules: &Vec<(String, String)>) -> () {
         };
 
         for pass_not_fail in [true, false].iter() {
-            let passfail = if *pass_not_fail {
-                "pass"
-            } else {
-                "fail"
-            };
+            let passfail = if *pass_not_fail { "pass" } else { "fail" };
 
             let test_filename = format!("testcases/{}/{}.sv", passfail, rulename);
             let lines = BufReader::new(File::open(test_filename).unwrap())
@@ -213,10 +229,7 @@ fn write_test_rs(rules: &Vec<(String, String)>) -> () {
                 .collect();
             let n_testcases: usize = testcases.len();
 
-            for (t, testcase) in testcases
-                .into_iter()
-                .enumerate()
-                .map(|(i, x)| (i + 1, x)) {
+            for (t, testcase) in testcases.into_iter().enumerate().map(|(i, x)| (i + 1, x)) {
                 // Write subtest to its own file.
                 let subtest_path = Path::new(&out_dir)
                     .join(format!("{rulename}.{passfail}.{t}of{n_testcases}.sv"));
@@ -230,13 +243,21 @@ fn write_test_rs(rules: &Vec<(String, String)>) -> () {
                 let _ = writeln!(o, "#[test]");
                 let _ = writeln!(o, "fn {}() {{", subtest_name);
                 if *pass_not_fail {
-                    let _ = writeln!(o, "    test(\"{rulename}\", {subtest_path:?}, true, {silent}, false);");
+                    let _ = writeln!(
+                        o,
+                        "    test(\"{rulename}\", {subtest_path:?}, true, {silent}, false);"
+                    );
                 } else {
-                    let _ = writeln!(o, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, false);");
-                    let _ = writeln!(o, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, true);");
+                    let _ = writeln!(
+                        o,
+                        "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, false);"
+                    );
+                    let _ = writeln!(
+                        o,
+                        "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, true);"
+                    );
                 }
                 let _ = writeln!(o, "}}");
-
             }
         }
     }
