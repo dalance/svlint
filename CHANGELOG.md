@@ -2,6 +2,17 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.6.0...Unreleased) - ReleaseDate
 
+* [Changed] Distinguish between parse/preprocess errors. Bump sv-parser. [#196](https://github.com/dalance/svlint/pull/196)
+* [Added] New Rule: action_block_with_side_effect [#203](https://github.com/dalance/svlint/pull/203)
+* [Added] New Rule: parameter_in_generate, similar to existing rule parameter_in_package. [#202](https://github.com/dalance/svlint/pull/202)
+* [Added] New Rules: style_trailingwhitespace, style_operator_(arithmetic|boolean|integer|unary) [#201](https://github.com/dalance/svlint/pull/201)
+* [Added] New Option: --dump-syntaxtree [#204](https://github.com/dalance/svlint/pull/204)
+* [Changed] Improvement: Testcase consistency and split tests. [#205](https://github.com/dalance/svlint/pull/205)
+* [Changed] Improvement: Simplify build.rs [#212](https://github.com/dalance/svlint/pull/212)
+* [Fixed] Bugfix/Improvement: Unittests for --dump-filelist, and fix two bugs. [#214](https://github.com/dalance/svlint/pull/214)
+* [Fixed] Bugfix: Correct keyword regex used by style_keyword_*. [#213](https://github.com/dalance/svlint/pull/213)
+* [Added] New Rules: Regex Naming Convention [#195](https://github.com/dalance/svlint/pull/195)
+
 ## [v0.6.0](https://github.com/dalance/svlint/compare/v0.5.6...v0.6.0) - 2022-11-07
 
 * [Changed] Relax style rule on assign keyword. [#191](https://github.com/dalance/svlint/pull/191)
