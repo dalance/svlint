@@ -1,0 +1,32 @@
+"$CARGO_MANIFEST_DIR/testcases/resources/child1.fl":
+  files:
+    - "child1_file1.sv"
+    - "child1_file2.sv"
+    - "child1_file1.sv"
+  incdirs:
+    - "relative/path/to/directory"
+    - "/absolute/path/to/directory"
+  defines:
+    "$(VAR1)": "var1"
+    "$VAR3": "var3"
+    "${VAR2}": "var2"
+    "A": "a"
+    "B": "b"
+    "C": "c"
+    "VAR4":
+".":
+  files:
+    - "child1_file1.sv"
+    - "child1_file2.sv"
+    - "child1_file1.sv"
+  incdirs:
+    - "relative/path/to/directory"
+    - "/absolute/path/to/directory"
+  defines:
+    "$(VAR1)": "var1"
+    "$VAR3": "var3"
+    "${VAR2}": "var2"
+    "A": "a"
+    "B": "b"
+    "C": "c"
+    "VAR4":

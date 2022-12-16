@@ -1,0 +1,6 @@
+".":
+  files:
+    - "foo/bar/one.sv"
+    - "foo/bar/two.sv"
+  incdirs:
+  defines:

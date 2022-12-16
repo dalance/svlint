@@ -3,7 +3,7 @@ use clap::Parser;
 use enquote;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
-use std::io::{Read, Write};
+use std::io::{BufReader, Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use sv_filelist_parser;
@@ -108,7 +108,8 @@ pub struct Opt {
 #[cfg_attr(tarpaulin, skip)]
 pub fn main() {
     let opt = Parser::parse();
-    let exit_code = match run_opt(&opt) {
+    let mut printer = Printer::new(false);
+    let exit_code = match run_opt(&mut printer, &opt) {
         Ok(pass) => {
             if pass {
                 0
@@ -117,7 +118,6 @@ pub fn main() {
             }
         }
         Err(x) => {
-            let mut printer = Printer::new();
             let _ = printer.print_error_type(x);
             2
         }
@@ -127,14 +127,18 @@ pub fn main() {
 }
 
 #[cfg_attr(tarpaulin, skip)]
-pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
+pub fn run_opt(
+    printer: &mut Printer,
+    opt: &Opt,
+) -> Result<bool, Error> {
     if opt.example {
         let config = Config::new();
-        println!("{}", toml::to_string(&config).unwrap());
+        let config = format!("{}", toml::to_string(&config).unwrap());
+        printer.println(&config)?;
         return Ok(true);
     }
 
-    let config = search_config(&opt.config);
+    let config = search_config(printer, &opt.config);
 
     let config = if let Some(config) = config {
         let mut f = File::open(&config)
@@ -157,28 +161,32 @@ pub fn run_opt(opt: &Opt) -> Result<bool, Error> {
 
         ret
     } else {
-        if !opt.silent {
-            println!(
+        if !opt.silent && !opt.dump_filelist && !opt.preprocess_only {
+            let msg = format!(
                 "Config file '{}' is not found. Enable all rules",
                 opt.config.to_string_lossy()
             );
+            printer.print_warning(&msg)?;
         }
         Config::new().enable_all()
     };
 
-    run_opt_config(opt, config)
+    run_opt_config(printer, opt, config)
 }
 
 #[cfg_attr(tarpaulin, skip)]
-pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
-    let mut printer = Printer::new();
-
+pub fn run_opt_config(
+    printer: &mut Printer,
+    opt: &Opt,
+    config: Config,
+) -> Result<bool, Error> {
     let mut not_obsolete = true;
     for (org_rule, renamed_rule) in config.check_rename() {
-        printer.print_warning(&format!(
+        let msg = format!(
             "Rule \"{}\" is obsolete. Please rename to \"{}\"",
             org_rule, renamed_rule,
-        ))?;
+        );
+        printer.print_warning(&msg)?;
         not_obsolete = false;
     }
 
@@ -208,7 +216,7 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         for filelist in &opt.filelist {
             let (mut f, mut i, d) = parse_filelist(filelist)?;
             if opt.dump_filelist {
-                dump_filelist(&filelist, &f, &i, &d);
+                dump_filelist(printer, &filelist, &f, &i, &d)?;
             }
             files.append(&mut f);
             includes.append(&mut i);
@@ -216,15 +224,16 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                 defines.insert(k, v);
             }
         }
-        if opt.dump_filelist {
-            dump_filelist(&Path::new("."), &files, &includes, &defines);
-            return Ok(true);
-        }
 
         (files, includes)
     } else {
         (opt.files.clone(), opt.includes.clone())
     };
+
+    if opt.dump_filelist {
+        dump_filelist(printer, &Path::new("."), &files, &includes, &defines)?;
+        return Ok(true);
+    }
 
     let mut all_pass = true;
 
@@ -233,11 +242,12 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
         if opt.preprocess_only {
             match preprocess(&path, &defines, &includes, false, opt.ignore_include) {
                 Ok((text, new_defines)) => {
-                    print!("{}", text.text());
+                    let msg = format!("{}", text.text());
+                    printer.print(&msg)?;
                     defines = new_defines;
                 }
                 Err(x) => {
-                    print_parser_error(&mut printer, x, opt.single)?;
+                    print_parser_error(printer, x, opt.single)?;
                     pass = false;
                 }
             }
@@ -255,11 +265,12 @@ pub fn run_opt_config(opt: &Opt, config: Config) -> Result<bool, Error> {
                     defines = new_defines;
 
                     if opt.dump_syntaxtree {
-                        println!("{:?}", &syntax_tree);
+                        let msg = format!("{:?}", &syntax_tree);
+                        printer.println(&msg)?;
                     }
                 }
                 Err(x) => {
-                    print_parser_error(&mut printer, x, opt.single)?;
+                    print_parser_error(printer, x, opt.single)?;
                     pass = false;
                 }
             }
@@ -310,19 +321,20 @@ fn print_parser_error(
 }
 
 #[cfg_attr(tarpaulin, skip)]
-fn search_config(config: &Path) -> Option<PathBuf> {
+fn search_config(
+    printer: &mut Printer,
+    config: &Path,
+) -> Option<PathBuf> {
     if let Ok(c) = env::var("SVLINT_CONFIG") {
         let candidate = Path::new(&c);
         if candidate.exists() {
             return Some(candidate.to_path_buf());
         } else {
-            let mut printer = Printer::new();
-            printer
-                .print_warning(&format!(
-                    "SVLINT_CONFIG=\"{}\" does not exist. Searching hierarchically.",
-                    c,
-                ))
-                .ok()?;
+            let msg = format!(
+                "SVLINT_CONFIG=\"{}\" does not exist. Searching hierarchically.",
+                c,
+            );
+            printer.print_warning(&msg).ok()?;
         }
     }
 
@@ -370,38 +382,100 @@ fn parse_filelist(
 }
 
 fn dump_filelist(
+    printer: &mut Printer,
     filename: &Path,
     files: &Vec<PathBuf>,
     incdirs: &Vec<PathBuf>,
     defines: &HashMap<String, Option<Define>>,
-) -> () {
-    println!("{:?}:", filename);
+) -> Result<(), Error> {
+    printer.println(&format!("{:?}:", filename))?;
 
-    println!("  files:");
+    printer.println(&format!("  files:"))?;
     for f in files {
-        println!("    - {:?}", f);
+        printer.println(&format!("    - {:?}", f))?;
     }
 
-    println!("  incdirs:");
+    printer.println(&format!("  incdirs:"))?;
     for i in incdirs {
-        println!("    - {:?}", i);
+        printer.println(&format!("    - {:?}", i))?;
     }
 
-    println!("  defines:");
-    for (k, v) in defines {
+    printer.println(&format!("  defines:"))?;
+    let mut keys: Vec<&String> = defines.keys().collect();
+    keys.sort_unstable();
+    for k in keys {
+        let v = defines.get(k).unwrap();
+
         match v {
-            None => println!("    {:?}:", k),
+            None => printer.println(&format!("    {:?}:", k)),
             Some(define) => match &define.text {
-                Some(definetext) => println!("    {:?}: {:?}", k, definetext.text),
-                None => println!("    {:?}:", k),
+                Some(definetext) => printer.println(&format!("    {:?}: {:?}", k, definetext.text)),
+                None => printer.println(&format!("    {:?}:", k)),
             },
-        };
+        }?;
     }
+
+    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use regex::Regex;
+
+    fn resources_path(s: &str) -> String {
+        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let path = Path::new(cargo_manifest_dir.as_str())
+            .join("testcases")
+            .join("resources")
+            .join(s);
+
+        String::from(path.to_str().unwrap())
+    }
+
+    // Take contents from a file in `testcases/expected/` and convert them to
+    // the platform-specific format given on stdout.
+    // On Unix, return the files contents (mostly) unchanged.
+    // On Windows, change runtime paths, i.e. anything beginning with
+    // `$CARGO_MANIFEST_DIR`, to the Unix equivalent and replace Windows line
+    // endings (CRLF) with Unix line endings (LF).
+    fn expected_contents(s: &str) -> String {
+        let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let path = Path::new(cargo_manifest_dir.as_str())
+            .join("testcases")
+            .join("expected")
+            .join(s);
+
+        let file = File::open(path).unwrap();
+        let mut buf_reader = BufReader::new(file);
+        let mut contents = String::new();
+        buf_reader.read_to_string(&mut contents).unwrap();
+
+        if cfg!(windows) {
+            // 1. CRLF -> LF
+            let ret = contents.replace("\r\n", "\n");
+
+            // 2. "$CARGO_MANIFEST_DIR/foo/bar.baz" -> "$CARGO_MANIFEST_DIR\\foo\\bar.baz"
+            let expected_paths = Regex::new(r"\$CARGO_MANIFEST_DIR[a-zA-Z0-9_/]+").unwrap();
+            let mut r = ret.clone();
+            for cap in expected_paths.captures_iter(&ret) {
+                let expected_path = &cap[0];
+                let runtime_path = expected_path.replace("/", "\\\\");
+                r = r.replace(expected_path, &runtime_path);
+            }
+            let ret: String = r;
+
+            // 3. "$CARGO_MANIFEST_DIR\\foo\\bar.baz" -> "C:\\path\\svlint\\foo\\bar.baz"
+            let cargo_manifest_dir: String = cargo_manifest_dir
+                .escape_default()
+                .to_string();
+            let ret = ret.replace("$CARGO_MANIFEST_DIR", cargo_manifest_dir.as_str());
+
+            ret
+        } else {
+            contents.replace("$CARGO_MANIFEST_DIR", cargo_manifest_dir.as_str())
+        }
+    }
 
     fn test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
         let s = format!("[rules]\n{} = true", rulename);
@@ -417,9 +491,127 @@ mod tests {
         args.push(filename);
         let opt = Opt::parse_from(args.iter());
 
-        let ret = run_opt_config(&opt, config.clone());
+        let mut printer = Printer::new(false);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
         assert_eq!(ret.unwrap(), pass_not_fail);
     }
 
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
+
+    #[test]
+    fn dump_filelist_1() { // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Files, not filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist");
+        args.push("foo/bar/one.sv");
+        args.push("foo/bar/two.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(
+            stdout,
+            expected_contents("dump_filelist_1")
+        );
+    } // }}}
+
+    #[test]
+    fn dump_filelist_2() { // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single flat filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist");
+        args.push("--filelist");
+        let f_1 = resources_path("child1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(
+            stdout,
+            expected_contents("dump_filelist_2")
+        );
+    } // }}}
+
+    #[test]
+    fn dump_filelist_3() { // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single non-flat filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist");
+        args.push("--filelist");
+        let f_1 = resources_path("parent1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(
+            stdout,
+            expected_contents("dump_filelist_3")
+        );
+    } // }}}
+
+    #[test]
+    fn dump_filelist_4() { // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Muliple filelists.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist");
+        args.push("--filelist");
+        let f_1 = resources_path("child1.fl");
+        args.push(&f_1);
+        args.push("--filelist");
+        let f_2 = resources_path("child2.fl");
+        args.push(&f_2);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(
+            stdout,
+            expected_contents("dump_filelist_4")
+        );
+    } // }}}
+
+    #[test]
+    fn dump_filelist_5() { // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single deeper filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist");
+        args.push("--filelist");
+        let f_1 = resources_path("grandparent1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(
+            stdout,
+            expected_contents("dump_filelist_5")
+        );
+    } // }}}
 }
