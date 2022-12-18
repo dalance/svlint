@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Generate Markdown files
-        run: cargo run --bin mdgen
+        run: cargo run --bin=mdgen
       - name: Commit generated files
         uses: EndBug/add-and-commit@v9
         env:
