@@ -1,0 +1,14 @@
+// Some comment
+# Another comment
++incdir+relative/path/to/directory
++incdir+/absolute/path/to/directory
++define+A=a+B=b+C=c
++define+$(VAR1)=var1
++define+${VAR2}=var2
++define+$VAR3=var3
++define+VAR4
+child1_file1.sv
+child1_file2.sv
+
+# Repeat a filename.
+child1_file1.sv

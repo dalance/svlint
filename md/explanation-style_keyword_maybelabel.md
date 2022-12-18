@@ -49,6 +49,3 @@ See also:
   - **style_keyword_datatype** - Potential companion rule.
   - **style_keyword_end** - Suggested companion rule.
   - **style_keyword_newline** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.

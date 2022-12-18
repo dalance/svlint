@@ -186,3 +186,25 @@ impl Linter {
         ret
     }
 }
+
+// Utility function used by rules `re_(required|forbidden)_*`.
+pub fn check_regex(
+    required_not_forbidden: bool,
+    id: Option<RefNode>,
+    syntax_tree: &SyntaxTree,
+    re: &Regex,
+) -> RuleResult {
+    let loc: &Locate = match id {
+        Some(x) => unwrap_locate!(x),
+        _ => None,
+    }
+    .unwrap();
+
+    let is_match: bool = re.is_match(syntax_tree.get_str(loc).unwrap());
+
+    if is_match == required_not_forbidden {
+        RuleResult::Pass
+    } else {
+        RuleResult::Fail
+    }
+}

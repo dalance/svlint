@@ -1,7 +1,7 @@
 use regex::Regex;
 use std::env;
 use std::fs::File;
-use std::io::{BufReader, BufRead, Read, Write};
+use std::io::{BufRead, BufReader, Read, Write};
 use std::path::Path;
 use walkdir::WalkDir;
 
@@ -56,10 +56,214 @@ const RENAMED_RULES: &[(&str, &str, &str)] = &[
     ),
 ];
 
-fn main() {
+fn write_rules_rs(rules: &Vec<(String, String)>) -> () {
     let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let out_dir = env::var("OUT_DIR").unwrap();
 
+    let o = Path::new(&out_dir).join("rules.rs");
+    let mut o = File::create(&o).unwrap();
+
+    for (rulename, _) in rules {
+        let _ = writeln!(
+            o,
+            "#[path = \"{}/src/rules/{}.rs\"]",
+            root_dir.replace("\\", "\\\\"),
+            rulename
+        );
+        let _ = writeln!(o, "pub mod {};", rulename);
+    }
+
+    for (rulename, _) in rules {
+        let _ = writeln!(o, "pub use {}::*;", rulename);
+    }
+}
+
+fn write_config_rules_rs(rules: &Vec<(String, String)>) -> () {
+    let out_dir = env::var("OUT_DIR").unwrap();
+    let o = Path::new(&out_dir).join("config_rules.rs");
+    let mut o = File::create(&o).unwrap();
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "#[derive(Clone, Debug, Deserialize, Serialize)]");
+    let _ = writeln!(o, "#[serde(deny_unknown_fields)]");
+    let _ = writeln!(o, "pub struct ConfigRules {{");
+
+    for (rulename, _) in rules {
+        let _ = writeln!(o, "    #[serde(default = \"default_as_false\")]");
+        let _ = writeln!(o, "    pub {}: bool,", rulename);
+    }
+
+    let _ = writeln!(o, "");
+
+    for (original_rulename, _, _) in RENAMED_RULES {
+        let _ = writeln!(
+            o,
+            "    #[serde(default = \"default_as_false\", skip_serializing)]"
+        );
+        let _ = writeln!(o, "    pub {}: bool,", original_rulename);
+    }
+
+    let _ = writeln!(o, "}}");
+}
+
+fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
+    let out_dir = env::var("OUT_DIR").unwrap();
+    let o = Path::new(&out_dir).join("impl_config.rs");
+    let mut o = File::create(&o).unwrap();
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "impl Config {{");
+    let _ = writeln!(o, "    pub fn new() -> Self {{");
+    let _ = writeln!(o, "        toml::from_str(\"\").unwrap()");
+    let _ = writeln!(o, "    }}");
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "    pub fn enable_all(mut self) -> Self {{");
+    for (rulename, _) in rules {
+        let _ = writeln!(o, "        self.rules.{} = true;", rulename);
+    }
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "        self");
+    let _ = writeln!(o, "    }}");
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "    pub fn gen_rules(&self) -> Vec<Box<dyn Rule>> {{");
+    let _ = writeln!(o, "        let mut ret: Vec<Box<dyn Rule>> = Vec::new();");
+    for (rulename, structname) in rules {
+        let _ = writeln!(o, "        if self.rules.{} {{", rulename);
+        let _ = writeln!(
+            o,
+            "            ret.push(Box::new({}::default()));",
+            structname
+        );
+        let _ = writeln!(o, "        }}");
+    }
+    for (original_rulename, _, structname) in RENAMED_RULES {
+        let _ = writeln!(o, "        if self.rules.{} {{", original_rulename);
+        let _ = writeln!(
+            o,
+            "            ret.push(Box::new({}::default()));",
+            structname
+        );
+        let _ = writeln!(o, "        }}");
+    }
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "        ret");
+    let _ = writeln!(o, "    }}");
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "    pub fn gen_all_rules() -> Vec<Box<dyn Rule>> {{");
+    let _ = writeln!(o, "        let mut ret: Vec<Box<dyn Rule>> = Vec::new();");
+    for (_, structname) in rules {
+        let _ = writeln!(o, "        ret.push(Box::new({}::default()));", structname);
+    }
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "        ret");
+    let _ = writeln!(o, "    }}");
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(
+        o,
+        "    pub fn check_rename(&self) -> Vec<(String, String)> {{"
+    );
+    let _ = writeln!(
+        o,
+        "        let mut ret: Vec<(String, String)> = Vec::new();"
+    );
+    for (original_rulename, rulename, _) in RENAMED_RULES {
+        let _ = writeln!(o, "        if self.rules.{} {{", original_rulename);
+        let _ = writeln!(
+            o,
+            "            ret.push((String::from(\"{}\"), String::from(\"{}\")));",
+            original_rulename, rulename
+        );
+        let _ = writeln!(o, "        }}");
+    }
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "        ret");
+    let _ = writeln!(o, "    }}");
+
+    let _ = writeln!(o, "");
+    let _ = writeln!(o, "    pub fn migrate(&mut self) {{");
+    for (original_rulename, rulename, _) in RENAMED_RULES {
+        let _ = writeln!(
+            o,
+            "        self.rules.{} = self.rules.{};",
+            rulename, original_rulename
+        );
+    }
+    let _ = writeln!(o, "    }}");
+
+    let _ = writeln!(o, "}} // impl Config");
+}
+
+fn write_test_rs(rules: &Vec<(String, String)>) -> () {
+    let out_dir = env::var("OUT_DIR").unwrap();
+    let o = Path::new(&out_dir).join("test.rs");
+    let mut o = File::create(&o).unwrap();
+
+    // blocking_assignment_in_always_ff testcases demonstrate comment control,
+    // so visibility is useful when running `cargo test`.
+    let test_verbose = ["blocking_assignment_in_always_ff"];
+
+    for (rulename, _) in rules {
+        let silent = if test_verbose.contains(&rulename.as_str()) {
+            "false"
+        } else {
+            "true"
+        };
+
+        for pass_not_fail in [true, false].iter() {
+            let passfail = if *pass_not_fail { "pass" } else { "fail" };
+
+            let test_filename = format!("testcases/{}/{}.sv", passfail, rulename);
+            let lines = BufReader::new(File::open(test_filename).unwrap())
+                .lines()
+                .collect::<Result<Vec<_>, _>>()
+                .unwrap();
+
+            let sep = "/".repeat(80);
+            let testcases: Vec<&[String]> = lines
+                .as_slice()
+                .split(|l| l.contains(sep.as_str()))
+                .collect();
+            let n_testcases: usize = testcases.len();
+
+            for (t, testcase) in testcases.into_iter().enumerate().map(|(i, x)| (i + 1, x)) {
+                // Write subtest to its own file.
+                let subtest_path = Path::new(&out_dir)
+                    .join(format!("{rulename}.{passfail}.{t}of{n_testcases}.sv"));
+                let mut out_subtest = File::create(&subtest_path).unwrap();
+                for line in testcase {
+                    let _ = writeln!(out_subtest, "{}", line);
+                }
+
+                // Create call to `main.rs::tests::test()` via `tests.rs`.
+                let subtest_name = format!("{rulename}_{passfail}_{t}of{n_testcases}");
+                let _ = writeln!(o, "#[test]");
+                let _ = writeln!(o, "fn {}() {{", subtest_name);
+                if *pass_not_fail {
+                    let _ = writeln!(
+                        o,
+                        "    test(\"{rulename}\", {subtest_path:?}, true, {silent}, false);"
+                    );
+                } else {
+                    let _ = writeln!(
+                        o,
+                        "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, false);"
+                    );
+                    let _ = writeln!(
+                        o,
+                        "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, true);"
+                    );
+                }
+                let _ = writeln!(o, "}}");
+            }
+        }
+    }
+}
+
+fn main() {
     let re_struct = Regex::new(r"pub struct ([a-zA-Z0-9]*)").unwrap();
 
     let mut rules = Vec::new();
@@ -81,201 +285,8 @@ fn main() {
 
     rules.sort_by(|a, b| a.0.cmp(&b.0));
 
-    // -------------------------------------------------------------------------------------------------
-    // Output 'rules.rs'
-    // -------------------------------------------------------------------------------------------------
-
-    let out_rules = Path::new(&out_dir).join("rules.rs");
-    let mut out_rules = File::create(&out_rules).unwrap();
-
-    for (file_name, _) in &rules {
-        let _ = write!(
-            out_rules,
-            "#[path = \"{}/src/rules/{}.rs\"]\n",
-            root_dir.replace("\\", "\\\\"),
-            file_name
-        );
-        let _ = write!(out_rules, "pub mod {};\n", file_name);
-    }
-    for (file_name, _) in &rules {
-        let _ = write!(out_rules, "pub use {}::*;\n", file_name);
-    }
-
-    // -------------------------------------------------------------------------------------------------
-    // Output 'config_rules.rs'
-    // -------------------------------------------------------------------------------------------------
-
-    let out_config_rules = Path::new(&out_dir).join("config_rules.rs");
-    let mut out_config_rules = File::create(&out_config_rules).unwrap();
-
-    let mut body = String::new();
-    for (file_name, _) in &rules {
-        body.push_str(&format!("    #[serde(default = \"default_as_false\")]\n"));
-        body.push_str(&format!("    pub {}: bool,\n", file_name));
-    }
-    for (org_name, _, _) in RENAMED_RULES {
-        body.push_str(&format!(
-            "    #[serde(default = \"default_as_false\", skip_serializing)]\n"
-        ));
-        body.push_str(&format!("    pub {}: bool,\n", org_name));
-    }
-
-    let str_config_rules = format!(
-        r##"
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct ConfigRules {{
-{}
-}}"##,
-        body
-    );
-    let _ = write!(out_config_rules, "{}", str_config_rules);
-
-    // -------------------------------------------------------------------------------------------------
-    // Output 'impl_config.rs'
-    // -------------------------------------------------------------------------------------------------
-
-    let out_impl_config = Path::new(&out_dir).join("impl_config.rs");
-    let mut out_impl_config = File::create(&out_impl_config).unwrap();
-
-    let mut enable_all_body = String::new();
-    let mut gen_rules_body = String::new();
-    let mut gen_all_rules_body = String::new();
-    let mut check_rename_body = String::new();
-    let mut migrate_body = String::new();
-    for (file_name, struct_name) in &rules {
-        enable_all_body.push_str(&format!("        self.rules.{} = true;\n", file_name));
-        gen_rules_body.push_str(&format!("        if self.rules.{} {{\n", file_name));
-        gen_rules_body.push_str(&format!(
-            "            ret.push(Box::new({}::default()));\n",
-            struct_name
-        ));
-        gen_rules_body.push_str(&format!("        }}\n"));
-        gen_all_rules_body.push_str(&format!(
-            "        ret.push(Box::new({}::default()));\n",
-            struct_name
-        ));
-    }
-    for (org_name, file_name, struct_name) in RENAMED_RULES {
-        gen_rules_body.push_str(&format!("        if self.rules.{} {{\n", org_name));
-        gen_rules_body.push_str(&format!(
-            "            ret.push(Box::new({}::default()));\n",
-            struct_name
-        ));
-        gen_rules_body.push_str(&format!("        }}\n"));
-        check_rename_body.push_str(&format!("        if self.rules.{} {{\n", org_name));
-        check_rename_body.push_str(&format!(
-            "            ret.push((String::from(\"{}\"), String::from(\"{}\")));\n",
-            org_name, file_name
-        ));
-        check_rename_body.push_str(&format!("        }}\n"));
-        migrate_body.push_str(&format!(
-            "        self.rules.{} = self.rules.{};\n",
-            file_name, org_name
-        ));
-    }
-
-    let str_impl_config = format!(
-        r##"
-impl Config {{
-    pub fn new() -> Self {{
-        toml::from_str("").unwrap()
-    }}
-
-    pub fn enable_all(mut self) -> Self {{
-{}
-        self
-    }}
-
-    pub fn gen_rules(&self) -> Vec<Box<dyn Rule>> {{
-        let mut ret: Vec<Box<dyn Rule>> = Vec::new();
-{}
-        ret
-    }}
-
-    pub fn gen_all_rules() -> Vec<Box<dyn Rule>> {{
-        let mut ret: Vec<Box<dyn Rule>> = Vec::new();
-{}
-        ret
-    }}
-
-    pub fn check_rename(&self) -> Vec<(String, String)> {{
-        let mut ret: Vec<(String, String)> = Vec::new();
-{}
-        ret
-    }}
-
-    pub fn migrate(&mut self) {{
-{}
-    }}
-}}"##,
-        enable_all_body, gen_rules_body, gen_all_rules_body, check_rename_body, migrate_body
-    );
-    let _ = write!(out_impl_config, "{}", str_impl_config);
-
-    // -------------------------------------------------------------------------------------------------
-    // Output 'test.rs'
-    // -------------------------------------------------------------------------------------------------
-
-    let out_test = Path::new(&out_dir).join("test.rs");
-    let mut out_test = File::create(&out_test).unwrap();
-
-    // blocking_assignment_in_always_ff testcases demonstrate comment control,
-    // so visibility is useful when running `cargo test`.
-    let test_verbose = ["blocking_assignment_in_always_ff"];
-
-    for (rulename, _) in &rules {
-        let silent = if test_verbose.contains(&rulename.as_str()) {
-            "false"
-        } else {
-            "true"
-        };
-
-        for pass_not_fail in [true, false].iter() {
-            let passfail = if *pass_not_fail {
-                "pass"
-            } else {
-                "fail"
-            };
-
-            let test_filename = format!("testcases/{}/{}.sv", passfail, rulename);
-            let lines = BufReader::new(File::open(test_filename).unwrap())
-                .lines()
-                .collect::<Result<Vec<_>, _>>()
-                .unwrap();
-
-            let sep = "/".repeat(80);
-            let testcases: Vec<&[String]> = lines
-                .as_slice()
-                .split(|l| l.contains(sep.as_str()))
-                .collect();
-            let n_testcases: usize = testcases.len();
-
-            for (t, testcase) in testcases
-                .into_iter()
-                .enumerate()
-                .map(|(i, x)| (i + 1, x)) {
-                // Write subtest to its own file.
-                let subtest_path = Path::new(&out_dir)
-                    .join(format!("{rulename}.{passfail}.{t}of{n_testcases}.sv"));
-                let mut out_subtest = File::create(&subtest_path).unwrap();
-                for line in testcase {
-                    let _ = write!(out_subtest, "{}\n", line);
-                }
-
-                // Create call to `main.rs::tests::test()` via `tests.rs`.
-                let subtest_name = format!("{rulename}_{passfail}_{t}of{n_testcases}");
-                let _ = write!(out_test, "#[test]\n");
-                let _ = write!(out_test, "fn {}() {{\n", subtest_name);
-                if *pass_not_fail {
-                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, true, {silent}, false);\n");
-                } else {
-                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, false);\n");
-                    let _ = write!(out_test, "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, true);\n");
-                }
-                let _ = write!(out_test, "}}\n");
-
-            }
-        }
-    }
+    write_rules_rs(&rules);
+    write_config_rules_rs(&rules);
+    write_impl_config_rs(&rules);
+    write_test_rs(&rules);
 }

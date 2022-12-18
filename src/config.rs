@@ -34,6 +34,112 @@ pub struct ConfigOption {
     pub prefix_package: String,
     #[serde(default = "default_prefix_interface")]
     pub prefix_interface: String,
+
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_assert: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_assert_property: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_checker: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_class: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_function: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_generateblock: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_genvar: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_instance: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_interface: String,
+    #[serde(default = "default_re_uppercase")]
+    pub re_required_localparam: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_modport: String,
+    #[serde(default = "default_re_mixedcase")]
+    pub re_required_module_ansi: String,
+    #[serde(default = "default_re_uppercase")]
+    pub re_required_module_nonansi: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_package: String,
+    #[serde(default = "default_re_uppercase")]
+    pub re_required_parameter: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_port_inout: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_port_input: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_port_output: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_port_ref: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_port_interface: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_program: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_property: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_sequence: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_task: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_var_class: String,
+    #[serde(default = "default_re_lowercase")]
+    pub re_required_var_classmethod: String,
+
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_assert: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_assert_property: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_checker: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_class: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_function: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_generateblock: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_genvar: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_instance: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_interface: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_localparam: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_modport: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_module_ansi: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_module_nonansi: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_package: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_parameter: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_port_inout: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_port_input: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_port_output: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_port_ref: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_port_interface: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_program: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_property: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_sequence: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_task: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_var_class: String,
+    #[serde(default = "default_re_unconfigured")]
+    pub re_forbidden_var_classmethod: String,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));
@@ -60,49 +166,60 @@ fn default_as_false() -> bool {
     false
 }
 
-#[allow(dead_code)]
 fn default_indent() -> usize {
     2
 }
 
-#[allow(dead_code)]
 fn default_prefix_inout() -> String {
     String::from("b_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_input() -> String {
     String::from("i_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_output() -> String {
     String::from("o_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_label() -> String {
     String::from("l_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_instance() -> String {
     String::from("u_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_module() -> String {
     String::from("mod_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_package() -> String {
     String::from("pkg_")
 }
 
-#[allow(dead_code)]
 fn default_prefix_interface() -> String {
     String::from("ifc_")
+}
+
+fn default_re_lowercase() -> String {
+    String::from(r"^[a-z]+[a-z0-9_]*$")
+}
+
+fn default_re_mixedcase() -> String {
+    String::from(r"^[a-z]+[a-zA-Z0-9_]*$")
+}
+
+fn default_re_uppercase() -> String {
+    String::from(r"^[A-Z]+[A-Z0-9_]*$")
+}
+
+fn default_re_unconfigured() -> String {
+    // Match all strings which don't begin with "X".
+    // The "UNCONFIGURED" portion is an informative message, but functionally
+    // redundant.
+    // A special prefix "X" is required only for the testcases.
+    String::from(r"^[^X](UNCONFIGURED|.*)$")
 }
 
 include!(concat!(env!("OUT_DIR"), "/impl_config.rs"));

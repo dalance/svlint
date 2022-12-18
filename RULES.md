@@ -110,8 +110,7 @@ This tool (svlint) works in a series of well-defined steps:
 8. If a rule detects an undesirable quality in the syntax tree, then return a
   failure, otherwise return a pass.
 
-
-# Rules
+## Rule Documentation
 
 Each rule is documented with 5 pieces of information:
 - Hint: A brief instruction on how to modify failing SystemVerilog.
@@ -134,7 +133,7 @@ a short reason why it should be seen.
   For example, **style_keyword_datatype** exists to ensure all SystemVerilog
   keywords are captured in the `style_keyword_*` set, but its use is not
   suggested because it is visually appealing (and common practice) to align
-  the identifiers in declarations.
+  the identifiers in adjacent declarations.
 - "useful companion" - Enabling the named rule provides an additional set of
   properties which are useful for reasoning about the function and semantics of
   code which passes.
@@ -146,6 +145,9 @@ a short reason why it should be seen.
 - "mutually exclusive alternative" - The named rule *can* not be used in
   conjunction, i.e. enabling both rules is nonsensical because a failure on one
   implies a pass on the other rule.
+
+
+# Functional Rules
 
 
 ---
@@ -847,347 +849,6 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
   - 13.4.2 Static and automatic functions
-
-
----
-## `generate_case_with_label`
-
-### Hint
-
-Use a label with prefix "l_" on conditional generate block.
-
-### Reason
-
-Unnamed generate blocks imply unintuitive hierarchical paths.
-
-### Pass Example
-
-```SystemVerilog
-module A;
-  generate case (2'd3)
-    2'd1:     begin: l_nondefault wire c = 1'b0; end
-    default:  begin: l_default    wire c = 1'b0; end
-  endcase endgenerate
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module M;
-  case (2'd0)             // No begin/end delimiters.
-    2'd1:
-      logic a = 1'b0;
-    default:
-      logic a = 1'b0;
-  endcase
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  case (2'd1)             // begin/end delimiters, but no label.
-    2'd1: begin
-      logic b = 1'b0;
-    end
-    default: begin
-      logic b = 1'b0;
-    end
-  endcase
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  case (2'd2)             // With label, but no prefix.
-    2'd1: begin: foo
-      logic c = 1'b0;
-    end: foo              // NOTE: With optional label on end.
-    default: begin: bar
-      logic c = 1'b0;
-    end                   // NOTE: Without optional label on end.
-  endcase
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  case (2'd4)             // Without default arm.
-    2'd1: begin: foo
-      logic e = 1'b0;
-    end
-  endcase
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  case (2'd5)             // Without non-default arm.
-    default: begin: bar
-      logic f = 1'b0;
-    end
-  endcase
-endmodule
-```
-
-### Explanation
-
-Conditional generate constructs select zero or one blocks from a set of
-alternative generate blocks within a module, interface, program, or checker.
-The selection of which generate blocks are instantiated is decided during
-elaboration via evaluation of constant expressions.
-Generate blocks introduce hierarchy within a module, whether they are named or
-unnamed.
-Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
-can use and depend on.
-For example, to find a specific DFF in a netlist you could use a hierarchical
-path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
-The naming scheme for unnamed generated blocks is defined in
-IEEE1800-2017 clause 27.6.
-
-These implicit names are not intuitive for human readers, so this rule is
-designed to check three things:
-1. The generate block uses `begin`/`end` delimiters.
-2. The generate block has been given a label, e.g. `begin: mylabel`.
-3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
-  the string `l_`.
-
-The prefix is useful to when reading hierarchical paths to distinguish between
-module/interface instances and generate blocks.
-For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
-with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
-
-See also:
-  - **generate_for_with_label** - Similar reasoning, useful companion rule.
-  - **generate_if_with_label** - Equivalent reasoning, useful companion rule.
-  - **prefix_instance** - Useful companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 27.5 Conditional generate constructs
-  - 27.6 External names for unnamed generate blocks
-
-
----
-## `generate_for_with_label`
-
-### Hint
-
-Use a label with prefix "l_" on loop generate block.
-
-### Reason
-
-Unnamed generate blocks imply unintuitive hierarchical paths.
-
-### Pass Example
-
-```SystemVerilog
-module M;
-  for(genvar i=0; i < 10; i++) begin: l_a
-  end
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module M;
-  for (genvar i=0; i < 10; i++) // No begin/end delimeters.
-    assign a[i] = i;
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  for (genvar i=0; i < 10; i++) begin // begin/end delimiters, but no label.
-    assign a[i] = i;
-  end
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  for (genvar i=0; i < 10; i++) begin: foo // With label, but no prefix.
-    assign a[i] = i;
-  end
-endmodule
-```
-
-### Explanation
-
-A loop generate construct allows a single generate block to be instantiated
-multiple times within a module, interface, program, or checker.
-The selection of which generate blocks are instantiated is decided during
-elaboration via evaluation of constant expressions.
-Generate blocks introduce hierarchy within a module, whether they are named or
-unnamed.
-Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
-can use and depend on.
-For example, to find a specific DFF in a netlist you could use a hierarchical
-path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
-The naming scheme for unnamed generated blocks is defined in
-IEEE1800-2017 clause 27.6.
-
-These implicit names are not intuitive for human readers, so this rule is
-designed to check three things:
-1. The generate block uses `begin`/`end` delimiters.
-2. The generate block has been given a label, e.g. `begin: mylabel`.
-3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
-  the string `l_`.
-
-The prefix is useful to when reading hierarchical paths to distinguish between
-module/interface instances and generate blocks.
-For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
-with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
-
-See also:
-  - **generate_case_with_label** - Similar reasoning, useful companion rule.
-  - **generate_if_with_label** - Similar reasoning, useful companion rule.
-  - **prefix_instance** - Useful companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 27.4 Loop generate constructs
-  - 27.6 External names for unnamed generate blocks
-
-
----
-## `generate_if_with_label`
-
-### Hint
-
-Use a label with prefix "l_" on conditional generate block.
-
-### Reason
-
-Unnamed generate blocks imply unintuitive hierarchical paths.
-
-### Pass Example
-
-```SystemVerilog
-module M;
-  if (a) begin: l_abc
-  end else if (b) begin: l_def
-  end else begin: l_hij
-  end
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module M;
-  if (x)                        // No begin/end delimeters.
-    assign a = 0;               // if condition.
-  else if (x) begin: l_def
-    assign a = 1;
-  end else begin: l_hij
-    assign a = 2;
-  end
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  if (x) begin: l_abc
-    assign a = 0;
-  end else if (x)               // No begin/end delimeters.
-    assign a = 1;               // else-if condition.
-  else begin: l_hij
-    assign a = 2;
-  end
-endmodule
-
-// TODO: This isn't caught.
-module M;
-  if (x) begin: l_abc
-    assign a = 0;
-  end else if (x) begin: l_def
-    assign a = 1;
-  end else                      // No begin/end delimeters.
-    assign a = 2;               // else condition
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  if (x) begin                  // begin/end delimiters, but no label.
-    assign a = 0;               // if condition.
-  end else if (x) begin: l_def
-    assign a = 1;
-  end else begin: l_hij
-    assign a = 2;
-  end
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  if (x) begin: l_abc
-    assign a = 0;
-  end else if (x) begin         // begin/end delimiters, but no label.
-    assign a = 1;               // else-if condition.
-  end else begin: l_hij
-    assign a = 2;
-  end
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  if (x) begin: l_abc
-    assign a = 0;
-  end else if (x) begin: l_def
-    assign a = 1;
-  end else begin                // begin/end delimiters, but no label.
-    assign a = 2;               // else condition
-  end
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  if (x) begin: foo             // With label, but no prefix.
-    assign a = 0;               // if condition.
-  end else if (x) begin: l_def
-    assign a = 1;
-  end else begin: l_hij
-    assign a = 2;
-  end
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  if (x) begin: l_abc
-    assign a = 0;
-  end else if (x) begin: foo    // With label, but no prefix.
-    assign a = 1;               // else-if condition.
-  end else begin: l_hij
-    assign a = 2;
-  end
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M;
-  if (x) begin: l_abc
-    assign a = 0;
-  end else if (x) begin: l_def
-    assign a = 1;
-  end else begin: foo           // With label, but no prefix.
-    assign a = 2;               // else condition
-  end
-endmodule
-```
-
-### Explanation
-
-Conditional generate constructs select zero or one blocks from a set of
-alternative generate blocks within a module, interface, program, or checker.
-The selection of which generate blocks are instantiated is decided during
-elaboration via evaluation of constant expressions.
-Generate blocks introduce hierarchy within a module, whether they are named or
-unnamed.
-Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
-can use and depend on.
-For example, to find a specific DFF in a netlist you could use a hierarchical
-path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
-The naming scheme for unnamed generated blocks is defined in
-IEEE1800-2017 clause 27.6.
-
-These implicit names are not intuitive for human readers, so this rule is
-designed to check three things:
-1. The generate block uses `begin`/`end` delimiters.
-2. The generate block has been given a label, e.g. `begin: mylabel`.
-3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
-  the string `l_`.
-
-The prefix is useful to when reading hierarchical paths to distinguish between
-module/interface instances and generate blocks.
-For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
-with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
-
-See also:
-  - **generate_case_with_label** - Equivalent reasoning, useful companion rule.
-  - **generate_for_with_label** - Similar reasoning, useful companion rule.
-  - **prefix_instance** - Useful companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - 27.5 Conditional generate constructs
-  - 27.6 External names for unnamed generate blocks
 
 
 ---
@@ -2411,150 +2072,6 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
-## `lowercamelcase_interface`
-
-### Hint
-
-Begin `interface` name with lowerCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-interface fooBar;
-endinterface
-```
-
-### Fail Example
-
-```SystemVerilog
-interface FooBar;
-endinterface
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with a lowercase letter, and packages should start with an
-uppercase letter.
-
-See also:
-  - **lowercamelcase_module** - Suggested companion rule.
-  - **lowercamelcase_package** - Potential companion rule.
-  - **prefix_interface** - Alternative rule.
-  - **uppercamelcase_interface** - Mutually exclusive alternative rule.
-  - **uppercamelcase_module** - Potential companion rule.
-  - **uppercamelcase_package** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `lowercamelcase_module`
-
-### Hint
-
-Begin `module` name with lowerCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-module fooBar;
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module FooBar;
-endmodule
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with a lowercase letter, and packages should start with an
-uppercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Suggested companion rule.
-  - **lowercamelcase_package** - Potential companion rule.
-  - **prefix_module** - Alternative rule.
-  - **uppercamelcase_interface** - Potential companion rule.
-  - **uppercamelcase_module** - Mutually exclusive alternative rule.
-  - **uppercamelcase_package** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `lowercamelcase_package`
-
-### Hint
-
-Begin `package` name with lowerCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-package fooBar;
-endpackage
-```
-
-### Fail Example
-
-```SystemVerilog
-package FooBar;
-endpackage
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with an uppercase letter, and packages should start with an
-lowercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Potential companion rule.
-  - **lowercamelcase_module** - Potential companion rule.
-  - **prefix_package** - Alternative rule.
-  - **uppercamelcase_interface** - Suggested companion rule.
-  - **uppercamelcase_module** - Suggested companion rule.
-  - **uppercamelcase_package** - Mutually exclusive alternative rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
 ## `multiline_for_begin`
 
 ### Hint
@@ -2728,9 +2245,18 @@ Non-ANSI module headers are visually noisy and error-prone.
 ### Pass Example
 
 ```SystemVerilog
-module M
+module M      // An ANSI module has ports declared in the module header.
   ( input  a
   , output b
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;     // A module with no ports is also ANSI.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M      // Declaring ports in the header with default direction (inout)
+  ( a         // also specifies an ANSI module.
+  , b
   );
 endmodule
 ```
@@ -2742,8 +2268,8 @@ module M
   ( a
   , b
   );
-  input  a;
-  output b;
+  input  a;   // Declaring ports outside the module header declaration
+  output b;   // makes this a non-ANSI module.
 endmodule
 ```
 
@@ -3229,360 +2755,6 @@ The most relevant clauses of IEEE1800-2017 are:
 
 
 ---
-## `prefix_inout`
-
-### Hint
-
-Prefix `inout` port identifier with "b_".
-
-### Reason
-
-Port prefixes help readers to follow signals through modules.
-
-### Pass Example
-
-```SystemVerilog
-module M
-  ( inout var b_foo
-  , input var logic [FOO-1:0] b_bar
-  );
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module M
-  ( inout var foo // `foo` is missing prefix.
-  );
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M
-  ( inout var logic [A-1:0] bar // `bar` is missing prefix, not `A`.
-  );
-endmodule
-////////////////////////////////////////////////////////////////////////////////
-module M
-  ( inout var i_foo
-  , inout var bar // `bar` is missing prefix.
-  );
-endmodule
-```
-
-### Explanation
-
-There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
-though `ref` is not generally used for synthesisable code.
-For a new reader, unfamiliar with a large module, it is useful to be able to 
-distinguish at a glance between which signals are ports and internal ones.
-This is especially useful for an integrator who needs to read and understand the
-boundaries of many modules quickly and accurately.
-To use a visual analogy, prefixing port names is like adding arrowheads to a
-schematic - they're not essential, but they speed up comprehension.
-This rule requires the prefix `b_` (configurable) on bi-directional signals,
-i.e, ports declared with direction `inout`, which is also the default direction.
-
-See also:
-  - **prefix_input** - Suggested companion rule.
-  - **prefix_instance** - Suggested companion rule.
-  - **prefix_output** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `prefix_input`
-
-### Hint
-
-Prefix `input` port identifier with "i_".
-
-### Reason
-
-Port prefixes help readers to follow signals through modules.
-
-### Pass Example
-
-```SystemVerilog
-module M
-  ( input var i_foo
-  , input var logic [FOO-1:0] i_bar
-  );
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module M
-  ( input var foo
-  , input var logic [FOO-1:0] bar
-  );
-endmodule
-```
-
-### Explanation
-
-There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
-though `ref` is not generally used for synthesisable code.
-For a new reader, unfamiliar with a large module, it is useful to be able to 
-distinguish at a glance between which signals are ports and internal ones.
-This is especially useful for an integrator who needs to read and understand the
-boundaries of many modules quickly and accurately.
-To use a visual analogy, prefixing port names is like adding arrowheads to a
-schematic - they're not essential, but they speed up comprehension.
-This rule requires the prefix `i_` (configurable) on `input` signals.
-
-See also:
-  - **prefix_inout** - Suggested companion rule.
-  - **prefix_instance** - Suggested companion rule.
-  - **prefix_output** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `prefix_instance`
-
-### Hint
-
-Prefix instance identifier with "u_".
-
-### Reason
-
-Naming convention helps investigation using hierarchical paths.
-
-### Pass Example
-
-```SystemVerilog
-module M;
-  I #() u_foo (a, b, c);
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module M;
-  Foo #() foo (a, b, c);
-endmodule
-```
-
-### Explanation
-
-This rule requires that instances of modules or interfaces are prefixed with
-`u_` (configurable) which allows readers to quickly find instances and
-connections of interest.
-Prefixing instances also allows components of a hierarchical path to be easily
-identified as modules/interfaces rather than generate blocks, which is
-especially useful when reading netlists and synthesis reports.
-The default value of `u_` comes from the historical use of `U` for the PCB
-reference designator of an inseparable assembly or integrated-circuit package,
-as standardized in IEEE315-1975.
-
-See also:
-  - **generate_case_with_label** - Suggested companion rule.
-  - **generate_for_with_label** - Suggested companion rule.
-  - **generate_if_with_label** - Suggested companion rule.
-  - **prefix_inout** - Suggested companion rule.
-  - **prefix_input** - Suggested companion rule.
-  - **prefix_output** - Suggested companion rule.
-  - <https://en.wikipedia.org/wiki/Reference_designator>
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `prefix_interface`
-
-### Hint
-
-Prefix `interface` identifier with "ifc_".
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-interface ifc_withPrefix;
-endinterface
-```
-
-### Fail Example
-
-```SystemVerilog
-interface noPrefix;
-endinterface
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-This rule requires that interface identifiers are declared with a prefix of
-`ifc_` (configurable) which allows a reader to easily distinguish between
-module and interface instances.
-
-See also:
-  - **lowercamelcase_interface** - Alternative rule.
-  - **prefix_module** - Potential companion rule.
-  - **prefix_package** - Suggested companion rule.
-  - **uppercamelcase_interface** - Alternative rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `prefix_module`
-
-### Hint
-
-Prefix `module` identifier with "mod_".
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-module mod_withPrefix; // Module identifier of declaration has prefix.
-  I #(.A(1)) u_M (.a); // Module identifier of instance doesn't require prefix.
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module noPrefix; // Module identifier of declaration should have prefix.
-endmodule
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-This rule requires that module identifiers are declared with a prefix of `mod_`
-(configurable) which allows a reader to easily distinguish between
-module and interface instances.
-
-See also:
-  - **lowercamelcase_module** - Alternative rule.
-  - **prefix_interface** - Suggested companion rule.
-  - **prefix_package** - Suggested companion rule.
-  - **uppercamelcase_module** - Alternative rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `prefix_output`
-
-### Hint
-
-Prefix `output` port identifier with "o_".
-
-### Reason
-
-Port prefixes help readers to follow signals through modules.
-
-### Pass Example
-
-```SystemVerilog
-module M
-  ( output var o_foo
-  , output var logic [FOO-1:0] o_bar
-  );
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module M
-  ( output var foo
-  , output var logic [FOO-1:0] bar
-  );
-endmodule
-```
-
-### Explanation
-
-There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
-though `ref` is not generally used for synthesisable code.
-For a new reader, unfamiliar with a large module, it is useful to be able to 
-distinguish at a glance between which signals are ports and internal ones.
-This is especially useful for an integrator who needs to read and understand the
-boundaries of many modules quickly and accurately.
-To use a visual analogy, prefixing port names is like adding arrowheads to a
-schematic - they're not essential, but they speed up comprehension.
-This rule requires the prefix `o_` (configurable) on `output` signals.
-
-See also:
-  - **prefix_inout** - Suggested companion rule.
-  - **prefix_input** - Suggested companion rule.
-  - **prefix_instance** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `prefix_package`
-
-### Hint
-
-Prefix `package` identifier with "pkg_".
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-package pkg_withPrefix;
-endpackage
-```
-
-### Fail Example
-
-```SystemVerilog
-package noPrefix;
-endpackage
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-This rule requires that package identifiers are declared with a prefix of
-`pkg_` (configurable).
-When used in conjunction with a file naming scheme like "There should be one
-package declaration per file, and a package `pkg_foo` must be contained in a
-file called `pkg_foo.sv`.", this aids a reader in browsing a source directory.
-
-See also:
-  - **lowercamelcase_package** - Alternative rule.
-  - **prefix_interface** - Suggested companion rule.
-  - **prefix_module** - Potential companion rule.
-  - **uppercamelcase_package** - Alternative rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
 ## `sequential_block_in_always_comb`
 
 ### Hint
@@ -3963,6 +3135,3415 @@ The most relevant clauses of IEEE1800-2017 are:
   - 12.7 Loop statements
 
 
+# Naming Convention Rules
+
+Rules for checking against naming conventions are named with either the suffix
+`_with_label` or one of these prefixes:
+- `prefix_`
+- `(lower|upper)camelcase_`
+- `re_(forbidden|required)_`
+
+Naming conventions are useful to help ensure consistency across components in
+large projects.
+A naming convention might be designed with several, sometimes competing, points
+of view such as:
+- Enable simple identification of code's owner, e.g. "Prefix all module
+  identifiers with `BlueTeam_` at the point of declaration".
+  This makes it easy for the blue team to review their own code, without being
+  distracted by other team's code.
+  Not specific to SystemVerilog, i.e also applicable to VHDL.
+- Enhance readability of netlists, e.g. "Prefix all module instances with `u_`,
+  interface instances with `uin_`, and generate blocks with `l_`".
+  This facilitates straightforward translation from a netlist identifier to its
+  corresponding identifier in SystemVerilog.
+  Not specific to SystemVerilog, i.e also applicable to VHDL.
+- Enhance readability of code for integrators and reviewers, e.g. "Prefix all
+  ports with `i_`, `o_`, or `b_` for inputs, outputs, and bi-directionals
+  respectively".
+  This allows a reader to glean important information about how ports and
+  internal logic are connected without the need to scroll back-and-forth
+  through a file and/or memorize the portlist.
+- Add redundancy to capture design intent, e.g. "Suffix every signal which
+  should infer a flip-flop with `_q`".
+  By using conventional terminology (`d` for input, `q` for output) readers
+  will be alerted to investigate any flip-flops without this prefix as the
+  tools may not be treating the code as the original author intended.
+  Some example suffixes include:
+  - `_d`: Input to a flip-flop.
+  - `_q`: Output from a flip-flop.
+  - `_lat`: Output from a latch.
+  - `_mem`: Memory model.
+  - `_a`: Asynchronous signal.
+  - `_n`: Active-low signal.
+  - `_dp`, `_dn`: Differential positive/negative pair.
+  - `_ana`: Analog signal.
+  - `_55MHz`: A signal with a required operating frequency.
+- On the above two points, prefixes are redundant re-statements of information
+  which must is explicit in SystemVerilog semantics, and suffixes are redundant
+  clarifications of information which can only be specified implictly in
+  SystemVerilog.
+
+The rules `re_forbidden_*` can also be used to restrict language features.
+For example, if a project requires that interfaces must never be used, you can
+enable the rule `re_forbidden_interface` and configure it to match all
+identifier strings.
+By forbidding all possible identifiers at the point of declaration, no
+interfaces may be specified.
+For example:
+```toml
+[option]
+re_forbidden_interface = ".*"
+
+[rules]
+re_forbidden_interface = true
+```
+
+
+---
+## `generate_case_with_label`
+
+### Hint
+
+Use a label with prefix "l_" on conditional generate block.
+
+### Reason
+
+Unnamed generate blocks imply unintuitive hierarchical paths.
+
+### Pass Example
+
+```SystemVerilog
+module A;
+  generate case (2'd3)
+    2'd1:     begin: l_nondefault wire c = 1'b0; end
+    default:  begin: l_default    wire c = 1'b0; end
+  endcase endgenerate
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  case (2'd0)             // No begin/end delimiters.
+    2'd1:
+      logic a = 1'b0;
+    default:
+      logic a = 1'b0;
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (2'd1)             // begin/end delimiters, but no label.
+    2'd1: begin
+      logic b = 1'b0;
+    end
+    default: begin
+      logic b = 1'b0;
+    end
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (2'd2)             // With label, but no prefix.
+    2'd1: begin: foo
+      logic c = 1'b0;
+    end: foo              // NOTE: With optional label on end.
+    default: begin: bar
+      logic c = 1'b0;
+    end                   // NOTE: Without optional label on end.
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (2'd4)             // Without default arm.
+    2'd1: begin: foo
+      logic e = 1'b0;
+    end
+  endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (2'd5)             // Without non-default arm.
+    default: begin: bar
+      logic f = 1'b0;
+    end
+  endcase
+endmodule
+```
+
+### Explanation
+
+Conditional generate constructs select zero or one blocks from a set of
+alternative generate blocks within a module, interface, program, or checker.
+The selection of which generate blocks are instantiated is decided during
+elaboration via evaluation of constant expressions.
+Generate blocks introduce hierarchy within a module, whether they are named or
+unnamed.
+Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
+can use and depend on.
+For example, to find a specific DFF in a netlist you could use a hierarchical
+path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
+The naming scheme for unnamed generated blocks is defined in
+IEEE1800-2017 clause 27.6.
+
+These implicit names are not intuitive for human readers, so this rule is
+designed to check three things:
+1. The generate block uses `begin`/`end` delimiters.
+2. The generate block has been given a label, e.g. `begin: mylabel`.
+3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
+  the string `l_`.
+
+The prefix is useful to when reading hierarchical paths to distinguish between
+module/interface instances and generate blocks.
+For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
+with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
+
+See also:
+  - **generate_for_with_label** - Similar reasoning, useful companion rule.
+  - **generate_if_with_label** - Equivalent reasoning, useful companion rule.
+  - **prefix_instance** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 27.5 Conditional generate constructs
+  - 27.6 External names for unnamed generate blocks
+
+
+---
+## `generate_for_with_label`
+
+### Hint
+
+Use a label with prefix "l_" on loop generate block.
+
+### Reason
+
+Unnamed generate blocks imply unintuitive hierarchical paths.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  for(genvar i=0; i < 10; i++) begin: l_a
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  for (genvar i=0; i < 10; i++) // No begin/end delimeters.
+    assign a[i] = i;
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  for (genvar i=0; i < 10; i++) begin // begin/end delimiters, but no label.
+    assign a[i] = i;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  for (genvar i=0; i < 10; i++) begin: foo // With label, but no prefix.
+    assign a[i] = i;
+  end
+endmodule
+```
+
+### Explanation
+
+A loop generate construct allows a single generate block to be instantiated
+multiple times within a module, interface, program, or checker.
+The selection of which generate blocks are instantiated is decided during
+elaboration via evaluation of constant expressions.
+Generate blocks introduce hierarchy within a module, whether they are named or
+unnamed.
+Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
+can use and depend on.
+For example, to find a specific DFF in a netlist you could use a hierarchical
+path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
+The naming scheme for unnamed generated blocks is defined in
+IEEE1800-2017 clause 27.6.
+
+These implicit names are not intuitive for human readers, so this rule is
+designed to check three things:
+1. The generate block uses `begin`/`end` delimiters.
+2. The generate block has been given a label, e.g. `begin: mylabel`.
+3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
+  the string `l_`.
+
+The prefix is useful to when reading hierarchical paths to distinguish between
+module/interface instances and generate blocks.
+For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
+with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
+
+See also:
+  - **generate_case_with_label** - Similar reasoning, useful companion rule.
+  - **generate_if_with_label** - Similar reasoning, useful companion rule.
+  - **prefix_instance** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 27.4 Loop generate constructs
+  - 27.6 External names for unnamed generate blocks
+
+
+---
+## `generate_if_with_label`
+
+### Hint
+
+Use a label with prefix "l_" on conditional generate block.
+
+### Reason
+
+Unnamed generate blocks imply unintuitive hierarchical paths.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  if (a) begin: l_abc
+  end else if (b) begin: l_def
+  end else begin: l_hij
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  if (x)                        // No begin/end delimeters.
+    assign a = 0;               // if condition.
+  else if (x) begin: l_def
+    assign a = 1;
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x)               // No begin/end delimeters.
+    assign a = 1;               // else-if condition.
+  else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+
+// TODO: This isn't caught.
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else                      // No begin/end delimeters.
+    assign a = 2;               // else condition
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin                  // begin/end delimiters, but no label.
+    assign a = 0;               // if condition.
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin         // begin/end delimiters, but no label.
+    assign a = 1;               // else-if condition.
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else begin                // begin/end delimiters, but no label.
+    assign a = 2;               // else condition
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: foo             // With label, but no prefix.
+    assign a = 0;               // if condition.
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: foo    // With label, but no prefix.
+    assign a = 1;               // else-if condition.
+  end else begin: l_hij
+    assign a = 2;
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  if (x) begin: l_abc
+    assign a = 0;
+  end else if (x) begin: l_def
+    assign a = 1;
+  end else begin: foo           // With label, but no prefix.
+    assign a = 2;               // else condition
+  end
+endmodule
+```
+
+### Explanation
+
+Conditional generate constructs select zero or one blocks from a set of
+alternative generate blocks within a module, interface, program, or checker.
+The selection of which generate blocks are instantiated is decided during
+elaboration via evaluation of constant expressions.
+Generate blocks introduce hierarchy within a module, whether they are named or
+unnamed.
+Unnamed generate blocks are assigned a name, e.g. `genblk5`, which other tools
+can use and depend on.
+For example, to find a specific DFF in a netlist you could use a hierarchical
+path like `top.genblk2[3].u_cpu.genblk5.foo_q`.
+The naming scheme for unnamed generated blocks is defined in
+IEEE1800-2017 clause 27.6.
+
+These implicit names are not intuitive for human readers, so this rule is
+designed to check three things:
+1. The generate block uses `begin`/`end` delimiters.
+2. The generate block has been given a label, e.g. `begin: mylabel`.
+3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
+  the string `l_`.
+
+The prefix is useful to when reading hierarchical paths to distinguish between
+module/interface instances and generate blocks.
+For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
+with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
+
+See also:
+  - **generate_case_with_label** - Equivalent reasoning, useful companion rule.
+  - **generate_for_with_label** - Similar reasoning, useful companion rule.
+  - **prefix_instance** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+  - 27.5 Conditional generate constructs
+  - 27.6 External names for unnamed generate blocks
+
+
+---
+## `lowercamelcase_interface`
+
+### Hint
+
+Begin `interface` name with lowerCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+interface fooBar;
+endinterface
+```
+
+### Fail Example
+
+```SystemVerilog
+interface FooBar;
+endinterface
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with a lowercase letter, and packages should start with an
+uppercase letter.
+
+See also:
+  - **lowercamelcase_module** - Suggested companion rule.
+  - **lowercamelcase_package** - Potential companion rule.
+  - **prefix_interface** - Alternative rule.
+  - **uppercamelcase_interface** - Mutually exclusive alternative rule.
+  - **uppercamelcase_module** - Potential companion rule.
+  - **uppercamelcase_package** - Suggested companion rule.
+
+
+---
+## `lowercamelcase_module`
+
+### Hint
+
+Begin `module` name with lowerCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+module fooBar;
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module FooBar;
+endmodule
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with a lowercase letter, and packages should start with an
+uppercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Suggested companion rule.
+  - **lowercamelcase_package** - Potential companion rule.
+  - **prefix_module** - Alternative rule.
+  - **uppercamelcase_interface** - Potential companion rule.
+  - **uppercamelcase_module** - Mutually exclusive alternative rule.
+  - **uppercamelcase_package** - Suggested companion rule.
+
+
+---
+## `lowercamelcase_package`
+
+### Hint
+
+Begin `package` name with lowerCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+package fooBar;
+endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package FooBar;
+endpackage
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with an uppercase letter, and packages should start with an
+lowercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Potential companion rule.
+  - **lowercamelcase_module** - Potential companion rule.
+  - **prefix_package** - Alternative rule.
+  - **uppercamelcase_interface** - Suggested companion rule.
+  - **uppercamelcase_module** - Suggested companion rule.
+  - **uppercamelcase_package** - Mutually exclusive alternative rule.
+
+
+---
+## `prefix_inout`
+
+### Hint
+
+Prefix `inout` port identifier with "b_".
+
+### Reason
+
+Port prefixes help readers to follow signals through modules.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( inout var b_foo
+  , input var logic [FOO-1:0] b_bar
+  );
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( inout var foo // `foo` is missing prefix.
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  ( inout var logic [A-1:0] bar // `bar` is missing prefix, not `A`.
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M
+  ( inout var i_foo
+  , inout var bar // `bar` is missing prefix.
+  );
+endmodule
+```
+
+### Explanation
+
+There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
+though `ref` is not generally used for synthesisable code.
+For a new reader, unfamiliar with a large module, it is useful to be able to
+distinguish at a glance between which signals are ports and internal ones.
+This is especially useful for an integrator who needs to read and understand the
+boundaries of many modules quickly and accurately.
+To use a visual analogy, prefixing port names is like adding arrowheads to a
+schematic - they're not essential, but they speed up comprehension.
+This rule requires the prefix `b_` (configurable) on bi-directional signals,
+i.e, ports declared with direction `inout`, which is also the default direction.
+
+See also:
+  - **prefix_input** - Suggested companion rule.
+  - **prefix_instance** - Suggested companion rule.
+  - **prefix_output** - Suggested companion rule.
+
+
+---
+## `prefix_input`
+
+### Hint
+
+Prefix `input` port identifier with "i_".
+
+### Reason
+
+Port prefixes help readers to follow signals through modules.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( input var i_foo
+  , input var logic [FOO-1:0] i_bar
+  );
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( input var foo
+  , input var logic [FOO-1:0] bar
+  );
+endmodule
+```
+
+### Explanation
+
+There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
+though `ref` is not generally used for synthesisable code.
+For a new reader, unfamiliar with a large module, it is useful to be able to
+distinguish at a glance between which signals are ports and internal ones.
+This is especially useful for an integrator who needs to read and understand the
+boundaries of many modules quickly and accurately.
+To use a visual analogy, prefixing port names is like adding arrowheads to a
+schematic - they're not essential, but they speed up comprehension.
+This rule requires the prefix `i_` (configurable) on `input` signals.
+
+See also:
+  - **prefix_inout** - Suggested companion rule.
+  - **prefix_instance** - Suggested companion rule.
+  - **prefix_output** - Suggested companion rule.
+
+
+---
+## `prefix_instance`
+
+### Hint
+
+Prefix instance identifier with "u_".
+
+### Reason
+
+Naming convention helps investigation using hierarchical paths.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  I #() u_foo (a, b, c);
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  Foo #() foo (a, b, c);
+endmodule
+```
+
+### Explanation
+
+This rule requires that instances of modules or interfaces are prefixed with
+`u_` (configurable) which allows readers to quickly find instances and
+connections of interest.
+Prefixing instances also allows components of a hierarchical path to be easily
+identified as modules/interfaces rather than generate blocks, which is
+especially useful when reading netlists and synthesis reports.
+The default value of `u_` comes from the historical use of `U` for the PCB
+reference designator of an inseparable assembly or integrated-circuit package,
+as standardized in IEEE315-1975.
+
+See also:
+  - **generate_case_with_label** - Suggested companion rule.
+  - **generate_for_with_label** - Suggested companion rule.
+  - **generate_if_with_label** - Suggested companion rule.
+  - **prefix_inout** - Suggested companion rule.
+  - **prefix_input** - Suggested companion rule.
+  - **prefix_output** - Suggested companion rule.
+  - <https://en.wikipedia.org/wiki/Reference_designator>
+
+
+---
+## `prefix_interface`
+
+### Hint
+
+Prefix `interface` identifier with "ifc_".
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+interface ifc_withPrefix;
+endinterface
+```
+
+### Fail Example
+
+```SystemVerilog
+interface noPrefix;
+endinterface
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+This rule requires that interface identifiers are declared with a prefix of
+`ifc_` (configurable) which allows a reader to easily distinguish between
+module and interface instances.
+
+See also:
+  - **lowercamelcase_interface** - Alternative rule.
+  - **prefix_module** - Potential companion rule.
+  - **prefix_package** - Suggested companion rule.
+  - **uppercamelcase_interface** - Alternative rule.
+
+
+---
+## `prefix_module`
+
+### Hint
+
+Prefix `module` identifier with "mod_".
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+module mod_withPrefix; // Module identifier of declaration has prefix.
+  I #(.A(1)) u_M (.a); // Module identifier of instance doesn't require prefix.
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module noPrefix; // Module identifier of declaration should have prefix.
+endmodule
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+This rule requires that module identifiers are declared with a prefix of `mod_`
+(configurable) which allows a reader to easily distinguish between
+module and interface instances.
+
+See also:
+  - **lowercamelcase_module** - Alternative rule.
+  - **prefix_interface** - Suggested companion rule.
+  - **prefix_package** - Suggested companion rule.
+  - **uppercamelcase_module** - Alternative rule.
+
+
+---
+## `prefix_output`
+
+### Hint
+
+Prefix `output` port identifier with "o_".
+
+### Reason
+
+Port prefixes help readers to follow signals through modules.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( output var o_foo
+  , output var logic [FOO-1:0] o_bar
+  );
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( output var foo
+  , output var logic [FOO-1:0] bar
+  );
+endmodule
+```
+
+### Explanation
+
+There are 4 kinds of SystemVerilog port (`inout`, `input`, `output`, and `ref`),
+though `ref` is not generally used for synthesisable code.
+For a new reader, unfamiliar with a large module, it is useful to be able to
+distinguish at a glance between which signals are ports and internal ones.
+This is especially useful for an integrator who needs to read and understand the
+boundaries of many modules quickly and accurately.
+To use a visual analogy, prefixing port names is like adding arrowheads to a
+schematic - they're not essential, but they speed up comprehension.
+This rule requires the prefix `o_` (configurable) on `output` signals.
+
+See also:
+  - **prefix_inout** - Suggested companion rule.
+  - **prefix_input** - Suggested companion rule.
+  - **prefix_instance** - Suggested companion rule.
+
+
+---
+## `prefix_package`
+
+### Hint
+
+Prefix `package` identifier with "pkg_".
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+package pkg_withPrefix;
+endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package noPrefix;
+endpackage
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+This rule requires that package identifiers are declared with a prefix of
+`pkg_` (configurable).
+When used in conjunction with a file naming scheme like "There should be one
+package declaration per file, and a package `pkg_foo` must be contained in a
+file called `pkg_foo.sv`.", this aids a reader in browsing a source directory.
+
+See also:
+  - **lowercamelcase_package** - Alternative rule.
+  - **prefix_interface** - Suggested companion rule.
+  - **prefix_module** - Potential companion rule.
+  - **uppercamelcase_package** - Alternative rule.
+
+
+---
+## `re_forbidden_assert`
+
+### Hint
+
+Use an immediate assertion identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  initial begin
+    Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
+      assert (p) else $error(); // Simple immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
+      assert #0 (p) else $error(); // Deferred immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
+    assert #0 (p) else $error(); // Deferred immmediate assertion item.
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  initial begin
+    foo: // Unconfigured forbidden regex matches (almost) anything.
+      assert (p) else $error(); // Simple immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    foo: // Unconfigured forbidden regex matches (almost) anything.
+      assert #0 (p) else $error(); // Deferred immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  foo: // Unconfigured forbidden regex matches (almost) anything.
+    assert #0 (p) else $error(); // Deferred immmediate assertion item.
+endmodule
+```
+
+### Explanation
+
+Immediate assertions, including deferred immediate assertions, must not have
+identifiers matching the regex configured via the `re_forbidden_assert` option.
+
+See also:
+  - **re_required_assert**
+
+
+---
+## `re_forbidden_assert_property`
+
+### Hint
+
+Use a concurrent assertion identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
+    assert property (@(posedge c) p); // Concurrent assertion.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
+      assert property (@(posedge c) p); // Concurrent assertion.
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  foo: // Unconfigured forbidden regex matches (almost) anything.
+    assert property (@(posedge c) p); // Concurrent assertion.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    foo: // Unconfigured forbidden regex matches (almost) anything.
+      assert property (@(posedge c) p); // Concurrent assertion.
+  end
+endmodule
+```
+
+### Explanation
+
+Concurrent assertions must not have identifiers matching the regex configured
+via the `re_forbidden_assert_property` option.
+
+See also:
+  - **re_required_assert_property**
+
+
+---
+## `re_forbidden_checker`
+
+### Hint
+
+Use a checker identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+checker Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endchecker
+```
+
+### Fail Example
+
+```SystemVerilog
+checker foo; // Unconfigured forbidden regex matches (almost) anything.
+endchecker
+```
+
+### Explanation
+
+Checkers must not have identifiers matching the regex configured via the
+`re_forbidden_checker` option.
+
+See also:
+  - **re_required_checker**
+
+
+---
+## `re_forbidden_class`
+
+### Hint
+
+Use a class identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+class Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endclass
+```
+
+### Fail Example
+
+```SystemVerilog
+class foo; // Unconfigured forbidden regex matches (almost) anything.
+endclass
+```
+
+### Explanation
+
+Classes must not have identifiers matching the regex configured via the
+`re_forbidden_class` option.
+
+See also:
+  - **re_required_class**
+
+
+---
+## `re_forbidden_function`
+
+### Hint
+
+Use a function identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+package P;
+  function Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+  endfunction
+endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package P;
+  function foo; // Unconfigured forbidden regex matches (almost) anything.
+  endfunction
+endpackage
+```
+
+### Explanation
+
+Functions must not have identifiers matching the regex configured via the
+`re_forbidden_function` option.
+
+See also:
+  - **re_required_function**
+  - **function_same_as_system_function**
+
+
+---
+## `re_forbidden_generateblock`
+
+### Hint
+
+Use a generate block identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  if (0) begin: Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+    assign a = 0;
+  end: Xfoo
+  else begin: Xbar // Identifier doesn't match default forbidden regex (X prefix).
+    assign a = 1;
+  end: Xbar
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  // Identifier doesn't match default forbidden regex (X prefix).
+  for (genvar i=0; i < 5; i++) begin: Xfoo
+    assign b[i] = 0;
+  end: Xfoo
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (0)
+    0: begin: Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+      assign c = 0;
+    end: Xfoo
+    1: begin: Xbar // Identifier doesn't match default forbidden regex (X prefix).
+      assign c = 1;
+    end: Xbar
+    default: begin: Xbaz // Identifier doesn't match default forbidden regex (X prefix).
+      assign c = 2;
+    end: Xbaz
+  endcase
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  if (0) begin: foo // Unconfigured forbidden regex matches (almost) anything.
+    assign a = 0;
+  end: foo
+  else begin: bar // Unconfigured forbidden regex matches (almost) anything.
+    assign a = 1;
+  end: bar
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  // Unconfigured forbidden regex matches (almost) anything.
+  for (genvar i=0; i < 5; i++) begin: foo
+    assign b[i] = 0;
+  end: foo
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  case (0)
+    0: begin: foo // Unconfigured forbidden regex matches (almost) anything.
+      assign c = 0;
+    end: foo
+    1: begin: bar // Unconfigured forbidden regex matches (almost) anything.
+      assign c = 1;
+    end: bar
+    default: begin: baz // Unconfigured forbidden regex matches (almost) anything.
+      assign c = 2;
+    end: baz
+  endcase
+endmodule
+```
+
+### Explanation
+
+Generate blocks must not have identifiers matching the regex configured via the
+`re_forbidden_generateblock` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_generateblock**
+  - **generate_case_with_label**
+  - **generate_for_with_label**
+  - **generate_if_with_label**
+
+
+---
+## `re_forbidden_genvar`
+
+### Hint
+
+Use a genvar identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  genvar Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  // Identifier doesn't match default forbidden regex (X prefix).
+  for (genvar Xbar=0; Xbar < 5; Xbar++) begin
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  genvar foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  // Unconfigured forbidden regex matches (almost) anything.
+  for (genvar bar=0; bar < 5; bar++) begin
+  end
+endmodule
+```
+
+### Explanation
+
+Genvars must not have identifiers matching the regex configured via the
+`re_forbidden_genvar` option.
+
+See also:
+  - **re_required_genvar**
+
+
+---
+## `re_forbidden_instance`
+
+### Hint
+
+Use an instance identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  A #(
+  ) Xfoo (); // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  A #(
+  ) foo (); // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+### Explanation
+
+Instances must not have identifiers matching the regex configured via the
+`re_forbidden_instance` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_package**
+  - **prefix_instance**
+
+
+---
+## `re_forbidden_interface`
+
+### Hint
+
+Use a interface identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+interface Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endinterface
+```
+
+### Fail Example
+
+```SystemVerilog
+interface foo; // Unconfigured forbidden regex matches (almost) anything.
+endinterface
+```
+
+### Explanation
+
+Interfaces must not have identifiers matching the regex configured via the
+`re_forbidden_interface` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_interface**
+  - **prefix_interface**
+  - **uppercamelcase_interface**
+  - **lowercamelcase_interface**
+
+
+---
+## `re_forbidden_localparam`
+
+### Hint
+
+Use a localparam identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+package P;
+  localparam Xfoo = 0; // Identifier doesn't match default forbidden regex (X prefix).
+endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package P;
+  localparam foo = 0; // Unconfigured forbidden regex matches (almost) anything.
+endpackage
+```
+
+### Explanation
+
+Local parameters must not have identifiers matching the regex configured via the
+`re_forbidden_localparam` option.
+
+See also:
+  - **re_required_localparam**
+  - **localparam_explicit_type**
+  - **localparam_type_twostate**
+  - **parameter_explicit_type**
+  - **parameter_in_package**
+  - **parameter_type_twostate**
+
+
+---
+## `re_forbidden_modport`
+
+### Hint
+
+Use a modport identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+interface I;
+  modport Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  ( input i
+  );
+endinterface
+```
+
+### Fail Example
+
+```SystemVerilog
+interface I;
+  modport foo // Unconfigured forbidden regex matches (almost) anything.
+  ( input i
+  );
+endinterface
+```
+
+### Explanation
+
+Modports must not have identifiers matching the regex configured via the
+`re_forbidden_modport` option.
+
+See also:
+  - **re_required_modport**
+  - **interface_port_with_modport**
+
+
+---
+## `re_forbidden_module_ansi`
+
+### Hint
+
+Use a module identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+### Explanation
+
+Modules declared with an ANSI header must not have identifiers matching the
+regex configured via the `re_forbidden_module_ansi` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_module_ansi**
+  - **re_forbidden_module_nonansi**
+  - **re_required_module_nonansi**
+  - **prefix_module**
+  - **uppercamelcase_module**
+  - **lowercamelcase_module**
+  - **non_ansi_module**
+
+
+---
+## `re_forbidden_module_nonansi`
+
+### Hint
+
+Use a module identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  ( a
+  );
+  input a;
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module foo // Unconfigured forbidden regex matches (almost) anything.
+  ( a
+  );
+  input a;
+endmodule
+```
+
+### Explanation
+
+Modules declared with a non-ANSI header must not have identifiers matching the
+regex configured via the `re_forbidden_module_nonansi` option.
+Non-ANSI modules are commonly used where compatability with classic Verilog
+(IEEE1364-1995) is required, such as low-level cells and macros.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_module_nonansi**
+  - **re_forbidden_module_ansi**
+  - **re_required_module_ansi**
+  - **prefix_module**
+  - **uppercamelcase_module**
+  - **lowercamelcase_module**
+  - **non_ansi_module**
+
+
+---
+## `re_forbidden_package`
+
+### Hint
+
+Use a package identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+package Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package foo; // Unconfigured forbidden regex matches (almost) anything.
+endpackage
+```
+
+### Explanation
+
+Packages must not have identifiers matching the regex configured via the
+`re_forbidden_package` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_package**
+  - **prefix_package**
+  - **uppercamelcase_package**
+  - **lowercamelcase_package**
+
+
+---
+## `re_forbidden_parameter`
+
+### Hint
+
+Use a parameter identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  #( Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  ) ();
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  #( foo // Unconfigured forbidden regex matches (almost) anything.
+  ) ();
+endmodule
+```
+
+### Explanation
+
+Parameters must not have identifiers matching the regex configured via the
+`re_forbidden_parameter` option.
+
+See also:
+  - **re_required_parameter**
+  - **localparam_explicit_type**
+  - **localparam_type_twostate**
+  - **parameter_explicit_type**
+  - **parameter_in_package**
+  - **parameter_type_twostate**
+
+
+---
+## `re_forbidden_port_inout`
+
+### Hint
+
+Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( inout Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M_nonansi
+  ( Xfoo
+  );
+  inout Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( inout foo // Unconfigured forbidden regex matches (almost) anything.
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M_nonansi
+  ( foo
+  );
+  inout foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+### Explanation
+
+Bidirectional ports must not have identifiers matching the regex configured via
+the `re_forbidden_port_inout` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_port_inout**
+  - **prefix_inout**
+
+
+---
+## `re_forbidden_port_input`
+
+### Hint
+
+Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( input Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M_nonansi
+  ( Xfoo
+  );
+  input Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( input foo // Unconfigured forbidden regex matches (almost) anything.
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M_nonansi
+  ( foo
+  );
+  input foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+### Explanation
+
+Input ports must not have identifiers matching the regex configured via the
+`re_forbidden_port_input` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_port_input**
+  - **prefix_input**
+
+
+---
+## `re_forbidden_port_interface`
+
+### Hint
+
+Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( I Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M_nonansi
+  ( Xfoo
+  );
+  I.i Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( I.i foo // Unconfigured forbidden regex matches (almost) anything.
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M_nonansi
+  ( foo
+  );
+  I.i foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+### Explanation
+
+Interface ports must not have identifiers matching the regex configured via the
+`re_forbidden_port_interface` option.
+
+See also:
+  - **re_required_port_interface**
+
+
+---
+## `re_forbidden_port_output`
+
+### Hint
+
+Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( output Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M_nonansi
+  ( Xfoo
+  );
+  output Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( output foo // Unconfigured forbidden regex matches (almost) anything.
+  );
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M_nonansi
+  ( foo
+  );
+  output foo; // Unconfigured forbidden regex matches (almost) anything.
+endmodule
+```
+
+### Explanation
+
+Output ports must not have identifiers matching the regex configured via the
+`re_forbidden_port_output` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_required_port_output**
+  - **prefix_output**
+
+
+---
+## `re_forbidden_port_ref`
+
+### Hint
+
+Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( ref Xfoo // Identifier doesn't match default forbidden regex (X prefix).
+  );
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( ref foo // Unconfigured forbidden regex matches (almost) anything.
+  );
+endmodule
+```
+
+### Explanation
+
+Reference ports must not have identifiers matching the regex configured via the
+`re_forbidden_port_ref` option.
+
+See also:
+  - **re_required_port_ref**
+
+
+---
+## `re_forbidden_program`
+
+### Hint
+
+Use a program identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+program Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endprogram
+```
+
+### Fail Example
+
+```SystemVerilog
+program foo; // Unconfigured forbidden regex matches (almost) anything.
+endprogram
+```
+
+### Explanation
+
+Programs must not have identifiers matching the regex configured via the
+`re_forbidden_program` option.
+
+See also:
+  - **re_required_program**
+
+
+---
+## `re_forbidden_property`
+
+### Hint
+
+Use a property identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  property Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+    @(posedge c) p; // Concurrent assertion.
+  endproperty
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  property foo; // Unconfigured forbidden regex matches (almost) anything.
+    @(posedge c) p; // Concurrent assertion.
+  endproperty
+endmodule
+```
+
+### Explanation
+
+Properties must not have identifiers matching the regex configured via the
+`re_forbidden_property` option.
+
+See also:
+  - **re_required_property**
+
+
+---
+## `re_forbidden_sequence`
+
+### Hint
+
+Use a sequence identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  sequence Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+    @(posedge c) a ##1 b
+  endsequence
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  sequence foo; // Unconfigured forbidden regex matches (almost) anything.
+    @(posedge c) a ##1 b
+  endsequence
+endmodule
+```
+
+### Explanation
+
+Sequences must not have identifiers matching the regex configured via the
+`re_forbidden_sequence` option.
+
+See also:
+  - **re_required_sequence**
+
+
+---
+## `re_forbidden_task`
+
+### Hint
+
+Use a task identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  task Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+  endtask
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  task foo; // Unconfigured forbidden regex matches (almost) anything.
+  endtask
+endmodule
+```
+
+### Explanation
+
+Tasks must not have identifiers matching the regex configured via the
+`re_forbidden_task` option.
+
+See also:
+  - **re_required_task**
+
+
+---
+## `re_forbidden_var_class`
+
+### Hint
+
+Use a class-scoped variable identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+class C;
+  int Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+endclass
+```
+
+### Fail Example
+
+```SystemVerilog
+class C;
+  int foo; // Unconfigured forbidden regex matches (almost) anything.
+endclass
+```
+
+### Explanation
+
+Class-scoped variables must not have identifiers matching the regex configured
+via the `re_forbidden_var_class` option.
+
+See also:
+  - **re_required_var_class**
+
+
+---
+## `re_forbidden_var_classmethod`
+
+### Hint
+
+Use a method-scoped variable identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+class C;
+  function F;
+    int Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
+  endfunction
+endclass
+```
+
+### Fail Example
+
+```SystemVerilog
+class C;
+  function F;
+    int foo; // Unconfigured forbidden regex matches (almost) anything.
+  endfunction
+endclass
+```
+
+### Explanation
+
+Method-scoped variables must not have identifiers matching the regex configured
+via the `re_forbidden_var_classmethod` option.
+
+See also:
+  - **re_required_var_classmethod**
+  - **re_required_var_class**
+  - **re_forbidden_var_class**
+
+
+---
+## `re_required_assert`
+
+### Hint
+
+Use an immediate assertion identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  initial begin
+    mn3: // Identifier matches default required regex (lowercase).
+      assert (p) else $error(); // Simple immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    mn3: // Identifier matches default required regex (lowercase).
+      assert #0 (p) else $error(); // Deferred immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  mn3: // Identifier matches default required regex (lowercase).
+    assert #0 (p) else $error(); // Deferred immmediate assertion item.
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  initial begin
+    Mn3: // Identifier doesn't match default required regex (lowercase).
+      assert (p) else $error(); // Simple immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    Mn3: // Identifier doesn't match default required regex (lowercase).
+      assert #0 (p) else $error(); // Deferred immmediate assertion statement.
+  end
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  Mn3: // Identifier doesn't match default required regex (lowercase).
+    assert #0 (p) else $error(); // Deferred immmediate assertion item.
+endmodule
+```
+
+### Explanation
+
+Immediate assertions, including deferred immediate assertions, must have
+identifiers matching the regex configured via the `re_required_assert` option.
+
+See also:
+  - **re_forbidden_assert**
+
+
+---
+## `re_required_assert_property`
+
+### Hint
+
+Use a concurrent assertion identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  mn3: // Identifier matches default required regex (lowercase).
+    assert property (@(posedge c) p); // Concurrent assertion.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    mn3: // Identifier matches default required regex (lowercase).
+      assert property (@(posedge c) p); // Concurrent assertion.
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  Mn3: // Identifier doesn't match default required regex (lowercase).
+    assert property (@(posedge c) p); // Concurrent assertion.
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  initial begin
+    Mn3: // Identifier doesn't match default required regex (lowercase).
+      assert property (@(posedge c) p); // Concurrent assertion.
+  end
+endmodule
+```
+
+### Explanation
+
+Concurrent assertions must have identifiers matching the regex configured via
+the `re_required_assert_property` option.
+
+See also:
+  - **re_forbidden_assert_property**
+
+
+---
+## `re_required_checker`
+
+### Hint
+
+Use a checker identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+checker mn3; // Identifier matches default required regex (lowercase).
+endchecker
+```
+
+### Fail Example
+
+```SystemVerilog
+checker Mn3; // Identifier doesn't match default required regex (lowercase).
+endchecker
+```
+
+### Explanation
+
+Checkers must have identifiers matching the regex configured via the
+`re_required_checker` option.
+
+See also:
+  - **re_forbidden_checker**
+
+
+---
+## `re_required_class`
+
+### Hint
+
+Use a class identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+class mn3; // Identifier matches default required regex (lowercase).
+endclass
+```
+
+### Fail Example
+
+```SystemVerilog
+class Mn3; // Identifier doesn't match default required regex (lowercase).
+endclass
+```
+
+### Explanation
+
+Classes must have identifiers matching the regex configured via the
+`re_required_class` option.
+
+See also:
+  - **re_forbidden_class**
+
+
+---
+## `re_required_function`
+
+### Hint
+
+Use a function identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+package P;
+  function mn3; // Identifier matches default required regex (lowercase).
+  endfunction
+endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package P;
+  function Mn3; // Identifier doesn't match default required regex (lowercase).
+  endfunction
+endpackage
+```
+
+### Explanation
+
+Functions must have identifiers matching the regex configured via the
+`re_required_function` option.
+
+See also:
+  - **re_forbidden_function**
+  - **function_same_as_system_function**
+
+
+---
+## `re_required_generateblock`
+
+### Hint
+
+Use a generate block identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  if (0) begin: mn3 // Identifier matches default required regex (lowercase).
+    assign a = 0;
+  end: mn3
+  else begin: mn4 // Identifier matches default required regex (lowercase).
+    assign a = 1;
+  end: mn4
+
+  // Identifier matches default required regex (lowercase).
+  for (genvar i=0; i < 5; i++) begin: mn5
+    assign b[i] = 0;
+  end: mn5
+
+  case (0)
+    0: begin: mn6 // Identifier matches default required regex (lowercase).
+      assign c = 0;
+    end: mn6
+    1: begin: mn7 // Identifier matches default required regex (lowercase).
+      assign c = 1;
+    end: mn7
+    default: begin: mn8 // Identifier matches default required regex (lowercase).
+      assign c = 2;
+    end: mn8
+  endcase
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  if (0) begin: Mn3 // Identifier doesn't match default required regex (lowercase).
+    assign a = 0;
+  end: Mn3
+  else begin: Mn4 // Identifier doesn't match default required regex (lowercase).
+    assign a = 1;
+  end: Mn4
+
+  // Identifier doesn't match default required regex (lowercase).
+  for (genvar i=0; i < 5; i++) begin: Mn5
+    assign b[i] = 0;
+  end: Mn5
+
+  case (0)
+    0: begin: Mn6 // Identifier doesn't match default required regex (lowercase).
+      assign c = 0;
+    end: Mn6
+    1: begin: Mn7 // Identifier doesn't match default required regex (lowercase).
+      assign c = 1;
+    end: Mn7
+    default: begin: Mn8 // Identifier doesn't match default required regex (lowercase).
+      assign c = 2;
+    end: Mn8
+  endcase
+endmodule
+```
+
+### Explanation
+
+Generate blocks must have identifiers matching the regex configured via the
+`re_required_generateblock` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_generateblock**
+  - **generate_case_with_label**
+  - **generate_for_with_label**
+  - **generate_if_with_label**
+
+
+---
+## `re_required_genvar`
+
+### Hint
+
+Use a genvar identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  genvar mn3; // Identifier matches default required regex (lowercase).
+
+  // Identifier matches default required regex (lowercase).
+  for (genvar mn4=0; mn4 < 5; mn4++) begin
+  end
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  genvar Mn3; // Identifier doesn't match default required regex (lowercase).
+
+  // Identifier doesn't match default required regex (lowercase).
+  for (genvar Mn4=0; Mn4 < 5; Mn4++) begin
+  end
+endmodule
+```
+
+### Explanation
+
+Genvars must have identifiers matching the regex configured via the
+`re_required_genvar` option.
+
+See also:
+  - **re_forbidden_genvar**
+
+
+---
+## `re_required_instance`
+
+### Hint
+
+Use an instance identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  A #(
+  ) mn3 (); // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  A #(
+  ) Mn3 (); // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+### Explanation
+
+Instances must have identifiers matching the regex configured via the
+`re_required_instance` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_instance**
+  - **prefix_instance**
+
+
+---
+## `re_required_interface`
+
+### Hint
+
+Use a interface identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+interface mn3; // Identifier matches default required regex (lowercase).
+endinterface
+```
+
+### Fail Example
+
+```SystemVerilog
+interface Mn3; // Identifier doesn't match default required regex (lowercase).
+endinterface
+```
+
+### Explanation
+
+Interfaces must have identifiers matching the regex configured via the
+`re_required_interface` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_interface**
+  - **prefix_interface**
+  - **uppercamelcase_interface**
+  - **lowercamelcase_interface**
+
+
+---
+## `re_required_localparam`
+
+### Hint
+
+Use a localparam identifier matching regex "^[A-Z]+[A-Z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+package P;
+  localparam MN3 = 0; // Identifier matches default required regex (uppercase).
+endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package P;
+  localparam Mn3 = 0; // Identifier doesn't match default required regex (uppercase).
+endpackage
+```
+
+### Explanation
+
+Local parameters must have identifiers matching the regex configured via the
+`re_required_localparam` option.
+
+See also:
+  - **re_forbidden_localparam**
+  - **localparam_explicit_type**
+  - **localparam_type_twostate**
+  - **parameter_explicit_type**
+  - **parameter_in_package**
+  - **parameter_type_twostate**
+
+
+---
+## `re_required_modport`
+
+### Hint
+
+Use a modport identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+interface I;
+  modport mn3 // Identifier matches default required regex (lowercase).
+  ( input i
+  );
+endinterface
+```
+
+### Fail Example
+
+```SystemVerilog
+interface I;
+  modport Mn3 // Identifier doesn't match default required regex (lowercase).
+  ( input i
+  );
+endinterface
+```
+
+### Explanation
+
+Modports must have identifiers matching the regex configured via the
+`re_required_modport` option.
+
+See also:
+  - **re_forbidden_modport**
+  - **interface_port_with_modport**
+
+
+---
+## `re_required_module_ansi`
+
+### Hint
+
+Use a module identifier matching regex "^[a-z]+[a-zA-Z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module mN3; // Identifier matches default required regex (mixed-case).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module Mn3; // Identifier doesn't match default required regex (mixed-case).
+endmodule
+```
+
+### Explanation
+
+Modules declared with an ANSI header must have identifiers matching the regex
+configured via the `re_required_module_ansi` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_module_ansi**
+  - **re_forbidden_module_nonansi**
+  - **re_required_module_nonansi**
+  - **prefix_module**
+  - **uppercamelcase_module**
+  - **lowercamelcase_module**
+  - **non_ansi_module**
+
+
+---
+## `re_required_module_nonansi`
+
+### Hint
+
+Use a module identifier matching regex "^[A-Z]+[A-Z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module MN3 // Identifier matches default required regex (uppercase).
+  ( a
+  );
+  input a;
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module mn3 // Identifier doesn't match default required regex (uppercase).
+  ( a
+  );
+  input a;
+endmodule
+```
+
+### Explanation
+
+Modules declared with a non-ANSI header must have identifiers matching the
+regex configured via the `re_required_module_nonansi` option.
+Non-ANSI modules are commonly used where compatability with classic Verilog
+(IEEE1364-1995) is required, such as low-level cells and macros.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_module_nonansi**
+  - **re_forbidden_module_ansi**
+  - **re_required_module_ansi**
+  - **prefix_module**
+  - **uppercamelcase_module**
+  - **lowercamelcase_module**
+  - **non_ansi_module**
+
+
+---
+## `re_required_package`
+
+### Hint
+
+Use a package identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+package mn3; // Identifier matches default required regex (lowercase).
+endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package Mn3; // Identifier doesn't match default required regex (lowercase).
+endpackage
+```
+
+### Explanation
+
+Packages must have identifiers matching the regex configured via the
+`re_required_package` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_package**
+  - **prefix_package**
+  - **uppercamelcase_package**
+  - **lowercamelcase_package**
+
+
+---
+## `re_required_parameter`
+
+### Hint
+
+Use a parameter identifier matching regex "^[A-Z]+[A-Z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  #( MN3 // Identifier matches default required regex (uppercase).
+  ) ();
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  #( Mn3 // Identifier doesn't match default required regex (uppercase).
+  ) ();
+endmodule
+```
+
+### Explanation
+
+Parameters must have identifiers matching the regex configured via the
+`re_required_parameter` option.
+
+See also:
+  - **re_forbidden_parameter**
+  - **localparam_explicit_type**
+  - **localparam_type_twostate**
+  - **parameter_explicit_type**
+  - **parameter_in_package**
+  - **parameter_type_twostate**
+
+
+---
+## `re_required_port_inout`
+
+### Hint
+
+Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( inout mn3 // Identifier matches default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( mn3
+  );
+  inout mn3; // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( inout Mn3 // Identifier doesn't match default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( Mn3
+  );
+  inout Mn3; // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+### Explanation
+
+Bidirectional ports must have identifiers matching the regex configured via the
+`re_required_port_inout` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_inout**
+  - **prefix_inout**
+
+
+---
+## `re_required_port_input`
+
+### Hint
+
+Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( input mn3 // Identifier matches default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( mn3
+  );
+  input mn3; // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( input Mn3 // Identifier doesn't match default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( Mn3
+  );
+  input Mn3; // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+### Explanation
+
+Input ports must have identifiers matching the regex configured via the
+`re_required_port_input` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_input**
+  - **prefix_input**
+
+
+---
+## `re_required_port_interface`
+
+### Hint
+
+Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( I.i mn3 // Identifier matches default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( mn3
+  );
+  I.i mn3; // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( I.i Mn3 // Identifier doesn't match default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( Mn3
+  );
+  I.i Mn3; // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+### Explanation
+
+Interface ports must have identifiers matching the regex configured via the
+`re_required_port_interface` option.
+
+See also:
+  - **re_forbidden_interface**
+
+
+---
+## `re_required_port_output`
+
+### Hint
+
+Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( output mn3 // Identifier matches default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( mn3
+  );
+  output mn3; // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( output Mn3 // Identifier doesn't match default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( Mn3
+  );
+  output Mn3; // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+### Explanation
+
+Output ports must have identifiers matching the regex configured via the
+`re_required_port_output` option.
+
+NOTE: For performance reasons, particularly within text-editor integrations
+(i.e. svls), the `re_(required|forbidden)_` should only be used where the
+simpler naming rules are not sufficient.
+
+See also:
+  - **re_forbidden_output**
+  - **prefix_output**
+
+
+---
+## `re_required_port_ref`
+
+### Hint
+
+Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M
+  ( ref mn3 // Identifier matches default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( mn3
+  );
+  ref var mn3; // Identifier matches default required regex (lowercase).
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M
+  ( ref Mn3 // Identifier doesn't match default required regex (lowercase).
+  );
+endmodule
+
+module M_nonansi
+  ( Mn3
+  );
+  ref var Mn3; // Identifier doesn't match default required regex (lowercase).
+endmodule
+```
+
+### Explanation
+
+Reference ports must have identifiers matching the regex configured via the
+`re_required_port_ref` option.
+
+See also:
+  - **re_forbidden_ref**
+
+
+---
+## `re_required_program`
+
+### Hint
+
+Use a program identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+program mn3; // Identifier matches default required regex (lowercase).
+endprogram
+```
+
+### Fail Example
+
+```SystemVerilog
+program Mn3; // Identifier doesn't match default required regex (lowercase).
+endprogram
+```
+
+### Explanation
+
+Programs must have identifiers matching the regex configured via the
+`re_required_program` option.
+
+See also:
+  - **re_forbidden_program**
+
+
+---
+## `re_required_property`
+
+### Hint
+
+Use a property identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  property mn3; // Identifier matches default required regex (lowercase).
+    @(posedge c) p; // Concurrent assertion.
+  endproperty
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  property Mn3; // Identifier doesn't match default required regex (lowercase).
+    @(posedge c) p; // Concurrent assertion.
+  endproperty
+endmodule
+```
+
+### Explanation
+
+Properties must have identifiers matching the regex configured via the
+`re_required_property` option.
+
+See also:
+  - **re_forbidden_property**
+
+
+---
+## `re_required_sequence`
+
+### Hint
+
+Use a sequence identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  sequence mn3; // Identifier matches default required regex (lowercase).
+    @(posedge c) a ##1 b
+  endsequence
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  sequence Mn3; // Identifier doesn't match default required regex (lowercase).
+    @(posedge c) a ##1 b
+  endsequence
+endmodule
+```
+
+### Explanation
+
+Sequences must have identifiers matching the regex configured via the
+`re_required_sequence` option.
+
+See also:
+  - **re_forbidden_sequence**
+
+
+---
+## `re_required_task`
+
+### Hint
+
+Use a task identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+module M;
+  task mn3; // Identifier matches default required regex (lowercase).
+  endtask
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module M;
+  task Mn3; // Identifier doesn't match default required regex (lowercase).
+  endtask
+endmodule
+```
+
+### Explanation
+
+Tasks must have identifiers matching the regex configured via the
+`re_required_task` option.
+
+See also:
+  - **re_forbidden_task**
+
+
+---
+## `re_required_var_class`
+
+### Hint
+
+Use a class-scoped variable identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+class C;
+  int mn3; // Identifier matches default required regex (lowercase).
+endclass
+```
+
+### Fail Example
+
+```SystemVerilog
+class C;
+  int Mn3; // Identifier doesn't match default required regex (lowercase).
+endclass
+```
+
+### Explanation
+
+Class-scoped variables must have identifiers matching the regex configured via
+the `re_required_var_class` option.
+
+See also:
+  - **re_forbidden_var_class**
+
+
+---
+## `re_required_var_classmethod`
+
+### Hint
+
+Use a method-scoped variable identifier matching regex "^[a-z]+[a-z0-9_]*$".
+
+### Reason
+
+Identifiers must conform to the naming scheme.
+
+### Pass Example
+
+```SystemVerilog
+class C;
+  function F;
+    int mn3; // Identifier matches default required regex (lowercase).
+  endfunction
+endclass
+```
+
+### Fail Example
+
+```SystemVerilog
+class C;
+  function F;
+    int Mn3; // Identifier doesn't match default required regex (lowercase).
+  endfunction
+endclass
+```
+
+### Explanation
+
+Method-scoped variables must have identifiers matching the regex configured via
+the `re_required_var_classmethod` option.
+
+See also:
+  - **re_forbidden_var_classmethod**
+  - **re_forbidden_var_class**
+  - **re_required_var_class**
+
+
+---
+## `uppercamelcase_interface`
+
+### Hint
+
+Begin `interface` name with UpperCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+interface FooBar;
+endinterface
+```
+
+### Fail Example
+
+```SystemVerilog
+interface fooBar;
+endinterface
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with an uppercase letter, and packages should start with an
+lowercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Mutually exclusive alternative rule.
+  - **lowercamelcase_module** - Potential companion rule.
+  - **lowercamelcase_package** - Suggested companion rule.
+  - **prefix_interface** - Alternative rule.
+  - **uppercamelcase_module** - Suggested companion rule.
+  - **uppercamelcase_package** - Potential companion rule.
+
+
+---
+## `uppercamelcase_module`
+
+### Hint
+
+Begin `module` name with UpperCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+module FooBar;
+endmodule
+```
+
+### Fail Example
+
+```SystemVerilog
+module fooBar;
+endmodule
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with an uppercase letter, and packages should start with an
+lowercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Potential companion rule.
+  - **lowercamelcase_module** - Mutually exclusive alternative rule.
+  - **lowercamelcase_package** - Suggested companion rule.
+  - **prefix_module** - Alternative rule.
+  - **uppercamelcase_interface** - Suggested companion rule.
+  - **uppercamelcase_package** - Potential companion rule.
+
+
+---
+## `uppercamelcase_package`
+
+### Hint
+
+Begin `package` name with UpperCamelCase.
+
+### Reason
+
+Naming convention simplifies audit.
+
+### Pass Example
+
+```SystemVerilog
+package FooBar;
+endpackage
+```
+
+### Fail Example
+
+```SystemVerilog
+package fooBar;
+endpackage
+```
+
+### Explanation
+
+There are 3 usual types of SystemVerilog file for synthesizable design code
+(module, interface, package) and having a simple naming convention helps
+distinguish them from a filesystem viewpoint.
+In Haskell, types/typeclasses must start with an uppercase letter, and
+functions/variables must start with a lowercase letter.
+This rule checks part of a related naming scheme where modules and interfaces
+should start with a lowercase letter, and packages should start with an
+uppercase letter.
+
+See also:
+  - **lowercamelcase_interface** - Suggested companion rule.
+  - **lowercamelcase_module** - Suggested companion rule.
+  - **lowercamelcase_package** - Mutually exclusive alternative rule.
+  - **prefix_package** - Alternative rule.
+  - **uppercamelcase_interface** - Potential companion rule.
+  - **uppercamelcase_module** - Potential companion rule.
+
+
+# Style/Whitespace Convention Rules
+
+Most rules for checking style/whitespace are named with the prefix `style_`,
+but `tab_character` is also in this class.
+These rules do not reference any clause in the LRM (IEEE1800-2017).
+
+
 ---
 ## `style_commaleading`
 
@@ -4141,9 +6722,6 @@ endmodule
 See also:
   - **style_indent** - Suggested companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `style_indent`
@@ -4195,9 +6773,6 @@ followed by an integer multiple of 2 (configurable) space characters.
 
 See also:
   - **tab_character** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4256,9 +6831,6 @@ See also:
   - **style_keyword_end** - Suggested companion rule.
   - **style_keyword_maybelabel** - Suggested companion rule.
   - **style_keyword_newline** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4340,9 +6912,6 @@ See also:
   - **style_keyword_maybelabel** - Suggested companion rule.
   - **style_keyword_newline** - Suggested companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `style_keyword_1or2space`
@@ -4410,9 +6979,6 @@ See also:
   - **style_keyword_end** - Suggested companion rule.
   - **style_keyword_maybelabel** - Suggested companion rule.
   - **style_keyword_newline** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4648,9 +7214,6 @@ See also:
   - **style_keyword_maybelabel** - Suggested companion rule.
   - **style_keyword_newline** - Suggested companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `style_keyword_construct`
@@ -4749,9 +7312,6 @@ See also:
   - **style_keyword_maybelabel** - Suggested companion rule.
   - **style_keyword_newline** - Suggested companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `style_keyword_datatype`
@@ -4835,9 +7395,6 @@ See also:
   - **style_keyword_end** - Suggested companion rule.
   - **style_keyword_maybelabel** - Suggested companion rule.
   - **style_keyword_newline** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -4928,9 +7485,6 @@ See also:
   - **style_keyword_datatype** - Potential companion rule.
   - **style_keyword_maybelabel** - Suggested companion rule.
   - **style_keyword_newline** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5025,9 +7579,6 @@ See also:
   - **style_keyword_end** - Suggested companion rule.
   - **style_keyword_newline** - Suggested companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `style_keyword_newline`
@@ -5100,9 +7651,6 @@ See also:
   - **style_keyword_end** - Suggested companion rule.
   - **style_keyword_maybelabel** - Suggested companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `style_operator_arithmetic`
@@ -5171,9 +7719,6 @@ See also:
   - **style_operator_boolean** - Suggested companion rule.
   - **style_operator_integer** - Suggested companion rule.
   - **style_operator_unary** - Suggested companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
 
 
 ---
@@ -5247,9 +7792,6 @@ See also:
   - **style_operator_integer** - Suggested companion rule.
   - **style_operator_unary** - Suggested companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `style_operator_integer`
@@ -5321,9 +7863,6 @@ See also:
   - **style_operator_boolean** - Suggested companion rule.
   - **style_operator_unary** - Suggested companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `style_operator_unary`
@@ -5389,9 +7928,6 @@ See also:
   - **style_operator_boolean** - Suggested companion rule.
   - **style_operator_integer** - Suggested companion rule.
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `style_trailingwhitespace`
@@ -5442,9 +7978,6 @@ See also:
   - VSCode: `files.trimTrailingWhitespace: true,`
   - Notepad++: "Trim Trailing Space" on <https://npp-user-manual.org/docs/editing/>
 
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 ---
 ## `tab_character`
@@ -5489,150 +8022,5 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
-
-
----
-## `uppercamelcase_interface`
-
-### Hint
-
-Begin `interface` name with UpperCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-interface FooBar;
-endinterface
-```
-
-### Fail Example
-
-```SystemVerilog
-interface fooBar;
-endinterface
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with an uppercase letter, and packages should start with an
-lowercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Mutually exclusive alternative rule.
-  - **lowercamelcase_module** - Potential companion rule.
-  - **lowercamelcase_package** - Suggested companion rule.
-  - **prefix_interface** - Alternative rule.
-  - **uppercamelcase_module** - Suggested companion rule.
-  - **uppercamelcase_package** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `uppercamelcase_module`
-
-### Hint
-
-Begin `module` name with UpperCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-module FooBar;
-endmodule
-```
-
-### Fail Example
-
-```SystemVerilog
-module fooBar;
-endmodule
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with an uppercase letter, and packages should start with an
-lowercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Potential companion rule.
-  - **lowercamelcase_module** - Mutually exclusive alternative rule.
-  - **lowercamelcase_package** - Suggested companion rule.
-  - **prefix_module** - Alternative rule.
-  - **uppercamelcase_interface** - Suggested companion rule.
-  - **uppercamelcase_package** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
-
----
-## `uppercamelcase_package`
-
-### Hint
-
-Begin `package` name with UpperCamelCase.
-
-### Reason
-
-Naming convention simplifies audit.
-
-### Pass Example
-
-```SystemVerilog
-package FooBar;
-endpackage
-```
-
-### Fail Example
-
-```SystemVerilog
-package fooBar;
-endpackage
-```
-
-### Explanation
-
-There are 3 usual types of SystemVerilog file for synthesizable design code
-(module, interface, package) and having a simple naming convention helps
-distinguish them from a filesystem viewpoint.
-In Haskell, types/typeclasses must start with an uppercase letter, and
-functions/variables must start with a lowercase letter.
-This rule checks part of a related naming scheme where modules and interfaces
-should start with a lowercase letter, and packages should start with an
-uppercase letter.
-
-See also:
-  - **lowercamelcase_interface** - Suggested companion rule.
-  - **lowercamelcase_module** - Suggested companion rule.
-  - **lowercamelcase_package** - Mutually exclusive alternative rule.
-  - **prefix_package** - Alternative rule.
-  - **uppercamelcase_interface** - Potential companion rule.
-  - **uppercamelcase_module** - Potential companion rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
-
 
 

@@ -12,6 +12,3 @@ See also:
   - Emacs: <https://www.emacswiki.org/emacs/WhiteSpace>
   - VSCode: `files.trimTrailingWhitespace: true,`
   - Notepad++: "Trim Trailing Space" on <https://npp-user-manual.org/docs/editing/>
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.

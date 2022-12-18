@@ -14,6 +14,3 @@ See also:
   - **uppercamelcase_interface** - Suggested companion rule.
   - **uppercamelcase_module** - Suggested companion rule.
   - **uppercamelcase_package** - Mutually exclusive alternative rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-  - Not applicable.
