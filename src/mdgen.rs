@@ -8,10 +8,15 @@ mod rules;
 use crate::config::{Config, ConfigOption};
 use crate::linter::Rule;
 use regex::Regex;
+use std::env;
 use std::fs::File;
-use std::io::{BufReader, Read};
+use std::io::{BufReader, Read, Write};
+use std::path::Path;
 
 fn file_contents(path: &str) -> String {
+    let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let path = Path::new(&cargo_manifest_dir).join(path);
+
     let file: File = File::open(path).unwrap();
     let mut buf_reader: BufReader<File> = BufReader::new(file);
     let mut contents: String = String::new();
@@ -20,28 +25,28 @@ fn file_contents(path: &str) -> String {
     contents
 }
 
-fn print_rules(rules: Vec<Box<dyn Rule>>) -> () {
+fn write_md_rules(o: &mut File, rules: Vec<Box<dyn Rule>>) -> () {
     for rule in rules {
-        println!("---");
-        println!("## `{}`\n", rule.name());
+        let _ = writeln!(o, "---");
+        let _ = writeln!(o, "## `{}`\n", rule.name());
 
-        println!("### Hint\n");
-        println!("{}\n", rule.hint(&ConfigOption::default()));
+        let _ = writeln!(o, "### Hint\n");
+        let _ = writeln!(o, "{}\n", rule.hint(&ConfigOption::default()));
 
-        println!("### Reason\n");
-        println!("{}\n", rule.reason());
+        let _ = writeln!(o, "### Reason\n");
+        let _ = writeln!(o, "{}\n", rule.reason());
 
-        println!("### Pass Example\n");
+        let _ = writeln!(o, "### Pass Example\n");
         let p: String = format!("testcases/pass/{}.sv", rule.name());
-        println!("```SystemVerilog\n{}```\n", file_contents(&p));
+        let _ = writeln!(o, "```SystemVerilog\n{}```\n", file_contents(&p));
 
-        println!("### Fail Example\n");
+        let _ = writeln!(o, "### Fail Example\n");
         let p: String = format!("testcases/fail/{}.sv", rule.name());
-        println!("```SystemVerilog\n{}```\n", file_contents(&p));
+        let _ = writeln!(o, "```SystemVerilog\n{}```\n", file_contents(&p));
 
-        println!("### Explanation\n");
+        let _ = writeln!(o, "### Explanation\n");
         let p: String = format!("md/explanation-{}.md", rule.name());
-        println!("{}\n", file_contents(&p));
+        let _ = writeln!(o, "{}\n", file_contents(&p));
     }
 }
 
@@ -72,30 +77,42 @@ fn partition_rules(
     (ruleset_functional, ruleset_naming, ruleset_style)
 }
 
-#[cfg_attr(tarpaulin, skip)]
-pub fn main() {
+fn write_manual_md() -> () {
+    let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let o = Path::new(&cargo_manifest_dir).join("RULES.md");
+    let mut o = File::create(&o).unwrap();
+
     let (functional_rules, naming_rules, style_rules) = partition_rules(Config::gen_all_rules());
 
-    println!(
+    let _ = writeln!(
+        o,
         "{}\n",
         file_contents(format!("md/manual-introduction.md").as_str())
     );
 
-    println!(
+    let _ = writeln!(
+        o,
         "{}\n",
         file_contents(format!("md/manual-functional_rules.md").as_str())
     );
-    print_rules(functional_rules);
+    write_md_rules(&mut o, functional_rules);
 
-    println!(
+    let _ = writeln!(
+        o,
         "{}\n",
         file_contents(format!("md/manual-naming_convention_rules.md").as_str())
     );
-    print_rules(naming_rules);
+    write_md_rules(&mut o, naming_rules);
 
-    println!(
+    let _ = writeln!(
+        o,
         "{}\n",
         file_contents(format!("md/manual-style_convention_rules.md").as_str())
     );
-    print_rules(style_rules);
+    write_md_rules(&mut o, style_rules);
+}
+
+#[cfg_attr(tarpaulin, skip)]
+pub fn main() {
+    write_manual_md();
 }
