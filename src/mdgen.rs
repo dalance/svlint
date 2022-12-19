@@ -9,9 +9,17 @@ use crate::config::{Config, ConfigOption};
 use crate::linter::Rule;
 use regex::Regex;
 use std::env;
-use std::fs::File;
-use std::io::{BufReader, Read, Write};
+use std::fs::{File, read_dir};
+use std::io::{BufReader, Read, Write, Error};
 use std::path::Path;
+
+struct Ruleset {
+    name: String,
+    md: Vec<String>,
+    sh: Vec<String>,
+    cmd: Vec<String>,
+    toml: Vec<String>,
+}
 
 fn file_contents(path: &str) -> String {
     let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
@@ -23,6 +31,67 @@ fn file_contents(path: &str) -> String {
     buf_reader.read_to_string(&mut contents).unwrap();
 
     contents
+}
+
+fn get_rulesets() -> Vec<Ruleset> {
+    let mut definitions: Vec<(String, String)> = Vec::new();
+    let re: Regex = Regex::new(r"ruleset-([a-zA-Z0-9_-]+)\.md").unwrap();
+    let entries = read_dir("md").unwrap()
+        .map(|res| res.map(|e| e.path()))
+        .collect::<Result<Vec<_>, Error>>().unwrap();
+    for entry in entries {
+        let entry = entry.to_str().unwrap();
+        if let Some(caps) = re.captures(entry) {
+            let name = String::from(caps.get(1).unwrap().as_str());
+            definitions.push((name, file_contents(&entry)));
+        }
+    }
+
+    let mut ret = Vec::new();
+    for (name, contents) in definitions {
+        enum DefinitionLineState {
+            Markdown,
+            PosixShell,
+            WindowsBatch,
+            TomlConfig,
+        }
+
+        let mut linestate = DefinitionLineState::Markdown;
+        let mut md: Vec<String> = Vec::new();
+        let mut sh: Vec<String> = Vec::new();
+        let mut cmd: Vec<String> = Vec::new();
+        let mut toml: Vec<String> = Vec::new();
+
+        for line in contents.lines() {
+            if line.starts_with("```toml") {
+                linestate = DefinitionLineState::TomlConfig;
+            } else if line.starts_with("```winbatch") {
+                linestate = DefinitionLineState::WindowsBatch;
+            } else if line.starts_with("```sh") {
+                linestate = DefinitionLineState::PosixShell;
+            } else if line.starts_with("```") {
+                linestate = DefinitionLineState::Markdown;
+            } else {
+                let line = line.to_string();
+                let _ = match linestate {
+                    DefinitionLineState::Markdown => md.push(line),
+                    DefinitionLineState::PosixShell => sh.push(line),
+                    DefinitionLineState::WindowsBatch => cmd.push(line),
+                    DefinitionLineState::TomlConfig => toml.push(line),
+                };
+            }
+        }
+
+        ret.push(Ruleset {
+            name: name,
+            md: md,
+            sh: sh,
+            cmd: cmd,
+            toml: toml,
+        });
+    }
+
+    ret
 }
 
 fn write_md_rules(o: &mut File, rules: Vec<Box<dyn Rule>>) -> () {
@@ -77,12 +146,12 @@ fn partition_rules(
     (ruleset_functional, ruleset_naming, ruleset_style)
 }
 
-fn write_manual_md() -> () {
+fn write_manual_md(rules: Vec<Box<dyn Rule>>) -> () {
     let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let o = Path::new(&cargo_manifest_dir).join("RULES.md");
     let mut o = File::create(&o).unwrap();
 
-    let (functional_rules, naming_rules, style_rules) = partition_rules(Config::gen_all_rules());
+    let (functional_rules, naming_rules, style_rules) = partition_rules(rules);
 
     let _ = writeln!(
         o,
@@ -112,7 +181,70 @@ fn write_manual_md() -> () {
     write_md_rules(&mut o, style_rules);
 }
 
+fn write_ruleset_sh(ruleset: &Ruleset) -> () {
+    let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let p = Path::new(&cargo_manifest_dir)
+        .join("rulesets")
+        .join(format!("svlint-{}", ruleset.name));
+
+    {
+        let mut o = File::create(&p).unwrap();
+
+        let _ = writeln!(o, "#!/usr/bin/env sh -e");
+        let _ = writeln!(o, "SVLINT_CONFIG=\"$(which svlint-{}).toml\"", ruleset.name);
+        for line in &ruleset.sh {
+            let _ = writeln!(o, "{}", line);
+        }
+        let _ = writeln!(o, "env SVLINT_CONFIG=\"$SVLINT_CONFIG\" svlint $*");
+    }
+
+    if cfg!(unix) {
+        use std::fs::{set_permissions, Permissions};
+        use std::os::unix::fs::PermissionsExt;
+        set_permissions(&p, Permissions::from_mode(0o755)).unwrap();
+    }
+}
+
+fn write_ruleset_cmd(ruleset: &Ruleset) -> () {
+    let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let p = Path::new(&cargo_manifest_dir)
+        .join("rulesets")
+        .join(format!("svlint-{}.cmd", ruleset.name));
+    let mut o = File::create(&p).unwrap();
+
+    let _ = write!(o, "\r\n");
+    let _ = write!(o, "@echo off\r\n");
+    let _ = write!(o, "for /f %f in ('where.exe {}') do set \"WHERE=%f\"\r\n", ruleset.name);
+    let _ = write!(o, "set \"SVLINT_CONFIG=%WHERE%\\{}.toml\"\r\n", ruleset.name);
+    for line in &ruleset.cmd {
+        let _ = write!(o, "{}\r\n", line);
+    }
+    let _ = write!(o, "svlint %*\r\n");
+    let _ = write!(o, "\r\n");
+}
+
+fn write_ruleset_toml(ruleset: &Ruleset) -> () {
+    let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let p = Path::new(&cargo_manifest_dir)
+        .join("rulesets")
+        .join(format!("{}.toml", ruleset.name));
+    let mut o = File::create(&p).unwrap();
+
+    for line in &ruleset.toml {
+        let _ = writeln!(o, "{}", line);
+    }
+}
+
+
 #[cfg_attr(tarpaulin, skip)]
 pub fn main() {
-    write_manual_md();
+    let rulesets = get_rulesets();
+    for ruleset in &rulesets {
+        write_ruleset_sh(ruleset);
+        write_ruleset_cmd(ruleset);
+        write_ruleset_toml(ruleset);
+    }
+
+    let rules = Config::gen_all_rules();
+    write_manual_md(rules); // TODO: Use rulesets in manual.
 }

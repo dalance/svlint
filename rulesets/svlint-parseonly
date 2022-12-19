@@ -1,0 +1,9 @@
+#!/usr/bin/env sh -e
+SVLINT_CONFIG="$(which svlint-parseonly).toml"
+SVLINT_FILES=$(svlint --dump-filelist $* |
+  sed -n '1,/^"\.":$/d;/  files:$/d;/  incdirs:$/q;s/[^"]*"\([^"]*\).*/\1/;p'
+)
+for f in $SVLINT_FILES; do
+  iconv -f utf8 "$f" -t utf8 -o /dev/null
+done
+env SVLINT_CONFIG="$SVLINT_CONFIG" svlint $*
