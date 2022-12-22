@@ -14,6 +14,60 @@ TODO
 
 TODO: Line width via shell script.
 
+### Test Each File for Excessively Long Lines
+
+TODO Context about long lines.
+
+To get a list of all the files examined by a particular invocation of svlint,
+use the `--dump-filelist` option and parse the output.
+```sh
+# Delete ANSI control sequences that begin with ESC and (usually) end with m.
+STRIP_ANSI_CONTROL="| sed -e 's/\\o33\\[[0-9;]*[mGKHF]//g'"
+
+# Delete every ASCII control character except line feed ('\n' = 0o12 = 10 = 0x0A).
+STRIP_ASCII_CONTROL="| tr -d '[\\000-\\011\\013-\\037\\177]'"
+
+# Extract files from YAML output of --dump-filelist.
+# First, delete all lines up to and including one equal to `".":`.
+# Next, delete all lines equal to `  files:`.
+# On encountering a line equal to `  incdirs:`, quit processing immediately.
+# Replace lines containing double quotes with the characters between those quotes.
+# Suppress normal output with -n, but print remaining content.
+FILES_FROM_YAML="| sed -n '"
+FILES_FROM_YAML="${FILES_FROM_YAML}0,/^\"\\.\":\$/d;"
+FILES_FROM_YAML="${FILES_FROM_YAML}/^  files:\$/d;"
+FILES_FROM_YAML="${FILES_FROM_YAML}/^  incdirs:\$/q;"
+FILES_FROM_YAML="${FILES_FROM_YAML}s/[^\"]*\"\\([^\"]*\\).*/\1/;"
+FILES_FROM_YAML="${FILES_FROM_YAML}p"
+FILES_FROM_YAML="${FILES_FROM_YAML}'"
+
+# Combine the above fragments into a string which can be evaluated and
+# processed with xargs.
+# NOTE: Creating a variable with the result (instead of the command) would lead
+# to undefined behavior where the list of file paths exceeds 2MiB.
+SVFILES="svlint --dump-filelist $*"
+SVFILES="${SVFILES} ${STRIP_ANSI_CONTROL}"
+SVFILES="${SVFILES} ${STRIP_ASCII_CONTROL}"
+SVFILES="${SVFILES} ${FILES_FROM_YAML}"
+```
+
+The `grep` utility can be used to detect, and report, lines longer than a given
+number of characters.
+```sh
+TEXTWIDTH='80'
+LINE_LENGTH="grep -EvIxHn --color '.{0,${TEXTWIDTH}}' {};"
+LINE_LENGTH="${LINE_LENGTH} if [ \"\$?\" -eq \"0\" ]; then"
+LINE_LENGTH="${LINE_LENGTH}   echo '!!! Lines longer than ${TEXTWIDTH} characters !!!';"
+LINE_LENGTH="${LINE_LENGTH}   exit 1;"
+LINE_LENGTH="${LINE_LENGTH} else"
+LINE_LENGTH="${LINE_LENGTH}   exit 0;"
+LINE_LENGTH="${LINE_LENGTH} fi"
+eval "${SVFILES}" | xargs -I {} sh -c "${LINE_LENGTH}"
+```
+
+On Windows, the default environment does not contain utilities such as `grep`,
+so some system-specific scripting may be more appropriate.
+
 ### Indentation
 
 An indent of 2 spaces, not tabs, is chosen.
