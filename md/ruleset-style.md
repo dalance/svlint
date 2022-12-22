@@ -1,10 +1,9 @@
-Style
------
+# Style
 
 The set of whitespace-only checks which are "suggested" in the explanations
 of the **style_** rules.
 
-### Motivation
+## Motivation
 
 TODO
 - Remove visual noise.
@@ -14,7 +13,7 @@ TODO
 
 TODO: Line width via shell script.
 
-### Test Each File for Excessively Long Lines
+## Test Each File for Excessively Long Lines
 
 TODO Context about long lines.
 
@@ -68,7 +67,7 @@ eval "${SVFILES}" | xargs -I {} sh -c "${LINE_LENGTH}"
 On Windows, the default environment does not contain utilities such as `grep`,
 so some system-specific scripting may be more appropriate.
 
-### Indentation
+## Indentation
 
 An indent of 2 spaces, not tabs, is chosen.
 For better or worse, contemporary computer language styles have moved
@@ -118,7 +117,7 @@ rules.multiline_if_begin = true
 rules.multiline_for_begin = true
 ```
 
-### Indentation Preprocessor Considerations
+## Indentation Preprocessor Considerations
 
 A potential source of confusion is in the use of the preprocessor to
 accidentally introduce whitespace.
@@ -212,7 +211,7 @@ characters followed immediately by a newline.
 rules.style_trailingwhitespace = true
 ```
 
-### Operators
+## Operators
 
 Consistent use of whitespace around operators makes it easier for new readers
 to understand expressions.
@@ -224,7 +223,7 @@ rules.style_operator_integer = true
 rules.style_operator_unary = true
 ```
 
-### Keywords
+## Keywords
 
 TODO
 ```toml
@@ -239,7 +238,7 @@ rules.style_keyword_maybelabel = true
 rules.style_keyword_newline = true
 ```
 
-### Comma-Separated Lists
+## Comma-Separated Lists
 
 TODO
 ```toml
