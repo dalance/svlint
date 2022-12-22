@@ -251,7 +251,7 @@ POSIX shell scripts begin with this header, where "an-example" is replaced by
 the ruleset's name:
 ```sh
 #!/usr/bin/env sh -e
-SVLINT_CONFIG="$(which svlint-an-example).toml"
+SVLINT_CONFIG="$(dirname $(which svlint-an-example))/an-example.toml"
 ```
 Next, any codeblocks with the `sh` language marker are concatenated to
 the header in order before, finally, this footer is appended:

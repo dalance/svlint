@@ -26,19 +26,41 @@ issue of differently encoded files.
 To get a list of all the files examined by a particular invocation of svlint,
 use the `--dump-filelist` option and parse the output.
 ```sh
-SVLINT_FILES=$(svlint --dump-filelist $* |
-  sed -n '1,/^"\.":$/d;/  files:$/d;/  incdirs:$/q;s/[^"]*"\([^"]*\).*/\1/;p'
-)
+# Delete ANSI control sequences that begin with ESC and (usually) end with m.
+STRIP_ANSI_CONTROL="| sed -e 's/\\o33\\[[0-9;]*[mGKHF]//g'"
+
+# Delete every ASCII control character except line feed ('\n' = 0o12 = 10 = 0x0A).
+STRIP_ASCII_CONTROL="| tr -d '[\\000-\\011\\013-\\037\\177]'"
+
+# Extract files from YAML output of --dump-filelist.
+# First, delete all lines up to and including one equal to `".":`.
+# Next, delete all lines equal to `  files:`.
+# On encountering a line equal to `  incdirs:`, quit processing immediately.
+# Replace lines containing double quotes with the characters between those quotes.
+# Suppress normal output with -n, but print remaining content.
+FILES_FROM_YAML="| sed -n '"
+FILES_FROM_YAML="${FILES_FROM_YAML}0,/^\"\\.\":\$/d;"
+FILES_FROM_YAML="${FILES_FROM_YAML}/^  files:\$/d;"
+FILES_FROM_YAML="${FILES_FROM_YAML}/^  incdirs:\$/q;"
+FILES_FROM_YAML="${FILES_FROM_YAML}s/[^\"]*\"\\([^\"]*\\).*/\1/;"
+FILES_FROM_YAML="${FILES_FROM_YAML}p"
+FILES_FROM_YAML="${FILES_FROM_YAML}'"
+
+# Combine the above fragments into a string which can be evaluated and
+# processed with xargs.
+# NOTE: Creating a variable with the result (instead of the command) would lead
+# to undefined behavior where the list of file paths exceeds 2MiB.
+SVFILES="svlint --dump-filelist $*"
+SVFILES="${SVFILES} ${STRIP_ANSI_CONTROL}"
+SVFILES="${SVFILES} ${STRIP_ASCII_CONTROL}"
+SVFILES="${SVFILES} ${FILES_FROM_YAML}"
 ```
 
 Testing files for alternate (i.e. legacy) encodings is made easier by
 specialized tools like `iconv` on Unix.
 ```sh
-for f in $SVLINT_FILES; do
-  iconv -f utf8 "$f" -t utf8 -o /dev/null
-done
+eval "${SVFILES}" | xargs -I {} iconv -f UTF-8 -t UTF-8 {} > /dev/null
 ```
 
-On Windows, such utilities are not generally installed by default.
-
-TODO: rm (TEST GitHub Actions)
+On Windows, the default environment does not contain utilities such as `sed`,
+so some system-specific scripting may be more appropriate.

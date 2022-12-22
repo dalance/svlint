@@ -190,8 +190,9 @@ fn write_ruleset_sh(ruleset: &Ruleset) -> () {
     {
         let mut o = File::create(&p).unwrap();
 
-        let _ = writeln!(o, "#!/usr/bin/env sh -e");
-        let _ = writeln!(o, "SVLINT_CONFIG=\"$(which svlint-{}).toml\"", ruleset.name);
+        let _ = writeln!(o, "#!/usr/bin/env sh");
+        let _ = writeln!(o, "set -e");
+        let _ = writeln!(o, "SVLINT_CONFIG=\"$(dirname $(which svlint-{0}))/{0}.toml\"", ruleset.name);
         for line in &ruleset.sh {
             let _ = writeln!(o, "{}", line);
         }
