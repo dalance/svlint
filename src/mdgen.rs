@@ -193,9 +193,11 @@ fn write_ruleset_sh(ruleset: &Ruleset) -> () {
         let _ = writeln!(o, "#!/usr/bin/env sh");
         let _ = writeln!(o, "set -e");
         let _ = writeln!(o, "SVLINT_CONFIG=\"$(dirname $(which svlint-{0}))/{0}.toml\"", ruleset.name);
+        let _ = writeln!(o, "");
         for line in &ruleset.sh {
             let _ = writeln!(o, "{}", line);
         }
+        let _ = writeln!(o, "");
         let _ = writeln!(o, "env SVLINT_CONFIG=\"$SVLINT_CONFIG\" svlint $*");
     }
 
