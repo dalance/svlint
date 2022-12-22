@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 set -e
 SVLINT_CONFIG="$(dirname $(which svlint-style))/style.toml"
+
 # Delete ANSI control sequences that begin with ESC and (usually) end with m.
 STRIP_ANSI_CONTROL="| sed -e 's/\\o33\\[[0-9;]*[mGKHF]//g'"
 
@@ -38,4 +39,5 @@ LINE_LENGTH="${LINE_LENGTH} else"
 LINE_LENGTH="${LINE_LENGTH}   exit 0;"
 LINE_LENGTH="${LINE_LENGTH} fi"
 eval "${SVFILES}" | xargs -I {} sh -c "${LINE_LENGTH}"
+
 env SVLINT_CONFIG="$SVLINT_CONFIG" svlint $*
