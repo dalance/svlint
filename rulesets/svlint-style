@@ -1,3 +1,4 @@
-#!/usr/bin/env sh -e
-SVLINT_CONFIG="$(which svlint-style).toml"
+#!/usr/bin/env sh
+set -e
+SVLINT_CONFIG="$(dirname $(which svlint-style))/style.toml"
 env SVLINT_CONFIG="$SVLINT_CONFIG" svlint $*
