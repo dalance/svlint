@@ -146,7 +146,7 @@ fn partition_rules(
     (ruleset_functional, ruleset_naming, ruleset_style)
 }
 
-fn write_manual_md(rules: Vec<Box<dyn Rule>>) -> () {
+fn write_manual_md(rules: Vec<Box<dyn Rule>>, rulesets: Vec<Ruleset>) -> () {
     let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let o = Path::new(&cargo_manifest_dir).join("RULES.md");
     let mut o = File::create(&o).unwrap();
@@ -179,6 +179,13 @@ fn write_manual_md(rules: Vec<Box<dyn Rule>>) -> () {
         file_contents(format!("md/manual-style_convention_rules.md").as_str())
     );
     write_md_rules(&mut o, style_rules);
+
+    let _ = writeln!(
+        o,
+        "{}\n",
+        file_contents(format!("md/manual-rulesets.md").as_str())
+    );
+    // TODO: For ruleset in rulesets: write a chapter in the manual.
 }
 
 fn write_ruleset_sh(ruleset: &Ruleset) -> () {
@@ -249,5 +256,5 @@ pub fn main() {
     }
 
     let rules = Config::gen_all_rules();
-    write_manual_md(rules); // TODO: Put rulesets in manual.
+    write_manual_md(rules, rulesets);
 }
