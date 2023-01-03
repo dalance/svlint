@@ -249,5 +249,5 @@ pub fn main() {
     }
 
     let rules = Config::gen_all_rules();
-    write_manual_md(rules); // TODO: Use rulesets in manual.
+    write_manual_md(rules); // TODO: Put rulesets in manual.
 }
