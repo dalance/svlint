@@ -241,9 +241,8 @@ Do not specify side effects within `assert` or `wait_order` action blocks.
 
 Side effects may cause undefined event ordering.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always @(posedge clk)
     assert (A)
@@ -257,9 +256,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   always @(posedge clk)
     assert (A) // These are legal, but potentially confusing.
@@ -325,9 +323,8 @@ Do not use blocking assignments within `always_ff`.
 
 Blocking assignment in `always_ff` may cause undefined event ordering.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_ff @(posedge clk) q1 <= d; // Correct.
 
@@ -337,9 +334,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
 /* svlint off blocking_assignment_in_always_ff */
 always_ff @(posedge clk) q1 = d;   // Control comments avoid failure.
@@ -385,9 +381,8 @@ Use a `default` expression in `case` statements.
 
 Incomplete case may cause simulation/synthesis mismatch in `always_comb` and `function`.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_comb
     case (x)
@@ -402,9 +397,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   always_comb
     case (x)
@@ -456,17 +450,15 @@ Place `` `default_nettype none`` at the top of source code.
 
 Compiler directive `` `default_nettype none`` detects unintentional implicit wires.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 `default_nettype none
 module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
 endmodule
 ```
@@ -533,9 +525,8 @@ Specify an explicit `enum` base type.
 
 The default `enum` base type is `int` (32b, 2-state).
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   typedef enum int {
     i
@@ -543,9 +534,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   typedef enum
     { i
@@ -614,9 +604,8 @@ Add a `default` arm to the `case` statement.
 
 Fully-specified case clarifies design intent.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_comb
     case (x)
@@ -632,16 +621,18 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M;
   always_comb
     case (x)
       1: a = 0; // Incompletely specified case implies memory.
     endcase
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M;
   always_ff @(clk) begin
     case (x)
@@ -704,9 +695,8 @@ Add an `else` clause to the `if` statement.
 
 Fully-specified conditional clarifies design intent.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_ff @(clk)
     if (x) y <= 0;
@@ -718,14 +708,16 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M;
   always_comb
     if (x) y = 0; // Incompletely specified condition implies memory.
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M;
   always_ff @(clk) begin
     if (a)
@@ -784,18 +776,16 @@ Rename `function` to something other than the name of a built-in function.
 
 Name clashes may cause confusion amongst tools and readers.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   function my_clog2;
   endfunction
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   function clog2;
   endfunction
@@ -832,9 +822,8 @@ Add the `automatic` lifetime specifier to function.
 
 Static lifetime of function items causes a simulation/synthesis mismatch.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   function automatic F;
   endfunction
@@ -902,9 +891,8 @@ module static M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   function F;
   endfunction
@@ -942,18 +930,16 @@ Declare `genvar` inside a loop generate construct.
 
 Minimized `genvar` scope makes code easier to read and review.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   for(genvar i=0; i < 10; i++) begin: a
   end
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   genvar i;
   for (i=0; i < 10; i++) begin
@@ -1027,9 +1013,8 @@ Declare `genvar` outside the loop generate construct.
 
 Some tools don't support `genvar` declarations inside loop generate constructs.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   genvar i;
   for (i=0; i < 10; i++) begin: a
@@ -1037,9 +1022,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   for (genvar i=0; i < 10; i++) begin: l_foo
   end: l_foo
@@ -1092,18 +1076,16 @@ Specify `tri` datakind on `inout` ports.
 
 Explicit datakind of bi-directional ports should be consistent with input ports.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( inout tri a
   );
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( inout wire a
   );
@@ -1166,18 +1148,16 @@ Specify `var` datakind on `input` ports.
 
 Default datakind of input port is a tri-state net.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( input var a
   );
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( input logic a
   );
@@ -1241,9 +1221,8 @@ Specify the modport on the interface port.
 
 Without a modport, the interface port signals are all implictly `inout`.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( test_if.a a
   , interface.b b
@@ -1251,14 +1230,16 @@ module M
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M
   ( test_if a
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M
   ( interface b
   );
@@ -1308,18 +1289,16 @@ Use `always_comb`/`always_ff`/`always_latch` instead of `always`.
 
 General-purpose `always` cannot detect combinatorial/stateful (non-)blocking mistakes.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_comb begin
   end
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   always @* begin
   end
@@ -1388,16 +1367,14 @@ Remove `generate`/`endgenerate` keywords.
 
 Keywords `generate`/`endgenerate` do not change semantics of generate blocks.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   generate
   endgenerate
@@ -1441,9 +1418,8 @@ Remove `priority` keyword, perhaps replace with an assertion.
 
 Priority-case/if constructs may mismatch between simulation and synthesis.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   initial
     case (a)
@@ -1452,16 +1428,18 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M;
   initial
     priority case (a)
       default: b = 1;
     endcase
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M;
   initial
     priority if (a)
@@ -1525,9 +1503,8 @@ Remove `unique` keyword, perhaps replace with an assertion.
 
 Unique-case/if constructs may mismatch between simulation and synthesis.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   initial
     case (a)
@@ -1536,16 +1513,18 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M;
   initial
     unique case (a)
       default: b = 1;
     endcase
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M;
   initial
     unique if (a)
@@ -1619,9 +1598,8 @@ Remove `unique0` keyword, perhaps replace with an assertion.
 
 Unique0-case/if constructs may mismatch between simulation and synthesis.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   initial
     case (a)
@@ -1630,9 +1608,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M;
   initial begin
     unique0 case (a)
@@ -1640,7 +1617,10 @@ module M;
     endcase
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M;
   initial
     unique0 if (a)
@@ -1712,17 +1692,15 @@ Replace `wire` or `reg` keywords with `logic`, `tri` and/or `var`.
 
 Explicit datatype `logic` and/or datakind `var`/`tri` better describes intent.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   logic a;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   wire a;
   reg b;
@@ -1768,9 +1746,8 @@ Use `generate`/`endgenerate` keywords to define generate regions.
 
 Omitting `generate`/`endgenerate` keywords may cause issues with non-compliant tools.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   generate
 
@@ -1788,20 +1765,25 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 3)
+```systemverilog
 module M;
   if (a) begin
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 3)
+```systemverilog
 module M;
   case (a)
       default: a;
   endcase
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 3)
+```systemverilog
 module M;
   for (genvar i=0; i < 10; i++) begin
   end
@@ -1843,9 +1825,8 @@ Replace level-sensitive `always` with `always_comb`.
 
 Level-sensitive `always` cannot detect combinatorial/stateful (non-)blocking mistakes.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_comb begin
   end
@@ -1854,14 +1835,16 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M;
   always @* begin // No sensitivity list.
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M;
   always @ (a or b) begin // No sensitivity to posedge, negedge, or edge.
   end
@@ -1921,17 +1904,15 @@ Provide an explicit type in `localparam` declaration.
 
 Explicit parameter types clarify intent and improve readability.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   localparam int A = 0;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   localparam L = 0;
 endmodule
@@ -1983,9 +1964,8 @@ Declare `localparam` with an explicit 2-state type.
 
 Design constants with Xs or Zs may cause simulation/synthesis mismatch.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   localparam byte     A = 8'b0;
   localparam shortint B = 16'b0;
@@ -1995,17 +1975,22 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 3)
+```systemverilog
 module M;
   localparam integer A = 32'b0; // 32b
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 3)
+```systemverilog
 module M;
   localparam logic B = 1'b0; // 1b
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 3)
+```systemverilog
 module M;
   localparam reg C = 1'b0; // 1b
 endmodule
@@ -2113,9 +2098,8 @@ Declare the loop variable within the loop, i.e. `for (int i`.
 
 Minimizing the variable's scope avoids common coding errors.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   initial
     for(int i=0; i < 10; i++) begin
@@ -2123,9 +2107,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   initial begin
     int i;
@@ -2162,9 +2145,8 @@ Add `begin`/`end` around multi-line `for` statement.
 
 Without `begin`/`end`, the loop statement may be confusing.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_comb begin
     for (int a=0; a < 10; a++) begin
@@ -2176,16 +2158,18 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M;
   always_comb begin
     for (int i=0; i < 10; i++)
       a = 0;
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M;
   always_comb begin
     for (int i=0; i < 10; i++) a = 0; // This is okay.
@@ -2221,9 +2205,8 @@ Add `begin`/`end` around multi-line `if` statement.
 
 Without `begin`/`end`, the conditional statement may be confusing.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_comb begin
     if (a) begin
@@ -2251,15 +2234,17 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 5)
+```systemverilog
 module M;
   always_comb
     if (a)
       a = 0; // Missing begin/end.
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 5)
+```systemverilog
 module M;
   always_comb
     if (a) begin
@@ -2267,7 +2252,10 @@ module M;
     end else if (a)
       a = 0; // Missing begin/end.
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 5)
+```systemverilog
 module M;
   always_comb
     if (a) begin
@@ -2277,14 +2265,20 @@ module M;
     end else
       a = 0; // Missing begin/end.
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (4 of 5)
+```systemverilog
 module M;
   always_comb begin
     if (a)
       a = 0; // Missing begin/end.
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (5 of 5)
+```systemverilog
 module M;
   always_comb begin
     if (a) a = 0; // This conditional statement is okay.
@@ -2322,18 +2316,23 @@ Declare `module` header in ANSI style.
 
 Non-ANSI module headers are visually noisy and error-prone.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 3)
+```systemverilog
 module M      // An ANSI module has ports declared in the module header.
   ( input  a
   , output b
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 3)
+```systemverilog
 module M;     // A module with no ports is also ANSI.
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (3 of 3)
+```systemverilog
 module M      // Declaring ports in the header with default direction (inout)
   ( a         // also specifies an ANSI module.
   , b
@@ -2341,9 +2340,8 @@ module M      // Declaring ports in the header with default direction (inout)
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( a
   , b
@@ -2386,18 +2384,16 @@ Remove non-blocking assignment in `always_comb`.
 
 Scheduling between blocking and non-blocking assignments is non-deterministic.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_comb
     x = 0;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   always_comb
     x <= 0;
@@ -2439,18 +2435,16 @@ Specify `var` datakind on `output` ports.
 
 Explicit datakind of output ports should be consistent with input ports.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( output var logic a
   );
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( output logic a
   );
@@ -2515,28 +2509,32 @@ Specify `parameter` with an explicit default value.
 
 Default values are required by some tools and clarify intent.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   #(parameter int P = 0
   ) ();
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 3)
+```systemverilog
 module M
   #(parameter int P // Type is specified (good), but default value isn't (bad).
   ) ();
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 3)
+```systemverilog
 module M
   #(parameter Q // Neither type or default value are specified (very bad).
   ) ();
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 3)
+```systemverilog
 module M
   #(parameter int P = 0
   , R // Legal, but even less clear about the author's intention.
@@ -2595,23 +2593,24 @@ Provide an explicit type in `parameter` declaration.
 
 Explicit parameter types clarify intent and improve readability.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   #(parameter int a = 0
   ) ();
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M
   #(parameter a = 0
   ) ();
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M
   #(parameter a = int'(0)
   ) ();
@@ -2664,9 +2663,8 @@ Replace `parameter` keyword with `localparam`.
 
 In a generate block, `localparam` properly describes the non-overridable semantics.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   for (genvar i=0; i < 5; i++) begin
     localparam int P1 = 1;
@@ -2689,9 +2687,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   for (genvar i=0; i < 5; i++) begin
     parameter int P1 = 1;
@@ -2740,17 +2737,15 @@ Replace `parameter` keyword with `localparam`.
 
 In a package, `localparam` properly describes the non-overridable semantics.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 package P;
   localparam int A = 1;
 endpackage
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 package P;
   parameter int A = 1;
 endpackage
@@ -2782,9 +2777,8 @@ Declare `parameter` with an explicit 2-state type.
 
 Design constants with Xs or Zs may cause simulation/synthesis mismatch.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   #(parameter byte     A = 8'b0
   , parameter shortint B = 16'b0
@@ -2795,19 +2789,24 @@ module M
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 3)
+```systemverilog
 module M
   #(parameter integer A = 32'b0
   ) ();
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 3)
+```systemverilog
 module M
   #(parameter logic B = 1'b0
   ) ();
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 3)
+```systemverilog
 module M
   #(parameter reg C = 1'b0
   , logic         Z = 1'b0 // TODO: Z isn't caught.
@@ -2845,9 +2844,8 @@ Keywords `begin` and `end` are forbidden within `always_comb`.
 
 Sequential blocks within `always_comb` introduce sequential dependencies.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_comb
     a = b;
@@ -2867,22 +2865,27 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 4)
+```systemverilog
 module M;
   always_comb begin
     a = z;
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 4)
+```systemverilog
 module M;
   always_comb
     if (bar) begin
       b = z;
     end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 4)
+```systemverilog
 module M;
   always_comb
     if (bar) c = z;
@@ -2890,7 +2893,10 @@ module M;
       c = z;
     end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (4 of 4)
+```systemverilog
 module M;
   always_comb
     case (bar)
@@ -2963,9 +2969,8 @@ Keywords `begin` and `end` are forbidden within `always_ff`.
 
 Sequential blocks within `always_ff` may encourage overly-complex code.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_ff @(posedge clk)
     q <= d;
@@ -2986,22 +2991,27 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 4)
+```systemverilog
 module M;
   always_ff @(posedge clk) begin
     a <= z;
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 4)
+```systemverilog
 module M;
   always_ff @(posedge clk)
     if (x) begin
       a <= z;
     end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 4)
+```systemverilog
 module M;
   always_ff @(posedge clk)
     if (x) a <= z;
@@ -3009,7 +3019,10 @@ module M;
       a <= z;
     end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (4 of 4)
+```systemverilog
 module M;
   always_ff @(posedge clk)
     case (x)
@@ -3133,9 +3146,8 @@ Keywords `begin` and `end` are forbidden within `always_latch`.
 
 Sequential blocks within `always_latch` may encourage overly-complex code.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_latch
     if (foo) a <= b;
@@ -3153,22 +3165,27 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 4)
+```systemverilog
 module M;
   always_latch begin
     a <= z;
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 4)
+```systemverilog
 module M;
   always_latch
     if (x) begin
       a <= z;
     end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 4)
+```systemverilog
 module M;
   always_latch
     if (x) a <= z;
@@ -3176,7 +3193,10 @@ module M;
       a <= z;
     end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (4 of 4)
+```systemverilog
 module M;
   always_latch
     case (x)
@@ -3290,9 +3310,8 @@ Use a label with prefix "l_" on conditional generate block.
 
 Unnamed generate blocks imply unintuitive hierarchical paths.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module A;
   generate case (2'd3)
     2'd1:     begin: l_nondefault wire c = 1'b0; end
@@ -3301,9 +3320,8 @@ module A;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 5)
+```systemverilog
 module M;
   case (2'd0)             // No begin/end delimiters.
     2'd1:
@@ -3312,7 +3330,10 @@ module M;
       logic a = 1'b0;
   endcase
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 5)
+```systemverilog
 module M;
   case (2'd1)             // begin/end delimiters, but no label.
     2'd1: begin
@@ -3323,7 +3344,10 @@ module M;
     end
   endcase
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 5)
+```systemverilog
 module M;
   case (2'd2)             // With label, but no prefix.
     2'd1: begin: foo
@@ -3334,7 +3358,10 @@ module M;
     end                   // NOTE: Without optional label on end.
   endcase
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (4 of 5)
+```systemverilog
 module M;
   case (2'd4)             // Without default arm.
     2'd1: begin: foo
@@ -3342,7 +3369,10 @@ module M;
     end
   endcase
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (5 of 5)
+```systemverilog
 module M;
   case (2'd5)             // Without non-default arm.
     default: begin: bar
@@ -3400,29 +3430,33 @@ Use a label with prefix "l_" on loop generate block.
 
 Unnamed generate blocks imply unintuitive hierarchical paths.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   for(genvar i=0; i < 10; i++) begin: l_a
   end
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 3)
+```systemverilog
 module M;
   for (genvar i=0; i < 10; i++) // No begin/end delimeters.
     assign a[i] = i;
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 3)
+```systemverilog
 module M;
   for (genvar i=0; i < 10; i++) begin // begin/end delimiters, but no label.
     assign a[i] = i;
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 3)
+```systemverilog
 module M;
   for (genvar i=0; i < 10; i++) begin: foo // With label, but no prefix.
     assign a[i] = i;
@@ -3478,9 +3512,8 @@ Use a label with prefix "l_" on conditional generate block.
 
 Unnamed generate blocks imply unintuitive hierarchical paths.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   if (a) begin: l_abc
   end else if (b) begin: l_def
@@ -3489,9 +3522,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 8)
+```systemverilog
 module M;
   if (x)                        // No begin/end delimeters.
     assign a = 0;               // if condition.
@@ -3501,7 +3533,10 @@ module M;
     assign a = 2;
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 8)
+```systemverilog
 module M;
   if (x) begin: l_abc
     assign a = 0;
@@ -3521,7 +3556,10 @@ module M;
   end else                      // No begin/end delimeters.
     assign a = 2;               // else condition
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 8)
+```systemverilog
 module M;
   if (x) begin                  // begin/end delimiters, but no label.
     assign a = 0;               // if condition.
@@ -3531,7 +3569,10 @@ module M;
     assign a = 2;
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (4 of 8)
+```systemverilog
 module M;
   if (x) begin: l_abc
     assign a = 0;
@@ -3541,7 +3582,10 @@ module M;
     assign a = 2;
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (5 of 8)
+```systemverilog
 module M;
   if (x) begin: l_abc
     assign a = 0;
@@ -3551,7 +3595,10 @@ module M;
     assign a = 2;               // else condition
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (6 of 8)
+```systemverilog
 module M;
   if (x) begin: foo             // With label, but no prefix.
     assign a = 0;               // if condition.
@@ -3561,7 +3608,10 @@ module M;
     assign a = 2;
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (7 of 8)
+```systemverilog
 module M;
   if (x) begin: l_abc
     assign a = 0;
@@ -3571,7 +3621,10 @@ module M;
     assign a = 2;
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (8 of 8)
+```systemverilog
 module M;
   if (x) begin: l_abc
     assign a = 0;
@@ -3631,16 +3684,14 @@ Begin `interface` name with lowerCamelCase.
 
 Naming convention simplifies audit.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 interface fooBar;
 endinterface
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 interface FooBar;
 endinterface
 ```
@@ -3676,16 +3727,14 @@ Begin `module` name with lowerCamelCase.
 
 Naming convention simplifies audit.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module fooBar;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module FooBar;
 endmodule
 ```
@@ -3721,16 +3770,14 @@ Begin `package` name with lowerCamelCase.
 
 Naming convention simplifies audit.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 package fooBar;
 endpackage
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 package FooBar;
 endpackage
 ```
@@ -3766,9 +3813,8 @@ Prefix `inout` port identifier with "b_".
 
 Port prefixes help readers to follow signals through modules.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( inout var b_foo
   , input var logic [FOO-1:0] b_bar
@@ -3776,19 +3822,24 @@ module M
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 3)
+```systemverilog
 module M
   ( inout var foo // `foo` is missing prefix.
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 3)
+```systemverilog
 module M
   ( inout var logic [A-1:0] bar // `bar` is missing prefix, not `A`.
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 3)
+```systemverilog
 module M
   ( inout var i_foo
   , inout var bar // `bar` is missing prefix.
@@ -3826,9 +3877,8 @@ Prefix `input` port identifier with "i_".
 
 Port prefixes help readers to follow signals through modules.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( input var i_foo
   , input var logic [FOO-1:0] i_bar
@@ -3836,9 +3886,8 @@ module M
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( input var foo
   , input var logic [FOO-1:0] bar
@@ -3875,17 +3924,15 @@ Prefix instance identifier with "u_".
 
 Naming convention helps investigation using hierarchical paths.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   I #() u_foo (a, b, c);
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   Foo #() foo (a, b, c);
 endmodule
@@ -3924,16 +3971,14 @@ Prefix `interface` identifier with "ifc_".
 
 Naming convention simplifies audit.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 interface ifc_withPrefix;
 endinterface
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 interface noPrefix;
 endinterface
 ```
@@ -3965,17 +4010,15 @@ Prefix `module` identifier with "mod_".
 
 Naming convention simplifies audit.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module mod_withPrefix; // Module identifier of declaration has prefix.
   I #(.A(1)) u_M (.a); // Module identifier of instance doesn't require prefix.
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module noPrefix; // Module identifier of declaration should have prefix.
 endmodule
 ```
@@ -4007,9 +4050,8 @@ Prefix `output` port identifier with "o_".
 
 Port prefixes help readers to follow signals through modules.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( output var o_foo
   , output var logic [FOO-1:0] o_bar
@@ -4017,9 +4059,8 @@ module M
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( output var foo
   , output var logic [FOO-1:0] bar
@@ -4056,16 +4097,14 @@ Prefix `package` identifier with "pkg_".
 
 Naming convention simplifies audit.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 package pkg_withPrefix;
 endpackage
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 package noPrefix;
 endpackage
 ```
@@ -4099,46 +4138,56 @@ Use an immediate assertion identifier not matching regex "^[^X](UNCONFIGURED|.*)
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 3)
+```systemverilog
 module M;
   initial begin
     Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
       assert (p) else $error(); // Simple immmediate assertion statement.
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 3)
+```systemverilog
 module M;
   initial begin
     Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
       assert #0 (p) else $error(); // Deferred immmediate assertion statement.
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (3 of 3)
+```systemverilog
 module M;
   Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
     assert #0 (p) else $error(); // Deferred immmediate assertion item.
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 3)
+```systemverilog
 module M;
   initial begin
     foo: // Unconfigured forbidden regex matches (almost) anything.
       assert (p) else $error(); // Simple immmediate assertion statement.
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 3)
+```systemverilog
 module M;
   initial begin
     foo: // Unconfigured forbidden regex matches (almost) anything.
       assert #0 (p) else $error(); // Deferred immmediate assertion statement.
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 3)
+```systemverilog
 module M;
   foo: // Unconfigured forbidden regex matches (almost) anything.
     assert #0 (p) else $error(); // Deferred immmediate assertion item.
@@ -4165,14 +4214,16 @@ Use a concurrent assertion identifier not matching regex "^[^X](UNCONFIGURED|.*)
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 2)
+```systemverilog
 module M;
   Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
     assert property (@(posedge c) p); // Concurrent assertion.
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 2)
+```systemverilog
 module M;
   initial begin
     Xfoo: // Identifier doesn't match default forbidden regex (X prefix).
@@ -4181,14 +4232,16 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M;
   foo: // Unconfigured forbidden regex matches (almost) anything.
     assert property (@(posedge c) p); // Concurrent assertion.
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M;
   initial begin
     foo: // Unconfigured forbidden regex matches (almost) anything.
@@ -4217,16 +4270,14 @@ Use a checker identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 checker Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
 endchecker
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 checker foo; // Unconfigured forbidden regex matches (almost) anything.
 endchecker
 ```
@@ -4251,16 +4302,14 @@ Use a class identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 class Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
 endclass
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 class foo; // Unconfigured forbidden regex matches (almost) anything.
 endclass
 ```
@@ -4285,18 +4334,16 @@ Use a function identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 package P;
   function Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
   endfunction
 endpackage
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 package P;
   function foo; // Unconfigured forbidden regex matches (almost) anything.
   endfunction
@@ -4324,9 +4371,8 @@ Use a generate block identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 3)
+```systemverilog
 module M;
   if (0) begin: Xfoo // Identifier doesn't match default forbidden regex (X prefix).
     assign a = 0;
@@ -4335,14 +4381,20 @@ module M;
     assign a = 1;
   end: Xbar
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 3)
+```systemverilog
 module M;
   // Identifier doesn't match default forbidden regex (X prefix).
   for (genvar i=0; i < 5; i++) begin: Xfoo
     assign b[i] = 0;
   end: Xfoo
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (3 of 3)
+```systemverilog
 module M;
   case (0)
     0: begin: Xfoo // Identifier doesn't match default forbidden regex (X prefix).
@@ -4358,9 +4410,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 3)
+```systemverilog
 module M;
   if (0) begin: foo // Unconfigured forbidden regex matches (almost) anything.
     assign a = 0;
@@ -4369,14 +4420,20 @@ module M;
     assign a = 1;
   end: bar
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 3)
+```systemverilog
 module M;
   // Unconfigured forbidden regex matches (almost) anything.
   for (genvar i=0; i < 5; i++) begin: foo
     assign b[i] = 0;
   end: foo
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 3)
+```systemverilog
 module M;
   case (0)
     0: begin: foo // Unconfigured forbidden regex matches (almost) anything.
@@ -4419,13 +4476,15 @@ Use a genvar identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 2)
+```systemverilog
 module M;
   genvar Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 2)
+```systemverilog
 module M;
   // Identifier doesn't match default forbidden regex (X prefix).
   for (genvar Xbar=0; Xbar < 5; Xbar++) begin
@@ -4433,13 +4492,15 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M;
   genvar foo; // Unconfigured forbidden regex matches (almost) anything.
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M;
   // Unconfigured forbidden regex matches (almost) anything.
   for (genvar bar=0; bar < 5; bar++) begin
@@ -4467,18 +4528,16 @@ Use an instance identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   A #(
   ) Xfoo (); // Identifier doesn't match default forbidden regex (X prefix).
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   A #(
   ) foo (); // Unconfigured forbidden regex matches (almost) anything.
@@ -4510,16 +4569,14 @@ Use a interface identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 interface Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
 endinterface
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 interface foo; // Unconfigured forbidden regex matches (almost) anything.
 endinterface
 ```
@@ -4551,17 +4608,15 @@ Use a localparam identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 package P;
   localparam Xfoo = 0; // Identifier doesn't match default forbidden regex (X prefix).
 endpackage
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 package P;
   localparam foo = 0; // Unconfigured forbidden regex matches (almost) anything.
 endpackage
@@ -4592,9 +4647,8 @@ Use a modport identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 interface I;
   modport Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   ( input i
@@ -4602,9 +4656,8 @@ interface I;
 endinterface
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 interface I;
   modport foo // Unconfigured forbidden regex matches (almost) anything.
   ( input i
@@ -4633,16 +4686,14 @@ Use a module identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module foo; // Unconfigured forbidden regex matches (almost) anything.
 endmodule
 ```
@@ -4677,9 +4728,8 @@ Use a module identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   ( a
   );
@@ -4687,9 +4737,8 @@ module Xfoo // Identifier doesn't match default forbidden regex (X prefix).
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module foo // Unconfigured forbidden regex matches (almost) anything.
   ( a
   );
@@ -4729,16 +4778,14 @@ Use a package identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 package Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
 endpackage
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 package foo; // Unconfigured forbidden regex matches (almost) anything.
 endpackage
 ```
@@ -4770,18 +4817,16 @@ Use a parameter identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   #( Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   ) ();
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   #( foo // Unconfigured forbidden regex matches (almost) anything.
   ) ();
@@ -4813,14 +4858,16 @@ Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 2)
+```systemverilog
 module M
   ( inout Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 2)
+```systemverilog
 module M_nonansi
   ( Xfoo
   );
@@ -4828,14 +4875,16 @@ module M_nonansi
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M
   ( inout foo // Unconfigured forbidden regex matches (almost) anything.
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M_nonansi
   ( foo
   );
@@ -4868,14 +4917,16 @@ Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 2)
+```systemverilog
 module M
   ( input Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 2)
+```systemverilog
 module M_nonansi
   ( Xfoo
   );
@@ -4883,14 +4934,16 @@ module M_nonansi
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M
   ( input foo // Unconfigured forbidden regex matches (almost) anything.
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M_nonansi
   ( foo
   );
@@ -4923,14 +4976,16 @@ Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 2)
+```systemverilog
 module M
   ( I Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 2)
+```systemverilog
 module M_nonansi
   ( Xfoo
   );
@@ -4938,14 +4993,16 @@ module M_nonansi
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M
   ( I.i foo // Unconfigured forbidden regex matches (almost) anything.
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M_nonansi
   ( foo
   );
@@ -4973,14 +5030,16 @@ Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 2)
+```systemverilog
 module M
   ( output Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 2)
+```systemverilog
 module M_nonansi
   ( Xfoo
   );
@@ -4988,14 +5047,16 @@ module M_nonansi
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M
   ( output foo // Unconfigured forbidden regex matches (almost) anything.
   );
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M_nonansi
   ( foo
   );
@@ -5028,18 +5089,16 @@ Use a port identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( ref Xfoo // Identifier doesn't match default forbidden regex (X prefix).
   );
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( ref foo // Unconfigured forbidden regex matches (almost) anything.
   );
@@ -5066,16 +5125,14 @@ Use a program identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 program Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
 endprogram
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 program foo; // Unconfigured forbidden regex matches (almost) anything.
 endprogram
 ```
@@ -5100,9 +5157,8 @@ Use a property identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   property Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
     @(posedge c) p; // Concurrent assertion.
@@ -5110,9 +5166,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   property foo; // Unconfigured forbidden regex matches (almost) anything.
     @(posedge c) p; // Concurrent assertion.
@@ -5140,9 +5195,8 @@ Use a sequence identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   sequence Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
     @(posedge c) a ##1 b
@@ -5150,9 +5204,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   sequence foo; // Unconfigured forbidden regex matches (almost) anything.
     @(posedge c) a ##1 b
@@ -5180,18 +5233,16 @@ Use a task identifier not matching regex "^[^X](UNCONFIGURED|.*)$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   task Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
   endtask
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   task foo; // Unconfigured forbidden regex matches (almost) anything.
   endtask
@@ -5218,17 +5269,15 @@ Use a class-scoped variable identifier not matching regex "^[^X](UNCONFIGURED|.*
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 class C;
   int Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
 endclass
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 class C;
   int foo; // Unconfigured forbidden regex matches (almost) anything.
 endclass
@@ -5254,9 +5303,8 @@ Use a method-scoped variable identifier not matching regex "^[^X](UNCONFIGURED|.
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 class C;
   function F;
     int Xfoo; // Identifier doesn't match default forbidden regex (X prefix).
@@ -5264,9 +5312,8 @@ class C;
 endclass
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 class C;
   function F;
     int foo; // Unconfigured forbidden regex matches (almost) anything.
@@ -5296,46 +5343,56 @@ Use an immediate assertion identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 3)
+```systemverilog
 module M;
   initial begin
     mn3: // Identifier matches default required regex (lowercase).
       assert (p) else $error(); // Simple immmediate assertion statement.
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 3)
+```systemverilog
 module M;
   initial begin
     mn3: // Identifier matches default required regex (lowercase).
       assert #0 (p) else $error(); // Deferred immmediate assertion statement.
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (3 of 3)
+```systemverilog
 module M;
   mn3: // Identifier matches default required regex (lowercase).
     assert #0 (p) else $error(); // Deferred immmediate assertion item.
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 3)
+```systemverilog
 module M;
   initial begin
     Mn3: // Identifier doesn't match default required regex (lowercase).
       assert (p) else $error(); // Simple immmediate assertion statement.
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 3)
+```systemverilog
 module M;
   initial begin
     Mn3: // Identifier doesn't match default required regex (lowercase).
       assert #0 (p) else $error(); // Deferred immmediate assertion statement.
   end
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 3)
+```systemverilog
 module M;
   Mn3: // Identifier doesn't match default required regex (lowercase).
     assert #0 (p) else $error(); // Deferred immmediate assertion item.
@@ -5362,14 +5419,16 @@ Use a concurrent assertion identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 2)
+```systemverilog
 module M;
   mn3: // Identifier matches default required regex (lowercase).
     assert property (@(posedge c) p); // Concurrent assertion.
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Pass Example (2 of 2)
+```systemverilog
 module M;
   initial begin
     mn3: // Identifier matches default required regex (lowercase).
@@ -5378,14 +5437,16 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 2)
+```systemverilog
 module M;
   Mn3: // Identifier doesn't match default required regex (lowercase).
     assert property (@(posedge c) p); // Concurrent assertion.
 endmodule
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 2)
+```systemverilog
 module M;
   initial begin
     Mn3: // Identifier doesn't match default required regex (lowercase).
@@ -5414,16 +5475,14 @@ Use a checker identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 checker mn3; // Identifier matches default required regex (lowercase).
 endchecker
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 checker Mn3; // Identifier doesn't match default required regex (lowercase).
 endchecker
 ```
@@ -5448,16 +5507,14 @@ Use a class identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 class mn3; // Identifier matches default required regex (lowercase).
 endclass
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 class Mn3; // Identifier doesn't match default required regex (lowercase).
 endclass
 ```
@@ -5482,18 +5539,16 @@ Use a function identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 package P;
   function mn3; // Identifier matches default required regex (lowercase).
   endfunction
 endpackage
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 package P;
   function Mn3; // Identifier doesn't match default required regex (lowercase).
   endfunction
@@ -5521,9 +5576,8 @@ Use a generate block identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   if (0) begin: mn3 // Identifier matches default required regex (lowercase).
     assign a = 0;
@@ -5551,9 +5605,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   if (0) begin: Mn3 // Identifier doesn't match default required regex (lowercase).
     assign a = 0;
@@ -5608,9 +5661,8 @@ Use a genvar identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   genvar mn3; // Identifier matches default required regex (lowercase).
 
@@ -5620,9 +5672,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   genvar Mn3; // Identifier doesn't match default required regex (lowercase).
 
@@ -5652,18 +5703,16 @@ Use an instance identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   A #(
   ) mn3 (); // Identifier matches default required regex (lowercase).
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   A #(
   ) Mn3 (); // Identifier doesn't match default required regex (lowercase).
@@ -5695,16 +5744,14 @@ Use a interface identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 interface mn3; // Identifier matches default required regex (lowercase).
 endinterface
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 interface Mn3; // Identifier doesn't match default required regex (lowercase).
 endinterface
 ```
@@ -5736,17 +5783,15 @@ Use a localparam identifier matching regex "^[A-Z]+[A-Z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 package P;
   localparam MN3 = 0; // Identifier matches default required regex (uppercase).
 endpackage
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 package P;
   localparam Mn3 = 0; // Identifier doesn't match default required regex (uppercase).
 endpackage
@@ -5777,9 +5822,8 @@ Use a modport identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 interface I;
   modport mn3 // Identifier matches default required regex (lowercase).
   ( input i
@@ -5787,9 +5831,8 @@ interface I;
 endinterface
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 interface I;
   modport Mn3 // Identifier doesn't match default required regex (lowercase).
   ( input i
@@ -5818,16 +5861,14 @@ Use a module identifier matching regex "^[a-z]+[a-zA-Z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module mN3; // Identifier matches default required regex (mixed-case).
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module Mn3; // Identifier doesn't match default required regex (mixed-case).
 endmodule
 ```
@@ -5862,9 +5903,8 @@ Use a module identifier matching regex "^[A-Z]+[A-Z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module MN3 // Identifier matches default required regex (uppercase).
   ( a
   );
@@ -5872,9 +5912,8 @@ module MN3 // Identifier matches default required regex (uppercase).
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module mn3 // Identifier doesn't match default required regex (uppercase).
   ( a
   );
@@ -5914,16 +5953,14 @@ Use a package identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 package mn3; // Identifier matches default required regex (lowercase).
 endpackage
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 package Mn3; // Identifier doesn't match default required regex (lowercase).
 endpackage
 ```
@@ -5955,18 +5992,16 @@ Use a parameter identifier matching regex "^[A-Z]+[A-Z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   #( MN3 // Identifier matches default required regex (uppercase).
   ) ();
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   #( Mn3 // Identifier doesn't match default required regex (uppercase).
   ) ();
@@ -5998,9 +6033,8 @@ Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( inout mn3 // Identifier matches default required regex (lowercase).
   );
@@ -6013,9 +6047,8 @@ module M_nonansi
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( inout Mn3 // Identifier doesn't match default required regex (lowercase).
   );
@@ -6053,9 +6086,8 @@ Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( input mn3 // Identifier matches default required regex (lowercase).
   );
@@ -6068,9 +6100,8 @@ module M_nonansi
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( input Mn3 // Identifier doesn't match default required regex (lowercase).
   );
@@ -6108,9 +6139,8 @@ Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( I.i mn3 // Identifier matches default required regex (lowercase).
   );
@@ -6123,9 +6153,8 @@ module M_nonansi
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( I.i Mn3 // Identifier doesn't match default required regex (lowercase).
   );
@@ -6158,9 +6187,8 @@ Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( output mn3 // Identifier matches default required regex (lowercase).
   );
@@ -6173,9 +6201,8 @@ module M_nonansi
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( output Mn3 // Identifier doesn't match default required regex (lowercase).
   );
@@ -6213,9 +6240,8 @@ Use a port identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( ref mn3 // Identifier matches default required regex (lowercase).
   );
@@ -6228,9 +6254,8 @@ module M_nonansi
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( ref Mn3 // Identifier doesn't match default required regex (lowercase).
   );
@@ -6263,16 +6288,14 @@ Use a program identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 program mn3; // Identifier matches default required regex (lowercase).
 endprogram
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 program Mn3; // Identifier doesn't match default required regex (lowercase).
 endprogram
 ```
@@ -6297,9 +6320,8 @@ Use a property identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   property mn3; // Identifier matches default required regex (lowercase).
     @(posedge c) p; // Concurrent assertion.
@@ -6307,9 +6329,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   property Mn3; // Identifier doesn't match default required regex (lowercase).
     @(posedge c) p; // Concurrent assertion.
@@ -6337,9 +6358,8 @@ Use a sequence identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   sequence mn3; // Identifier matches default required regex (lowercase).
     @(posedge c) a ##1 b
@@ -6347,9 +6367,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   sequence Mn3; // Identifier doesn't match default required regex (lowercase).
     @(posedge c) a ##1 b
@@ -6377,18 +6396,16 @@ Use a task identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   task mn3; // Identifier matches default required regex (lowercase).
   endtask
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   task Mn3; // Identifier doesn't match default required regex (lowercase).
   endtask
@@ -6415,17 +6432,15 @@ Use a class-scoped variable identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 class C;
   int mn3; // Identifier matches default required regex (lowercase).
 endclass
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 class C;
   int Mn3; // Identifier doesn't match default required regex (lowercase).
 endclass
@@ -6451,9 +6466,8 @@ Use a method-scoped variable identifier matching regex "^[a-z]+[a-z0-9_]*$".
 
 Identifiers must conform to the naming scheme.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 class C;
   function F;
     int mn3; // Identifier matches default required regex (lowercase).
@@ -6461,9 +6475,8 @@ class C;
 endclass
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 class C;
   function F;
     int Mn3; // Identifier doesn't match default required regex (lowercase).
@@ -6493,16 +6506,14 @@ Begin `interface` name with UpperCamelCase.
 
 Naming convention simplifies audit.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 interface FooBar;
 endinterface
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 interface fooBar;
 endinterface
 ```
@@ -6538,16 +6549,14 @@ Begin `module` name with UpperCamelCase.
 
 Naming convention simplifies audit.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module FooBar;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module fooBar;
 endmodule
 ```
@@ -6583,16 +6592,14 @@ Begin `package` name with UpperCamelCase.
 
 Naming convention simplifies audit.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 package FooBar;
 endpackage
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 package fooBar;
 endpackage
 ```
@@ -6635,9 +6642,8 @@ Follow each comma with a single space (comma-leading format).
 
 Consistent style enhances readability.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   #(bit FOO = 1 // comment
   , int BAR = 2 /* comment */
@@ -6664,9 +6670,8 @@ module M
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   #( bit FOO = 1 // Space after `#(` causes misalignment.
   , int BAR = 2
@@ -6814,9 +6819,8 @@ Follow each newline with an integer multiple of 2 spaces.
 
 Consistent indentation is essential for readability.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   if (a)
     a = 0;
@@ -6829,9 +6833,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
  if (a)
    a = 0;
@@ -6866,9 +6869,8 @@ Follow keyword with a symbol or exactly 1 space.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   function F;
     if (a)
@@ -6880,9 +6882,8 @@ endmodule
 
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   function F();
     if (a)
@@ -6924,9 +6925,8 @@ Remove all whitespace between keyword and following symbol.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_comb
     case (a)
@@ -6944,9 +6944,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   always_comb
     case (a)
@@ -7004,9 +7003,8 @@ Follow keyword with exactly 1 or 2 spaces.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M
   ( input a
   , inout b  // 1 space after `input` or `inout` keywords
@@ -7019,9 +7017,8 @@ module M
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M
   ( input   a
   , inout   b // multiple spaces after `input` or `inout` keywords
@@ -7072,9 +7069,8 @@ Follow keyword with exactly 1 space.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;                   // 1 space after `module`.
   for (i = 0; i < 5; i++)   // 1 space after `for`.
     assign foo = bar;       // 1 space after `assign`.
@@ -7086,9 +7082,8 @@ module M;                   // 1 space after `module`.
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module  M;                  // Multiple spaces after `module`.
   for(genvar i = 0; i < 5; i++)    // No spaces after `for`.
     assign  a = b;      // Multiple spaces after `assign`.
@@ -7306,9 +7301,8 @@ Follow keyword with a newline or exactly 1 space.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   always_comb a = b;  // 1 space after `always_comb`.
 
@@ -7326,9 +7320,8 @@ endmodule
 
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   always_comb   a = b;  // Multiple spaces after `always_comb`.
   initial     begin       // Multiple spaces after `initial`.
@@ -7404,9 +7397,8 @@ Follow datatype keyword with a symbol or exactly 1 space.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   localparam bit A = 0;   // 1 space after `bit`.
   localparam int B = 0;   // 1 space after `int`.
@@ -7416,9 +7408,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   localparam bit  A = 0;  // Multiple spaces after `bit`.
   localparam int
@@ -7488,9 +7479,8 @@ Follow keyword with a colon, newline, or exactly 1 space.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   initial begin
     if (foo) begin: l_foo
@@ -7508,9 +7498,8 @@ endmodule
 
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   initial begin
     if (foo) begin: l_foo
@@ -7578,9 +7567,8 @@ Follow keyword with a colon, newline, or exactly 1 space plus comment.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
 endmodule: M // colon immediately after `endmodule`
 package P;
@@ -7591,15 +7579,20 @@ endpackage // 1 space then comment after `endpackage`
 
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 3)
+```systemverilog
 module M;
 endmodule  : M // spaces immediately after `endmodule`
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (2 of 3)
+```systemverilog
 package P;
 endpackage  // multiple spaces then comment after `endpackage`
-////////////////////////////////////////////////////////////////////////////////
+```
+
+### Fail Example (3 of 3)
+```systemverilog
 interface I;
 endinterface interface J; // space instead of newline after `endinterface`
 endinterface
@@ -7671,9 +7664,8 @@ Follow keyword with a newline or exactly 1 space plus comment.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   generate
     case (foo)
@@ -7685,9 +7677,8 @@ endmodule
 
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   generate
     case (x)
@@ -7743,9 +7734,8 @@ Follow operator with a symbol, identifier, newline, or exactly 1 space.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   localparam bit [a-1:0] P1 = b; // No space around `-`.
 
@@ -7761,9 +7751,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   localparam int P2 = a  +  b; // Multiple spaces around `+`.
 
@@ -7812,9 +7801,8 @@ Follow operator with a exactly 1 space.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   localparam bit P1 = a && b; // Single space around `&&`.
 
@@ -7825,9 +7813,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   localparam bit P1 = a&&b; // No space around `&&`.
 
@@ -7884,9 +7871,8 @@ Follow operator with a newline or exactly 1 space.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   localparam int P1 = a | b; // Single space around `|`.
 
@@ -7900,9 +7886,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   localparam int P1 = a|b; // No space around `|`.
 
@@ -7955,9 +7940,8 @@ Remove all whitespace following the operator.
 
 Consistent use of whitespace enhances readability by reducing visual noise.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   localparam bit P1 = &{a, b}; // No space after `&`.
 
@@ -7966,9 +7950,8 @@ module M;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
   localparam bit P1 = & {a, b}; // No space after `&`.
 
@@ -8020,17 +8003,15 @@ Remove trailing whitespace.
 
 Trailing whitespace leads to unnecessary awkwardness with version control.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module        M;
 // End of line ^
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
                 
 // End of line ^
@@ -8070,17 +8051,15 @@ Replace tab characters with spaces.
 
 Tabs may cause misalignment depending on editor setup.
 
-### Pass Example
-
-```SystemVerilog
+### Pass Example (1 of 1)
+```systemverilog
 module M;
   logic a;
 endmodule
 ```
 
-### Fail Example
-
-```SystemVerilog
+### Fail Example (1 of 1)
+```systemverilog
 module M;
 	logic a;
 endmodule

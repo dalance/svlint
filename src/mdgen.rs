@@ -10,7 +10,7 @@ use crate::linter::Rule;
 use regex::Regex;
 use std::env;
 use std::fs::{File, read_dir};
-use std::io::{BufReader, Read, Write, Error};
+use std::io::{BufRead, BufReader, Read, Write, Error};
 use std::path::Path;
 
 struct Ruleset {
@@ -94,6 +94,34 @@ fn get_rulesets() -> Vec<Ruleset> {
     ret
 }
 
+fn write_md_rule_testcases(o: &mut File, rule: &Box<dyn Rule>, pass_not_fail: bool) -> () {
+        let sep = "/".repeat(80);
+        let rulename = rule.name();
+
+        let passfail = if pass_not_fail { "pass" } else { "fail" };
+        let filename = format!("testcases/{}/{}.sv", passfail, rulename);
+        let lines = BufReader::new(File::open(filename).unwrap())
+            .lines()
+            .collect::<Result<Vec<_>, _>>()
+            .unwrap();
+        let testcases: Vec<&[String]> = lines
+            .as_slice()
+            .split(|l| l.contains(sep.as_str()))
+            .collect();
+        let n_testcases: usize = testcases.len();
+
+        let passfail = if pass_not_fail { "Pass" } else { "Fail" };
+        for (t, testcase) in testcases.into_iter().enumerate().map(|(i, x)| (i + 1, x)) {
+            let _ = writeln!(o, "### {passfail} Example ({t} of {n_testcases})");
+            let _ = writeln!(o, "```systemverilog");
+            for line in testcase {
+                let _ = writeln!(o, "{}", line);
+            }
+            let _ = writeln!(o, "```");
+            let _ = writeln!(o, "");
+        }
+}
+
 fn write_md_rules(o: &mut File, rules: Vec<Box<dyn Rule>>) -> () {
     for rule in rules {
         let _ = writeln!(o, "---");
@@ -105,13 +133,8 @@ fn write_md_rules(o: &mut File, rules: Vec<Box<dyn Rule>>) -> () {
         let _ = writeln!(o, "### Reason\n");
         let _ = writeln!(o, "{}\n", rule.reason());
 
-        let _ = writeln!(o, "### Pass Example\n");
-        let p: String = format!("testcases/pass/{}.sv", rule.name());
-        let _ = writeln!(o, "```SystemVerilog\n{}```\n", file_contents(&p));
-
-        let _ = writeln!(o, "### Fail Example\n");
-        let p: String = format!("testcases/fail/{}.sv", rule.name());
-        let _ = writeln!(o, "```SystemVerilog\n{}```\n", file_contents(&p));
+        write_md_rule_testcases(o, &rule, true);
+        write_md_rule_testcases(o, &rule, false);
 
         let _ = writeln!(o, "### Explanation\n");
         let p: String = format!("md/explanation-{}.md", rule.name());
