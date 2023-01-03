@@ -148,7 +148,7 @@ fn partition_rules(
 
 fn write_manual_md(rules: Vec<Box<dyn Rule>>, rulesets: Vec<Ruleset>) -> () {
     let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let o = Path::new(&cargo_manifest_dir).join("RULES.md");
+    let o = Path::new(&cargo_manifest_dir).join("MANUAL.md");
     let mut o = File::create(&o).unwrap();
 
     let (functional_rules, naming_rules, style_rules) = partition_rules(rules);

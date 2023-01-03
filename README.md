@@ -28,4 +28,4 @@ To see information about the command line interface use `svlint --help`,
 and to see which version you're running use `svlint --version`.
 
 Further information on how svlint works, how to configure it, and other usage
-information is in the [manual](./RULES.md).
+information is in the [manual](./MANUAL.md).
