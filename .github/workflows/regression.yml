@@ -19,11 +19,12 @@ jobs:
           rust-version: ${{ matrix.rust }}
       - shell: bash
         run: |
-          rm BUILDENV
+          rm -f BUILDENV
           rustup --version >> BUILDENV
           cargo --version >> BUILDENV
           rustc --version >> BUILDENV
           cat BUILDENV
+          sha256sum BUILDENV
       - uses: actions/cache@v3
         with:
           path: |
