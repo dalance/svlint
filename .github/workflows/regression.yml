@@ -17,6 +17,13 @@ jobs:
       - uses: hecrj/setup-rust-action@v1
         with:
           rust-version: ${{ matrix.rust }}
+      - shell: bash
+        run: |
+          rm BUILDENV
+          rustup --version >> BUILDENV
+          cargo --version >> BUILDENV
+          rustc --version >> BUILDENV
+          cat BUILDENV
       - uses: actions/cache@v3
         with:
           path: |
@@ -25,6 +32,6 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('BUILDENV', '**/Cargo.lock') }}
       - run: cargo test
 
