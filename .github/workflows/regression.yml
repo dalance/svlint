@@ -17,7 +17,8 @@ jobs:
       - uses: hecrj/setup-rust-action@v1
         with:
           rust-version: ${{ matrix.rust }}
-      - shell: bash
+      - name: BUILDENV
+        shell: bash
         run: |
           rm -f BUILDENV
           rustup --version >> BUILDENV
