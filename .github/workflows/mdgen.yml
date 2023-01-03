@@ -26,8 +26,8 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('BUILDENV', '**/Cargo.lock') }}
       - run: |
-        cargo run --bin=mdgen
-        rm -f BUILDENV
+          cargo run --bin=mdgen
+          rm -f BUILDENV
       - uses: EndBug/add-and-commit@v9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
