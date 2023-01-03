@@ -8117,14 +8117,14 @@ There are two methods of specifying those TOML files:
   Ideally, add some comments to explain the background of the configuration and
   open a [pull request](https://github.com/dalance/svlint/pulls) to have it
   included as part of this project.
-  This is the (initially) low-effort approach, best suited to small personal
+  This is the (initially) lower-effort approach, best suited to small personal
   projects with low requirements for documentation.
 2. Create a definition in Markdown to compose a ruleset from a sequence of
   TOML fragments , i.e. write `md/ruleset-foo.md` to describe how the
   configuration in `rulesets/foo.toml` should be formed.
   Again, please open a [pull request](https://github.com/dalance/svlint/pulls)
   to have it included as part of this project.
-  This approach is initially high-effort but on larger projects, users will
+  This approach is initially higher-effort but on larger projects, users will
   appreciate a good explanation of why configurations are necessary.
 The rest of this section refers to the second method.
 
@@ -8217,7 +8217,7 @@ first version of `svlint` found on your `$PATH`.
 This method of generating a configuration and wrapper scripts enables full
 flexibility for each ruleset's requirements, while encouraging full and open
 documentation about their construction.
-The process, defined in `build.rs`, is deterministic so both the Markdown
+The process, defined in `src/mdgen.rs`, is deterministic so both the Markdown
 specifications and the TOML configurations are tracked by versions control.
 However, wrapper scripts are not installed alongside the `svlint` binary
 created via `cargo install svlint` (or similar).
