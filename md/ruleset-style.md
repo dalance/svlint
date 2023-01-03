@@ -5,17 +5,46 @@ of the **style_** rules.
 
 ## Motivation
 
-TODO
-- Remove visual noise.
-- Consistent readability on differently configured viewers.
-- Usability on differently viewers, GUI, terminal, webpage.
-- Readable diffs.
+Style conventions also help a human reader to quickly and efficiently
+comprehend large bodies of code.
+Indeed, that is exactly what a reader wants to do when they're working with
+code written by other people, often complete strangers.
+The reader simply wishes to open the file, extract the necessary information,
+close the file, and get on with their life.
+Unlike mechanical tools, people process code visually (by translating their
+view of the screen into a mental model) and any noise which obscures the useful
+information will require extra mental effort to process.
+When code is written with consistent and regular whitespace, the important
+details like operators and identifiers are easily extracted.
+In contrast, when little attention is paid to indentation or spaces around
+keywords, operators, or identifers, the readers must waste their energy
+performing a mental noise reduction.
+Therefore, the main motivation behind this ruleset is to avoid visual noise.
 
-TODO: Line width via shell script.
+Two notable style conventions help with a change-review process, i.e. comparing
+multiple versions of a file, rather than reading one version:
+- Line length limited to a fixed number of characters, usually 80.
+  - Excessively long lines may indicate problems with a program's logic.
+  - Excessively long lines prevent viewing differences side-by-side.
+  - Side-by-side reading is awkward when sideways scrolling is involved.
+  - Code which is printed on paper cannot be scrolled sideways, and soft-wrap
+    alternatives interrupt indentation.
+- Trailing whitespace is forbidden.
+  - Changes to trailing whitespace are not usually visible to human readers,
+    but are found by version control tools.
+  - Editors are often configured to remove trailing whitespace, resulting in
+    unnecessary differences.
+  - Git, a popular version control tool will (by default) warn against trailing
+    whitespace with prominent markers specifically because of the unnecessary
+    noise introduced to a repository's history.
+These conventions help give a consistent view over different ways of viewing
+files which include the writer's text editor (Vim, VSCode, Emacs, etc.),
+consumer's text editor, reviewer's web-based tools (GitHub, BitBucket, GitLab,
+etc.), printed material (e.g. via PDF), and logfiles from CI/CD tools (GitHub
+Actions, Bamboo, Jenkins, etc).
+
 
 ## Test Each File for Excessively Long Lines
-
-TODO Context about long lines.
 
 To get a list of all the files examined by a particular invocation of svlint,
 use the `--dump-filelist` option and parse the output.
@@ -213,26 +242,20 @@ rules.style_trailingwhitespace = true
 
 ## Operators
 
-Consistent use of whitespace around operators makes it easier for new readers
-to understand expressions.
-TODO
+Consistent use of whitespace around operators and keywords makes it easier to
+read expressions quickly and accurately.
 ```toml
 rules.style_operator_arithmetic = true
 rules.style_operator_boolean = true
 rules.style_operator_integer = true
 rules.style_operator_unary = true
-```
 
-## Keywords
-
-TODO
-```toml
 rules.style_keyword_0or1space = true
 rules.style_keyword_0space = true
 rules.style_keyword_1or2space = true
 rules.style_keyword_1space = true
 rules.style_keyword_construct = true
-rules.style_keyword_datatype = false
+rules.style_keyword_datatype = false # Overly restrictive.
 rules.style_keyword_end = true
 rules.style_keyword_maybelabel = true
 rules.style_keyword_newline = true
