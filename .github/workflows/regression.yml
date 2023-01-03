@@ -34,4 +34,3 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('BUILDENV', '**/Cargo.lock') }}
       - run: cargo test
-
