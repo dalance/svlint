@@ -231,7 +231,8 @@ fn write_ruleset_sh(ruleset: &Ruleset) -> () {
         let _ = writeln!(o, "env SVLINT_CONFIG=\"$SVLINT_CONFIG\" svlint $*");
     }
 
-    if cfg!(unix) {
+    #[cfg(unix)]
+    {
         use std::fs::{set_permissions, Permissions};
         use std::os::unix::fs::PermissionsExt;
         set_permissions(&p, Permissions::from_mode(0o755)).unwrap();
