@@ -8,7 +8,26 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: hecrj/setup-rust-action@v1
-      - run: cargo run --bin=mdgen
+      - name: BUILDENV
+        shell: bash
+        run: |
+          rm -f BUILDENV
+          rustup --version >> BUILDENV
+          cargo --version >> BUILDENV
+          rustc --version >> BUILDENV
+          cat BUILDENV
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('BUILDENV', '**/Cargo.lock') }}
+      - run: |
+          cargo run --bin=mdgen
+          rm -f BUILDENV
       - uses: EndBug/add-and-commit@v9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

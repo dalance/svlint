@@ -13,11 +13,25 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Setup Rust
-      uses: hecrj/setup-rust-action@v1
-      with:
-        rust-version: ${{ matrix.rust }}
-    - name: Checkout
-      uses: actions/checkout@v1
-    - name: Run tests
-      run: cargo test
+      - uses: actions/checkout@v3
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: ${{ matrix.rust }}
+      - name: BUILDENV
+        shell: bash
+        run: |
+          rm -f BUILDENV
+          rustup --version >> BUILDENV
+          cargo --version >> BUILDENV
+          rustc --version >> BUILDENV
+          cat BUILDENV
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('BUILDENV', '**/Cargo.lock') }}
+      - run: cargo test
