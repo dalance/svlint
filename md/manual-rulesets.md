@@ -85,7 +85,6 @@ the ruleset's name:
 set -e
 SVLINT_CONFIG="$(dirname $(command -v svlint-an-example))/an-example.toml"
 ```
-
 Next, any codeblocks with the `sh` language marker are concatenated to
 the header in order before, finally, this footer is appended:
 ```sh
@@ -99,18 +98,19 @@ main executable (via `$*`).
 When svlint searches for a configuration (`src/main.rs::search_config()`), the
 environment variable is chosen in preference to the `--config` flag which
 prevents confusing cases.
-The wrapper script is given the option, e.g. `svlint-foo --config=bar *.sv`.
+1) Where the script is given the option, e.g. `svlint-foo --config=bar *.sv`.
 As the environment variable is set, the option `--config=bar` is ignored.
 If a user wishes to pass a different configuration, they'll need to call the
 main executable like `svlint --config=bar *.sv`.
-Where the environment variable is not set or is invalid, the `--config` value
-(defaulting to `.svlint.toml`) is searched for hierarchically, beginning in the
-current directory then moving upwards to filesystem ancestors.
+2) Where the environment variable is not set or is invalid, the `--config`
+value (defaulting to `.svlint.toml`) is searched for hierarchically, beginning
+in the current directory then moving upwards to filesystem ancestors.
 If instead the `--config` option was used in wrapper scripts, this could lead
 to confusion where TOML files exist elsewhere in the hierarchy.
 
-It isn't essential for all ruleset wrappers to be POSIX compliant, but this
-allows for usage across the widest range of systems.
+It isn't essential for all ruleset scripts to be POSIX compliant, but POSIX
+compliance should be encourage because it allows for consistent behavior across
+the widest range of systems.
 The utilities used in the POSIX wrappers (`env`, `sh`, `command`, `dirname`)
 are specified in the current POSIX standard (IEEE1003.1-2017, Volume 3: Shell
 and Utilities).
@@ -122,7 +122,7 @@ Some resources related to these components:
   Included in the Single Unix Specification since
   X/Open Portability Guide Issue 2 (1987).
 - [`set`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#set)
-  Specified in Section 2.14 Special Built-In Utilities,and available since
+  Specified in Section 2.14 Special Built-In Utilities, and available since
   (at least) X/Open Portability Guide Issue 2 (1987).
 - [`command`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/command.html)
   Included in the Single Unix Specification since
@@ -143,6 +143,10 @@ to the header in order before, finally, this footer is appended:
 ```winbatch
 svlint %*
 ```
+TODO: Fix and writeup.
+- [`where`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/where)
+- [`echo`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/echo)
+- [`set`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1)
 
 These wrapper scripts can then be used with svlint's usual arguments like
 `svlint-foo path/to/design/*.sv`.
