@@ -8105,7 +8105,8 @@ There are two methods of specifying those TOML files:
   to have it included as part of this project.
   This approach is initially higher-effort but on larger projects, users will
   appreciate a good explanation of why configurations are necessary.
-The rest of this section refers to the second method.
+The rest of this section refers to the second method, which is a variant of
+[literate programming](https://en.wikipedia.org/wiki/Literate_programming).
 
 If you only use one configuration, there isn't much benefit in having wrapper
 scripts, i.e. the benefits appear when you regularly use several
