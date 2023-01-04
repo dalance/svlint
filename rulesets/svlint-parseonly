@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 set -e
-SVLINT_CONFIG="$(dirname $(which svlint-parseonly))/parseonly.toml"
+SVLINT_CONFIG="$(dirname $(command -v svlint-parseonly))/parseonly.toml"
 
 # Delete ANSI control sequences that begin with ESC and (usually) end with m.
 STRIP_ANSI_CONTROL="| sed -e 's/\\o33\\[[0-9;]*[mGKHF]//g'"
@@ -32,4 +32,4 @@ SVFILES="${SVFILES} ${STRIP_ASCII_CONTROL}"
 SVFILES="${SVFILES} ${FILES_FROM_YAML}"
 eval "${SVFILES}" | xargs -I {} iconv -f UTF-8 -t UTF-8 {} > /dev/null
 
-env SVLINT_CONFIG="$SVLINT_CONFIG" svlint $*
+env SVLINT_CONFIG="${SVLINT_CONFIG}" svlint $*

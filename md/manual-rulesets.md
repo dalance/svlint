@@ -80,14 +80,55 @@ option.red = "DEF"
 POSIX shell scripts begin with this header, where "an-example" is replaced by
 the ruleset's name:
 ```sh
-#!/usr/bin/env sh -e
-SVLINT_CONFIG="$(dirname $(which svlint-an-example))/an-example.toml"
+#!/usr/bin/env sh
+set -e
+SVLINT_CONFIG="$(dirname $(command -v svlint-an-example))/an-example.toml"
 ```
+
 Next, any codeblocks with the `sh` language marker are concatenated to
 the header in order before, finally, this footer is appended:
 ```sh
-env SVLINT_CONFIG="$SVLINT_CONFIG" svlint $*
+env SVLINT_CONFIG="${SVLINT_CONFIG}" svlint $*
 ```
+The final command calls the main `svlint` executable, wherever it is on your
+`$PATH`, with the environment variable `SVLINT_CONFIG` pointing to a TOML
+configuration in the same directory as the wrapper script.
+Any command line arguments given to the wrapper script are passed on to the
+main executable (via `$*`).
+When svlint searches for a configuration (`src/main.rs::search_config()`), the
+environment variable is chosen in preference to the `--config` flag which
+prevents confusing cases.
+The wrapper script is given the option, e.g. `svlint-foo --config=bar *.sv`.
+As the environment variable is set, the option `--config=bar` is ignored.
+If a user wishes to pass a different configuration, they'll need to call the
+main executable like `svlint --config=bar *.sv`.
+Where the environment variable is not set or is invalid, the `--config` value
+(defaulting to `.svlint.toml`) is searched for hierarchically, beginning in the
+current directory then moving upwards to filesystem ancestors.
+If instead the `--config` option was used in wrapper scripts, this could lead
+to confusion where TOML files exist elsewhere in the hierarchy.
+
+It isn't essential for all ruleset wrappers to be POSIX compliant, but this
+allows for usage across the widest range of systems.
+The utilities used in the POSIX wrappers (`env`, `sh`, `command`, `dirname`)
+are specified in the current POSIX standard (IEEE1003.1-2017, Volume 3: Shell
+and Utilities).
+Some resources related to these components:
+- [`env`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/env.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
+- [`sh`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sh.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
+- [`set`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#set)
+  Specified in Section 2.14 Special Built-In Utilities,and available since
+  (at least) X/Open Portability Guide Issue 2 (1987).
+- [`command`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/command.html)
+  Included in the Single Unix Specification since
+  X/Open Common Application Environment (CAE) Specification Issue 4 (1994).
+- [`dirname`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/dirname.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
 
 Windows batch scripts begin with this header, where "an-example" is replaced by
 the ruleset's name:

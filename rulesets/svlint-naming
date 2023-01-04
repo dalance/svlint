@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 set -e
-SVLINT_CONFIG="$(dirname $(which svlint-naming))/naming.toml"
+SVLINT_CONFIG="$(dirname $(command -v svlint-naming))/naming.toml"
 
 
-env SVLINT_CONFIG="$SVLINT_CONFIG" svlint $*
+env SVLINT_CONFIG="${SVLINT_CONFIG}" svlint $*
