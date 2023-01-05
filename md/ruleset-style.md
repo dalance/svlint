@@ -1,9 +1,8 @@
-# Style
 
 The set of whitespace-only checks which are "suggested" in the explanations
 of the **style_** rules.
 
-## Motivation
+### Motivation
 
 Style conventions also help a human reader to quickly and efficiently
 comprehend large bodies of code.
@@ -44,7 +43,7 @@ etc.), printed material (e.g. via PDF), and logfiles from CI/CD tools (GitHub
 Actions, Bamboo, Jenkins, etc).
 
 
-## Test Each File for Excessively Long Lines
+### Test Each File for Excessively Long Lines
 
 To get a list of all the files examined by a particular invocation of svlint,
 use the `--dump-filelist` option and parse the output.
@@ -96,7 +95,7 @@ eval "${SVFILES}" | xargs -I {} sh -c "${LINE_LENGTH}"
 On Windows, the default environment does not contain utilities such as `grep`,
 so some system-specific scripting may be more appropriate.
 
-## Indentation
+### Indentation
 
 An indent of 2 spaces, not tabs, is chosen.
 For better or worse, contemporary computer language styles have moved
@@ -146,7 +145,7 @@ rules.multiline_if_begin = true
 rules.multiline_for_begin = true
 ```
 
-## Indentation Preprocessor Considerations
+### Indentation Preprocessor Considerations
 
 A potential source of confusion is in the use of the preprocessor to
 accidentally introduce whitespace.
@@ -240,7 +239,7 @@ characters followed immediately by a newline.
 rules.style_trailingwhitespace = true
 ```
 
-## Operators
+### Operators and Keywords
 
 Consistent use of whitespace around operators and keywords makes it easier to
 read expressions quickly and accurately.
@@ -261,7 +260,7 @@ rules.style_keyword_maybelabel = true
 rules.style_keyword_newline = true
 ```
 
-## Comma-Separated Lists
+### Comma-Separated Lists
 
 TODO
 ```toml

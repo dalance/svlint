@@ -1,4 +1,3 @@
-# parseonly
 
 If a file passes this ruleset you have these pieces of information:
 - The file is valid UTF-8.
@@ -6,7 +5,7 @@ If a file passes this ruleset you have these pieces of information:
 - The emitted text is valid SystemVerilog adhering to Annex A of IEEE1800-2017,
   i.e. there are no syntax errors.
 
-## Test Each File for UTF-8 Encoding
+### Test Each File for UTF-8 Encoding
 
 Errors resulting from files with non-UTF8 encodings can be difficult to read,
 possibly because UTF8 is a fundamental assumption made by the Rust components
@@ -58,7 +57,7 @@ eval "${SVFILES}" | xargs -I {} iconv -f UTF-8 -t UTF-8 {} > /dev/null
 On Windows, the default environment does not contain utilities such as `iconv`,
 so some system-specific scripting may be more appropriate.
 
-## Disable All Rules
+### Disable All Rules
 
 All rules are implicitly disabled, and all options are implicitly set to their
 default values.

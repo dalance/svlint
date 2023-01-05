@@ -46,6 +46,7 @@ fn get_rulesets() -> Vec<Ruleset> {
             definitions.push((name, file_contents(&entry)));
         }
     }
+    definitions.sort_by(|a, b| a.0.to_lowercase().cmp(&b.0.to_lowercase()));
 
     let mut ret = Vec::new();
     for (name, contents) in definitions {
@@ -208,7 +209,14 @@ fn write_manual_md(rules: Vec<Box<dyn Rule>>, rulesets: Vec<Ruleset>) -> () {
         "{}\n",
         file_contents(format!("md/manual-rulesets.md").as_str())
     );
-    // TODO: For ruleset in rulesets: write a chapter in the manual.
+    for ruleset in &rulesets {
+        let _ = writeln!(o, "## Ruleset *{}*", &ruleset.name);
+        let _ = writeln!(
+            o,
+            "{}\n", // TODO: remove \n?
+            file_contents(format!("md/ruleset-{}.md", &ruleset.name).as_str())
+        );
+    }
 }
 
 fn write_ruleset_sh(ruleset: &Ruleset) -> () {

@@ -1,9 +1,8 @@
-# Naming
 
 A set of lightweight naming-only checks which are "suggested" in the
 explanations of the **prefix** rules.
 
-## Motivation
+### Motivation
 
 Naming conventions help a human reader to take in large amounts of detailed
 information (e.g. from netlists, timing reports) by allowing the reader to
