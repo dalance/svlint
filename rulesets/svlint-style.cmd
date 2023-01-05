@@ -1,6 +1,7 @@
 
 @echo off
-for /f %f in ('where.exe style') do set "WHERE=%f"
-set "SVLINT_CONFIG=%WHERE%\style.toml"
+for /f %%E in ('where.exe svlint-style') do (
+    set "SVLINT_CONFIG=%%~dpEstyle.toml"
+)
 svlint %*
 

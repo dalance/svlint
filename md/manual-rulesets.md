@@ -135,17 +135,22 @@ Windows batch scripts begin with this header, where "an-example" is replaced by
 the ruleset's name:
 ```winbatch
 @echo off
-for /f %f in ('where.exe an-example') do set "WHERE=%f"
-set "SVLINT_CONFIG=%WHERE%\an-example.toml"
+for /f %%E in ('where.exe /f svlint-an-example') do (
+    set "SVLINT_CONFIG=%%~dpEan-example.toml"
+)
 ```
 Next, any codeblocks with the `winbatch` language marker are then concatenated
 to the header in order before, finally, this footer is appended:
 ```winbatch
 svlint %*
 ```
-TODO: Fix and writeup.
-- [`where`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/where)
+
+The batch script template is designed for Windows XP and later, using the
+`cmd.exe` shell.
+Some useful resources for Windows batch script commands:
 - [`echo`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/echo)
+- [`for`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/for)
+- [`where`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/where)
 - [`set`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1)
 
 These wrapper scripts can then be used with svlint's usual arguments like

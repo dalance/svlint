@@ -248,8 +248,9 @@ fn write_ruleset_cmd(ruleset: &Ruleset) -> () {
 
     let _ = write!(o, "\r\n");
     let _ = write!(o, "@echo off\r\n");
-    let _ = write!(o, "for /f %f in ('where.exe {}') do set \"WHERE=%f\"\r\n", ruleset.name);
-    let _ = write!(o, "set \"SVLINT_CONFIG=%WHERE%\\{}.toml\"\r\n", ruleset.name);
+    let _ = write!(o, "for /f %%E in ('where.exe svlint-{0}') do (\r\n", ruleset.name);
+    let _ = write!(o, "    set \"SVLINT_CONFIG=%%~dpE{0}.toml\"\r\n", ruleset.name);
+    let _ = write!(o, ")\r\n");
     for line in &ruleset.cmd {
         let _ = write!(o, "{}\r\n", line);
     }
