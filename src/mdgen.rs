@@ -179,41 +179,45 @@ fn write_manual_md(rules: Vec<Box<dyn Rule>>, rulesets: Vec<Ruleset>) -> () {
 
     let _ = writeln!(
         o,
-        "{}\n",
+        "{}",
         file_contents(format!("md/manual-introduction.md").as_str())
     );
 
     let _ = writeln!(
         o,
-        "{}\n",
+        "{}",
         file_contents(format!("md/manual-functional_rules.md").as_str())
     );
     write_md_rules(&mut o, functional_rules);
 
     let _ = writeln!(
         o,
-        "{}\n",
+        "{}",
         file_contents(format!("md/manual-naming_convention_rules.md").as_str())
     );
     write_md_rules(&mut o, naming_rules);
 
     let _ = writeln!(
         o,
-        "{}\n",
+        "{}",
         file_contents(format!("md/manual-style_convention_rules.md").as_str())
     );
     write_md_rules(&mut o, style_rules);
 
+    let _ = writeln!(o, "---");
+    let _ = writeln!(o, "---");
+
     let _ = writeln!(
         o,
-        "{}\n",
+        "{}",
         file_contents(format!("md/manual-rulesets.md").as_str())
     );
     for ruleset in &rulesets {
+        let _ = writeln!(o, "---");
         let _ = writeln!(o, "## Ruleset *{}*", &ruleset.name);
         let _ = writeln!(
             o,
-            "{}\n", // TODO: remove \n?
+            "{}",
             file_contents(format!("md/ruleset-{}.md", &ruleset.name).as_str())
         );
     }

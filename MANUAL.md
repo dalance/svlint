@@ -229,7 +229,6 @@ You are welcome to suggest a new rule through
 
 # Functional Rules
 
-
 ---
 ## `action_block_with_side_effect`
 
@@ -3297,7 +3296,6 @@ re_forbidden_interface = ".*"
 [rules]
 re_forbidden_interface = true
 ```
-
 
 ---
 ## `generate_case_with_label`
@@ -6630,7 +6628,6 @@ Most rules for checking style/whitespace are named with the prefix `style_`,
 but `tab_character` is also in this class.
 These rules do not reference any clause in the LRM (IEEE1800-2017).
 
-
 ---
 ## `style_commaleading`
 
@@ -8083,6 +8080,8 @@ The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
 
 
+---
+---
 
 # Rulesets
 
@@ -8254,7 +8253,7 @@ created via `cargo install svlint` (or similar).
 Instead, you must either add `rulesets/` to your `$PATH` environment variable,
 or copy the wrapper scripts to somewhere already on your `$PATH`.
 
-
+---
 ## Ruleset *naming*
 
 A set of lightweight naming-only checks which are "suggested" in the
@@ -8280,7 +8279,7 @@ appropriate files from hierarchical paths in a netlist, and more.
 
 TODO
 
-
+---
 ## Ruleset *parseonly*
 
 If a file passes this ruleset you have these pieces of information:
@@ -8353,7 +8352,7 @@ preprocessed and parsed, i.e. internally processed from text to a syntax tree.
 [rules]
 ```
 
-
+---
 ## Ruleset *style*
 
 The set of whitespace-only checks which are "suggested" in the explanations
@@ -8623,5 +8622,4 @@ TODO
 ```toml
 rules.style_commaleading = true
 ```
-
 

@@ -225,3 +225,4 @@ a short reason why it should be seen.
 You are welcome to suggest a new rule through
 [Issues](https://github.com/dalance/svlint/issues) or
 [Pull Requests](https://github.com/dalance/svlint/pulls).
+
