@@ -8623,3 +8623,16 @@ TODO
 rules.style_commaleading = true
 ```
 
+Pros
+- Easier diff than comma-trailing.
+- Multi-dimensional arrays are easier to read.
+  Newline between elements of more-significant axis.
+- Rule is extremely simple.
+- Comma is visually similar to bulletpoint.
+- Harder to make syntax errors with extraneous comma.
+- More closely aligned with BNF, reflected by how sv-parser attaches Comment
+  nodes.
+
+Cons
+- May be less familiar at first.
+
