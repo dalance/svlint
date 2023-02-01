@@ -8615,7 +8615,7 @@ PPDIRECTIVES="define|undef|undefineall|resetall"
 PPDIRECTIVES="${PPDIRECTIVES}|ifdef|ifndef|elsif|else|endif"
 PPDIRECTIVES="${PPDIRECTIVES}|include"
 
-PPINDENT="grep -EIxHn --color '[ ]+`(${PPDIRECTIVES})' {};"
+PPINDENT="grep -EIxHn --color '[ ]+\`(${PPDIRECTIVES})' {};"
 PPINDENT="${PPINDENT} if [ \"\$?\" -eq \"0\" ]; then"
 PPINDENT="${PPINDENT}   echo '!!! Indented preprocessor directives !!!';"
 PPINDENT="${PPINDENT}   exit 1;"
@@ -8649,21 +8649,53 @@ rules.style_keyword_newline = true
 
 ### Comma-Separated Lists
 
-TODO
+SystemVerilog code has many uses for comma-separated lists of items specified
+in IEEE1800-2017 Annex A.
+Most of these uses can be found by searching for BNF symbols containing the
+string `list_of_`, but uses are specified in BNF expressions for other symbols,
+e.g. `modport_declaration` and `data_type`.
+
+Without careful review processes in place, the large variety semantics and
+syntax surrounding comma-separated lists can easily lead authors writing in a
+large variety of styles.
+To make matters worse, the use of comma-separated lists varies is common in
+other languages - but with significant subtle differences.
+For example, while Python and Rust allow an extra comma after the last argument
+in a function call, C and SystemVerilog do not allow this.
+
+The desire for consistent formatting and readability provides motivation for a
+simple rule which can be easily remembered by authors.
+The most common style in functional programming language Haskell provides
+inspiration for such a rule:
+"Every comma must be followed by exactly one space".
 ```toml
 rules.style_commaleading = true
 ```
 
-Pros
-- Easier diff than comma-trailing.
-- Multi-dimensional arrays are easier to read.
-  Newline between elements of more-significant axis.
-- Rule is extremely simple.
-- Comma is visually similar to bulletpoint.
-- Harder to make syntax errors with extraneous comma.
-- More closely aligned with BNF, reflected by how sv-parser attaches Comment
-  nodes.
+This rule leads to the comma-leading style which, although perhaps unfamiliar
+to authors with a background in C or Python, has a number of advantages.
+- The rule is extremely simple, especially in comparison to the multitude of
+  rules requried to format comma-trailing lists consistently.
+- A comma character is visually similar to bullet-point.
+- When changing code over time, it's more common to add items to the end of a
+  list than the beginning.
+  This means that comma-leading style often leads to diffs which are easier to
+  review.
+  Closely related to this is that comma-leading style makes it less likely to
+  introduce an extra comma at the end of a list (which would be a syntax
+  error).
+- Multi-dimensional arrays are easier to read, because it's natural to put a
+  line without elements (only the closing `}`) between elements of the
+  more-significant axis.
+- Comma is visually similar to bulletpoint (a common symbol for introducing an
+  item of a list in prose).
+- Comma-leading style can be said to be more closely aligned with BNF
+  specification, e.g.
+  `list_of_genvar_identifiers ::= genvar_identifier { , genvar_identifier }`.
+  This is reflected by how sv-parser attaches `Comment` nodes (which contain
+  whitespace) to the RHS of comma symbols.
 
-Cons
-- May be less familiar at first.
+For some examples, please see the explanation of the **style_commaleading**
+rule.
+
 
