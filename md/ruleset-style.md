@@ -82,14 +82,27 @@ The `grep` utility can be used to detect, and report, lines longer than a given
 number of characters.
 ```sh
 TEXTWIDTH='80'
-LINE_LENGTH="grep -EvIxHn --color '.{0,${TEXTWIDTH}}' {};"
-LINE_LENGTH="${LINE_LENGTH} if [ \"\$?\" -eq \"0\" ]; then"
-LINE_LENGTH="${LINE_LENGTH}   echo '!!! Lines longer than ${TEXTWIDTH} characters !!!';"
-LINE_LENGTH="${LINE_LENGTH}   exit 1;"
-LINE_LENGTH="${LINE_LENGTH} else"
-LINE_LENGTH="${LINE_LENGTH}   exit 0;"
-LINE_LENGTH="${LINE_LENGTH} fi"
-eval "${SVFILES}" | xargs -I {} sh -c "${LINE_LENGTH}"
+LINELEN="grep -EvIxHn --color '.{0,${TEXTWIDTH}}' {};"
+LINELEN="${LINELEN} if [ \"\$?\" -eq \"0\" ]; then"
+LINELEN="${LINELEN}   echo '!!! Lines longer than ${TEXTWIDTH} characters !!!';"
+LINELEN="${LINELEN}   exit 1;"
+LINELEN="${LINELEN} else"
+LINELEN="${LINELEN}   exit 0;"
+LINELEN="${LINELEN} fi"
+eval "${SVFILES}" | xargs -I {} sh -c "${LINELEN}"
+```
+
+Another use of `grep` is to report obfuscated statements where semicolons are
+pushed off the RHS of the screen.
+```sh
+OBFUSTMT="grep -EIHn --color '[ ]+;' {};"
+OBFUSTMT="${OBFUSTMT} if [ \"\$?\" -eq \"0\" ]; then"
+OBFUSTMT="${OBFUSTMT}   echo '!!! Potentially obfuscated statements !!!';"
+OBFUSTMT="${OBFUSTMT}   exit 1;"
+OBFUSTMT="${OBFUSTMT} else"
+OBFUSTMT="${OBFUSTMT}   exit 0;"
+OBFUSTMT="${OBFUSTMT} fi"
+eval "${SVFILES}" | xargs -I {} sh -c "${OBFUSTMT}"
 ```
 
 On Windows, the default environment does not contain utilities such as `grep`,
@@ -238,6 +251,24 @@ characters followed immediately by a newline.
 ```toml
 rules.style_trailingwhitespace = true
 ```
+
+Problems around indented preprocessor directives must be caught before svlint's
+preprocessor stage, so searching with `grep` beforehand is appropriate.
+```sh
+PPDIRECTIVES="define|undef|undefineall|resetall"
+PPDIRECTIVES="${PPDIRECTIVES}|ifdef|ifndef|elsif|else|endif"
+PPDIRECTIVES="${PPDIRECTIVES}|include"
+
+PPINDENT="grep -EIxHn --color '[ ]+`(${PPDIRECTIVES})' {};"
+PPINDENT="${PPINDENT} if [ \"\$?\" -eq \"0\" ]; then"
+PPINDENT="${PPINDENT}   echo '!!! Indented preprocessor directives !!!';"
+PPINDENT="${PPINDENT}   exit 1;"
+PPINDENT="${PPINDENT} else"
+PPINDENT="${PPINDENT}   exit 0;"
+PPINDENT="${PPINDENT} fi"
+eval "${SVFILES}" | xargs -I {} sh -c "${PPINDENT}"
+```
+
 
 ### Operators and Keywords
 
