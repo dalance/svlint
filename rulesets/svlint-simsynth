@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+set -e
+SVLINT_CONFIG="$(dirname $(command -v svlint-simsynth))/simsynth.toml"
+
+
+env SVLINT_CONFIG="${SVLINT_CONFIG}" svlint $*
