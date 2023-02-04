@@ -259,7 +259,7 @@ PPDIRECTIVES="define|undef|undefineall|resetall"
 PPDIRECTIVES="${PPDIRECTIVES}|ifdef|ifndef|elsif|else|endif"
 PPDIRECTIVES="${PPDIRECTIVES}|include"
 
-PPINDENT="grep -EIxHn --color '[ ]+\`(${PPDIRECTIVES})' {};"
+PPINDENT="grep -EIHn --color '[ ]+\`(${PPDIRECTIVES})' {};"
 PPINDENT="${PPINDENT} if [ \"\$?\" -eq \"0\" ]; then"
 PPINDENT="${PPINDENT}   echo '!!! Indented preprocessor directives !!!';"
 PPINDENT="${PPINDENT}   exit 1;"
