@@ -1,6 +1,9 @@
 # svlint
 
-SystemVerilog linter
+SystemVerilog linter compliant with IEEE1800-2017.
+Written in Rust, based on [sv-parser](https://github.com/dalance/sv-parser).
+Svlint is also integrated with most text editors via
+[svls](https://github.com/dalance/svls).
 
 [![Actions Status](https://github.com/dalance/svlint/workflows/Regression/badge.svg)](https://github.com/dalance/svlint/actions)
 [![codecov](https://codecov.io/gh/dalance/svlint/branch/master/graph/badge.svg)](https://codecov.io/gh/dalance/svlint)
