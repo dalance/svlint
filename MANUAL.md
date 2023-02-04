@@ -8257,7 +8257,7 @@ or copy the wrapper scripts to somewhere already on your `$PATH`.
 ## Ruleset *designintent*
 
 Rules that forbid suspicious constructions, i.e. ways of specifying hardware
-are legal according to the LRM, but may express their intention unclearly.
+that are legal according to the LRM, but may express their intention unclearly.
 
 This ruleset is a superset of **ruleset-simsynth**.
 These rules don't depend on each other or interact to provide additional
@@ -8282,7 +8282,7 @@ Note, in the related **ruleset-verifintent**, the rule
 for a simulation testbench to schedule assignments, tasks, and functions in
 ways that wouldn't make sense for synthesizable hardware.
 ```toml
-rules.action_block_with_side_effects = true
+rules.action_block_with_side_effect = true
 rules.default_nettype_none = true
 rules.function_same_as_system_function = true
 rules.keyword_forbidden_always = true
@@ -8357,7 +8357,7 @@ Note, this ruleset does *not* check the amount of indentation like
 **style_indent**.
 ```toml
 rules.multiline_for_begin = true
-rules.multiline_if = true
+rules.multiline_if_begin = true
 ```
 
 The semantics around port declarations are, perhaps, unintuitive but were
@@ -8845,7 +8845,7 @@ Please see their individual explanations for details.
 Note, in the related **ruleset-designintent**, an additional rule
 **keyword_forbidden_always** is enabled.
 ```toml
-rules.action_block_with_side_effects = true
+rules.action_block_with_side_effect = true
 rules.default_nettype_none = true
 rules.function_same_as_system_function = true
 rules.keyword_forbidden_wire_reg = true
@@ -8892,7 +8892,7 @@ Note, this ruleset does *not* check the amount of indentation like
 **style_indent**.
 ```toml
 rules.multiline_for_begin = true
-rules.multiline_if = true
+rules.multiline_if_begin = true
 ```
 
 The semantics around port declarations are, perhaps, unintuitive but were

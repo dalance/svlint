@@ -26,7 +26,7 @@ Please see their individual explanations for details.
 Note, in the related **ruleset-designintent**, an additional rule
 **keyword_forbidden_always** is enabled.
 ```toml
-rules.action_block_with_side_effects = true
+rules.action_block_with_side_effect = true
 rules.default_nettype_none = true
 rules.function_same_as_system_function = true
 rules.keyword_forbidden_wire_reg = true
@@ -73,7 +73,7 @@ Note, this ruleset does *not* check the amount of indentation like
 **style_indent**.
 ```toml
 rules.multiline_for_begin = true
-rules.multiline_if = true
+rules.multiline_if_begin = true
 ```
 
 The semantics around port declarations are, perhaps, unintuitive but were
