@@ -299,6 +299,9 @@ fn print_parser_error(
                 printer.print_error(&format!("failed to include '{}'", x.to_string_lossy()))?;
             }
         }
+        SvParserError::ReadUtf8(path) => {
+            printer.print_error(&format!("file '{}' is not valid UTF-8", path.display()))?;
+        }
         SvParserError::DefineNoArgs(x) => {
             printer.print_error(&format!("macro '{}' requires arguments", x))?;
         }
