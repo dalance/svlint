@@ -299,11 +299,14 @@ fn print_parser_error(
                 printer.print_error(&format!("failed to include '{}'", x.to_string_lossy()))?;
             }
         }
+        SvParserError::DefineNoArgs(x) => {
+            printer.print_error(&format!("macro '{}' requires arguments", x))?;
+        }
         SvParserError::DefineArgNotFound(x) => {
-            printer.print_error(&format!("define argument '{}' is not found", x))?;
+            printer.print_error(&format!("macro argument '{}' is required", x))?;
         }
         SvParserError::DefineNotFound(x) => {
-            printer.print_error(&format!("define '{}' is not found", x))?;
+            printer.print_error(&format!("macro '{}' is not defined", x))?;
         }
         x => {
             printer.print_error(&format!("{}", x))?;
