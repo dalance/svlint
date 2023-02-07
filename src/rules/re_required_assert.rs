@@ -48,7 +48,7 @@ impl Rule for ReRequiredAssert {
         };
 
         match node {
-            RefNode::DeferredImmediateAssetionItem(x) => {
+            RefNode::DeferredImmediateAssertionItem(x) => {
                 if let (Some(_id), _) = &x.nodes {
                     check_regex(true, unwrap_node!(*x, BlockIdentifier),
                                 &syntax_tree, &self.re.as_ref().unwrap())
