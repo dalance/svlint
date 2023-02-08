@@ -48,7 +48,7 @@ impl Rule for ReForbiddenAssert {
         };
 
         match node {
-            RefNode::DeferredImmediateAssetionItem(x) => {
+            RefNode::DeferredImmediateAssertionItem(x) => {
                 if let (Some(_id), _) = &x.nodes {
                     check_regex(false, unwrap_node!(*x, BlockIdentifier),
                                 &syntax_tree, &self.re.as_ref().unwrap())
