@@ -499,18 +499,18 @@ mod tests {
             // 1. CRLF -> LF
             let ret = contents.replace("\r\n", "\n");
 
-            // 2. "$CARGO_MANIFEST_DIR/foo/bar.baz" -> "$CARGO_MANIFEST_DIR\\foo\\bar.baz"
+            // 2. "$CARGO_MANIFEST_DIR/foo/bar.baz" -> "$CARGO_MANIFEST_DIR\foo\bar.baz"
             let expected_paths = Regex::new(r"\$CARGO_MANIFEST_DIR[a-zA-Z0-9_/]+").unwrap();
             let mut r = ret.clone();
             for cap in expected_paths.captures_iter(&ret) {
                 let expected_path = &cap[0];
-                let runtime_path = expected_path.replace("/", "\\\\");
+                let runtime_path = expected_path.replace("/", "\\");
                 r = r.replace(expected_path, &runtime_path);
             }
             let ret: String = r;
 
-            // 3. "$CARGO_MANIFEST_DIR\\foo\\bar.baz" -> "C:\\path\\svlint\\foo\\bar.baz"
-            let cargo_manifest_dir: String = cargo_manifest_dir.escape_default().to_string();
+            // 3. "$CARGO_MANIFEST_DIR\foo\bar.baz" -> "C:\path\svlint\foo\bar.baz"
+            let cargo_manifest_dir: String = cargo_manifest_dir.to_string();
             let ret = ret.replace("$CARGO_MANIFEST_DIR", cargo_manifest_dir.as_str());
 
             ret
