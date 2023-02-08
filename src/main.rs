@@ -646,4 +646,67 @@ mod tests {
         let stdout = printer.read_to_string().unwrap();
         assert_eq!(stdout, expected_contents("dump_filelist_5"));
     } // }}}
+
+    #[test]
+    fn dump_filelist_6() {
+        // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single deeper filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=files");
+        args.push("--filelist");
+        let f_1 = resources_path("grandparent1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(stdout, expected_contents("dump_filelist_6"));
+    } // }}}
+
+    #[test]
+    fn dump_filelist_7() {
+        // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single deeper filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=incdirs");
+        args.push("--filelist");
+        let f_1 = resources_path("grandparent1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(stdout, expected_contents("dump_filelist_7"));
+    } // }}}
+
+    #[test]
+    fn dump_filelist_8() {
+        // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single deeper filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=defines");
+        args.push("--filelist");
+        let f_1 = resources_path("grandparent1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(stdout, expected_contents("dump_filelist_8"));
+    } // }}}
 }
