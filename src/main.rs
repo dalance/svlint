@@ -403,16 +403,16 @@ fn dump_filelist(
 ) -> Result<(), Error> {
     match mode {
         DumpFilelistMode::Yaml => {
-            printer.println(&format!("{:?}:", filename))?;
+            printer.println(&format!("\"{}\":", filename.display()))?;
 
             printer.println(&format!("  files:"))?;
             for f in files {
-                printer.println(&format!("    - {:?}", f))?;
+                printer.println(&format!("    - \"{}\"", f.display()))?;
             }
 
             printer.println(&format!("  incdirs:"))?;
             for i in incdirs {
-                printer.println(&format!("    - {:?}", i))?;
+                printer.println(&format!("    - \"{}\"", i.display()))?;
             }
 
             printer.println(&format!("  defines:"))?;
@@ -422,22 +422,22 @@ fn dump_filelist(
                 let v = defines.get(k).unwrap();
 
                 match v {
-                    None => printer.println(&format!("    {:?}:", k)),
+                    None => printer.println(&format!("    \"{}\":", k)),
                     Some(define) => match &define.text {
-                        Some(definetext) => printer.println(&format!("    {:?}: {:?}", k, definetext.text)),
-                        None => printer.println(&format!("    {:?}:", k)),
+                        Some(definetext) => printer.println(&format!("    \"{}\": \"{}\"", k, definetext.text)),
+                        None => printer.println(&format!("    \"{}\":", k)),
                     },
                 }?;
             }
         }
         DumpFilelistMode::Files => {
             for f in files {
-                printer.println(&format!("{:?}", f))?;
+                printer.println(&format!("{}", f.display()))?;
             }
         }
         DumpFilelistMode::Incdirs => {
             for i in incdirs {
-                printer.println(&format!("{:?}", i))?;
+                printer.println(&format!("{}", i.display()))?;
             }
         }
         DumpFilelistMode::Defines => {
