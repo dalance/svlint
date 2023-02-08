@@ -84,6 +84,23 @@ the ruleset's name:
 #!/usr/bin/env sh
 set -e
 SVLINT_CONFIG="$(dirname $(command -v svlint-an-example))/an-example.toml"
+
+# Delete ANSI control sequences that begin with ESC and (usually) end with m.
+STRIP_ANSI_CONTROL="| sed -e 's/\\o33\\[[0-9;]*[mGKHF]//g'"
+
+# Delete every ASCII control character except line feed ('\n' = 0o12 = 10 = 0x0A).
+STRIP_ASCII_CONTROL="| tr -d '[\\000-\\011\\013-\\037\\177]'"
+
+# Combine the above fragments into a string which can be evaluated and
+# processed with xargs.
+# NOTE: Creating a variable with the result (instead of the command) would lead
+# to undefined behavior where the list of file paths exceeds 2MiB.
+SVFILES="svlint --dump-filelist=files $*"
+SVFILES="${SVFILES} ${STRIP_ANSI_CONTROL}"
+SVFILES="${SVFILES} ${STRIP_ASCII_CONTROL}"
+SVINCDIRS="svlint --dump-filelist=incdirs $*"
+SVINCDIRS="${SVINCDIRS} ${STRIP_ANSI_CONTROL}"
+SVINCDIRS="${SVINCDIRS} ${STRIP_ASCII_CONTROL}"
 ```
 Next, any codeblocks with the `sh` language marker are concatenated to
 the header in order before, finally, this footer is appended:

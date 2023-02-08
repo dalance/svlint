@@ -236,6 +236,23 @@ fn write_ruleset_sh(ruleset: &Ruleset) -> () {
         let _ = writeln!(o, "set -e");
         let _ = writeln!(o, "SVLINT_CONFIG=\"$(dirname $(command -v svlint-{0}))/{0}.toml\"", ruleset.name);
         let _ = writeln!(o, "");
+        let _ = writeln!(o, "# Delete ANSI control sequences that begin with ESC and (usually) end with m.");
+        let _ = writeln!(o, "STRIP_ANSI_CONTROL=\"| sed -e 's/\\\\o33\\\\[[0-9;]*[mGKHF]//g'\"");
+        let _ = writeln!(o, "");
+        let _ = writeln!(o, "# Delete every ASCII control character except line feed ('\\n' = 0o12 = 10 = 0x0A).");
+        let _ = writeln!(o, "STRIP_ASCII_CONTROL=\"| tr -d '[\\\\000-\\\\011\\\\013-\\\\037\\\\177]'\"");
+        let _ = writeln!(o, "");
+        let _ = writeln!(o, "# Combine the above fragments into a variable which can be evaluated and");
+        let _ = writeln!(o, "# processed with xargs.");
+        let _ = writeln!(o, "# NOTE: Creating a variable with the result (instead of the command) would lead");
+        let _ = writeln!(o, "# to undefined behavior where the list of file paths exceeds 2MiB.");
+        let _ = writeln!(o, "SVFILES=\"svlint --dump-filelist=files $*\"");
+        let _ = writeln!(o, "SVFILES=\"${{SVFILES}} ${{STRIP_ANSI_CONTROL}}\"");
+        let _ = writeln!(o, "SVFILES=\"${{SVFILES}} ${{STRIP_ASCII_CONTROL}}\"");
+        let _ = writeln!(o, "SVINCDIRS=\"svlint --dump-filelist=incdirs $*\"");
+        let _ = writeln!(o, "SVINCDIRS=\"${{SVINCDIRS}} ${{STRIP_ANSI_CONTROL}}\"");
+        let _ = writeln!(o, "SVINCDIRS=\"${{SVINCDIRS}} ${{STRIP_ASCII_CONTROL}}\"");
+        let _ = writeln!(o, "");
         for line in &ruleset.sh {
             let _ = writeln!(o, "{}", line);
         }
