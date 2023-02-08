@@ -471,45 +471,4 @@ impl Printer {
         self.write("\n", None);
         Ok(())
     }
-
-    //#[cfg_attr(tarpaulin, skip)]
-    //fn print_summary(
-    //    &mut self,
-    //    path_checked: &[(PathBuf, Vec<Checked>)],
-    //    _verbose: bool,
-    //    start_time: SystemTime,
-    //) -> Result<(), Error> {
-    //    self.write(
-    //        "- Summary ----------------------------------------------------------------------\n\n",
-    //        Color::BrightGreen,
-    //    );
-
-    //    let cnt_file = path_checked.len();
-    //    let cnt_checked = path_checked.iter().fold(0, |sum, (_, y)| sum + y.len());
-    //    let cnt_pass = path_checked.iter().fold(0, |sum, (_, y)| {
-    //        sum + y.iter().filter(|x| x.state == CheckedState::Pass).count()
-    //    });
-    //    let cnt_fail = path_checked.iter().fold(0, |sum, (_, y)| {
-    //        sum + y.iter().filter(|x| x.state == CheckedState::Fail).count()
-    //    });
-    //    let cnt_skip = path_checked.iter().fold(0, |sum, (_, y)| {
-    //        sum + y.iter().filter(|x| x.state == CheckedState::Skip).count()
-    //    });
-
-    //    self.write(&format!("  * Checked files : {}\n", cnt_file), Color::Reset);
-    //    self.write(
-    //        &format!(
-    //            "  * Checked points: {} ( Pass: {}, Fail: {}, Skip: {} )\n",
-    //            cnt_checked, cnt_pass, cnt_fail, cnt_skip
-    //        ),
-    //        Color::Reset,
-    //    );
-
-    //    let elapsed = start_time.elapsed()?;
-    //    let elapsed = elapsed.as_secs() as f64 + elapsed.subsec_micros() as f64 * 1e-6;
-    //    self.write(&format!("  * Elapsed time  : {}s\n", elapsed), Color::Reset);
-    //    self.write("\n", Color::Reset);
-
-    //    Ok(())
-    //}
 }
