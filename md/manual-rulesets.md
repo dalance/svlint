@@ -86,21 +86,17 @@ set -e
 SVLINT_CONFIG="$(dirname $(command -v svlint-an-example))/an-example.toml"
 
 # Delete ANSI control sequences that begin with ESC and (usually) end with m.
-STRIP_ANSI_CONTROL="| sed -e 's/\\o33\\[[0-9;]*[mGKHF]//g'"
+# Delete ASCII control characters except line feed ('\n' = 0o12 = 10 = 0x0A).
+SANS_CONTROL="| sed -e 's/\\o33\\[[0-9;]*[mGKHF]//g'"
+SANS_CONTROL="${SANS_CONTROL} | tr -d '[\\000-\\011\\013-\\037\\177]'"
 
-# Delete every ASCII control character except line feed ('\n' = 0o12 = 10 = 0x0A).
-STRIP_ASCII_CONTROL="| tr -d '[\\000-\\011\\013-\\037\\177]'"
-
-# Combine the above fragments into a string which can be evaluated and
-# processed with xargs.
+# Combine the above output sanitization fragments into variables which can be
+# evaluated and processed with xargs, e.g:
+#   eval "${SVFILES}" | xargs -I {} sh -c "grep foo {};"
 # NOTE: Creating a variable with the result (instead of the command) would lead
 # to undefined behavior where the list of file paths exceeds 2MiB.
-SVFILES="svlint --dump-filelist=files $*"
-SVFILES="${SVFILES} ${STRIP_ANSI_CONTROL}"
-SVFILES="${SVFILES} ${STRIP_ASCII_CONTROL}"
-SVINCDIRS="svlint --dump-filelist=incdirs $*"
-SVINCDIRS="${SVINCDIRS} ${STRIP_ANSI_CONTROL}"
-SVINCDIRS="${SVINCDIRS} ${STRIP_ASCII_CONTROL}"
+SVFILES="svlint --dump-filelist=files $* ${SANS_CONTROL}"
+SVINCDIRS="svlint --dump-filelist=incdirs $* ${SANS_CONTROL}"
 ```
 Next, any codeblocks with the `sh` language marker are concatenated to
 the header in order before, finally, this footer is appended:
@@ -128,9 +124,8 @@ to confusion where TOML files exist elsewhere in the hierarchy.
 It isn't essential for all ruleset scripts to be POSIX compliant, but POSIX
 compliance should be encourage because it allows for consistent behavior across
 the widest range of systems.
-The utilities used in the POSIX wrappers (`env`, `sh`, `command`, `dirname`)
-are specified in the current POSIX standard (IEEE1003.1-2017, Volume 3: Shell
-and Utilities).
+The utilities used in the POSIX wrappers are specified in the current POSIX
+standard (IEEE1003.1-2017, Volume 3: Shell and Utilities).
 Some resources related to these components:
 - [`env`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/env.html)
   Included in the Single Unix Specification since
@@ -141,10 +136,22 @@ Some resources related to these components:
 - [`set`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#set)
   Specified in Section 2.14 Special Built-In Utilities, and available since
   (at least) X/Open Portability Guide Issue 2 (1987).
+- [`printf`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/printf.html)
+  Included in the Single Unix Specification since
+  X/Open Common Application Environment (CAE) Specification Issue 4 (1994).
+- [`grep`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/grep.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
 - [`command`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/command.html)
   Included in the Single Unix Specification since
   X/Open Common Application Environment (CAE) Specification Issue 4 (1994).
 - [`dirname`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/dirname.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
+- [`sed`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sed.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
+- [`tr`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/tr.html)
   Included in the Single Unix Specification since
   X/Open Portability Guide Issue 2 (1987).
 
