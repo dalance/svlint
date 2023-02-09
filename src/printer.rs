@@ -69,56 +69,63 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    fn write(&mut self, dat: &str, color: Color) {
+    fn write(&mut self, dat: &str, color: Option<Color>) {
         match self.term {
             TermCapture::Noncapturable(Some(ref mut term)) => {
-                let term_color = match color {
-                    Color::Black => color::BLACK,
-                    Color::Red => color::RED,
-                    Color::Green => color::GREEN,
-                    Color::Yellow => color::YELLOW,
-                    Color::Blue => color::BLUE,
-                    Color::Magenta => color::MAGENTA,
-                    Color::Cyan => color::CYAN,
-                    Color::White => color::WHITE,
-                    Color::BrightBlack => color::BRIGHT_BLACK,
-                    Color::BrightRed => color::BRIGHT_RED,
-                    Color::BrightGreen => color::BRIGHT_GREEN,
-                    Color::BrightYellow => color::BRIGHT_YELLOW,
-                    Color::BrightBlue => color::BRIGHT_BLUE,
-                    Color::BrightMagenta => color::BRIGHT_MAGENTA,
-                    Color::BrightCyan => color::BRIGHT_CYAN,
-                    Color::BrightWhite => color::BRIGHT_WHITE,
-                    Color::Reset => color::BLACK,
-                };
-                if color == Color::Reset {
-                    let _ = term.reset();
-                } else {
-                    let _ = term.fg(term_color);
+                if let Some(c) = color {
+                    if c == Color::Reset {
+                        let _ = term.reset();
+                    } else {
+                        let term_color = match c {
+                            Color::Black => color::BLACK,
+                            Color::Red => color::RED,
+                            Color::Green => color::GREEN,
+                            Color::Yellow => color::YELLOW,
+                            Color::Blue => color::BLUE,
+                            Color::Magenta => color::MAGENTA,
+                            Color::Cyan => color::CYAN,
+                            Color::White => color::WHITE,
+                            Color::BrightBlack => color::BRIGHT_BLACK,
+                            Color::BrightRed => color::BRIGHT_RED,
+                            Color::BrightGreen => color::BRIGHT_GREEN,
+                            Color::BrightYellow => color::BRIGHT_YELLOW,
+                            Color::BrightBlue => color::BRIGHT_BLUE,
+                            Color::BrightMagenta => color::BRIGHT_MAGENTA,
+                            Color::BrightCyan => color::BRIGHT_CYAN,
+                            Color::BrightWhite => color::BRIGHT_WHITE,
+                            Color::Reset => color::BLACK,
+                        };
+
+                        let _ = term.fg(term_color);
+                    }
                 }
                 let _ = write!(term, "{}", dat);
             }
             TermCapture::Noncapturable(None) => {
-                let colored = match color {
-                    Color::Black => dat.black(),
-                    Color::Red => dat.red(),
-                    Color::Green => dat.green(),
-                    Color::Yellow => dat.yellow(),
-                    Color::Blue => dat.blue(),
-                    Color::Magenta => dat.magenta(),
-                    Color::Cyan => dat.cyan(),
-                    Color::White => dat.white(),
-                    Color::BrightBlack => dat.bright_black(),
-                    Color::BrightRed => dat.bright_red(),
-                    Color::BrightGreen => dat.bright_green(),
-                    Color::BrightYellow => dat.bright_yellow(),
-                    Color::BrightBlue => dat.bright_blue(),
-                    Color::BrightMagenta => dat.bright_magenta(),
-                    Color::BrightCyan => dat.bright_cyan(),
-                    Color::BrightWhite => dat.bright_white(),
-                    Color::Reset => dat.clear(),
-                };
-                print!("{}", colored);
+                if let Some(c) = color {
+                    let colored = match c {
+                        Color::Black => dat.black(),
+                        Color::Red => dat.red(),
+                        Color::Green => dat.green(),
+                        Color::Yellow => dat.yellow(),
+                        Color::Blue => dat.blue(),
+                        Color::Magenta => dat.magenta(),
+                        Color::Cyan => dat.cyan(),
+                        Color::White => dat.white(),
+                        Color::BrightBlack => dat.bright_black(),
+                        Color::BrightRed => dat.bright_red(),
+                        Color::BrightGreen => dat.bright_green(),
+                        Color::BrightYellow => dat.bright_yellow(),
+                        Color::BrightBlue => dat.bright_blue(),
+                        Color::BrightMagenta => dat.bright_magenta(),
+                        Color::BrightCyan => dat.bright_cyan(),
+                        Color::BrightWhite => dat.bright_white(),
+                        Color::Reset => dat.clear(),
+                    };
+                    print!("{}", colored);
+                } else {
+                    print!("{}", dat);
+                }
             }
             TermCapture::Capturable(ref mut buf) => {
                 // NOTE: Capturable terminal is only for unit testability,
@@ -208,22 +215,22 @@ impl Printer {
         hint: Option<&str>,
     ) {
         Printer::with_pos(src, print_pos, |pos, column, row, next_crlf, _last_lf| {
-            self.write(header, Color::BrightRed);
+            self.write(header, Some(Color::BrightRed));
             self.write(
                 &format!("\t{}:{}:{}", path.to_string_lossy(), column, row),
-                Color::BrightBlue,
+                Some(Color::BrightBlue),
             );
             self.write(
                 &format!(
                     "\t{}",
                     String::from_utf8_lossy(&src.as_bytes()[pos..next_crlf])
                 ),
-                Color::White,
+                Some(Color::White),
             );
             if let Some(hint) = hint {
-                self.write(&format!("\thint: {}", hint), Color::BrightYellow);
+                self.write(&format!("\thint: {}", hint), Some(Color::BrightYellow));
             }
-            self.write("\n", Color::Reset);
+            self.write("\n", Some(Color::Reset));
         });
     }
 
@@ -240,7 +247,7 @@ impl Printer {
         reason: Option<&str>,
     ) {
         Printer::with_pos(src, print_pos, |pos, column, row, next_crlf, last_lf| {
-            self.write(header, Color::BrightRed);
+            self.write(header, Some(Color::BrightRed));
 
             let beg = if let Some(last_lf) = last_lf {
                 if next_crlf > last_lf {
@@ -261,33 +268,33 @@ impl Printer {
 
             let column_len = format!("{}", column).len();
 
-            self.write(&format!(": {}\n", description), Color::BrightWhite);
+            self.write(&format!(": {}\n", description), Some(Color::BrightWhite));
 
-            self.write("   -->", Color::BrightBlue);
+            self.write("   -->", Some(Color::BrightBlue));
 
             self.write(
                 &format!(" {}:{}:{}\n", path.to_string_lossy(), column, row),
-                Color::White,
+                Some(Color::White),
             );
 
             self.write(
                 &format!("{}|\n", " ".repeat(column_len + 1)),
-                Color::BrightBlue,
+                Some(Color::BrightBlue),
             );
 
-            self.write(&format!("{} |", column), Color::BrightBlue);
+            self.write(&format!("{} |", column), Some(Color::BrightBlue));
 
             self.write(
                 &format!(
                     " {}\n",
                     String::from_utf8_lossy(&src.as_bytes()[beg..next_crlf])
                 ),
-                Color::White,
+                Some(Color::White),
             );
 
             self.write(
                 &format!("{}|", " ".repeat(column_len + 1)),
-                Color::BrightBlue,
+                Some(Color::BrightBlue),
             );
 
             self.write(
@@ -296,17 +303,17 @@ impl Printer {
                     " ".repeat(pos - beg),
                     "^".repeat(cmp::min(print_pos + print_len, next_crlf) - print_pos)
                 ),
-                Color::BrightYellow,
+                Some(Color::BrightYellow),
             );
 
             if let Some(hint) = hint {
-                self.write(&format!(" hint  : {}\n", hint), Color::BrightYellow);
+                self.write(&format!(" hint  : {}\n", hint), Some(Color::BrightYellow));
             }
 
             if let Some(reason) = reason {
                 self.write(
                     &format!("{}|", " ".repeat(column_len + 1)),
-                    Color::BrightBlue,
+                    Some(Color::BrightBlue),
                 );
 
                 self.write(
@@ -315,13 +322,13 @@ impl Printer {
                         " ".repeat(pos - beg),
                         " ".repeat(cmp::min(print_pos + print_len, next_crlf) - print_pos)
                     ),
-                    Color::Yellow,
+                    Some(Color::Yellow),
                 );
 
-                self.write(&format!(" reason: {}\n", reason), Color::Yellow);
+                self.write(&format!(" reason: {}\n", reason), Some(Color::Yellow));
             }
 
-            self.write("\n", Color::Reset);
+            self.write("\n", Some(Color::Reset));
         });
     }
 
@@ -418,91 +425,50 @@ impl Printer {
 
     #[cfg_attr(tarpaulin, skip)]
     pub fn print_error(&mut self, msg: &str) -> Result<(), Error> {
-        self.write("Error", Color::BrightRed);
-        self.write(&format!(": {}", msg), Color::BrightWhite);
-        self.write("\n", Color::Reset);
+        self.write("Error", Some(Color::BrightRed));
+        self.write(&format!(": {}", msg), Some(Color::BrightWhite));
+        self.write("\n", Some(Color::Reset));
         Ok(())
     }
 
     #[cfg_attr(tarpaulin, skip)]
     pub fn print_warning(&mut self, msg: &str) -> Result<(), Error> {
-        self.write("Warning", Color::BrightYellow);
-        self.write(&format!(": {}", msg), Color::BrightWhite);
-        self.write("\n", Color::Reset);
+        self.write("Warning", Some(Color::BrightYellow));
+        self.write(&format!(": {}", msg), Some(Color::BrightWhite));
+        self.write("\n", Some(Color::Reset));
         Ok(())
     }
 
     #[cfg_attr(tarpaulin, skip)]
     pub fn print_info(&mut self, msg: &str) -> Result<(), Error> {
-        self.write("Info", Color::BrightGreen);
-        self.write(&format!(": {}", msg), Color::BrightWhite);
-        self.write("\n", Color::Reset);
+        self.write("Info", Some(Color::BrightGreen));
+        self.write(&format!(": {}", msg), Some(Color::BrightWhite));
+        self.write("\n", Some(Color::Reset));
         Ok(())
     }
 
     #[cfg_attr(tarpaulin, skip)]
     pub fn print_error_type(&mut self, error: Error) -> Result<(), Error> {
         let mut cause = error.chain();
-        self.write("Error", Color::BrightRed);
-        self.write(&format!(": {}", cause.next().unwrap()), Color::BrightWhite);
-        self.write("\n", Color::Reset);
+        self.write("Error", Some(Color::BrightRed));
+        self.write(&format!(": {}", cause.next().unwrap()), Some(Color::BrightWhite));
+        self.write("\n", Some(Color::Reset));
         for x in cause {
-            self.write(&format!("  caused by: {}\n", x), Color::Reset);
+            self.write(&format!("  caused by: {}\n", x), Some(Color::Reset));
         }
         Ok(())
     }
 
     #[cfg_attr(tarpaulin, skip)]
     pub fn print(&mut self, msg: &str) -> Result<(), Error> {
-        self.write(msg, Color::Reset);
+        self.write(msg, None);
         Ok(())
     }
 
     #[cfg_attr(tarpaulin, skip)]
     pub fn println(&mut self, msg: &str) -> Result<(), Error> {
-        self.write(msg, Color::Reset);
-        self.write("\n", Color::Reset);
+        self.write(msg, None);
+        self.write("\n", None);
         Ok(())
     }
-
-    //#[cfg_attr(tarpaulin, skip)]
-    //fn print_summary(
-    //    &mut self,
-    //    path_checked: &[(PathBuf, Vec<Checked>)],
-    //    _verbose: bool,
-    //    start_time: SystemTime,
-    //) -> Result<(), Error> {
-    //    self.write(
-    //        "- Summary ----------------------------------------------------------------------\n\n",
-    //        Color::BrightGreen,
-    //    );
-
-    //    let cnt_file = path_checked.len();
-    //    let cnt_checked = path_checked.iter().fold(0, |sum, (_, y)| sum + y.len());
-    //    let cnt_pass = path_checked.iter().fold(0, |sum, (_, y)| {
-    //        sum + y.iter().filter(|x| x.state == CheckedState::Pass).count()
-    //    });
-    //    let cnt_fail = path_checked.iter().fold(0, |sum, (_, y)| {
-    //        sum + y.iter().filter(|x| x.state == CheckedState::Fail).count()
-    //    });
-    //    let cnt_skip = path_checked.iter().fold(0, |sum, (_, y)| {
-    //        sum + y.iter().filter(|x| x.state == CheckedState::Skip).count()
-    //    });
-
-    //    self.write(&format!("  * Checked files : {}\n", cnt_file), Color::Reset);
-    //    self.write(
-    //        &format!(
-    //            "  * Checked points: {} ( Pass: {}, Fail: {}, Skip: {} )\n",
-    //            cnt_checked, cnt_pass, cnt_fail, cnt_skip
-    //        ),
-    //        Color::Reset,
-    //    );
-
-    //    let elapsed = start_time.elapsed()?;
-    //    let elapsed = elapsed.as_secs() as f64 + elapsed.subsec_micros() as f64 * 1e-6;
-    //    self.write(&format!("  * Elapsed time  : {}s\n", elapsed), Color::Reset);
-    //    self.write("\n", Color::Reset);
-
-    //    Ok(())
-    //}
 }

@@ -1,0 +1,9 @@
+$(VAR1)=var1
+$VAR3=var3
+${VAR2}=var2
+A=a
+B=b
+C=c
+VAR4
+a=123
+b=456
