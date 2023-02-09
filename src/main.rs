@@ -16,6 +16,14 @@ use svlint::printer::Printer;
 // -------------------------------------------------------------------------------------------------
 // Opt
 // -------------------------------------------------------------------------------------------------
+#[derive(clap::ValueEnum, Clone, Debug)]
+pub enum DumpFilelistMode {
+    No,
+    Yaml,
+    Files,
+    Incdirs,
+    Defines,
+}
 
 #[derive(Debug, Parser)]
 #[clap(name = "svlint")]
@@ -89,8 +97,8 @@ pub struct Opt {
     pub example: bool,
 
     /// Print data from filelists
-    #[clap(long = "dump-filelist")]
-    pub dump_filelist: bool,
+    #[clap(value_enum, default_value = "no", long = "dump-filelist")]
+    pub dump_filelist: DumpFilelistMode,
 
     /// Print syntax trees
     #[clap(long = "dump-syntaxtree")]
@@ -158,7 +166,12 @@ pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
 
         ret
     } else {
-        if !opt.silent && !opt.dump_filelist && !opt.preprocess_only {
+        let do_dump_filelist: bool = match opt.dump_filelist {
+            DumpFilelistMode::No => false,
+            _ => true,
+        };
+
+        if !opt.silent && !do_dump_filelist && !opt.preprocess_only {
             let msg = format!(
                 "Config file '{}' is not found. Enable all rules",
                 opt.config.to_string_lossy()
@@ -208,8 +221,8 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
 
         for filelist in &opt.filelist {
             let (mut f, mut i, d) = parse_filelist(filelist)?;
-            if opt.dump_filelist {
-                dump_filelist(printer, &filelist, &f, &i, &d)?;
+            if let DumpFilelistMode::Yaml = opt.dump_filelist {
+                dump_filelist(printer, &opt.dump_filelist, &filelist, &f, &i, &d)?;
             }
             files.append(&mut f);
             includes.append(&mut i);
@@ -223,9 +236,12 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
         (opt.files.clone(), opt.includes.clone())
     };
 
-    if opt.dump_filelist {
-        dump_filelist(printer, &Path::new("."), &files, &includes, &defines)?;
-        return Ok(true);
+    match opt.dump_filelist {
+        DumpFilelistMode::No => {}
+        _ => {
+            dump_filelist(printer, &opt.dump_filelist, &Path::new("."), &files, &includes, &defines)?;
+            return Ok(true);
+        }
     }
 
     let mut all_pass = true;
@@ -379,37 +395,68 @@ fn parse_filelist(
 
 fn dump_filelist(
     printer: &mut Printer,
+    mode: &DumpFilelistMode,
     filename: &Path,
     files: &Vec<PathBuf>,
     incdirs: &Vec<PathBuf>,
     defines: &HashMap<String, Option<Define>>,
 ) -> Result<(), Error> {
-    printer.println(&format!("{:?}:", filename))?;
+    match mode {
+        DumpFilelistMode::Yaml => {
+            printer.println(&format!("\"{}\":", filename.display()))?;
 
-    printer.println(&format!("  files:"))?;
-    for f in files {
-        printer.println(&format!("    - {:?}", f))?;
-    }
+            printer.println(&format!("  files:"))?;
+            for f in files {
+                printer.println(&format!("    - \"{}\"", f.display()))?;
+            }
 
-    printer.println(&format!("  incdirs:"))?;
-    for i in incdirs {
-        printer.println(&format!("    - {:?}", i))?;
-    }
+            printer.println(&format!("  incdirs:"))?;
+            for i in incdirs {
+                printer.println(&format!("    - \"{}\"", i.display()))?;
+            }
 
-    printer.println(&format!("  defines:"))?;
-    let mut keys: Vec<&String> = defines.keys().collect();
-    keys.sort_unstable();
-    for k in keys {
-        let v = defines.get(k).unwrap();
+            printer.println(&format!("  defines:"))?;
+            let mut keys: Vec<&String> = defines.keys().collect();
+            keys.sort_unstable();
+            for k in keys {
+                let v = defines.get(k).unwrap();
 
-        match v {
-            None => printer.println(&format!("    {:?}:", k)),
-            Some(define) => match &define.text {
-                Some(definetext) => printer.println(&format!("    {:?}: {:?}", k, definetext.text)),
-                None => printer.println(&format!("    {:?}:", k)),
-            },
-        }?;
-    }
+                match v {
+                    None => printer.println(&format!("    \"{}\":", k)),
+                    Some(define) => match &define.text {
+                        Some(definetext) => printer.println(&format!("    \"{}\": \"{}\"", k, definetext.text)),
+                        None => printer.println(&format!("    \"{}\":", k)),
+                    },
+                }?;
+            }
+        }
+        DumpFilelistMode::Files => {
+            for f in files {
+                printer.println(&format!("{}", f.display()))?;
+            }
+        }
+        DumpFilelistMode::Incdirs => {
+            for i in incdirs {
+                printer.println(&format!("{}", i.display()))?;
+            }
+        }
+        DumpFilelistMode::Defines => {
+            let mut keys: Vec<&String> = defines.keys().collect();
+            keys.sort_unstable();
+            for k in keys {
+                let v = defines.get(k).unwrap();
+
+                match v {
+                    None => printer.println(&format!("{}", k)),
+                    Some(define) => match &define.text {
+                        Some(definetext) => printer.println(&format!("{}={}", k, definetext.text)),
+                        None => printer.println(&format!("{}=", k)),
+                    },
+                }?;
+            }
+        }
+        _ => {}
+    };
 
     Ok(())
 }
@@ -452,18 +499,18 @@ mod tests {
             // 1. CRLF -> LF
             let ret = contents.replace("\r\n", "\n");
 
-            // 2. "$CARGO_MANIFEST_DIR/foo/bar.baz" -> "$CARGO_MANIFEST_DIR\\foo\\bar.baz"
+            // 2. "$CARGO_MANIFEST_DIR/foo/bar.baz" -> "$CARGO_MANIFEST_DIR\foo\bar.baz"
             let expected_paths = Regex::new(r"\$CARGO_MANIFEST_DIR[a-zA-Z0-9_/]+").unwrap();
             let mut r = ret.clone();
             for cap in expected_paths.captures_iter(&ret) {
                 let expected_path = &cap[0];
-                let runtime_path = expected_path.replace("/", "\\\\");
+                let runtime_path = expected_path.replace("/", "\\");
                 r = r.replace(expected_path, &runtime_path);
             }
             let ret: String = r;
 
-            // 3. "$CARGO_MANIFEST_DIR\\foo\\bar.baz" -> "C:\\path\\svlint\\foo\\bar.baz"
-            let cargo_manifest_dir: String = cargo_manifest_dir.escape_default().to_string();
+            // 3. "$CARGO_MANIFEST_DIR\foo\bar.baz" -> "C:\path\svlint\foo\bar.baz"
+            let cargo_manifest_dir: String = cargo_manifest_dir.to_string();
             let ret = ret.replace("$CARGO_MANIFEST_DIR", cargo_manifest_dir.as_str());
 
             ret
@@ -500,7 +547,7 @@ mod tests {
 
         // Files, not filelist.
         let mut args = vec!["svlint"];
-        args.push("--dump-filelist");
+        args.push("--dump-filelist=yaml");
         args.push("foo/bar/one.sv");
         args.push("foo/bar/two.sv");
         let opt = Opt::parse_from(args.iter());
@@ -520,7 +567,7 @@ mod tests {
 
         // Single flat filelist.
         let mut args = vec!["svlint"];
-        args.push("--dump-filelist");
+        args.push("--dump-filelist=yaml");
         args.push("--filelist");
         let f_1 = resources_path("child1.fl");
         args.push(&f_1);
@@ -541,7 +588,7 @@ mod tests {
 
         // Single non-flat filelist.
         let mut args = vec!["svlint"];
-        args.push("--dump-filelist");
+        args.push("--dump-filelist=yaml");
         args.push("--filelist");
         let f_1 = resources_path("parent1.fl");
         args.push(&f_1);
@@ -562,7 +609,7 @@ mod tests {
 
         // Muliple filelists.
         let mut args = vec!["svlint"];
-        args.push("--dump-filelist");
+        args.push("--dump-filelist=yaml");
         args.push("--filelist");
         let f_1 = resources_path("child1.fl");
         args.push(&f_1);
@@ -586,7 +633,7 @@ mod tests {
 
         // Single deeper filelist.
         let mut args = vec!["svlint"];
-        args.push("--dump-filelist");
+        args.push("--dump-filelist=yaml");
         args.push("--filelist");
         let f_1 = resources_path("grandparent1.fl");
         args.push(&f_1);
@@ -598,5 +645,68 @@ mod tests {
 
         let stdout = printer.read_to_string().unwrap();
         assert_eq!(stdout, expected_contents("dump_filelist_5"));
+    } // }}}
+
+    #[test]
+    fn dump_filelist_6() {
+        // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single deeper filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=files");
+        args.push("--filelist");
+        let f_1 = resources_path("grandparent1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(stdout, expected_contents("dump_filelist_6"));
+    } // }}}
+
+    #[test]
+    fn dump_filelist_7() {
+        // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single deeper filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=incdirs");
+        args.push("--filelist");
+        let f_1 = resources_path("grandparent1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(stdout, expected_contents("dump_filelist_7"));
+    } // }}}
+
+    #[test]
+    fn dump_filelist_8() {
+        // {{{
+        let config: Config = toml::from_str("").unwrap();
+
+        // Single deeper filelist.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=defines");
+        args.push("--filelist");
+        let f_1 = resources_path("grandparent1.fl");
+        args.push(&f_1);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), true);
+
+        let stdout = printer.read_to_string().unwrap();
+        assert_eq!(stdout, expected_contents("dump_filelist_8"));
     } // }}}
 }
