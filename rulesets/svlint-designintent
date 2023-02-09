@@ -1,5 +1,15 @@
 #!/usr/bin/env sh
 set -e
+
+# If flag/options are given that don't use the ruleset config, simply run
+# svlint with the given arguments.
+NONRULESET="-h|--help|-V|--version|--dump-filelist|-E|--example|--update"
+if printf "%b\n" " $*" | grep -Eq " (${NONRULESET})";
+then
+  svlint $*
+  exit $?
+fi
+
 SVLINT_CONFIG="$(dirname $(command -v svlint-designintent))/designintent.toml"
 
 # Delete ANSI control sequences that begin with ESC and (usually) end with m.

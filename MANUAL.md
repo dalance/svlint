@@ -8167,6 +8167,16 @@ the ruleset's name:
 ```sh
 #!/usr/bin/env sh
 set -e
+
+# If flag/options are given that don't use the ruleset config, simply run
+# svlint with the given arguments.
+NONRULESET="-h|--help|-V|--version|--dump-filelist|-E|--example|--update"
+if printf "%b\n" " $*" | grep -Eq " (${NONRULESET})";
+then
+  svlint $*
+  exit $?
+fi
+
 SVLINT_CONFIG="$(dirname $(command -v svlint-an-example))/an-example.toml"
 
 # Delete ANSI control sequences that begin with ESC and (usually) end with m.
@@ -8220,6 +8230,12 @@ Some resources related to these components:
 - [`set`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#set)
   Specified in Section 2.14 Special Built-In Utilities, and available since
   (at least) X/Open Portability Guide Issue 2 (1987).
+- [`printf`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/printf.html)
+  Included in the Single Unix Specification since
+  X/Open Common Application Environment (CAE) Specification Issue 4 (1994).
+- [`grep`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/grep.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
 - [`command`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/command.html)
   Included in the Single Unix Specification since
   X/Open Common Application Environment (CAE) Specification Issue 4 (1994).

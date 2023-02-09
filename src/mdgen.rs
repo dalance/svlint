@@ -234,6 +234,16 @@ fn write_ruleset_sh(ruleset: &Ruleset) -> () {
 
         let _ = writeln!(o, "#!/usr/bin/env sh");
         let _ = writeln!(o, "set -e");
+        let _ = writeln!(o, "");
+        let _ = writeln!(o, "# If flag/options are given that don't use the ruleset config, simply run");
+        let _ = writeln!(o, "# svlint with the given arguments.");
+        let _ = writeln!(o, "NONRULESET=\"-h|--help|-V|--version|--dump-filelist|-E|--example|--update\"");
+        let _ = writeln!(o, "if printf \"%b\\n\" \" $*\" | grep -Eq \" (${{NONRULESET}})\";");
+        let _ = writeln!(o, "then");
+        let _ = writeln!(o, "  svlint $*");
+        let _ = writeln!(o, "  exit $?");
+        let _ = writeln!(o, "fi");
+        let _ = writeln!(o, "");
         let _ = writeln!(o, "SVLINT_CONFIG=\"$(dirname $(command -v svlint-{0}))/{0}.toml\"", ruleset.name);
         let _ = writeln!(o, "");
         let _ = writeln!(o, "# Delete ANSI control sequences that begin with ESC and (usually) end with m.");
