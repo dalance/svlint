@@ -7,6 +7,7 @@ This document is generated from the Markdown files in `md/*.md`, the rules'
 source code (`svlint/src/rules/*.rs`), and their testcases
 (`testcases/(fail|pass)/*.sv`) using the `mdgen` utility.
 
+
 ## Purpose of Lint Checks
 
 The authors of any works must consider their audience, particularly in how
@@ -30,53 +31,8 @@ refusal to work if you dare to mis-spell a variable name.
 There are two main classes of rule for helping human readers:
 1. Rules which codify naming conventions.
 2. Rules which codify style/formatting conventions.
-
-Naming conventions help a human reader to take in large amounts of detailed
-information (e.g. from netlists, timing reports) by allowing the reader to
-predict the function of a signal from its name, and predict part of a signal's
-name from its function.
-For example, a common convention is: "All signals inferring the output of a
-flip-flop must be suffixed with `_q`."
-If an engineer reads a synthesized netlist and sees a flip-flop cell named
-without the `_q` suffix, there may be a coding error, so further checks
-with the author are required.
-On the frontend, a reader can quickly scan a SystemVerilog file to check that
-signals have the `_q` suffix if (and only if) they are driven in `always_ff`
-processes.
-Other naming conventions are useful for helping readers follow the direction of
-signals through ports, find files quickly in a large filesystem, find
-appropriate files from hierarchical paths in a netlist, and more.
-
-Style conventions also help a human reader to quickly and efficiently
-comprehend large bodies of code.
-Indeed, that is exactly what a reader wants to do when they're working with
-code written by other people, often complete strangers.
-The reader simply wishes to open the file, extract the necessary information,
-close the file, and get on with their life.
-Unlike mechanical tools, people process code visually (by translating their
-view of the screen into a mental model) and any noise which obscures the useful
-information will require extra mental effort to process.
-When code is written with consistent and regular whitespace, the important
-details like operators and identifiers are easily extracted.
-In contrast, when little attention is paid to indentation or spaces around
-keywords, operators, or identifers, the readers must waste their energy
-performing a mental noise reduction.
-Two notable style conventions help with a change-review process, i.e. comparing
-multiple versions of a file, rather than reading one version:
-- Line length limited to a fixed number of characters, usually 80.
-  - Excessively long lines may indicate problems with a program's logic.
-  - Excessively long lines prevent viewing differences side-by-side.
-  - Side-by-side reading is awkward when sideways scrolling is involved.
-  - Code which is printed on paper cannot be scrolled sideways, and soft-wrap
-    alternatives interrupt indentation.
-- Trailing whitespace is forbidden.
-  - Changes to trailing whitespace are not usually visible to human readers,
-    but are found by version control tools.
-  - Editors are often configured to remove trailing whitespace, resulting in
-    unnecessary differences.
-  - Git, a popular version control tool will (by default) warn against trailing
-    whitespace with prominent markers specifically because of the unnecessary
-    noise introduced to a repository's history.
+Further informatino on these concepts is provided in the `naming` and `style`
+rulesets.
 
 Just as individual human readers have their own preferences (in language,
 style, naming conventions, etc.), each tool has its own quirks and ways of
@@ -93,7 +49,8 @@ minimize the risk of introducing a mismatch between simulation and synthesis.
 Another class of functional rules is those which check for datatypes and
 constructs that avoid compiler checks for legacy compatibility.
 
-## How It Works
+
+## Usage
 
 This tool (svlint) works in a series of well-defined steps:
 1. On startup, search for a configuration file or use a default configuration.
@@ -109,6 +66,125 @@ This tool (svlint) works in a series of well-defined steps:
 7. For each node, apply each rule independently.
 8. If a rule detects an undesirable quality in the syntax tree, then return a
   failure, otherwise return a pass.
+
+
+### Filelists
+
+Specification of the files to be processed can be given on the command line by
+*either* a list of files (e.g. `svlint foo.sv bar/*.sv`), or via filelists
+(e.g. `svlint -f foo.fl -f path/to/bar.fl`).
+It is not supported to specify both files and filelists, primarily because
+concerns about usability due to the way command-line arguments are processed.
+
+The following features are supported via the
+[sv-filelist-parser](https://github.com/supleed2/sv-filelist-parser) crate.
+- Lines beginning with `//` or `#` and empty lines are ignored.
+- Specify include directories like `+incdir+path/to/foo`.
+- Define preprocessor macros like `+define+FOO` or `+define+BAR=1`.
+- Include other filelists like `-f path/to/foo.fl`
+- All remaining lines are treated as file paths.
+- Substitute of environment variables like `$FOO`, `${FOO}`, or `$(FOO)`.
+For example:
+```
+aaa.sv
+$FOO/bbb.sv
+${FOO}/ccc.sv
+$(FOO)/ddd.sv
++incdir+$PWD/header/src
++define+SYNTHESIS
+-f anotherFilelist.fl
+```
+
+### Plugin rules
+
+svlint supports plugin rules, an example of which is available
+[here](https://github.com/dalance/svlint-plugin-sample).
+
+A plugin rule is one which is compiled separately to the main svlint binary,
+and is loaded at runtime.
+In the same way as integrated rules, a plugin rule must implement the `Rule`
+trait, i.e. `check`, `name`, `hint`, and `reason`.
+The `hint` and `reason` methods allow plugin rules to provide information back
+to the user on the terminal, but they do not require testcases or an
+explanation.
+All loaded plugin rules, via the `--plugin` option, are enabled and have access
+to all values in the TOML configuration.
+
+### Configuration
+
+First of all, you must put a configuration file `.svlint.toml` to specify enabled rules.
+Configuration file is searched to the upper directory until `/`.
+So you can put configuration file (`.svlint.toml`) on the repository root
+alongside `.gitignore`.
+Alternatively, for project-wide rules you can set the environment variable
+`SVLINT_CONFIG` to something like `/cad/projectFoo/teamBar.svlint.toml`.
+
+The example of configuration file is below:
+
+```toml
+[option]
+exclude_paths = ["ip/.*"]
+prefix_label = ""
+
+[rules]
+non_ansi_module = true
+keyword_forbidden_wire_reg = true
+```
+
+The complete example can be generated by `svlint --example`
+
+#### `[option]` section
+
+- `exclude_paths` is a list of regular expressions.
+  If a file path is matched with any regex in the list, the file is skipped.
+- `prefix_(inout|input|output)` are strings which port identifiers must begin
+  with.
+  Only used when the corresponding rule is enabled.
+  Defaults to `"b_"`, `"i_"`, and `"o_"` respectively.
+- `prefix_label` is a string which generate labels must begin with.
+  Applicable to `if/else`, `for`, and `case` generate constructs when the
+  corresponding `generate_*_with_label` rule is enabled.
+  Defaults to `"l_"`.
+  To check only that a label exists, set this to `""`.
+- `prefix_instance` is a string which instances must begin with.
+  Defaults to `"u_"`.
+- `prefix_(interface|module|package)` are strings which definitions must begin
+  with.
+  An alternative naming convention for interface, module, and package names is
+  uppercase/lowercase first letter.
+  This is similar to Haskell where types begin with uppercase and variables
+  begin with lowercase.
+  These alternative rules are called
+  `(lower|upper)camelcase_(interface|module|package)`.
+- `re_(forbidden|required)_*` are regular expressions for detailed naming
+  conventions, used only when the corresponding rules are enabled.
+  The defaults for `re_required_*` are either uppercase, lowercase, or
+  mixed-case starting with lowercase, i.e. just vaguely sensible.
+  The defaults for `re_forbidden_*` are to forbid all strings, except those
+  starting with "X", i.e. not at all sensible (configuration required).
+
+#### `[rules]` section
+
+All rules are disabled unless explicitly enabled in the `[rules]` section.
+To enable a rule, assign `true` to its name, e.g. `case_default = true`.
+
+Where no configuration file can be found, all rules are implicitly
+enabled which will most likely result in errors from conflicting rules, e.g.
+**keyword_forbidden_generate** and **keyword_required_generate**.
+
+If you need to turn off specific rules for a section, then you can use special
+comments within your SystemVerilog source code:
+```systemverilog
+/* svlint off keyword_forbidden_always */
+always @* foo = bar;                      // <-- This line is special.
+/* svlint on keyword_forbidden_always */
+```
+
+#### Configuration update
+
+If svlint is updated, `.svlint.toml` can be updated to the latest version with
+`svlint --update`.
+
 
 ## Rule Documentation
 
@@ -146,9 +222,12 @@ a short reason why it should be seen.
   conjunction, i.e. enabling both rules is nonsensical because a failure on one
   implies a pass on the other rule.
 
+You are welcome to suggest a new rule through
+[Issues](https://github.com/dalance/svlint/issues) or
+[Pull Requests](https://github.com/dalance/svlint/pulls).
+
 
 # Functional Rules
-
 
 ---
 ## `action_block_with_side_effect`
@@ -3217,7 +3296,6 @@ re_forbidden_interface = ".*"
 [rules]
 re_forbidden_interface = true
 ```
-
 
 ---
 ## `generate_case_with_label`
@@ -6550,7 +6628,6 @@ Most rules for checking style/whitespace are named with the prefix `style_`,
 but `tab_character` is also in this class.
 These rules do not reference any clause in the LRM (IEEE1800-2017).
 
-
 ---
 ## `style_commaleading`
 
@@ -8001,5 +8078,784 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
   - Not applicable.
+
+
+---
+---
+
+# Rulesets
+
+Some pre-configured rulesets are provided in `rulesets/*.toml`.
+A pre-configured ruleset can be used in the three standard ways (rename to
+`.svlint.toml` and place in the project root, the `--config` argument, or via
+the `SVLINT_CONFIG` environment variable).
+Pre-configured rulesets reside in `rulesets/*.toml`.
+There are two methods of specifying those TOML files:
+1. Simply copy your existing `.svlint.toml` configuration into that directory.
+  Ideally, add some comments to explain the background of the configuration and
+  open a [pull request](https://github.com/dalance/svlint/pulls) to have it
+  included as part of this project.
+  This is the (initially) lower-effort approach, best suited to small personal
+  projects with low requirements for documentation.
+2. Create a definition in Markdown to compose a ruleset from a sequence of
+  TOML fragments , i.e. write `md/ruleset-foo.md` to describe how the
+  configuration in `rulesets/foo.toml` should be formed.
+  Again, please open a [pull request](https://github.com/dalance/svlint/pulls)
+  to have it included as part of this project.
+  This approach is initially higher-effort but on larger projects, users will
+  appreciate a good explanation of why configurations are necessary.
+The rest of this section refers to the second method, which is a variant of
+[literate programming](https://en.wikipedia.org/wiki/Literate_programming).
+
+If you only use one configuration, there isn't much benefit in having wrapper
+scripts, i.e. the benefits appear when you regularly use several
+configurations.
+For example, say you work on two projects called "A" and "B", and each project
+has its own preferences for naming conventions.
+This situation can be troublesome because there are many ways to get confused
+about which configuration file should be used on which files.
+Wrapper scripts help this situation by providing convenient commands like
+`svlint-A` and `svlint-B`.
+Another case for convenient access to specific rulesets is where you want to
+check that some files adhere to a particular set of rules, e.g. rules to
+reduce synthesis/simulation mismatches should apply to `design/*.sv` but not
+apply to `verif/*.sv`.
+
+Each ruleset specification (in `md/ruleset-*.md`) is processed individually.
+A ruleset specification is freeform Markdown containing codeblocks with TOML
+(toml), POSIX shell (sh), or Windows batch (winbatch) language markers.
+Each ruleset specifies exactly one TOML configuration, one POSIX shell script,
+and one Windows batch script.
+For example, let this ruleset specification be placed in
+`md/ruleset-an-example.md`:
+
+    This is freeform Markdown.
+
+    Some explanation of how the **foo** and **bar** rules work together and the
+    associated option **blue**.
+    ```toml
+    rules.foo = true
+    rules.bar = true
+    option.blue = "ABC"
+    ```
+
+    Next, some text about the **baz** rule and another option **red**.
+    ```toml
+    # A comment here.
+    rules.baz = true
+    option.red = "DEF"
+    ```
+
+    Maybe some more Markdown text here.
+
+This example will produce three files under `rulesets/` when cargo builds this
+crate: `an-example` (a POSIX shell script), `an-example.cmd` (a Windows batch
+script), and `an-example.toml`.
+A ruleset's TOML configuration is generated by concatenating all TOML
+codeblocks into one file, so the above example will produce this TOML file:
+```toml
+rules.foo = true
+rules.bar = true
+option.blue = "ABC"
+# A comment here.
+rules.baz = true
+option.red = "DEF"
+```
+
+POSIX shell scripts begin with this header, where "an-example" is replaced by
+the ruleset's name:
+```sh
+#!/usr/bin/env sh
+set -e
+
+# If flag/options are given that don't use the ruleset config, simply run
+# svlint with the given arguments.
+NONRULESET="-h|--help|-V|--version|--dump-filelist|-E|--example|--update"
+if printf "%b\n" " $*" | grep -Eq " (${NONRULESET})";
+then
+  svlint $*
+  exit $?
+fi
+
+SVLINT_CONFIG="$(dirname $(command -v svlint-an-example))/an-example.toml"
+
+# Delete ANSI control sequences that begin with ESC and (usually) end with m.
+# Delete ASCII control characters except line feed ('\n' = 0o12 = 10 = 0x0A).
+SANS_CONTROL="| sed -e 's/\\o33\\[[0-9;]*[mGKHF]//g'"
+SANS_CONTROL="${SANS_CONTROL} | tr -d '[\\000-\\011\\013-\\037\\177]'"
+
+# Combine the above output sanitization fragments into variables which can be
+# evaluated and processed with xargs, e.g:
+#   eval "${SVFILES}" | xargs -I {} sh -c "grep foo {};"
+# NOTE: Creating a variable with the result (instead of the command) would lead
+# to undefined behavior where the list of file paths exceeds 2MiB.
+SVFILES="svlint --dump-filelist=files $* ${SANS_CONTROL}"
+SVINCDIRS="svlint --dump-filelist=incdirs $* ${SANS_CONTROL}"
+```
+Next, any codeblocks with the `sh` language marker are concatenated to
+the header in order before, finally, this footer is appended:
+```sh
+env SVLINT_CONFIG="${SVLINT_CONFIG}" svlint $*
+```
+The final command calls the main `svlint` executable, wherever it is on your
+`$PATH`, with the environment variable `SVLINT_CONFIG` pointing to a TOML
+configuration in the same directory as the wrapper script.
+Any command line arguments given to the wrapper script are passed on to the
+main executable (via `$*`).
+When svlint searches for a configuration (`src/main.rs::search_config()`), the
+environment variable is chosen in preference to the `--config` flag which
+prevents confusing cases.
+1) Where the script is given the option, e.g. `svlint-foo --config=bar *.sv`.
+As the environment variable is set, the option `--config=bar` is ignored.
+If a user wishes to pass a different configuration, they'll need to call the
+main executable like `svlint --config=bar *.sv`.
+2) Where the environment variable is not set or is invalid, the `--config`
+value (defaulting to `.svlint.toml`) is searched for hierarchically, beginning
+in the current directory then moving upwards to filesystem ancestors.
+If instead the `--config` option was used in wrapper scripts, this could lead
+to confusion where TOML files exist elsewhere in the hierarchy.
+
+It isn't essential for all ruleset scripts to be POSIX compliant, but POSIX
+compliance should be encourage because it allows for consistent behavior across
+the widest range of systems.
+The utilities used in the POSIX wrappers are specified in the current POSIX
+standard (IEEE1003.1-2017, Volume 3: Shell and Utilities).
+Some resources related to these components:
+- [`env`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/env.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
+- [`sh`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sh.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
+- [`set`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#set)
+  Specified in Section 2.14 Special Built-In Utilities, and available since
+  (at least) X/Open Portability Guide Issue 2 (1987).
+- [`printf`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/printf.html)
+  Included in the Single Unix Specification since
+  X/Open Common Application Environment (CAE) Specification Issue 4 (1994).
+- [`grep`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/grep.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
+- [`command`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/command.html)
+  Included in the Single Unix Specification since
+  X/Open Common Application Environment (CAE) Specification Issue 4 (1994).
+- [`dirname`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/dirname.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
+- [`sed`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sed.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
+- [`tr`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/tr.html)
+  Included in the Single Unix Specification since
+  X/Open Portability Guide Issue 2 (1987).
+
+Windows batch scripts begin with this header, where "an-example" is replaced by
+the ruleset's name:
+```winbatch
+@echo off
+for /f %%E in ('where.exe /f svlint-an-example') do (
+    set "SVLINT_CONFIG=%%~dpEan-example.toml"
+)
+```
+Next, any codeblocks with the `winbatch` language marker are then concatenated
+to the header in order before, finally, this footer is appended:
+```winbatch
+svlint %*
+```
+
+The batch script template is designed for Windows XP and later, using the
+`cmd.exe` shell.
+Some useful resources for Windows batch script commands:
+- [`echo`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/echo)
+- [`for`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/for)
+- [`where`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/where)
+- [`set`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1)
+
+These wrapper scripts can then be used with svlint's usual arguments like
+`svlint-foo path/to/design/*.sv`.
+Note that this style of wrapper script allows you to use `$PATH` environment
+variable in the usual way, and that the wrapper scripts will simply use the
+first version of `svlint` found on your `$PATH`.
+
+This method of generating a configuration and wrapper scripts enables full
+flexibility for each ruleset's requirements, while encouraging full and open
+documentation about their construction.
+The process, defined in `src/mdgen.rs`, is deterministic so both the Markdown
+specifications and the TOML configurations are tracked by versions control.
+However, wrapper scripts are not installed alongside the `svlint` binary
+created via `cargo install svlint` (or similar).
+Instead, you must either add `rulesets/` to your `$PATH` environment variable,
+or copy the wrapper scripts to somewhere already on your `$PATH`.
+
+---
+## Ruleset *designintent*
+
+Rules that forbid suspicious constructions, i.e. ways of specifying hardware
+that are legal according to the LRM, but may express their intention unclearly.
+
+This ruleset is a superset of **ruleset-simsynth**.
+These rules don't depend on each other or interact to provide additional
+properties.
+```toml
+rules.blocking_assignment_in_always_ff = true
+rules.non_blocking_assignment_in_always_comb = true
+rules.case_default = true
+rules.enum_with_type = true
+rules.function_with_automatic = true
+rules.keyword_forbidden_priority = true
+rules.keyword_forbidden_unique = true
+rules.keyword_forbidden_unique0 = true
+rules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
+```
+
+This ruleset has further rules which don't depend on each other or combine
+to provide additional properties.
+Please see their individual explanations for details.
+Note, in the related **ruleset-verifintent**, the rule
+**keyword_forbidden_always** is not enabled because it is perfectly reasonable
+for a simulation testbench to schedule assignments, tasks, and functions in
+ways that wouldn't make sense for synthesizable hardware.
+```toml
+rules.action_block_with_side_effect = true
+rules.default_nettype_none = true
+rules.function_same_as_system_function = true
+rules.keyword_forbidden_always = true
+rules.keyword_forbidden_wire_reg = true
+rules.non_ansi_module = true
+```
+
+When synthesised into a netlist, generate blocks should have labels so that
+their inferred logic can be detected in hierarchical paths.
+Although the LRM is clear about the implict naming of unlabelled generate
+blocks, see IEEE1800-2017 clause 27.6, using a well-named label provides some
+clarification about the author's intention for that logic.
+In the similar **ruleset-verifintent**, these rules are not enabled because
+they (mostly) relate to synthesizable hardware.
+```toml
+rules.generate_case_with_label = true
+rules.generate_for_with_label = true
+rules.generate_if_with_label = true
+```
+
+Generally, elaboration-time constant (`parameter`, `localparam`) should be
+2-state types and always supplied with some default value.
+Additionally, where the context defines that `parameter` is an alias for
+`localparam`, author's should demonstate that they understand the constant
+cannot be overriden by using the `localparam` keyword.
+```toml
+rules.localparam_type_twostate = true
+rules.parameter_type_twostate = true
+rules.localparam_explicit_type = true
+rules.parameter_explicit_type = true
+rules.parameter_default_value = true
+rules.parameter_in_generate = true
+rules.parameter_in_package = true
+```
+
+Genvars, which are also elaboration-time constants, should be declared within
+generate `for` loops to reduce their scope.
+This allows readers to be confident that they can see all of the relevant
+information about a genvar in one place, i.e. declaration and usage.
+A notable advantage of declaring genvars in each generate loop is that authors
+are encouraged to give their genvars suitably descriptive names.
+Rules on the use of the `generate` and `endgenerate` keywords is similarly
+subjective, but this ruleset forbids their use because readers should be aware
+that all `case`, `for`, and `if` blocks outside of assignment processes are
+generate blocks.
+Further, the use of `generate` and `endgenerate` is entirely optional with no
+semantic difference to not using them.
+```toml
+rules.genvar_declaration_in_loop = true
+rules.genvar_declaration_out_loop = false
+rules.keyword_forbidden_generate = true
+rules.keyword_required_generate = false
+```
+
+Rules in the below subset combine to provide an important property for the
+robust design of synthesizable hardware - that you can easily draw a schematic
+of what the synthesis result should look like.
+The two rules of thumb are to always fully specify decision logic, and never
+use sequential models for (what will be synthesized to) parallel logic.
+```toml
+rules.explicit_case_default = true
+rules.explicit_if_else = true
+rules.sequential_block_in_always_comb = true
+rules.sequential_block_in_always_ff = true
+rules.sequential_block_in_always_latch = true
+```
+
+Where sequential modelling of parallel logic is an unavoidable pragmatic
+approach, using the `begin` and `end` keywords should be done carefully with
+proper indentation.
+Note, this ruleset does *not* check the amount of indentation like
+**style_indent**.
+```toml
+rules.multiline_for_begin = true
+rules.multiline_if_begin = true
+```
+
+The semantics around port declarations are, perhaps, unintuitive but were
+designed for backward compliance with Verilog (IEEE1364-1995).
+The below subset ensures that port declarations clearly convey important
+information about the direction and update mechanism of each signal port.
+```toml
+rules.inout_with_tri = true
+rules.input_with_var = true
+rules.output_with_var = true
+rules.interface_port_with_modport = true
+```
+
+
+---
+## Ruleset *parseonly*
+
+If a file passes this ruleset you have these pieces of information:
+- The file is valid UTF-8.
+- svlint's preprocessor can successfully parse and emit text.
+- The emitted text is valid SystemVerilog adhering to Annex A of IEEE1800-2017,
+  i.e. there are no syntax errors.
+
+### Disable All Rules
+
+All rules are implicitly disabled, and all options are implicitly set to their
+default values.
+Despite non of svlint's rules being enabled, this instructs the files to be
+preprocessed and parsed, i.e. internally processed from text to a syntax tree.
+
+```toml
+[option]
+[rules]
+```
+
+---
+## Ruleset *simsynth*
+
+The set of checks which detect potential mismatches between simulation and
+synthesis.
+
+Unlike the rules in, for example, **ruleset-style**, the rules in this ruleset
+do not depend on each other or combine to check additional properties.
+See the explanations of individual rules for their details.
+
+```toml
+rules.blocking_assignment_in_always_ff = true
+rules.non_blocking_assignment_in_always_comb = true
+rules.case_default = true
+rules.enum_with_type = true
+rules.function_with_automatic = true
+rules.keyword_forbidden_priority = true
+rules.keyword_forbidden_unique = true
+rules.keyword_forbidden_unique0 = true
+rules.level_sensitive_always = true
+```
+
+
+---
+## Ruleset *style*
+
+The set of whitespace-only checks which are "suggested" in the explanations
+of the **style_** rules.
+
+### Motivation
+
+Style conventions also help a human reader to quickly and efficiently
+comprehend large bodies of code.
+Indeed, that is exactly what a reader wants to do when they're working with
+code written by other people, often complete strangers.
+The reader simply wishes to open the file, extract the necessary information,
+close the file, and get on with their life.
+Unlike mechanical tools, people process code visually (by translating their
+view of the screen into a mental model) and any noise which obscures the useful
+information will require extra mental effort to process.
+When code is written with consistent and regular whitespace, the important
+details like operators and identifiers are easily extracted.
+In contrast, when little attention is paid to indentation or spaces around
+keywords, operators, or identifers, the readers must waste their energy
+performing a mental noise reduction.
+Therefore, the main motivation behind this ruleset is to avoid visual noise.
+
+Two notable style conventions help with a change-review process, i.e. comparing
+multiple versions of a file, rather than reading one version:
+- Line length limited to a fixed number of characters, usually 80.
+  - Excessively long lines may indicate problems with a program's logic.
+  - Excessively long lines prevent viewing differences side-by-side.
+  - Side-by-side reading is awkward when sideways scrolling is involved.
+  - Code which is printed on paper cannot be scrolled sideways, and soft-wrap
+    alternatives interrupt indentation.
+- Trailing whitespace is forbidden.
+  - Changes to trailing whitespace are not usually visible to human readers,
+    but are found by version control tools.
+  - Editors are often configured to remove trailing whitespace, resulting in
+    unnecessary differences.
+  - Git, a popular version control tool will (by default) warn against trailing
+    whitespace with prominent markers specifically because of the unnecessary
+    noise introduced to a repository's history.
+These conventions help give a consistent view over different ways of viewing
+files which include the writer's text editor (Vim, VSCode, Emacs, etc.),
+consumer's text editor, reviewer's web-based tools (GitHub, BitBucket, GitLab,
+etc.), printed material (e.g. via PDF), and logfiles from CI/CD tools (GitHub
+Actions, Bamboo, Jenkins, etc).
+
+
+### Test Each File for Excessively Long Lines
+
+To get a list of all the files examined by a particular invocation of svlint,
+use the variable `${SVFILES}`, which is provided in all POSIX wrapper scripts.
+
+The `grep` utility can be used to detect, and report, lines longer than a given
+number of characters.
+```sh
+TEXTWIDTH='80'
+LINELEN="grep -EvIxHn --color '.{0,${TEXTWIDTH}}' {};"
+LINELEN="${LINELEN} if [ \"\$?\" -eq \"0\" ]; then"
+LINELEN="${LINELEN}   echo '!!! Lines longer than ${TEXTWIDTH} characters !!!';"
+LINELEN="${LINELEN}   exit 1;"
+LINELEN="${LINELEN} else"
+LINELEN="${LINELEN}   exit 0;"
+LINELEN="${LINELEN} fi"
+eval "${SVFILES}" | xargs -I {} sh -c "${LINELEN}"
+```
+
+Another use of `grep` is to report obfuscated statements where semicolons are
+pushed off the RHS of the screen.
+```sh
+OBFUSTMT="grep -EIHn --color '[ ]+;' {};"
+OBFUSTMT="${OBFUSTMT} if [ \"\$?\" -eq \"0\" ]; then"
+OBFUSTMT="${OBFUSTMT}   echo '!!! Potentially obfuscated statements !!!';"
+OBFUSTMT="${OBFUSTMT}   exit 1;"
+OBFUSTMT="${OBFUSTMT} else"
+OBFUSTMT="${OBFUSTMT}   exit 0;"
+OBFUSTMT="${OBFUSTMT} fi"
+eval "${SVFILES}" | xargs -I {} sh -c "${OBFUSTMT}"
+```
+
+On Windows, the default environment does not contain utilities such as `grep`,
+so some system-specific scripting may be more appropriate.
+
+### Indentation
+
+An indent of 2 spaces, not tabs, is chosen.
+For better or worse, contemporary computer language styles have moved
+decisively away from using tabs for indentation.
+The most likely reason behind this is that tab display width is configurable
+so tab indentations are shown differently, depending on the reader's personal
+configuration.
+```toml
+option.indent = 2
+rules.tab_character = true
+rules.style_indent = true
+```
+Note that the **style_indent** rule does not check that indentations are the
+correct level - only that the indentation is an integer multiple of 2 spaces.
+
+In SystemVerilog, most of the language is independent of whitespace characters,
+so readers are (hopefully) aware that they should be careful not to interpret
+indentation with semantic meaning, but its human nature to do so.
+Therefore, author care is still required to use the correct indent, i.e.
+**style_indent** only points out indentations which are obviously wrong, but
+does not understand the logical semantics of any SystemVerilog constructs.
+
+```systemverilog
+always_comb begin
+  x = 0;
+  y = 123;
+
+  if (a)
+    x = 1;
+  else
+    x = 2;
+    y = 666;
+
+  z = y + x;
+end
+```
+Above is a simple demonstration of how the human eye can be misled in ways
+that mechanical tools like compilers are immune to.
+Depending on the value of expression `a`, the variable `z` takes the value
+either `667` or `668`, but never `124`.
+To mitigate the risk of confusion around multi-line conditional statements and
+loops, two further rules are enabled to check that either `begin`/`end`
+keyword delimiters are used, or the statement is moved to the same line as the
+condition.
+```toml
+rules.multiline_if_begin = true
+rules.multiline_for_begin = true
+```
+
+### Indentation Preprocessor Considerations
+
+A potential source of confusion is in the use of the preprocessor to
+accidentally introduce whitespace.
+In these examples, a dot character (`.`) is used to visually present a space
+character where it's important.
+```systemverilog
+`ifdef A
+..foo();
+`endif.// A space between the "endif" directive and the line comment
+```
+If `A` is defined, the above example will be emitted from the preprocessor as
+this text:
+```systemverilog
+foo();
+.// A space between the "endif" directive and the line comment
+```
+The line after `foo()` begins with a 1 space, which violates the
+**style_indent** check.
+Note that the violation occurs even if `A` is not defined.
+
+To further confuse things, the following example will *not* cause a violation
+when `A` is undefined!
+```systemverilog
+.`ifdef A
+..foo();
+.`endif.// A space between the "endif" directive and the line comment
+```
+The 1 space on the `ifdef` line is joined to the 1 space after `endif` to make
+a line with a 2 space indent like this:
+```systemverilog
+..// A space between the "endif" directive and the line comment
+```
+
+Confusing situations like these arise from the fact that SystemVerilog is a
+combination of two languages;
+1) A text processing language (defining the preprocessor) in specified
+informally in IEEE1800-2017 Clause 22 among other compiler directives.
+2) The rest of SystemVerilog syntax is formally called `source_text`, is
+specified formally in IEEE1800-2017 Annex A.
+The svlint tool operates on the `source_text` part of SystemVerilog, after the
+preprocessor has been applied.
+As with other languages with similar text-based templating features, most
+notably C, use of the preprocessor is discouraged except where absolutely
+necessary.
+To avoid confusion with preprocessor, here are two recommendations:
+1. Don't indent compiler directives, especially preprocessor statements
+  containing any `source_text`.
+2. Don't put any spaces between compiler directives and comments on the same
+   line.
+
+These are some examples of confusion-ridden style, not recommended.
+```systemverilog
+`define Z // Space then comment
+`ifdef A // Space then comment
+..`ifdef B// Indented ifdef
+....foo(); // Indent of source_text mixed with preprocessor
+..`endif// Indented endif
+`endif // Space then comment
+```
+The above examples can be reformed like this:
+```systemverilog
+`define Z// No space then comment
+`ifdef A// No space then comment
+`ifdef B
+..foo();
+`endif// B
+`endif// A
+```
+
+Where no `source_text` is contained in the ifdef block, i.e. only preprocessor
+definitions, these may be indented without causing confusion:
+```systemverilog
+`ifdef A
+..`ifdef B
+....`define Z
+..`endif// B
+`endif// A
+```
+For clarification, when both `A` and `B` are defined, the above block will be
+emitted from the svlint preprocessor as shown below.
+```systemverilog
+`define Z
+..// B
+// A
+```
+
+One method which can help catch unintended whitespace, both from the
+preprocessor and written by hand, is to forbid trailing spaces, i.e. space
+characters followed immediately by a newline.
+```toml
+rules.style_trailingwhitespace = true
+```
+
+Problems around indented preprocessor directives must be caught before svlint's
+preprocessor stage, so searching with `grep` beforehand is appropriate.
+```sh
+PPDIRECTIVES="define|undef|undefineall|resetall"
+PPDIRECTIVES="${PPDIRECTIVES}|ifdef|ifndef|elsif|else|endif"
+PPDIRECTIVES="${PPDIRECTIVES}|include"
+
+PPINDENT="grep -EIHn --color '[ ]+\`(${PPDIRECTIVES})' {};"
+PPINDENT="${PPINDENT} if [ \"\$?\" -eq \"0\" ]; then"
+PPINDENT="${PPINDENT}   echo '!!! Indented preprocessor directives !!!';"
+PPINDENT="${PPINDENT}   exit 1;"
+PPINDENT="${PPINDENT} else"
+PPINDENT="${PPINDENT}   exit 0;"
+PPINDENT="${PPINDENT} fi"
+eval "${SVFILES}" | xargs -I {} sh -c "${PPINDENT}"
+```
+
+
+### Operators and Keywords
+
+Consistent use of whitespace around operators and keywords makes it easier to
+read expressions quickly and accurately.
+```toml
+rules.style_operator_arithmetic = true
+rules.style_operator_boolean = true
+rules.style_operator_integer = true
+rules.style_operator_unary = true
+
+rules.style_keyword_0or1space = true
+rules.style_keyword_0space = true
+rules.style_keyword_1or2space = true
+rules.style_keyword_1space = true
+rules.style_keyword_construct = true
+rules.style_keyword_datatype = false # Overly restrictive.
+rules.style_keyword_end = true
+rules.style_keyword_maybelabel = true
+rules.style_keyword_newline = true
+```
+
+### Comma-Separated Lists
+
+SystemVerilog code has many uses for comma-separated lists of items specified
+in IEEE1800-2017 Annex A.
+Most of these uses can be found by searching for BNF symbols containing the
+string `list_of_`, but uses are specified in BNF expressions for other symbols,
+e.g. `modport_declaration` and `data_type`.
+
+Without careful review processes in place, the large variety semantics and
+syntax surrounding comma-separated lists can easily lead authors writing in a
+large variety of styles.
+To make matters worse, the use of comma-separated lists varies is common in
+other languages - but with significant subtle differences.
+For example, while Python and Rust allow an extra comma after the last argument
+in a function call, C and SystemVerilog do not allow this.
+
+The desire for consistent formatting and readability provides motivation for a
+simple rule which can be easily remembered by authors.
+The most common style in functional programming language Haskell provides
+inspiration for such a rule:
+"Every comma must be followed by exactly one space".
+```toml
+rules.style_commaleading = true
+```
+
+This rule leads to the comma-leading style which, although perhaps unfamiliar
+to authors with a background in C or Python, has a number of advantages.
+- The rule is extremely simple, especially in comparison to the multitude of
+  rules requried to format comma-trailing lists consistently.
+- A comma character is visually similar to bullet-point.
+- When changing code over time, it's more common to add items to the end of a
+  list than the beginning.
+  This means that comma-leading style often leads to diffs which are easier to
+  review.
+  Closely related to this is that comma-leading style makes it less likely to
+  introduce an extra comma at the end of a list (which would be a syntax
+  error).
+- Multi-dimensional arrays are easier to read, because it's natural to put a
+  line without elements (only the closing `}`) between elements of the
+  more-significant axis.
+- Comma is visually similar to bulletpoint (a common symbol for introducing an
+  item of a list in prose).
+- Comma-leading style can be said to be more closely aligned with BNF
+  specification, e.g.
+  `list_of_genvar_identifiers ::= genvar_identifier { , genvar_identifier }`.
+  This is reflected by how sv-parser attaches `Comment` nodes (which contain
+  whitespace) to the RHS of comma symbols.
+
+For some examples, please see the explanation of the **style_commaleading**
+rule.
+
+
+---
+## Ruleset *verifintent*
+
+Rules that forbid suspicious constructions, i.e. those which are legal
+according to the LRM, but may express their intention unclearly.
+This ruleset is similar to **ruleset-designintent**, but with some rules
+enabled or disabled where they are applicable to testbench code (instead of
+synthesizable digital logic).
+
+While this ruleset is *not* a superset of **ruleset-simsynth**, some of those
+rules are also useful for testbench/verification code.
+A clean separation of (non-)blocking assignments and `always_(comb|ff)`
+processes is useful to prevent the specification of processes with scheduling
+semantics which are difficult to reason about.
+
+```toml
+rules.blocking_assignment_in_always_ff = true
+rules.non_blocking_assignment_in_always_comb = true
+rules.enum_with_type = true
+rules.keyword_forbidden_priority = true
+rules.keyword_forbidden_unique = true
+rules.keyword_forbidden_unique0 = true
+```
+
+This ruleset has further rules which don't depend on each other or combine
+to provide additional properties.
+Please see their individual explanations for details.
+Note, in the related **ruleset-designintent**, an additional rule
+**keyword_forbidden_always** is enabled.
+```toml
+rules.action_block_with_side_effect = true
+rules.default_nettype_none = true
+rules.function_same_as_system_function = true
+rules.keyword_forbidden_wire_reg = true
+rules.non_ansi_module = true
+```
+
+Generally, elaboration-time constant (`parameter`, `localparam`) should be
+2-state types and always supplied with some default value.
+Additionally, where the context defines that `parameter` is an alias for
+`localparam`, author's should demonstate that they understand the constant
+cannot be overriden by using the `localparam` keyword.
+```toml
+rules.localparam_type_twostate = true
+rules.parameter_type_twostate = true
+rules.localparam_explicit_type = true
+rules.parameter_explicit_type = true
+rules.parameter_default_value = true
+rules.parameter_in_generate = true
+rules.parameter_in_package = true
+```
+
+Genvars, which are also elaboration-time constants, should be declared within
+generate `for` loops to reduce their scope.
+This allows readers to be confident that they can see all of the relevant
+information about a genvar in one place, i.e. declaration and usage.
+A notable advantage of declaring genvars in each generate loop is that authors
+are encouraged to give their genvars suitably descriptive names.
+Rules on the use of the `generate` and `endgenerate` keywords is similarly
+subjective, but this ruleset forbids their use because readers should be aware
+that all `case`, `for`, and `if` blocks outside of assignment processes are
+generate blocks.
+Further, the use of `generate` and `endgenerate` is entirely optional with no
+semantic difference to not using them.
+```toml
+rules.genvar_declaration_in_loop = true
+rules.genvar_declaration_out_loop = false
+rules.keyword_forbidden_generate = true
+rules.keyword_required_generate = false
+```
+
+To prevent difficult-to-read procedural code, using the `begin` and `end`
+keywords should be done carefully with proper indentation.
+Note, this ruleset does *not* check the amount of indentation like
+**style_indent**.
+```toml
+rules.multiline_for_begin = true
+rules.multiline_if_begin = true
+```
+
+The semantics around port declarations are, perhaps, unintuitive but were
+designed for backward compliance with Verilog (IEEE1364-1995).
+The below subset ensures that port declarations clearly convey important
+information about the direction and update mechanism of each signal port.
+```toml
+rules.inout_with_tri = true
+rules.input_with_var = true
+rules.output_with_var = true
+rules.interface_port_with_modport = true
+```
 
 

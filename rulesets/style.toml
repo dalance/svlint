@@ -1,0 +1,21 @@
+option.indent = 2
+rules.tab_character = true
+rules.style_indent = true
+rules.multiline_if_begin = true
+rules.multiline_for_begin = true
+rules.style_trailingwhitespace = true
+rules.style_operator_arithmetic = true
+rules.style_operator_boolean = true
+rules.style_operator_integer = true
+rules.style_operator_unary = true
+
+rules.style_keyword_0or1space = true
+rules.style_keyword_0space = true
+rules.style_keyword_1or2space = true
+rules.style_keyword_1space = true
+rules.style_keyword_construct = true
+rules.style_keyword_datatype = false # Overly restrictive.
+rules.style_keyword_end = true
+rules.style_keyword_maybelabel = true
+rules.style_keyword_newline = true
+rules.style_commaleading = true

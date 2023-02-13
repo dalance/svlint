@@ -7,6 +7,7 @@ This document is generated from the Markdown files in `md/*.md`, the rules'
 source code (`svlint/src/rules/*.rs`), and their testcases
 (`testcases/(fail|pass)/*.sv`) using the `mdgen` utility.
 
+
 ## Purpose of Lint Checks
 
 The authors of any works must consider their audience, particularly in how
@@ -30,53 +31,8 @@ refusal to work if you dare to mis-spell a variable name.
 There are two main classes of rule for helping human readers:
 1. Rules which codify naming conventions.
 2. Rules which codify style/formatting conventions.
-
-Naming conventions help a human reader to take in large amounts of detailed
-information (e.g. from netlists, timing reports) by allowing the reader to
-predict the function of a signal from its name, and predict part of a signal's
-name from its function.
-For example, a common convention is: "All signals inferring the output of a
-flip-flop must be suffixed with `_q`."
-If an engineer reads a synthesized netlist and sees a flip-flop cell named
-without the `_q` suffix, there may be a coding error, so further checks
-with the author are required.
-On the frontend, a reader can quickly scan a SystemVerilog file to check that
-signals have the `_q` suffix if (and only if) they are driven in `always_ff`
-processes.
-Other naming conventions are useful for helping readers follow the direction of
-signals through ports, find files quickly in a large filesystem, find
-appropriate files from hierarchical paths in a netlist, and more.
-
-Style conventions also help a human reader to quickly and efficiently
-comprehend large bodies of code.
-Indeed, that is exactly what a reader wants to do when they're working with
-code written by other people, often complete strangers.
-The reader simply wishes to open the file, extract the necessary information,
-close the file, and get on with their life.
-Unlike mechanical tools, people process code visually (by translating their
-view of the screen into a mental model) and any noise which obscures the useful
-information will require extra mental effort to process.
-When code is written with consistent and regular whitespace, the important
-details like operators and identifiers are easily extracted.
-In contrast, when little attention is paid to indentation or spaces around
-keywords, operators, or identifers, the readers must waste their energy
-performing a mental noise reduction.
-Two notable style conventions help with a change-review process, i.e. comparing
-multiple versions of a file, rather than reading one version:
-- Line length limited to a fixed number of characters, usually 80.
-  - Excessively long lines may indicate problems with a program's logic.
-  - Excessively long lines prevent viewing differences side-by-side.
-  - Side-by-side reading is awkward when sideways scrolling is involved.
-  - Code which is printed on paper cannot be scrolled sideways, and soft-wrap
-    alternatives interrupt indentation.
-- Trailing whitespace is forbidden.
-  - Changes to trailing whitespace are not usually visible to human readers,
-    but are found by version control tools.
-  - Editors are often configured to remove trailing whitespace, resulting in
-    unnecessary differences.
-  - Git, a popular version control tool will (by default) warn against trailing
-    whitespace with prominent markers specifically because of the unnecessary
-    noise introduced to a repository's history.
+Further informatino on these concepts is provided in the `naming` and `style`
+rulesets.
 
 Just as individual human readers have their own preferences (in language,
 style, naming conventions, etc.), each tool has its own quirks and ways of
@@ -93,7 +49,8 @@ minimize the risk of introducing a mismatch between simulation and synthesis.
 Another class of functional rules is those which check for datatypes and
 constructs that avoid compiler checks for legacy compatibility.
 
-## How It Works
+
+## Usage
 
 This tool (svlint) works in a series of well-defined steps:
 1. On startup, search for a configuration file or use a default configuration.
@@ -109,6 +66,125 @@ This tool (svlint) works in a series of well-defined steps:
 7. For each node, apply each rule independently.
 8. If a rule detects an undesirable quality in the syntax tree, then return a
   failure, otherwise return a pass.
+
+
+### Filelists
+
+Specification of the files to be processed can be given on the command line by
+*either* a list of files (e.g. `svlint foo.sv bar/*.sv`), or via filelists
+(e.g. `svlint -f foo.fl -f path/to/bar.fl`).
+It is not supported to specify both files and filelists, primarily because
+concerns about usability due to the way command-line arguments are processed.
+
+The following features are supported via the
+[sv-filelist-parser](https://github.com/supleed2/sv-filelist-parser) crate.
+- Lines beginning with `//` or `#` and empty lines are ignored.
+- Specify include directories like `+incdir+path/to/foo`.
+- Define preprocessor macros like `+define+FOO` or `+define+BAR=1`.
+- Include other filelists like `-f path/to/foo.fl`
+- All remaining lines are treated as file paths.
+- Substitute of environment variables like `$FOO`, `${FOO}`, or `$(FOO)`.
+For example:
+```
+aaa.sv
+$FOO/bbb.sv
+${FOO}/ccc.sv
+$(FOO)/ddd.sv
++incdir+$PWD/header/src
++define+SYNTHESIS
+-f anotherFilelist.fl
+```
+
+### Plugin rules
+
+svlint supports plugin rules, an example of which is available
+[here](https://github.com/dalance/svlint-plugin-sample).
+
+A plugin rule is one which is compiled separately to the main svlint binary,
+and is loaded at runtime.
+In the same way as integrated rules, a plugin rule must implement the `Rule`
+trait, i.e. `check`, `name`, `hint`, and `reason`.
+The `hint` and `reason` methods allow plugin rules to provide information back
+to the user on the terminal, but they do not require testcases or an
+explanation.
+All loaded plugin rules, via the `--plugin` option, are enabled and have access
+to all values in the TOML configuration.
+
+### Configuration
+
+First of all, you must put a configuration file `.svlint.toml` to specify enabled rules.
+Configuration file is searched to the upper directory until `/`.
+So you can put configuration file (`.svlint.toml`) on the repository root
+alongside `.gitignore`.
+Alternatively, for project-wide rules you can set the environment variable
+`SVLINT_CONFIG` to something like `/cad/projectFoo/teamBar.svlint.toml`.
+
+The example of configuration file is below:
+
+```toml
+[option]
+exclude_paths = ["ip/.*"]
+prefix_label = ""
+
+[rules]
+non_ansi_module = true
+keyword_forbidden_wire_reg = true
+```
+
+The complete example can be generated by `svlint --example`
+
+#### `[option]` section
+
+- `exclude_paths` is a list of regular expressions.
+  If a file path is matched with any regex in the list, the file is skipped.
+- `prefix_(inout|input|output)` are strings which port identifiers must begin
+  with.
+  Only used when the corresponding rule is enabled.
+  Defaults to `"b_"`, `"i_"`, and `"o_"` respectively.
+- `prefix_label` is a string which generate labels must begin with.
+  Applicable to `if/else`, `for`, and `case` generate constructs when the
+  corresponding `generate_*_with_label` rule is enabled.
+  Defaults to `"l_"`.
+  To check only that a label exists, set this to `""`.
+- `prefix_instance` is a string which instances must begin with.
+  Defaults to `"u_"`.
+- `prefix_(interface|module|package)` are strings which definitions must begin
+  with.
+  An alternative naming convention for interface, module, and package names is
+  uppercase/lowercase first letter.
+  This is similar to Haskell where types begin with uppercase and variables
+  begin with lowercase.
+  These alternative rules are called
+  `(lower|upper)camelcase_(interface|module|package)`.
+- `re_(forbidden|required)_*` are regular expressions for detailed naming
+  conventions, used only when the corresponding rules are enabled.
+  The defaults for `re_required_*` are either uppercase, lowercase, or
+  mixed-case starting with lowercase, i.e. just vaguely sensible.
+  The defaults for `re_forbidden_*` are to forbid all strings, except those
+  starting with "X", i.e. not at all sensible (configuration required).
+
+#### `[rules]` section
+
+All rules are disabled unless explicitly enabled in the `[rules]` section.
+To enable a rule, assign `true` to its name, e.g. `case_default = true`.
+
+Where no configuration file can be found, all rules are implicitly
+enabled which will most likely result in errors from conflicting rules, e.g.
+**keyword_forbidden_generate** and **keyword_required_generate**.
+
+If you need to turn off specific rules for a section, then you can use special
+comments within your SystemVerilog source code:
+```systemverilog
+/* svlint off keyword_forbidden_always */
+always @* foo = bar;                      // <-- This line is special.
+/* svlint on keyword_forbidden_always */
+```
+
+#### Configuration update
+
+If svlint is updated, `.svlint.toml` can be updated to the latest version with
+`svlint --update`.
+
 
 ## Rule Documentation
 
@@ -145,3 +221,8 @@ a short reason why it should be seen.
 - "mutually exclusive alternative" - The named rule *can* not be used in
   conjunction, i.e. enabling both rules is nonsensical because a failure on one
   implies a pass on the other rule.
+
+You are welcome to suggest a new rule through
+[Issues](https://github.com/dalance/svlint/issues) or
+[Pull Requests](https://github.com/dalance/svlint/pulls).
+
