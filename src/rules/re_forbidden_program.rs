@@ -41,7 +41,7 @@ impl Rule for ReForbiddenProgram {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a program identifier not matching regex \"{}\".",
+            "Use a program identifier not matching regex `{}`.",
             &option.re_forbidden_program
         ))
     }

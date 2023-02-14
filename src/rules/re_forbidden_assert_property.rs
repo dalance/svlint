@@ -78,7 +78,7 @@ impl Rule for ReForbiddenAssertProperty {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a concurrent assertion identifier not matching regex \"{}\".",
+            "Use a concurrent assertion identifier not matching regex `{}`.",
             &option.re_forbidden_assert_property
         ))
     }

@@ -41,7 +41,7 @@ impl Rule for ReForbiddenInterface {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a interface identifier not matching regex \"{}\".",
+            "Use a interface identifier not matching regex `{}`.",
             &option.re_forbidden_interface
         ))
     }

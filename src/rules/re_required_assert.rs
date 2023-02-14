@@ -73,7 +73,7 @@ impl Rule for ReRequiredAssert {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use an immediate assertion identifier matching regex \"{}\".",
+            "Use an immediate assertion identifier matching regex `{}`.",
             &option.re_required_assert
         ))
     }

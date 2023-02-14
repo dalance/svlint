@@ -41,7 +41,7 @@ impl Rule for ReRequiredProperty {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a property identifier matching regex \"{}\".",
+            "Use a property identifier matching regex `{}`.",
             &option.re_required_property
         ))
     }

@@ -67,7 +67,7 @@ impl Rule for ReForbiddenPortInterface {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a port identifier not matching regex \"{}\".",
+            "Use a port identifier not matching regex `{}`.",
             &option.re_forbidden_port_interface
         ))
     }

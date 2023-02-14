@@ -41,7 +41,7 @@ impl Rule for ReRequiredFunction {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a function identifier matching regex \"{}\".",
+            "Use a function identifier matching regex `{}`.",
             &option.re_required_function
         ))
     }

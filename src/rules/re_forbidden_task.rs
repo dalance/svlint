@@ -41,7 +41,7 @@ impl Rule for ReForbiddenTask {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a task identifier not matching regex \"{}\".",
+            "Use a task identifier not matching regex `{}`.",
             &option.re_forbidden_task
         ))
     }

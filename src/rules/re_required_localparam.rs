@@ -56,7 +56,7 @@ impl Rule for ReRequiredLocalparam {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a localparam identifier matching regex \"{}\".",
+            "Use a localparam identifier matching regex `{}`.",
             &option.re_required_localparam
         ))
     }

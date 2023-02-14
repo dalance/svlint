@@ -41,7 +41,7 @@ impl Rule for ReForbiddenChecker {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a checker identifier not matching regex \"{}\".",
+            "Use a checker identifier not matching regex `{}`.",
             &option.re_forbidden_checker
         ))
     }

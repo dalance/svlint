@@ -66,7 +66,7 @@ impl Rule for ReRequiredGenvar {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a genvar identifier matching regex \"{}\".",
+            "Use a genvar identifier matching regex `{}`.",
             &option.re_required_genvar
         ))
     }

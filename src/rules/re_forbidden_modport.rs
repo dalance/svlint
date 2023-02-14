@@ -41,7 +41,7 @@ impl Rule for ReForbiddenModport {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a modport identifier not matching regex \"{}\".",
+            "Use a modport identifier not matching regex `{}`.",
             &option.re_forbidden_modport
         ))
     }

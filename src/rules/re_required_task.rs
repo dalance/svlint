@@ -41,7 +41,7 @@ impl Rule for ReRequiredTask {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a task identifier matching regex \"{}\".",
+            "Use a task identifier matching regex `{}`.",
             &option.re_required_task
         ))
     }

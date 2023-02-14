@@ -41,7 +41,7 @@ impl Rule for ReRequiredProgram {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a program identifier matching regex \"{}\".",
+            "Use a program identifier matching regex `{}`.",
             &option.re_required_program
         ))
     }

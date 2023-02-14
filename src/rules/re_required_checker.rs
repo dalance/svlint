@@ -41,7 +41,7 @@ impl Rule for ReRequiredChecker {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a checker identifier matching regex \"{}\".",
+            "Use a checker identifier matching regex `{}`.",
             &option.re_required_checker
         ))
     }

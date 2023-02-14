@@ -41,7 +41,7 @@ impl Rule for ReRequiredInterface {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a interface identifier matching regex \"{}\".",
+            "Use a interface identifier matching regex `{}`.",
             &option.re_required_interface
         ))
     }
