@@ -4,8 +4,10 @@ This rule encourages the author to consider that the constant may not be
 overridden and convey that explictly.
 
 See also:
-  - **parameter_in_generate**
+
+- **parameter_in_generate**
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 6.20.4 Local parameters (localparam)
-  - 26 Packages
+
+- 6.20.4 Local parameters (localparam)
+- 26 Packages

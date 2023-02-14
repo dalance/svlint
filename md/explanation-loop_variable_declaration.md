@@ -6,7 +6,9 @@ avoid a common class of coding mistake where `i` is erroneously used outside
 the loop.
 
 See also:
-  - **function_with_automatic** - Useful companion rule.
+
+- **function_with_automatic** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 12.7 Loop statements
+
+- 12.7 Loop statements

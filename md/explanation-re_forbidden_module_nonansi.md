@@ -8,10 +8,11 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-  - **re_required_module_nonansi**
-  - **re_forbidden_module_ansi**
-  - **re_required_module_ansi**
-  - **prefix_module**
-  - **uppercamelcase_module**
-  - **lowercamelcase_module**
-  - **non_ansi_module**
+
+- **re_required_module_nonansi**
+- **re_forbidden_module_ansi**
+- **re_required_module_ansi**
+- **prefix_module**
+- **uppercamelcase_module**
+- **lowercamelcase_module**
+- **non_ansi_module**

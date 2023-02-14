@@ -21,21 +21,25 @@ made in using `always_comb`, `always_ff`, and (less commonly) `always_latch`
 keywords.
 
 Variables are preferred over nets for most digital logic for 2 reasons:
+
 - Only 0 or 1 drivers allowed, so an accidental multi-driving is caught by
   a compile time error.
 - Simulator performance (dependent on implemetation).
   Value can be found by lookup, rather than evaluation of drivers.
+
 When `` `default_nettype none`` is used, all signals must be declared, thus
 forcing the author to consider whether they mean a variable or a net.
 
 See also:
-  - **inout_with_tri** - Useful companion rule.
-  - **input_with_var** - Useful companion rule.
-  - **output_with_var** - Useful companion rule.
+
+- **inout_with_tri** - Useful companion rule.
+- **input_with_var** - Useful companion rule.
+- **output_with_var** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 6.5 Nets and variables
-  - 22.8 default nettype
+
+- 6.5 Nets and variables
+- 22.8 default nettype
 
 Note: One prominent paper (Cliff Cummings, HDLCON 2002) recommends *against*
 using `` `default_nettype none`` on the basis that concise, typeless code has

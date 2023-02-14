@@ -6,5 +6,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-  - **re_forbidden_input**
-  - **prefix_input**
+
+- **re_forbidden_input**
+- **prefix_input**

@@ -27,11 +27,13 @@ condition, the synthesis tool may produce a netlist with the invalid assumption
 that the condition cannot be met.
 
 See also:
-  - **case_default** - Useful companion rule.
-  - **explicit_case_default** - Useful companion rule.
-  - **keyword_forbidden_unique** - Useful companion rule.
-  - **keyword_forbidden_unique0** - Useful companion rule.
+
+- **case_default** - Useful companion rule.
+- **explicit_case_default** - Useful companion rule.
+- **keyword_forbidden_unique** - Useful companion rule.
+- **keyword_forbidden_unique0** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 12.4 Conditional if-else statement
-  - 12.5 Case statement
+
+- 12.4 Conditional if-else statement
+- 12.5 Case statement

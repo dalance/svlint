@@ -7,9 +7,11 @@ built-in system of the same name (except of the leading `$`) which may lead
 to inconsistent results between tools.
 
 See also:
-  - **function_with_automatic** - Useful companion rule.
+
+- **function_with_automatic** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 13.7 Task and function names
-  - 20 Utility system tasks and system functions
-  - 23.8.1 Task and function name resolution
+
+- 13.7 Task and function names
+- 20 Utility system tasks and system functions
+- 23.8.1 Task and function name resolution

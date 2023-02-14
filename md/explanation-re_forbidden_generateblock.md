@@ -6,7 +6,8 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-  - **re_required_generateblock**
-  - **generate_case_with_label**
-  - **generate_for_with_label**
-  - **generate_if_with_label**
+
+- **re_required_generateblock**
+- **generate_case_with_label**
+- **generate_for_with_label**
+- **generate_if_with_label**

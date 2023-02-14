@@ -6,7 +6,8 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-  - **re_required_package**
-  - **prefix_package**
-  - **uppercamelcase_package**
-  - **lowercamelcase_package**
+
+- **re_required_package**
+- **prefix_package**
+- **uppercamelcase_package**
+- **lowercamelcase_package**

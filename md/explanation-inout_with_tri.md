@@ -4,6 +4,7 @@ tri-state net, rather than the default nettype.
 The rules for determining port kind, datatype, and direction are specified in
 IEEE1800-2017 Clause 23.2.2.3 and facilitate various shorthand notations which
 are backwards compatible with the semantics of Verilog (IEEE1364-1995):
+
 - `inout a` -> `inout tri logic a` The implicit datatype is `logic` and the
   default nettype is `tri` (without overriding via the `` `default_nettype ``
   compiler directive).
@@ -29,13 +30,15 @@ In order to describe the intended bi-directional behavior, `inout` ports must
 be declared with an explicit `tri` datakind.
 
 See also:
-  - **default_nettype_none** - Useful companion rule.
-  - **input_with_var** - Suggested companion rule.
-  - **output_with_var** - Suggested companion rule.
-  - **prefix_inout** - Useful companion rule.
+
+- **default_nettype_none** - Useful companion rule.
+- **input_with_var** - Suggested companion rule.
+- **output_with_var** - Suggested companion rule.
+- **prefix_inout** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 6.5 Nets and variables
-  - 6.6 Net types
-  - 22.8 default nettype
-  - 23.2.2 Port declarations
+
+- 6.5 Nets and variables
+- 6.6 Net types
+- 22.8 default nettype
+- 23.2.2 Port declarations

@@ -6,5 +6,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-  - **re_required_port_output**
-  - **prefix_output**
+
+- **re_required_port_output**
+- **prefix_output**

@@ -69,18 +69,21 @@ If wildcard equality operators are used with 4-state constants in your code,
 this rule should be considered on a case-by-case basis.
 
 See also:
-  - **localparam_explicit_type** - Useful companion rule.
-  - **parameter_explicit_type** - Useful companion rule.
-  - **parameter_type_twostate** - Useful companion rule, equivalent reasoning.
+
+- **localparam_explicit_type** - Useful companion rule.
+- **parameter_explicit_type** - Useful companion rule.
+- **parameter_type_twostate** - Useful companion rule, equivalent reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 6.8 Variable declarations
-  - 6.11 Integer data types
-  - 7.2.1 Packed structures
-  - 11.4.5 Equality operators
-  - 11.4.6 Wildcard equality operators
 
-NOTE: The reasoning behind this rule invites the creation of some new rules:
+- 6.8 Variable declarations
+- 6.11 Integer data types
+- 7.2.1 Packed structures
+- 11.4.5 Equality operators
+- 11.4.6 Wildcard equality operators
+
+NOTE: The reasoning behind this rule invites the use of other rules:
+
 1. Check that members of a packed structure definition are either all 2-state
   or all 4-state.
 2. Check for the use of case equality operators.

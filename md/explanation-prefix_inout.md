@@ -10,6 +10,7 @@ This rule requires the prefix `b_` (configurable) on bi-directional signals,
 i.e, ports declared with direction `inout`, which is also the default direction.
 
 See also:
-  - **prefix_input** - Suggested companion rule.
-  - **prefix_instance** - Suggested companion rule.
-  - **prefix_output** - Suggested companion rule.
+
+- **prefix_input** - Suggested companion rule.
+- **prefix_instance** - Suggested companion rule.
+- **prefix_output** - Suggested companion rule.

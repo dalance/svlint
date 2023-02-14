@@ -1,9 +1,11 @@
 In Verilog (IEEE1364), there are two language constructs which can be used to
-model combinatorial logic
+model combinatorial logic:
+
 1. Continuous assignment to `wire` signals is specified with the `assign`
   keyword.
 2. `reg` signals are assigned to with an `always` block, which is evaluated
   whenever anything in the sensitivity list changes value.
+
 The `always` keyword can also be used for modelling sequential logic by
 including the edge of a signal in the sensitivity list.
 
@@ -12,6 +14,7 @@ but additional keywords (`always_comb`, `always_ff`, and `always_latch`) should
 be used to clarify intent of digital designs.
 The `always_*` keywords have slightly different semantics which are beneficial
 for synthesizable designs:
+
 1. `always_*` processes require compiler checks that any signals driven on the
   LHS are not driven by any other process, i.e. `always_*` cannot infer
   multi-driven or tri-state logic.
@@ -37,11 +40,13 @@ synthesizable design code, but on verification code use
 **level_sensitive_always** instead.
 
 See also:
-  - **level_sensitive_always** - Alternative rule.
-  - **sequential_block_in_always_comb** - Useful companion rule.
-  - **sequential_block_in_always_if** - Useful companion rule.
-  - **sequential_block_in_always_latch** - Useful companion rule.
+
+- **level_sensitive_always** - Alternative rule.
+- **sequential_block_in_always_comb** - Useful companion rule.
+- **sequential_block_in_always_if** - Useful companion rule.
+- **sequential_block_in_always_latch** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 9.2.2 Always procedures
-  - 9.5 Process execution threads
+
+- 9.2.2 Always procedures
+- 9.5 Process execution threads

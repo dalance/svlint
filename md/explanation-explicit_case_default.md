@@ -22,12 +22,14 @@ constructs in the same block, which can be confusing and should be avoided.
 Use of the legacy keyword can be detected with the rule **legacy_always**.
 
 See also:
-  - **case_default** - Useful companion rule.
-  - **explicit_if_else** - Useful companion rule.
-  - **legacy_always** - Useful companion rule.
-  - **sequential_block_in_always_comb** - Useful companion rule.
-  - **sequential_block_in_always_ff** - Useful companion rule.
-  - **sequential_block_in_always_latch** - Useful companion rule.
+
+- **case_default** - Useful companion rule.
+- **explicit_if_else** - Useful companion rule.
+- **legacy_always** - Useful companion rule.
+- **sequential_block_in_always_comb** - Useful companion rule.
+- **sequential_block_in_always_ff** - Useful companion rule.
+- **sequential_block_in_always_latch** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 12.5 Case statement
+
+- 12.5 Case statement

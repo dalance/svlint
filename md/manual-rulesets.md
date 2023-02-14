@@ -7,6 +7,7 @@ A pre-configured ruleset can be used in the three standard ways (rename to
 the `SVLINT_CONFIG` environment variable).
 Pre-configured rulesets reside in `rulesets/*.toml`.
 There are two methods of specifying those TOML files:
+
 1. Simply copy your existing `.svlint.toml` configuration into that directory.
   Ideally, add some comments to explain the background of the configuration and
   open a [pull request](https://github.com/dalance/svlint/pulls) to have it
@@ -20,6 +21,7 @@ There are two methods of specifying those TOML files:
   to have it included as part of this project.
   This approach is initially higher-effort but on larger projects, users will
   appreciate a good explanation of why configurations are necessary.
+
 The rest of this section refers to the second method, which is a variant of
 [literate programming](https://en.wikipedia.org/wiki/Literate_programming).
 
@@ -47,8 +49,8 @@ For example, let this ruleset specification be placed in
 
     This is freeform Markdown.
 
-    Some explanation of how the **foo** and **bar** rules work together and the
-    associated option **blue**.
+    Some explanation of how the **foo** and **bar** rules work together
+    with the associated option **blue**.
     ```toml
     rules.foo = true
     rules.bar = true
@@ -120,14 +122,17 @@ Any command line arguments given to the wrapper script are passed on to the
 main executable (via `$*`).
 When svlint searches for a configuration (`src/main.rs::search_config()`), the
 environment variable is chosen in preference to the `--config` flag which
-prevents confusing cases.
-1) Where the script is given the option, e.g. `svlint-foo --config=bar *.sv`.
-As the environment variable is set, the option `--config=bar` is ignored.
-If a user wishes to pass a different configuration, they'll need to call the
-main executable like `svlint --config=bar *.sv`.
-2) Where the environment variable is not set or is invalid, the `--config`
-value (defaulting to `.svlint.toml`) is searched for hierarchically, beginning
-in the current directory then moving upwards to filesystem ancestors.
+prevents confusing cases:
+
+1. Where the script is given the option, e.g. `svlint-foo --config=bar *.sv`.
+  As the environment variable is set, the option `--config=bar` is ignored.
+  If a user wishes to pass a different configuration, they'll need to call the
+  main executable like `svlint --config=bar *.sv`.
+2. Where the environment variable is not set or is invalid, the `--config`
+  value (defaulting to `.svlint.toml`) is searched for hierarchically,
+  beginning in the current directory then moving upwards to filesystem
+  ancestors.
+
 If instead the `--config` option was used in wrapper scripts, this could lead
 to confusion where TOML files exist elsewhere in the hierarchy.
 
@@ -137,6 +142,7 @@ the widest range of systems.
 The utilities used in the POSIX wrappers are specified in the current POSIX
 standard (IEEE1003.1-2017, Volume 3: Shell and Utilities).
 Some resources related to these components:
+
 - [`env`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/env.html)
   Included in the Single Unix Specification since
   X/Open Portability Guide Issue 2 (1987).
@@ -182,6 +188,7 @@ svlint %*
 The batch script template is designed for Windows XP and later, using the
 `cmd.exe` shell.
 Some useful resources for Windows batch script commands:
+
 - [`echo`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/echo)
 - [`for`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/for)
 - [`where`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/where)

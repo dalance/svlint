@@ -6,5 +6,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-  - **re_forbidden_instance**
-  - **prefix_instance**
+
+- **re_forbidden_instance**
+- **prefix_instance**

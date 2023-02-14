@@ -1,4 +1,5 @@
 This rule has two purposes:
+
 1. Prevent mismatches between simulation and synthesis.
 2. Avoid unnecessarily restricting the simulator's scheduler.
 
@@ -33,13 +34,15 @@ dependencies.
 That can lead to a mismatch between simulation and synthesis.
 
 See also:
-  - **style_indent** - Useful companion rule.
-  - **sequential_block_in_always_ff** - Similar rule, different purpose.
-  - **sequential_block_in_always_latch** - Similar rule, different purpose.
+
+- **style_indent** - Useful companion rule.
+- **sequential_block_in_always_ff** - Similar rule, different purpose.
+- **sequential_block_in_always_latch** - Similar rule, different purpose.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 4.6 Determinisim
-  - 9.2.2.2 Combinational logic always_comb procedure
-  - 9.3.1 Sequential blocks
-  - 10.3 Continuous assignments
-  - 10.4 Procedural assignments
+
+- 4.6 Determinisim
+- 9.2.2.2 Combinational logic always_comb procedure
+- 9.3.1 Sequential blocks
+- 10.3 Continuous assignments
+- 10.4 Procedural assignments
