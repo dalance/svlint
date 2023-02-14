@@ -25,13 +25,14 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('BUILDENV', '**/Cargo.lock') }}
-      - run: |
-          cargo run --bin=mdgen
-          rm -f BUILDENV
-      - id: is_changed_md
+      - id: mdgen
         run: |
-          (git diff --quiet && echo "is_changed=no" >> $GITHUB_OUTPUT) || echo "is_changed=yes" >> $GITHUB_OUTPUT
-      - if: ${{ steps.is_changed_md.outputs.is_changed == 'yes' }}
+          cargo run --bin=mdgen
+          (git diff --quiet MANUAL.md && \
+            echo "manual_md=not_changed" >> $GITHUB_OUTPUT) || \
+            echo "manual_md=is_changed" >> $GITHUB_OUTPUT
+          rm -f BUILDENV
+      - if: ${{ steps.mdgen.outputs.manual_md == 'is_changed' }}
         uses: docker://pandoc/latex:2.18
         with:
           args: >-
