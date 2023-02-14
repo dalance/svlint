@@ -31,8 +31,7 @@ refusal to work if you dare to mis-spell a variable name.
 There are two main classes of rule for helping human readers:
 1. Rules which codify naming conventions.
 2. Rules which codify style/formatting conventions.
-Further informatino on these concepts is provided in the `naming` and `style`
-rulesets.
+Further information on these concepts is provided in the `style` ruleset.
 
 Just as individual human readers have their own preferences (in language,
 style, naming conventions, etc.), each tool has its own quirks and ways of
