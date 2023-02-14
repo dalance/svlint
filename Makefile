@@ -7,7 +7,7 @@ BIN_NAME = svlint
 
 export LONG_VERSION
 
-.PHONY: all test clean pdf release_lnx release_win release_mac
+.PHONY: all test clean release_lnx release_win release_mac
 
 all: test
 
@@ -20,23 +20,46 @@ watch:
 clean:
 	cargo clean
 
-pdf:
+# Convenience recipe for building non-release version of PDF manual.
+# This is normally handled by the GitHub Action `.github/workflows/mdgen.yml`
+# which runs on pushes and pull requests, and does NOT use this recipe.
+# TODO: Title page with "UNRELEASED", latest commit hash, date, and time.
+# TODO: Translate recipe to `mdgen.yml`.
+.PHONY: MANUAL.pdf
+MANUAL.pdf:
 	pandoc -i MANUAL.md -o MANUAL.pdf
+
+# Convenience recipe for building release version of PDF manual.
+# This is normally handled by the GitHub Action `.github/workflows/release.yml`
+# which runs when a new tag `v*.*.*` is pushed, and does NOT use this recipe.
+# TODO: Title page with latest tag and date.
+# TODO: Translate recipe to `release.yml`.
+.PHONY: MANUAL_release.pdf
+MANUAL_release.pdf:
+	pandoc -i MANUAL_release.md -o MANUAL_release.pdf
+
+# The `release` action should create a file of this name and upload it as an
+# artifact in a prerequisite job before the parallel jobs (Linux, Windows,
+# MacOS) download the artifact, build executables, and create GitHub releases.
+# RELEASE_MANUAL is created instead of passing the glob directly to `release_*`
+# recipies in order to gracefully handle the cases where no files match the
+# glob (ignore) or multiple files match (take the alphabetically last).
+RELEASE_MANUAL := $(lastword $(wildcard svlint_MANUAL_v*.*.*.pdf))
 
 release_lnx:
 	cargo build --release --target=x86_64-unknown-linux-musl
 	zip -j ${BIN_NAME}-v${VERSION}-x86_64-lnx.zip \
-		MANUAL.pdf \
+		${RELEASE_MANUAL} \
 		target/x86_64-unknown-linux-musl/release/${BIN_NAME}
 
 release_win:
 	cargo build --release --target=x86_64-pc-windows-msvc
 	7z a ${BIN_NAME}-v${VERSION}-x86_64-win.zip \
-		MANUAL.pdf \
+		${RELEASE_MANUAL} \
 		target/x86_64-pc-windows-msvc/release/${BIN_NAME}.exe
 
 release_mac:
 	cargo build --release --target=x86_64-apple-darwin
 	zip -j ${BIN_NAME}-v${VERSION}-x86_64-mac.zip \
-		MANUAL.pdf \
+		${RELEASE_MANUAL} \
 		target/x86_64-apple-darwin/release/${BIN_NAME}

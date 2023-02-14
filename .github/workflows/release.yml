@@ -6,40 +6,53 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build:
+  build_pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker://pandoc/latex:2.18
+        with:
+          args: >-
+            -i MANUAL.md
+            -o svlint_MANUAL_${{github.ref_name}}.pdf
+      - uses: actions/upload-artifact@v3
+        with:
+          name: svlint_MANUAL_${{github.ref_name}}.pdf
+          path: svlint_MANUAL_${{github.ref_name}}.pdf
+
+  build_exe:
+    needs: build_pdf
 
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        rust: [stable]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Setup Rust
-      uses: hecrj/setup-rust-action@v1
-      with:
-        rust-version: ${{ matrix.rust }}
-    - name: Checkout
-      uses: actions/checkout@v1
-    - name: Setup MUSL
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        rustup target add x86_64-unknown-linux-musl
-        sudo apt-get -qq install musl-tools
-    - name: Build for linux
-      if: matrix.os == 'ubuntu-latest'
-      run: make release_lnx
-    - name: Build for macOS
-      if: matrix.os == 'macOS-latest'
-      run: make release_mac
-    - name: Build for Windows
-      if: matrix.os == 'windows-latest'
-      run: make release_win
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with:
-        body: '[Changelog](https://github.com/dalance/svlint/blob/master/CHANGELOG.md)'
-        files: '*.zip'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v3
+      - uses: hecrj/setup-rust-action@v1
+      - uses: actions/download-artifact@v3
+
+      - if: matrix.os == 'ubuntu-latest'
+        run: |
+          rustup target add x86_64-unknown-linux-musl
+          sudo apt-get -qq install musl-tools
+      - if: matrix.os == 'ubuntu-latest'
+        run: make release_lnx
+        shell: sh
+
+      - if: matrix.os == 'macOS-latest'
+        run: make release_mac
+        shell: sh
+
+      - if: matrix.os == 'windows-latest'
+        run: make release_win
+        shell: bash
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          body: '[Changelog](https://github.com/dalance/svlint/blob/master/CHANGELOG.md)'
+          files: '*.zip'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
