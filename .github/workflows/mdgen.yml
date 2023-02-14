@@ -29,11 +29,10 @@ jobs:
           cargo run --bin=mdgen
           rm -f BUILDENV
       - id: is_changed_md
-        uses: EndBug/add-and-commit@v9
-        with:
-          commit: --dry-run
-      - if: steps.is_changed_md.outputs.committed == true
-        uses: docker://pandoc/latex:2.9
+        run: |
+          (git diff --quiet && echo "is_changed=no" >> $GITHUB_OUTPUT) || echo "is_changed=yes" >> $GITHUB_OUTPUT
+      - if: ${{ steps.is_changed_md.outputs.is_changed == 'yes' }}
+        uses: docker://pandoc/latex:2.18
         with:
           args: >-
             -i MANUAL.md
