@@ -1,6 +1,6 @@
 VERSION = $(patsubst "%",%, $(word 3, $(shell grep version Cargo.toml)))
 REPOSITORY = $(patsubst "%",%, $(word 3, $(shell grep repository Cargo.toml)))
-GIT_REVISION = $(shell git log -1 --format="%h")
+GIT_REVISION = $(shell git rev-parse --short=8 HEAD)
 DATE = $(shell date +"%Y-%m-%d")
 TIME = $(shell date +"%H:%M:%S")
 DATETIME_ISO8601 = ${DATE}T${TIME}
