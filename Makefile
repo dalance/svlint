@@ -1,8 +1,10 @@
 VERSION = $(patsubst "%",%, $(word 3, $(shell grep version Cargo.toml)))
-BUILD_TIME = $(shell date +"%Y/%m/%d %H:%M:%S")
 GIT_REVISION = $(shell git log -1 --format="%h")
+DATE = $(shell date +"%Y-%m-%d")
+TIME = $(shell date +"%H:%M:%S")
+DATETIME_ISO8601 = ${DATE}T${TIME}
 RUST_VERSION = $(word 2, $(shell rustc -V))
-LONG_VERSION = "$(VERSION) ( rev: $(GIT_REVISION), rustc: $(RUST_VERSION), build at: $(BUILD_TIME) )"
+LONG_VERSION = "${VERSION} ( rev: ${GIT_REVISION}, rustc: ${RUST_VERSION}, built: ${DATETIME_ISO8601} )"
 BIN_NAME = svlint
 
 export LONG_VERSION
