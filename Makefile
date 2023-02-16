@@ -44,6 +44,7 @@ MANUAL.pdf:
 		--metadata "keywords=sv-parser" \
 		--metadata "keywords=svls" \
 		--toc \
+		--toc-depth=2 \
 		-o MANUAL.pdf
 
 # Convenience recipe for building release version of PDF manual.
