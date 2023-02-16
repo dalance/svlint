@@ -26,11 +26,25 @@ clean:
 # Convenience recipe for building non-release version of PDF manual.
 # This is normally handled by the GitHub Action `.github/workflows/mdgen.yml`
 # which runs on pushes and pull requests, and does NOT use this recipe.
-# TODO: Title page with "UNRELEASED", latest commit hash, date, and time.
 # TODO: Translate recipe to `mdgen.yml`.
 .PHONY: MANUAL.pdf
 MANUAL.pdf:
-	pandoc -i MANUAL.md -o MANUAL.pdf
+	@pandoc --version
+	pandoc -i MANUAL.md \
+		--template=md/MANUAL_template.tex \
+		--metadata "title=Svlint Manual" \
+		--metadata "subtitle=DEVELOPMENT ${GIT_REVISION}" \
+		--metadata "author=${REPOSITORY}" \
+		--metadata "date=${DATETIME_ISO8601}" \
+		--metadata "keywords=SystemVerilog" \
+		--metadata "keywords=Verilog" \
+		--metadata "keywords=IEEE1800-2017" \
+		--metadata "keywords=lint" \
+		--metadata "keywords=svlint" \
+		--metadata "keywords=sv-parser" \
+		--metadata "keywords=svls" \
+		--toc \
+		-o MANUAL.pdf
 
 # Convenience recipe for building release version of PDF manual.
 # This is normally handled by the GitHub Action `.github/workflows/release.yml`
