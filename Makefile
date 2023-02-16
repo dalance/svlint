@@ -1,4 +1,5 @@
 VERSION = $(patsubst "%",%, $(word 3, $(shell grep version Cargo.toml)))
+REPOSITORY = $(patsubst "%",%, $(word 3, $(shell grep repository Cargo.toml)))
 GIT_REVISION = $(shell git log -1 --format="%h")
 DATE = $(shell date +"%Y-%m-%d")
 TIME = $(shell date +"%H:%M:%S")
