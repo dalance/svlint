@@ -45,7 +45,7 @@ jobs:
             -o svlint_MANUAL_${{github.ref_name}}.pdf
       - uses: actions/upload-artifact@v3
         with:
-          name: svlint_MANUAL_${{github.ref_name}}.pdf
+          name: pdf
           path: svlint_MANUAL_${{github.ref_name}}.pdf
 
   build_exe:

@@ -79,7 +79,7 @@ MANUAL-release: MANUAL.intermediateTex.md
 # RELEASE_MANUAL is created instead of passing the glob directly to `release_*`
 # recipies in order to gracefully handle the cases where no files match the
 # glob (ignore) or multiple files match (take the alphabetically last).
-RELEASE_MANUAL := $(lastword $(wildcard svlint_MANUAL_v*.*.*.pdf))
+RELEASE_MANUAL := $(lastword $(wildcard pdf/svlint_MANUAL_v*.*.*.pdf))
 
 release_lnx:
 	cargo build --release --target=x86_64-unknown-linux-musl
