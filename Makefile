@@ -49,6 +49,7 @@ MANUAL.pdf:
 		--metadata "keywords=svls" \
 		--toc \
 		--toc-depth=2 \
+		--variable=colorlinks \
 		-o MANUAL.pdf
 	rm -f *.intermediate*.*
 
