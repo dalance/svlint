@@ -31,13 +31,33 @@ jobs:
           (git diff --quiet MANUAL.md && \
             echo "manual_md=not_changed" >> $GITHUB_OUTPUT) || \
             echo "manual_md=is_changed" >> $GITHUB_OUTPUT
+          sed \
+            -e 's/^## Rule: /\\clearpage\n## Rule: /' \
+            -e 's/^## Ruleset: /\\clearpage\n## Ruleset: /' \
+            MANUAL.md > MANUAL.intermediateTex.md
           rm -f BUILDENV
       - if: ${{ steps.mdgen.outputs.manual_md == 'is_changed' }}
         uses: docker://pandoc/latex:2.18
         with:
           args: >-
-            -i MANUAL.md
+            -i MANUAL.intermediateTex.md
+            --template=md/MANUAL_template.tex
+            --metadata "title=Svlint Manual"
+            --metadata "subtitle=DEVELOPMENT ${GIT_REVISION}"
+            --metadata "author=${REPOSITORY}"
+            --metadata "date=${DATETIME_ISO8601}"
+            --metadata "keywords=SystemVerilog"
+            --metadata "keywords=Verilog"
+            --metadata "keywords=IEEE1800-2017"
+            --metadata "keywords=lint"
+            --metadata "keywords=svlint"
+            --metadata "keywords=sv-parser"
+            --metadata "keywords=svls"
+            --toc
+            --toc-depth=2
+            --variable=colorlinks
             -o MANUAL.pdf
+      - run: rm -f *.intermediate*.*
       - uses: EndBug/add-and-commit@v9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
