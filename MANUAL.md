@@ -1,4 +1,3 @@
-force rebuild
 
 # Introduction
 
