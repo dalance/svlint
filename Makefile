@@ -1,9 +1,9 @@
 VERSION = $(patsubst "%",%, $(word 3, $(shell grep version Cargo.toml)))
 REPOSITORY = $(patsubst "%",%, $(word 3, $(shell grep repository Cargo.toml)))
 GIT_REVISION = $(shell git rev-parse --short=8 HEAD)
-DATE = $(shell date +"%Y-%m-%d")
-TIME = $(shell date +"%H:%M:%S")
-DATETIME_ISO8601 = ${DATE}T${TIME}
+DATE_ISO8601 = $(shell date +"%Y-%m-%d")
+TIME_ISO8601 = $(shell date +"%H:%M:%S")
+DATETIME_ISO8601 = ${DATE_ISO8601}T${TIME_ISO8601}
 RUST_VERSION = $(word 2, $(shell rustc -V))
 LONG_VERSION = "${VERSION} ( rev: ${GIT_REVISION}, rustc: ${RUST_VERSION}, built: ${DATETIME_ISO8601} )"
 BIN_NAME = svlint
@@ -23,45 +23,54 @@ watch:
 clean:
 	cargo clean
 
-# Convenience recipe for building non-release version of PDF manual.
-# This is normally handled by the GitHub Action `.github/workflows/mdgen.yml`
-# which runs on pushes and pull requests, and does NOT use this recipe.
-# TODO: Translate recipe to `mdgen.yml`.
-.PHONY: MANUAL.pdf
-MANUAL.pdf:
-	@pandoc --version
+# Flags used by both development and release versions of PDF.
+# NOTE: If you change these, be sure to reflect the changes in the release and
+# mdgen workflow files too.
+PANDOC_FLAGS := --template=md/MANUAL_template.tex
+PANDOC_FLAGS += --metadata "title=Svlint Manual"
+PANDOC_FLAGS += --metadata "author=${REPOSITORY}"
+PANDOC_FLAGS += --metadata "keywords=SystemVerilog"
+PANDOC_FLAGS += --metadata "keywords=Verilog"
+PANDOC_FLAGS += --metadata "keywords=IEEE1800-2017"
+PANDOC_FLAGS += --metadata "keywords=lint"
+PANDOC_FLAGS += --metadata "keywords=svlint"
+PANDOC_FLAGS += --metadata "keywords=sv-parser"
+PANDOC_FLAGS += --metadata "keywords=svls"
+PANDOC_FLAGS += --toc
+PANDOC_FLAGS += --toc-depth=2
+PANDOC_FLAGS += --variable=colorlinks
+PANDOC_FLAGS += --variable=papersize:a4
+
+MANUAL.intermediateTex.md:
 	sed \
 		-e 's/^## Rule: /\\clearpage\n## Rule: /' \
 		-e 's/^## Ruleset: /\\clearpage\n## Ruleset: /' \
-		MANUAL.md > MANUAL.intermediateTex.md
+		MANUAL.md > $@
+
+# Convenience recipe for building non-release version of PDF manual.
+# This is normally handled by the GitHub Action `.github/workflows/mdgen.yml`
+# which runs on pushes and pull requests, and does NOT use this recipe.
+.PHONY: MANUAL-dev
+MANUAL-dev: MANUAL.intermediateTex.md
+	@pandoc --version
 	pandoc -i MANUAL.intermediateTex.md \
-		--template=md/MANUAL_template.tex \
-		--metadata "title=Svlint Manual" \
+		${PANDOC_FLAGS} \
 		--metadata "subtitle=DEVELOPMENT ${GIT_REVISION}" \
-		--metadata "author=${REPOSITORY}" \
 		--metadata "date=${DATETIME_ISO8601}" \
-		--metadata "keywords=SystemVerilog" \
-		--metadata "keywords=Verilog" \
-		--metadata "keywords=IEEE1800-2017" \
-		--metadata "keywords=lint" \
-		--metadata "keywords=svlint" \
-		--metadata "keywords=sv-parser" \
-		--metadata "keywords=svls" \
-		--toc \
-		--toc-depth=2 \
-		--variable=colorlinks \
-		--variable=papersize:a4 \
-		-o MANUAL.pdf
+		-o MANUAL-dev.pdf
 	rm -f *.intermediate*.*
 
 # Convenience recipe for building release version of PDF manual.
 # This is normally handled by the GitHub Action `.github/workflows/release.yml`
 # which runs when a new tag `v*.*.*` is pushed, and does NOT use this recipe.
-# TODO: Title page with latest tag and date.
-# TODO: Translate recipe to `release.yml`.
-.PHONY: MANUAL_release.pdf
-MANUAL_release.pdf:
-	pandoc -i MANUAL_release.md -o MANUAL_release.pdf
+.PHONY: MANUAL-release
+MANUAL-release: MANUAL.intermediateTex.md
+	pandoc -i MANUAL.intermediateTex.md \
+		${PANDOC_FLAGS} \
+		--metadata "subtitle=v${VERSION}" \
+		--metadata "date=${DATE_ISO8601}" \
+		-o MANUAL-release.pdf
+	rm -f *.intermediate*.*
 
 # The `release` action should create a file of this name and upload it as an
 # artifact in a prerequisite job before the parallel jobs (Linux, Windows,
