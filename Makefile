@@ -1,4 +1,5 @@
-VERSION = $(patsubst "%",%, $(word 3, $(shell grep version Cargo.toml)))
+
+VERSION ?= $(patsubst "%",%, $(word 3, $(shell grep version Cargo.toml)))
 REPOSITORY = $(patsubst "%",%, $(word 3, $(shell grep repository Cargo.toml)))
 GIT_REVISION = $(shell git rev-parse --short=8 HEAD)
 DATE_ISO8601 = $(shell date +"%Y-%m-%d")
