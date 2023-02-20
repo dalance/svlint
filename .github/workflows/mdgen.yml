@@ -9,7 +9,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: hecrj/setup-rust-action@v1
       - name: BUILDENV
-        id: BUILDENV
         shell: bash
         run: |
           rm -f BUILDENV
@@ -17,6 +16,10 @@ jobs:
           cargo --version >> BUILDENV
           rustc --version >> BUILDENV
           cat BUILDENV
+      - name: Calculate Variables
+        id: CALCVARS
+        shell: bash
+        run: |
           echo "REPOSITORY=$(grep repository Cargo.toml | sed 's/[^\"]*\"\([^\"]*\).*/\1/')" >> $GITHUB_OUTPUT
           echo "GIT_REVISION=$(git rev-parse --short=8 HEAD)" >> $GITHUB_OUTPUT
           echo "DATETIME_ISO8601=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_OUTPUT
@@ -39,7 +42,6 @@ jobs:
             -e 's/^## Rule: /\\clearpage\n## Rule: /' \
             -e 's/^## Ruleset: /\\clearpage\n## Ruleset: /' \
             MANUAL.md > MANUAL.intermediateTex.md
-          rm -f BUILDENV
       - if: ${{ steps.mdgen.outputs.manual_md == 'is_changed' }}
         uses: docker://pandoc/latex:2.18
         with:
@@ -47,9 +49,9 @@ jobs:
             -i MANUAL.intermediateTex.md
             --template=md/MANUAL_template.tex
             --metadata "title=Svlint Manual"
-            --metadata "subtitle=DEVELOPMENT ${{steps.BUILDENV.outputs.GIT_REVISION}}"
-            --metadata "author=${{steps.BUILDENV.outputs.REPOSITORY}}"
-            --metadata "date=${{steps.BUILDENV.outputs.DATETIME_ISO8601}}"
+            --metadata "subtitle=DEVELOPMENT ${{steps.CALCVARS.outputs.GIT_REVISION}}"
+            --metadata "author=${{steps.CALCVARS.outputs.REPOSITORY}}"
+            --metadata "date=${{steps.CALCVARS.outputs.DATETIME_ISO8601}}"
             --metadata "keywords=SystemVerilog"
             --metadata "keywords=Verilog"
             --metadata "keywords=IEEE1800-2017"
@@ -62,7 +64,10 @@ jobs:
             --variable=colorlinks
             --variable=papersize:a4
             -o MANUAL.pdf
-      - run: rm -f *.intermediate*.*
+      - name: Cleanup Before add-and-commit
+        run: |
+          rm -f BUILDENV
+          rm -f *.intermediate*.*
       - uses: EndBug/add-and-commit@v9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

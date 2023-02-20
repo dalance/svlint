@@ -10,12 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: BUILDENV
-        id: BUILDENV
+      - name: Calculate Variables
+        id: CALCVARS
         shell: bash
         run: |
           echo "REPOSITORY=$(grep repository Cargo.toml | sed 's/[^\"]*\"\([^\"]*\).*/\1/')" >> $GITHUB_OUTPUT
           echo "DATE_ISO8601=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      - name: Modify Markdown
+        run: |
           sed \
             -e 's/^## Rule: /\\clearpage\n## Rule: /' \
             -e 's/^## Ruleset: /\\clearpage\n## Ruleset: /' \
@@ -27,8 +29,8 @@ jobs:
             --template=md/MANUAL_template.tex
             --metadata "title=Svlint Manual"
             --metadata "subtitle=${{github.ref_name}}"
-            --metadata "author=${{steps.BUILDENV.outputs.REPOSITORY}}"
-            --metadata "date=${{steps.BUILDENV.outputs.DATE_ISO8601}}"
+            --metadata "author=${{steps.CALCVARS.outputs.REPOSITORY}}"
+            --metadata "date=${{steps.CALCVARS.outputs.DATE_ISO8601}}"
             --metadata "keywords=SystemVerilog"
             --metadata "keywords=Verilog"
             --metadata "keywords=IEEE1800-2017"
