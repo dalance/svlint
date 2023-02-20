@@ -6,7 +6,7 @@ DATE_ISO8601 := $(shell date +"%Y-%m-%d")
 TIME_ISO8601 := $(shell date +"%H:%M:%S")
 DATETIME_ISO8601 := ${DATE_ISO8601}T${TIME_ISO8601}
 RUST_VERSION := $(word 2, $(shell rustc -V))
-LONG_VERSION := "${VERSION} ( rev: ${GIT_REVISION}, rustc: ${RUST_VERSION}, built: ${DATETIME_ISO8601} )"
+LONG_VERSION := ${VERSION} rev:${GIT_REVISION} rustc:${RUST_VERSION} built:${DATETIME_ISO8601}
 BIN_NAME := svlint
 
 export LONG_VERSION
