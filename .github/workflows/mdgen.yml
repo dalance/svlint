@@ -16,10 +16,9 @@ jobs:
           cargo --version >> BUILDENV
           rustc --version >> BUILDENV
           cat BUILDENV
+          echo "REPOSITORY=$(grep repository Cargo.toml | sed 's/[^\"]*\"\([^\"]*\).*/\1/')" >> $GITHUB_OUTPUT
           echo "GIT_REVISION=$(git rev-parse --short=8 HEAD)" >> $GITHUB_OUTPUT
-          echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-          echo "TIME=$(date +'%H:%M:%S')" >> $GITHUB_OUTPUT
-          echo "DATETIME_ISO8601=${DATE}T${TIME}" >> $GITHUB_OUTPUT
+          echo "DATETIME_ISO8601=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_OUTPUT
       - uses: actions/cache@v3
         with:
           path: |
@@ -48,7 +47,7 @@ jobs:
             --template=md/MANUAL_template.tex
             --metadata "title=Svlint Manual"
             --metadata "subtitle=DEVELOPMENT ${{steps.BUILDENV.outputs.GIT_REVISION}}"
-            --metadata "author=${REPOSITORY}"
+            --metadata "author=${{steps.BUILDENV.outputs.REPOSITORY}}"
             --metadata "date=${{steps.BUILDENV.outputs.DATETIME_ISO8601}}"
             --metadata "keywords=SystemVerilog"
             --metadata "keywords=Verilog"
