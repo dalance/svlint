@@ -1,5 +1,5 @@
 
-VERSION ?= $(patsubst "%",%, $(word 3, $(shell grep version Cargo.toml)))
+VERSION ?= v$(patsubst "%",%, $(word 3, $(shell grep version Cargo.toml)))
 REPOSITORY = $(patsubst "%",%, $(word 3, $(shell grep repository Cargo.toml)))
 GIT_REVISION = $(shell git rev-parse --short=8 HEAD)
 DATE_ISO8601 = $(shell date +"%Y-%m-%d")
@@ -68,7 +68,7 @@ MANUAL-dev: MANUAL.intermediateTex.md
 MANUAL-release: MANUAL.intermediateTex.md
 	pandoc -i MANUAL.intermediateTex.md \
 		${PANDOC_FLAGS} \
-		--metadata "subtitle=v${VERSION}" \
+		--metadata "subtitle=${VERSION}" \
 		--metadata "date=${DATE_ISO8601}" \
 		-o MANUAL-release.pdf
 	rm -f *.intermediate*.*
@@ -83,18 +83,18 @@ RELEASE_MANUAL := $(lastword $(wildcard pdf/svlint_MANUAL_v*.*.*.pdf))
 
 release_lnx:
 	cargo build --release --target=x86_64-unknown-linux-musl
-	zip -j ${BIN_NAME}-v${VERSION}-x86_64-lnx.zip \
+	zip -j ${BIN_NAME}-${VERSION}-x86_64-lnx.zip \
 		${RELEASE_MANUAL} \
 		target/x86_64-unknown-linux-musl/release/${BIN_NAME}
 
 release_win:
 	cargo build --release --target=x86_64-pc-windows-msvc
-	7z a ${BIN_NAME}-v${VERSION}-x86_64-win.zip \
+	7z a ${BIN_NAME}-${VERSION}-x86_64-win.zip \
 		${RELEASE_MANUAL} \
 		target/x86_64-pc-windows-msvc/release/${BIN_NAME}.exe
 
 release_mac:
 	cargo build --release --target=x86_64-apple-darwin
-	zip -j ${BIN_NAME}-v${VERSION}-x86_64-mac.zip \
+	zip -j ${BIN_NAME}-${VERSION}-x86_64-mac.zip \
 		${RELEASE_MANUAL} \
 		target/x86_64-apple-darwin/release/${BIN_NAME}
