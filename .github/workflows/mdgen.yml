@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: hecrj/setup-rust-action@v1
-      - name: BUILDENV
+      - id: BUILDENV
         shell: bash
         run: |
           rm -f BUILDENV
@@ -16,6 +16,10 @@ jobs:
           cargo --version >> BUILDENV
           rustc --version >> BUILDENV
           cat BUILDENV
+          echo "GIT_REVISION=$(git rev-parse --short=8 HEAD)" >> $GITHUB_OUTPUT
+          echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+          echo "TIME=$(date +'%H:%M:%S')" >> $GITHUB_OUTPUT
+          echo "DATETIME_ISO8601=${DATE}T${TIME}" >> $GITHUB_OUTPUT
       - uses: actions/cache@v3
         with:
           path: |
@@ -43,9 +47,9 @@ jobs:
             -i MANUAL.intermediateTex.md
             --template=md/MANUAL_template.tex
             --metadata "title=Svlint Manual"
-            --metadata "subtitle=DEVELOPMENT ${GIT_REVISION}"
+            --metadata "subtitle=DEVELOPMENT ${{steps.BUILDENV.outputs.GIT_REVISION}}"
             --metadata "author=${REPOSITORY}"
-            --metadata "date=${DATETIME_ISO8601}"
+            --metadata "date=${{steps.BUILDENV.outputs.DATETIME_ISO8601}}"
             --metadata "keywords=SystemVerilog"
             --metadata "keywords=Verilog"
             --metadata "keywords=IEEE1800-2017"
