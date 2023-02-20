@@ -76,10 +76,7 @@ MANUAL-release: MANUAL.intermediateTex.md
 # The `release` action should create a file of this name and upload it as an
 # artifact in a prerequisite job before the parallel jobs (Linux, Windows,
 # MacOS) download the artifact, build executables, and create GitHub releases.
-# RELEASE_MANUAL is created instead of passing the glob directly to `release_*`
-# recipies in order to gracefully handle the cases where no files match the
-# glob (ignore) or multiple files match (take the alphabetically last).
-RELEASE_MANUAL := $(lastword $(wildcard pdf/svlint_MANUAL_v*.*.*.pdf))
+RELEASE_MANUAL := pdf/svlint_MANUAL_${VERSION}.pdf
 
 release_lnx:
 	cargo build --release --target=x86_64-unknown-linux-musl
