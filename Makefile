@@ -1,13 +1,13 @@
 
 VERSION ?= v$(patsubst "%",%, $(word 3, $(shell grep version Cargo.toml)))
-REPOSITORY = $(patsubst "%",%, $(word 3, $(shell grep repository Cargo.toml)))
-GIT_REVISION = $(shell git rev-parse --short=8 HEAD)
-DATE_ISO8601 = $(shell date +"%Y-%m-%d")
-TIME_ISO8601 = $(shell date +"%H:%M:%S")
-DATETIME_ISO8601 = ${DATE_ISO8601}T${TIME_ISO8601}
-RUST_VERSION = $(word 2, $(shell rustc -V))
-LONG_VERSION = "${VERSION} ( rev: ${GIT_REVISION}, rustc: ${RUST_VERSION}, built: ${DATETIME_ISO8601} )"
-BIN_NAME = svlint
+REPOSITORY := $(patsubst "%",%, $(word 3, $(shell grep repository Cargo.toml)))
+GIT_REVISION := $(shell git rev-parse --short=8 HEAD)
+DATE_ISO8601 := $(shell date +"%Y-%m-%d")
+TIME_ISO8601 := $(shell date +"%H:%M:%S")
+DATETIME_ISO8601 := ${DATE_ISO8601}T${TIME_ISO8601}
+RUST_VERSION := $(word 2, $(shell rustc -V))
+LONG_VERSION := "${VERSION} ( rev: ${GIT_REVISION}, rustc: ${RUST_VERSION}, built: ${DATETIME_ISO8601} )"
+BIN_NAME := svlint
 
 export LONG_VERSION
 
