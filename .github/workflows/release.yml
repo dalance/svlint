@@ -59,38 +59,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-#     - uses: hecrj/setup-rust-action@v1
+      - uses: hecrj/setup-rust-action@v1
       - uses: actions/download-artifact@v3
+
       - if: matrix.os == 'ubuntu-latest'
         run: |
-          find -name '*.pdf'
+          rustup target add x86_64-unknown-linux-musl
+          sudo apt-get -qq install musl-tools
+      - if: matrix.os == 'ubuntu-latest'
+        run: make release_lnx VERSION=${{github.ref_name}}
+        shell: sh
+
       - if: matrix.os == 'macOS-latest'
-        run: |
-          find -name '*.pdf'
+        run: make release_mac VERSION=${{github.ref_name}}
+        shell: sh
+
       - if: matrix.os == 'windows-latest'
-        run: |
-          dir /b /s *.pdf
+        run: make release_win VERSION=${{github.ref_name}}
+        shell: bash
 
-#     - if: matrix.os == 'ubuntu-latest'
-#       run: |
-#         rustup target add x86_64-unknown-linux-musl
-#         sudo apt-get -qq install musl-tools
-#     - if: matrix.os == 'ubuntu-latest'
-#       run: make release_lnx VERSION=${{github.ref_name}}
-#       run: make release_lnx VERSION=${{github.ref_name}}
-#       shell: sh
-
-#     - if: matrix.os == 'macOS-latest'
-#       run: make release_mac VERSION=${{github.ref_name}}
-#       shell: sh
-
-#     - if: matrix.os == 'windows-latest'
-#       run: make release_win VERSION=${{github.ref_name}}
-#       shell: bash
-
-#     - uses: softprops/action-gh-release@v1
-#       with:
-#         body: '[Changelog](https://github.com/dalance/svlint/blob/master/CHANGELOG.md)'
-#         files: '*.zip'
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: softprops/action-gh-release@v1
+        with:
+          body: '[Changelog](https://github.com/dalance/svlint/blob/master/CHANGELOG.md)'
+          files: '*.zip'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
