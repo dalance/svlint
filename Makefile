@@ -30,7 +30,11 @@ clean:
 .PHONY: MANUAL.pdf
 MANUAL.pdf:
 	@pandoc --version
-	pandoc -i MANUAL.md \
+	sed \
+		-e 's/^## Rule: /\\clearpage\n## Rule: /' \
+		-e 's/^## Ruleset: /\\clearpage\n## Ruleset: /' \
+		MANUAL.md > MANUAL.intermediateTex.md
+	pandoc -i MANUAL.intermediateTex.md \
 		--template=md/MANUAL_template.tex \
 		--metadata "title=Svlint Manual" \
 		--metadata "subtitle=DEVELOPMENT ${GIT_REVISION}" \
@@ -46,6 +50,7 @@ MANUAL.pdf:
 		--toc \
 		--toc-depth=2 \
 		-o MANUAL.pdf
+	rm -f *.intermediate*.*
 
 # Convenience recipe for building release version of PDF manual.
 # This is normally handled by the GitHub Action `.github/workflows/release.yml`

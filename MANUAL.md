@@ -241,7 +241,7 @@ You are welcome to suggest a new rule through
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `action_block_with_side_effect`
+## Rule: `action_block_with_side_effect`
 
 ### Hint
 
@@ -328,7 +328,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `blocking_assignment_in_always_ff`
+## Rule: `blocking_assignment_in_always_ff`
 
 ### Hint
 
@@ -391,7 +391,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `case_default`
+## Rule: `case_default`
 
 ### Hint
 
@@ -465,7 +465,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `default_nettype_none`
+## Rule: `default_nettype_none`
 
 ### Hint
 
@@ -546,7 +546,7 @@ IEEE1364, but not strongly to IEEE1800.
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `enum_with_type`
+## Rule: `enum_with_type`
 
 ### Hint
 
@@ -629,7 +629,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `explicit_case_default`
+## Rule: `explicit_case_default`
 
 ### Hint
 
@@ -724,7 +724,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `explicit_if_else`
+## Rule: `explicit_if_else`
 
 ### Hint
 
@@ -809,7 +809,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `function_same_as_system_function`
+## Rule: `function_same_as_system_function`
 
 ### Hint
 
@@ -859,7 +859,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `function_with_automatic`
+## Rule: `function_with_automatic`
 
 ### Hint
 
@@ -971,7 +971,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `genvar_declaration_in_loop`
+## Rule: `genvar_declaration_in_loop`
 
 ### Hint
 
@@ -1060,7 +1060,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `genvar_declaration_out_loop`
+## Rule: `genvar_declaration_out_loop`
 
 ### Hint
 
@@ -1128,7 +1128,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `inout_with_tri`
+## Rule: `inout_with_tri`
 
 ### Hint
 
@@ -1205,7 +1205,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `input_with_var`
+## Rule: `input_with_var`
 
 ### Hint
 
@@ -1283,7 +1283,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `interface_port_with_modport`
+## Rule: `interface_port_with_modport`
 
 ### Hint
 
@@ -1355,7 +1355,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `keyword_forbidden_always`
+## Rule: `keyword_forbidden_always`
 
 ### Hint
 
@@ -1440,7 +1440,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `keyword_forbidden_generate`
+## Rule: `keyword_forbidden_generate`
 
 ### Hint
 
@@ -1495,7 +1495,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `keyword_forbidden_priority`
+## Rule: `keyword_forbidden_priority`
 
 ### Hint
 
@@ -1584,7 +1584,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `keyword_forbidden_unique`
+## Rule: `keyword_forbidden_unique`
 
 ### Hint
 
@@ -1683,7 +1683,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `keyword_forbidden_unique0`
+## Rule: `keyword_forbidden_unique0`
 
 ### Hint
 
@@ -1781,7 +1781,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `keyword_forbidden_wire_reg`
+## Rule: `keyword_forbidden_wire_reg`
 
 ### Hint
 
@@ -1839,7 +1839,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `keyword_required_generate`
+## Rule: `keyword_required_generate`
 
 ### Hint
 
@@ -1922,7 +1922,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `level_sensitive_always`
+## Rule: `level_sensitive_always`
 
 ### Hint
 
@@ -2008,7 +2008,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `localparam_explicit_type`
+## Rule: `localparam_explicit_type`
 
 ### Hint
 
@@ -2072,7 +2072,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `localparam_type_twostate`
+## Rule: `localparam_type_twostate`
 
 ### Hint
 
@@ -2211,7 +2211,7 @@ NOTE: The reasoning behind this rule invites the use of other rules:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `loop_variable_declaration`
+## Rule: `loop_variable_declaration`
 
 ### Hint
 
@@ -2262,7 +2262,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `multiline_for_begin`
+## Rule: `multiline_for_begin`
 
 ### Hint
 
@@ -2326,7 +2326,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `multiline_if_begin`
+## Rule: `multiline_if_begin`
 
 ### Hint
 
@@ -2441,7 +2441,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `non_ansi_module`
+## Rule: `non_ansi_module`
 
 ### Hint
 
@@ -2515,7 +2515,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `non_blocking_assignment_in_always_comb`
+## Rule: `non_blocking_assignment_in_always_comb`
 
 ### Hint
 
@@ -2570,7 +2570,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `output_with_var`
+## Rule: `output_with_var`
 
 ### Hint
 
@@ -2649,7 +2649,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `parameter_default_value`
+## Rule: `parameter_default_value`
 
 ### Hint
 
@@ -2738,7 +2738,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `parameter_explicit_type`
+## Rule: `parameter_explicit_type`
 
 ### Hint
 
@@ -2812,7 +2812,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `parameter_in_generate`
+## Rule: `parameter_in_generate`
 
 ### Hint
 
@@ -2890,7 +2890,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `parameter_in_package`
+## Rule: `parameter_in_package`
 
 ### Hint
 
@@ -2934,7 +2934,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `parameter_type_twostate`
+## Rule: `parameter_type_twostate`
 
 ### Hint
 
@@ -3005,7 +3005,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `sequential_block_in_always_comb`
+## Rule: `sequential_block_in_always_comb`
 
 ### Hint
 
@@ -3135,7 +3135,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `sequential_block_in_always_ff`
+## Rule: `sequential_block_in_always_ff`
 
 ### Hint
 
@@ -3316,7 +3316,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `sequential_block_in_always_latch`
+## Rule: `sequential_block_in_always_latch`
 
 ### Hint
 
@@ -3485,7 +3485,7 @@ re_forbidden_interface = true
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `generate_case_with_label`
+## Rule: `generate_case_with_label`
 
 ### Hint
 
@@ -3610,7 +3610,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `generate_for_with_label`
+## Rule: `generate_for_with_label`
 
 ### Hint
 
@@ -3697,7 +3697,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `generate_if_with_label`
+## Rule: `generate_if_with_label`
 
 ### Hint
 
@@ -3874,7 +3874,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `lowercamelcase_interface`
+## Rule: `lowercamelcase_interface`
 
 ### Hint
 
@@ -3920,7 +3920,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `lowercamelcase_module`
+## Rule: `lowercamelcase_module`
 
 ### Hint
 
@@ -3966,7 +3966,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `lowercamelcase_package`
+## Rule: `lowercamelcase_package`
 
 ### Hint
 
@@ -4012,7 +4012,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `prefix_inout`
+## Rule: `prefix_inout`
 
 ### Hint
 
@@ -4079,7 +4079,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `prefix_input`
+## Rule: `prefix_input`
 
 ### Hint
 
@@ -4129,7 +4129,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `prefix_instance`
+## Rule: `prefix_instance`
 
 ### Hint
 
@@ -4179,7 +4179,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `prefix_interface`
+## Rule: `prefix_interface`
 
 ### Hint
 
@@ -4221,7 +4221,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `prefix_module`
+## Rule: `prefix_module`
 
 ### Hint
 
@@ -4264,7 +4264,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `prefix_output`
+## Rule: `prefix_output`
 
 ### Hint
 
@@ -4314,7 +4314,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `prefix_package`
+## Rule: `prefix_package`
 
 ### Hint
 
@@ -4358,7 +4358,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_assert`
+## Rule: `re_forbidden_assert`
 
 ### Hint
 
@@ -4437,7 +4437,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_assert_property`
+## Rule: `re_forbidden_assert_property`
 
 ### Hint
 
@@ -4496,7 +4496,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_checker`
+## Rule: `re_forbidden_checker`
 
 ### Hint
 
@@ -4531,7 +4531,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_class`
+## Rule: `re_forbidden_class`
 
 ### Hint
 
@@ -4566,7 +4566,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_function`
+## Rule: `re_forbidden_function`
 
 ### Hint
 
@@ -4606,7 +4606,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_generateblock`
+## Rule: `re_forbidden_generateblock`
 
 ### Hint
 
@@ -4714,7 +4714,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_genvar`
+## Rule: `re_forbidden_genvar`
 
 ### Hint
 
@@ -4769,7 +4769,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_instance`
+## Rule: `re_forbidden_instance`
 
 ### Hint
 
@@ -4813,7 +4813,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_interface`
+## Rule: `re_forbidden_interface`
 
 ### Hint
 
@@ -4855,7 +4855,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_localparam`
+## Rule: `re_forbidden_localparam`
 
 ### Hint
 
@@ -4897,7 +4897,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_modport`
+## Rule: `re_forbidden_modport`
 
 ### Hint
 
@@ -4939,7 +4939,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_module_ansi`
+## Rule: `re_forbidden_module_ansi`
 
 ### Hint
 
@@ -4984,7 +4984,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_module_nonansi`
+## Rule: `re_forbidden_module_nonansi`
 
 ### Hint
 
@@ -5037,7 +5037,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_package`
+## Rule: `re_forbidden_package`
 
 ### Hint
 
@@ -5079,7 +5079,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_parameter`
+## Rule: `re_forbidden_parameter`
 
 ### Hint
 
@@ -5123,7 +5123,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_port_inout`
+## Rule: `re_forbidden_port_inout`
 
 ### Hint
 
@@ -5185,7 +5185,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_port_input`
+## Rule: `re_forbidden_port_input`
 
 ### Hint
 
@@ -5247,7 +5247,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_port_interface`
+## Rule: `re_forbidden_port_interface`
 
 ### Hint
 
@@ -5304,7 +5304,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_port_output`
+## Rule: `re_forbidden_port_output`
 
 ### Hint
 
@@ -5366,7 +5366,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_port_ref`
+## Rule: `re_forbidden_port_ref`
 
 ### Hint
 
@@ -5405,7 +5405,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_program`
+## Rule: `re_forbidden_program`
 
 ### Hint
 
@@ -5440,7 +5440,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_property`
+## Rule: `re_forbidden_property`
 
 ### Hint
 
@@ -5481,7 +5481,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_sequence`
+## Rule: `re_forbidden_sequence`
 
 ### Hint
 
@@ -5522,7 +5522,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_task`
+## Rule: `re_forbidden_task`
 
 ### Hint
 
@@ -5561,7 +5561,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_var_class`
+## Rule: `re_forbidden_var_class`
 
 ### Hint
 
@@ -5598,7 +5598,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_forbidden_var_classmethod`
+## Rule: `re_forbidden_var_classmethod`
 
 ### Hint
 
@@ -5641,7 +5641,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_assert`
+## Rule: `re_required_assert`
 
 ### Hint
 
@@ -5720,7 +5720,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_assert_property`
+## Rule: `re_required_assert_property`
 
 ### Hint
 
@@ -5779,7 +5779,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_checker`
+## Rule: `re_required_checker`
 
 ### Hint
 
@@ -5814,7 +5814,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_class`
+## Rule: `re_required_class`
 
 ### Hint
 
@@ -5849,7 +5849,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_function`
+## Rule: `re_required_function`
 
 ### Hint
 
@@ -5889,7 +5889,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_generateblock`
+## Rule: `re_required_generateblock`
 
 ### Hint
 
@@ -5977,7 +5977,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_genvar`
+## Rule: `re_required_genvar`
 
 ### Hint
 
@@ -6022,7 +6022,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_instance`
+## Rule: `re_required_instance`
 
 ### Hint
 
@@ -6066,7 +6066,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_interface`
+## Rule: `re_required_interface`
 
 ### Hint
 
@@ -6108,7 +6108,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_localparam`
+## Rule: `re_required_localparam`
 
 ### Hint
 
@@ -6150,7 +6150,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_modport`
+## Rule: `re_required_modport`
 
 ### Hint
 
@@ -6192,7 +6192,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_module_ansi`
+## Rule: `re_required_module_ansi`
 
 ### Hint
 
@@ -6237,7 +6237,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_module_nonansi`
+## Rule: `re_required_module_nonansi`
 
 ### Hint
 
@@ -6290,7 +6290,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_package`
+## Rule: `re_required_package`
 
 ### Hint
 
@@ -6332,7 +6332,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_parameter`
+## Rule: `re_required_parameter`
 
 ### Hint
 
@@ -6376,7 +6376,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_port_inout`
+## Rule: `re_required_port_inout`
 
 ### Hint
 
@@ -6432,7 +6432,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_port_input`
+## Rule: `re_required_port_input`
 
 ### Hint
 
@@ -6488,7 +6488,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_port_interface`
+## Rule: `re_required_port_interface`
 
 ### Hint
 
@@ -6539,7 +6539,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_port_output`
+## Rule: `re_required_port_output`
 
 ### Hint
 
@@ -6595,7 +6595,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_port_ref`
+## Rule: `re_required_port_ref`
 
 ### Hint
 
@@ -6646,7 +6646,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_program`
+## Rule: `re_required_program`
 
 ### Hint
 
@@ -6681,7 +6681,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_property`
+## Rule: `re_required_property`
 
 ### Hint
 
@@ -6722,7 +6722,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_sequence`
+## Rule: `re_required_sequence`
 
 ### Hint
 
@@ -6763,7 +6763,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_task`
+## Rule: `re_required_task`
 
 ### Hint
 
@@ -6802,7 +6802,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_var_class`
+## Rule: `re_required_var_class`
 
 ### Hint
 
@@ -6839,7 +6839,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `re_required_var_classmethod`
+## Rule: `re_required_var_classmethod`
 
 ### Hint
 
@@ -6882,7 +6882,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `uppercamelcase_interface`
+## Rule: `uppercamelcase_interface`
 
 ### Hint
 
@@ -6928,7 +6928,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `uppercamelcase_module`
+## Rule: `uppercamelcase_module`
 
 ### Hint
 
@@ -6974,7 +6974,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `uppercamelcase_package`
+## Rule: `uppercamelcase_package`
 
 ### Hint
 
@@ -7026,7 +7026,7 @@ These rules do not reference any clause in the LRM (IEEE1800-2017).
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_commaleading`
+## Rule: `style_commaleading`
 
 ### Hint
 
@@ -7206,7 +7206,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_indent`
+## Rule: `style_indent`
 
 ### Hint
 
@@ -7259,7 +7259,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_keyword_0or1space`
+## Rule: `style_keyword_0or1space`
 
 ### Hint
 
@@ -7318,7 +7318,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_keyword_0space`
+## Rule: `style_keyword_0space`
 
 ### Hint
 
@@ -7399,7 +7399,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_keyword_1or2space`
+## Rule: `style_keyword_1or2space`
 
 ### Hint
 
@@ -7468,7 +7468,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_keyword_1space`
+## Rule: `style_keyword_1space`
 
 ### Hint
 
@@ -7703,7 +7703,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_keyword_construct`
+## Rule: `style_keyword_construct`
 
 ### Hint
 
@@ -7802,7 +7802,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_keyword_datatype`
+## Rule: `style_keyword_datatype`
 
 ### Hint
 
@@ -7887,7 +7887,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_keyword_end`
+## Rule: `style_keyword_end`
 
 ### Hint
 
@@ -7978,7 +7978,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_keyword_maybelabel`
+## Rule: `style_keyword_maybelabel`
 
 ### Hint
 
@@ -8078,7 +8078,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_keyword_newline`
+## Rule: `style_keyword_newline`
 
 ### Hint
 
@@ -8151,7 +8151,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_operator_arithmetic`
+## Rule: `style_operator_arithmetic`
 
 ### Hint
 
@@ -8221,7 +8221,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_operator_boolean`
+## Rule: `style_operator_boolean`
 
 ### Hint
 
@@ -8294,7 +8294,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_operator_integer`
+## Rule: `style_operator_integer`
 
 ### Hint
 
@@ -8366,7 +8366,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_operator_unary`
+## Rule: `style_operator_unary`
 
 ### Hint
 
@@ -8432,7 +8432,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `style_trailingwhitespace`
+## Rule: `style_trailingwhitespace`
 
 ### Hint
 
@@ -8483,7 +8483,7 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## `tab_character`
+## Rule: `tab_character`
 
 ### Hint
 
@@ -8747,7 +8747,7 @@ or copy the wrapper scripts to somewhere already on your `$PATH`.
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## Ruleset *designintent*
+## Ruleset: *designintent*
 
 Rules that forbid suspicious constructions, i.e. ways of specifying hardware
 that are legal according to the LRM, but may express their intention unclearly.
@@ -8868,7 +8868,7 @@ rules.interface_port_with_modport = true
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## Ruleset *parseonly*
+## Ruleset: *parseonly*
 
 If a file passes this ruleset you have these pieces of information:
 
@@ -8893,7 +8893,7 @@ preprocessed and parsed, i.e. internally processed from text to a syntax tree.
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## Ruleset *simsynth*
+## Ruleset: *simsynth*
 
 The set of checks which detect potential mismatches between simulation and
 synthesis.
@@ -8918,7 +8918,7 @@ rules.level_sensitive_always = true
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## Ruleset *style*
+## Ruleset: *style*
 
 The set of whitespace-only checks which are "suggested" in the explanations
 of the **style_** rules.
@@ -9247,7 +9247,7 @@ rule.
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## Ruleset *verifintent*
+## Ruleset: *verifintent*
 
 Rules that forbid suspicious constructions, i.e. those which are legal
 according to the LRM, but may express their intention unclearly.

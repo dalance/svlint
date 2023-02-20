@@ -492,6 +492,13 @@ $endif$
 $if(has-frontmatter)$
 \mainmatter
 $endif$
+
+% Begin each section on a new page.
+% NOTE: MANUAL.md is also modified to insert `\clearpage` before subsections
+% for rules and rulesets, but not other subsections.
+\let\oldsection\section
+\renewcommand{\section}[1]{\clearpage\oldsection{#1}}
+
 $body$
 
 $if(has-frontmatter)$

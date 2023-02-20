@@ -128,7 +128,7 @@ fn write_md_rules(o: &mut File, rules: Vec<Box<dyn Rule>>) -> () {
         let _ = writeln!(o, "");
         let _ = writeln!(o, "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         let _ = writeln!(o, "");
-        let _ = writeln!(o, "## `{}`\n", rule.name());
+        let _ = writeln!(o, "## Rule: `{}`\n", rule.name());
 
         let _ = writeln!(o, "### Hint\n");
         let _ = writeln!(o, "{}\n", rule.hint(&ConfigOption::default()));
@@ -221,7 +221,7 @@ fn write_manual_md(rules: Vec<Box<dyn Rule>>, rulesets: Vec<Ruleset>) -> () {
         let _ = writeln!(o, "");
         let _ = writeln!(o, "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         let _ = writeln!(o, "");
-        let _ = writeln!(o, "## Ruleset *{}*", &ruleset.name);
+        let _ = writeln!(o, "## Ruleset: *{}*", &ruleset.name);
         let _ = writeln!(
             o,
             "{}",
