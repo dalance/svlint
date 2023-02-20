@@ -8,7 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: hecrj/setup-rust-action@v1
-      - id: BUILDENV
+      - name: BUILDENV
+        id: BUILDENV
         shell: bash
         run: |
           rm -f BUILDENV
