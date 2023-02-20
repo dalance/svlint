@@ -50,6 +50,7 @@ MANUAL.pdf:
 		--toc \
 		--toc-depth=2 \
 		--variable=colorlinks \
+		--variable=papersize:a4 \
 		-o MANUAL.pdf
 	rm -f *.intermediate*.*
 
