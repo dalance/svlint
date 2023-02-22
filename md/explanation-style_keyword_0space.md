@@ -16,7 +16,6 @@ the following symbol, e.g.
 , or `super.foo`.
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.

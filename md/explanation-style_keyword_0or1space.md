@@ -7,7 +7,6 @@ should be exactly 1 space between the keyword and the following identifier,
 e.g. `return foo;`.
 
 See also:
-
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.

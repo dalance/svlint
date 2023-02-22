@@ -8,7 +8,6 @@ should start with an uppercase letter, and packages should start with an
 lowercase letter.
 
 See also:
-
 - **lowercamelcase_interface** - Mutually exclusive alternative rule.
 - **lowercamelcase_module** - Potential companion rule.
 - **lowercamelcase_package** - Suggested companion rule.

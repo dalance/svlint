@@ -6,7 +6,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_forbidden_package**
 - **prefix_package**
 - **uppercamelcase_package**

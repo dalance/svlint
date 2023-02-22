@@ -2,7 +2,6 @@ Local parameters must not have identifiers matching the regex configured via the
 `re_forbidden_localparam` option.
 
 See also:
-
 - **re_required_localparam**
 - **localparam_explicit_type**
 - **localparam_type_twostate**

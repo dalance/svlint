@@ -4,7 +4,6 @@ variable, rather than the default nettype or implict datakind.
 The rules for determining port kind, datatype, and direction are specified in
 IEEE1800-2017 Clause 23.2.2.3 and facilitate various shorthand notations which
 are backwards compatible with the semantics of Verilog (IEEE1364-1995):
-
 - `output a` -> `output tri logic a` The implicit datatype is `logic` and the
   default nettype is `tri` (without overriding via the `` `default_nettype ``
   compiler directive).
@@ -32,14 +31,12 @@ check that the output is only driven from within the module (otherwise, emit an
 error).
 
 See also:
-
 - **default_nettype_none** - Useful companion rule.
 - **inout_with_tri** - Suggested companion rule.
 - **output_with_var** - Suggested companion rule.
 - **prefix_output** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.5 Nets and variables
 - 6.6 Net types
 - 22.8 default nettype

@@ -9,11 +9,9 @@ assignments is written by Clifford E Cummings and presented at SNUG-2000,
 "Nonblocking Assignments in Verilog Synthesis, Coding Styles that Kill".
 
 See also:
-
 - **blocking_assignment_in_always_ff** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 4.9.3 Blocking assignment
 - 4.9.4 Non-blocking assignment
 - 9.2.2.2 Combinational logic `always_comb` procedure

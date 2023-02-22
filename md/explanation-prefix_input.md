@@ -9,7 +9,6 @@ schematic - they're not essential, but they speed up comprehension.
 This rule requires the prefix `i_` (configurable) on `input` signals.
 
 See also:
-
 - **prefix_inout** - Suggested companion rule.
 - **prefix_instance** - Suggested companion rule.
 - **prefix_output** - Suggested companion rule.

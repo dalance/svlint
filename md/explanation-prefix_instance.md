@@ -9,7 +9,6 @@ reference designator of an inseparable assembly or integrated-circuit package,
 as standardized in IEEE315-1975.
 
 See also:
-
 - **generate_case_with_label** - Suggested companion rule.
 - **generate_for_with_label** - Suggested companion rule.
 - **generate_if_with_label** - Suggested companion rule.

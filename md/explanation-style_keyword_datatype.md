@@ -32,7 +32,6 @@ These keywords are used to declare the datatype of signals/variables (like
 `logic foo`), and cast expressions (like `int'(foo)`).
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.

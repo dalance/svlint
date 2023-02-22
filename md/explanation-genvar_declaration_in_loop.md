@@ -12,7 +12,6 @@ loop generate constructs.
 That is, using syntax like `genvar i; for (i=0; ...)`.
 However, several examples of declarations inside loop generate constructs are
 present in other areas of the LRM like `for (genvar i=0; ...`:
-
 - Clause 11.12 Let construct, example d, page 295.
 - Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
 - Clause 20.11 Elaboration system tasks, page 607.
@@ -25,7 +24,6 @@ This interpretation matches C99 (ISO/IEC 9899:1999), while a requirement for
 the genvar to be declared outside would match ANSI C (ISO/IEC 9899:1990).
 This rule checks that genvars are declared in a C99-like style so that the
 identifier is declared beside its use which has several advantages:
-
 - The purpose of the genvar is immediately clear, e.g. it is easy to read
   that the `i` in `for (genvar i=0; i < N_BITS; i++) ...` refers to a bit
   index.
@@ -47,9 +45,7 @@ not support both ways of declaring genvars, so the related rule
 and checks that declarations must be separate from the generate loop syntax.
 
 See also:
-
 - **genvar_declaration_out_loop** - Opposite reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 27.4 Loop generate constructs

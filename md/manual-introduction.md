@@ -102,7 +102,7 @@ $(FOO)/ddd.sv
 
 ### Plugin rules
 
-svlint supports plugin rules, an example of which is available
+Svlint supports plugin rules, an example of which is available
 [here](https://github.com/dalance/svlint-plugin-sample).
 
 A plugin rule is one which is compiled separately to the main svlint binary,

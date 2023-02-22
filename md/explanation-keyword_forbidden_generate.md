@@ -16,9 +16,7 @@ NOTE: Some non-compliant tools may require the use of these keywords, which
 provides an argument against this rule.
 
 See also:
-
 - **keyword_required_generate** - Opposite reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 27.3 Generate construct syntax

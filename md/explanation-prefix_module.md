@@ -6,7 +6,6 @@ This rule requires that module identifiers are declared with a prefix of `mod_`
 module and interface instances.
 
 See also:
-
 - **lowercamelcase_module** - Alternative rule.
 - **prefix_interface** - Suggested companion rule.
 - **prefix_package** - Suggested companion rule.

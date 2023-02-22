@@ -19,7 +19,6 @@ The example above uses a system elaboration task to explicitly force an
 elaboration error, but there are several ways to implictly cause elaboration
 errors.
 Relying on the type's default value can cause problems for two reasons:
-
 1. Some tools do not support this syntax.
 2. Simply omitting the default value is unclear about the author's intention,
   particularly when the type is also omitted.
@@ -27,12 +26,10 @@ Relying on the type's default value can cause problems for two reasons:
 This rule checks that all parameter ports have an explicit default value.
 
 See also:
-
 - **parameter_explicit_type** - Useful companion rule.
 - **parameter_type_twostate** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.20.1 Parameter declaration syntax
 - 6.20.2 Value parameters
 - 23.2.3 Parameterized modules

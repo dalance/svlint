@@ -10,9 +10,7 @@ function is allocated dynamically for each concurrent function call.
 This behavior can be accurately inferred in synthesis.
 
 See also:
-
 - **function_same_as_system_function** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 13.4.2 Static and automatic functions

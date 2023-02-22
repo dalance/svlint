@@ -105,5 +105,4 @@ endmodule
 ```
 
 See also:
-
 - **style_indent** - Suggested companion rule.

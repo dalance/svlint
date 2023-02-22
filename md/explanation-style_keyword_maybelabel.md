@@ -40,7 +40,6 @@ end
 ```
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.

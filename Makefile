@@ -27,7 +27,8 @@ clean:
 # Flags used by both development and release versions of PDF.
 # NOTE: If you change these, be sure to reflect the changes in the release and
 # mdgen workflow files too.
-PANDOC_FLAGS := --template=md/MANUAL_template.tex
+PANDOC_FLAGS := -f markdown+lists_without_preceding_blankline
+PANDOC_FLAGS += --template=md/MANUAL_template.tex
 PANDOC_FLAGS += --metadata "title=Svlint Manual"
 PANDOC_FLAGS += --metadata "author=${REPOSITORY}"
 PANDOC_FLAGS += --metadata "keywords=SystemVerilog"

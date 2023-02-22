@@ -180,7 +180,6 @@ followed by a single space, e.g. `if (foo)`, `always_ff @(posedge clk)`,
 or `typedef struct packed {`.
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.

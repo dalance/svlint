@@ -6,7 +6,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_required_interface**
 - **prefix_interface**
 - **uppercamelcase_interface**

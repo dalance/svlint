@@ -6,7 +6,6 @@ not immediately preceeded by a space character.
 You can
 
 See also:
-
 - **style_indent** - Suggested companion rule.
 - **tab_character** - Suggested companion rule.
 - Vim: <https://vimtricks.com/p/vim-remove-trailing-whitespace/>

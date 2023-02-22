@@ -1,6 +1,5 @@
 In Verilog (IEEE1364), there are two language constructs which can be used to
 model combinatorial logic:
-
 1. Continuous assignment to `wire` signals is specified with the `assign`
   keyword.
 2. `reg` signals are assigned to with an `always` block, which is evaluated
@@ -14,7 +13,6 @@ but additional keywords (`always_comb`, `always_ff`, and `always_latch`) should
 be used to clarify intent of digital designs.
 The `always_*` keywords have slightly different semantics which are beneficial
 for synthesizable designs:
-
 1. `always_*` processes require compiler checks that any signals driven on the
   LHS are not driven by any other process, i.e. `always_*` cannot infer
   multi-driven or tri-state logic.
@@ -34,10 +32,8 @@ It is appropriate to use **keyword_forbidden_always** on synthesizable design
 code, but on verification code use **level_sensitive_always** instead.
 
 See also:
-
 - **keyword_forbidden_always** - Alternative rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 9.2.2 Always procedures
 - 9.5 Process execution threads

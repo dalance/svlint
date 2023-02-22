@@ -8,9 +8,7 @@ in UTF-8.
 See `man iconv` for details on how to convert legacy encodings to UTF-8.
 
 See also:
-
 - **style_indent** - Suggested companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - Not applicable.

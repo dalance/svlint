@@ -2,7 +2,6 @@ Parameters must have identifiers matching the regex configured via the
 `re_required_parameter` option.
 
 See also:
-
 - **re_forbidden_parameter**
 - **localparam_explicit_type**
 - **localparam_type_twostate**
