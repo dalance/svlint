@@ -24,7 +24,7 @@ jobs:
             -e '/^### Hint$/{$!{N;N;s/### Hint\n\n/Hint\n: /;t;P;D}}' \
             -e '/^### Reason$/{$!{N;N;s/### Reason\n\n/Reason\n: /;t;P;D}}' \
             MANUAL.md > MANUAL.intermediateTex.md
-      - uses: docker://pandoc/latex:3.1
+      - uses: docker://pandoc/extra:3.1
         with:
           args: >-
             -i MANUAL.intermediateTex.md

@@ -45,7 +45,7 @@ jobs:
             -e '/^### Reason$/{$!{N;N;s/### Reason\n\n/Reason\n: /;t;P;D}}' \
             MANUAL.md > MANUAL.intermediateTex.md
       - if: ${{ steps.mdgen.outputs.manual_md == 'is_changed' }}
-        uses: docker://pandoc/latex:3.1
+        uses: docker://pandoc/extra:3.1
         with:
           args: >-
             -i MANUAL.intermediateTex.md
