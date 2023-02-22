@@ -441,6 +441,16 @@ $endif$
 \usepackage{enumitem}
 \setlist[description]{style=multiline,leftmargin=15mm}
 
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{}
+\renewcommand{\headrule}{}
+\fancyfoot{}
+\renewcommand{\footrulewidth}{0.1pt}
+\fancyfoot[L]{$title$}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{$subtitle$}
+
 \begin{document}
 $if(has-frontmatter)$
 \frontmatter
