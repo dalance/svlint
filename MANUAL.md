@@ -3317,12 +3317,12 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
 - 4.6 Determinisim
-- 49.2.2.3 Latched logic always_latch procedure
-- 49.3.1 Sequential blocks
-- 49.4.2 Event control
-- 412.4 Conditional if-else statement
-- 412.5 Case statement
-- 412.7 Loop statements
+- 9.2.2.3 Latched logic always_latch procedure
+- 9.3.1 Sequential blocks
+- 9.4.2 Event control
+- 12.4 Conditional if-else statement
+- 12.5 Case statement
+- 12.7 Loop statements
 
 
 # Naming Convention Rules
