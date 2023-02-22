@@ -43,10 +43,15 @@ PANDOC_FLAGS += --toc-depth=2
 PANDOC_FLAGS += --variable=colorlinks
 PANDOC_FLAGS += --variable=papersize:a4
 
+# Minor tweaks for nicer formatting of PDF.
+#   - Begin each rule,ruleset description on a new page.
+#   - Compact form for rule's hint and reason.
 MANUAL.intermediateTex.md:
 	sed \
 		-e 's/^## Rule: /\\clearpage\n## Rule: /' \
 		-e 's/^## Ruleset: /\\clearpage\n## Ruleset: /' \
+		-e '/^### Hint$$/{$$!{N;N;s/### Hint\n\n/Hint\n: /;t;P;D}}' \
+		-e '/^### Reason$$/{$$!{N;N;s/### Reason\n\n/Reason\n: /;t;P;D}}' \
 		MANUAL.md > $@
 
 # Convenience recipe for building non-release version of PDF manual.

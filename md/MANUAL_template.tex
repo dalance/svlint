@@ -437,6 +437,10 @@ $if(logo)$
 $endif$
 $endif$
 
+% Consistent indent/format for description-list (used for Hint,Reason).
+\usepackage{enumitem}
+\setlist[description]{style=multiline,leftmargin=15mm}
+
 \begin{document}
 $if(has-frontmatter)$
 \frontmatter
@@ -498,6 +502,9 @@ $endif$
 % for rules and rulesets, but not other subsections.
 \let\oldsection\section
 \renewcommand{\section}[1]{\clearpage\oldsection{#1}}
+
+% Reduce boldness of description-list terms (used for Hint,Reason).
+\renewcommand{\descriptionlabel}[1]{\hspace{\labelsep}\textcolor[rgb]{0.6,0.6,0.6}{\textbf{#1}}}
 
 $body$
 
