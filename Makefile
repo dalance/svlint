@@ -46,6 +46,8 @@ PANDOC_FLAGS += --variable=papersize:a4
 # Minor tweaks for nicer formatting of PDF.
 #   - Begin each rule,ruleset description on a new page.
 #   - Compact form for rule's hint and reason.
+# NOTE: If you change these, be sure to reflect the changes in the release and
+# mdgen workflow files too.
 MANUAL.intermediateTex.md:
 	sed \
 		-e 's/^## Rule: /\\clearpage\n## Rule: /' \

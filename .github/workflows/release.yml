@@ -21,11 +21,14 @@ jobs:
           sed \
             -e 's/^## Rule: /\\clearpage\n## Rule: /' \
             -e 's/^## Ruleset: /\\clearpage\n## Ruleset: /' \
+            -e '/^### Hint$/{$!{N;N;s/### Hint\n\n/Hint\n: /;t;P;D}}' \
+            -e '/^### Reason$/{$!{N;N;s/### Reason\n\n/Reason\n: /;t;P;D}}' \
             MANUAL.md > MANUAL.intermediateTex.md
       - uses: docker://pandoc/latex:2.18
         with:
           args: >-
             -i MANUAL.intermediateTex.md
+            -f markdown+lists_without_preceding_blankline
             --template=md/MANUAL_template.tex
             --metadata "title=Svlint Manual"
             --metadata "subtitle=${{github.ref_name}}"
