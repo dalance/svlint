@@ -102,7 +102,7 @@ $(FOO)/ddd.sv
 
 ### Plugin rules
 
-svlint supports plugin rules, an example of which is available
+Svlint supports plugin rules, an example of which is available
 [here](https://github.com/dalance/svlint-plugin-sample).
 
 A plugin rule is one which is compiled separately to the main svlint binary,
@@ -306,7 +306,6 @@ implement inter-thread locking (with a hit to performance) or allow a
 race-condition to occur, neither of which are desirable.
 
 Specifically, action blocks should not contain blocking assignments:
-
 - Blocking assignment operator, e.g. `foo = 123;`
 - Increment/decrement operators, e.g. `foo++;`, `foo--;`.
 - Sequential IO, e.g. `$display();`, `$write();`.
@@ -314,12 +313,10 @@ Specifically, action blocks should not contain blocking assignments:
   IEEE1800-2017.
 
 See also:
-
 - **non_blocking_assignment_in_always_comb** - Useful companion rule.
 - **blocking_assignment_in_always_ff** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 15.5.4 Event sequencing: wait\_order()
 - 16 Assertions
 - 21 Input/output system tasks and system functions
@@ -369,16 +366,13 @@ non-blocking assignments in order for sampling and variable evaluation
 to operate in a defined order.
 
 Specifically, `always_ff` constructs should not contain blocking assignments:
-
 - Blocking assignment operator, e.g. `foo = 123;`
 - Increment/decrement operators, e.g. `foo++;`, `foo--;`.
 
 See also:
-
 - **non_blocking_assignment_in_always_comb** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 4.9.3 Blocking assignment
 - 4.9.4 Non-blocking assignment
 - 9.2.2.4 Sequential logic always_ff procedure
@@ -441,7 +435,6 @@ e.g: `always_comb case (foo) '0: a = 5; endcase`.
 Only the case where `foo == 0` is specified, to update variable `a` to the
 value `5`.
 When `foo` is non-zero, this example may be interpreted in at least two ways:
-
 - `a = 'x;` - As the new value is not specified, it is unknown.
   A synthesis tool may allow node `a` to be undriven, or choose to drive
   `a` equivalently to one of the explicitly specified case expressions.
@@ -449,14 +442,12 @@ When `foo` is non-zero, this example may be interpreted in at least two ways:
   A synthesis tool may produce a latching circuit.
 
 See also:
-
 - **explicit_case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
 - **legacy_always** - Useful companion rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 9.2.2.2 Combinational logic `always_comb` procedure
 - 12.5 Case statement
 - 13.4 Functions
@@ -513,7 +504,6 @@ made in using `always_comb`, `always_ff`, and (less commonly) `always_latch`
 keywords.
 
 Variables are preferred over nets for most digital logic for 2 reasons:
-
 - Only 0 or 1 drivers allowed, so an accidental multi-driving is caught by
   a compile time error.
 - Simulator performance (dependent on implemetation).
@@ -523,13 +513,11 @@ When `` `default_nettype none`` is used, all signals must be declared, thus
 forcing the author to consider whether they mean a variable or a net.
 
 See also:
-
 - **inout_with_tri** - Useful companion rule.
 - **input_with_var** - Useful companion rule.
 - **output_with_var** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.5 Nets and variables
 - 22.8 default nettype
 
@@ -611,14 +599,12 @@ Note: Comparison of 4-state variables against 2-state constants/enums *is*
 appropriate, e.g. `logic a; a = (m == RED);`.
 
 See also:
-
 - **localparam_explicit_type** - Useful companion rule.
 - **localparam_type_twostate** - Useful companion rule.
 - **parameter_explicit_type** - Useful companion rule.
 - **parameter_type_twostate** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.8 Variable declarations
 - 6.11 Integer data types
 - 6.19 Enumerations
@@ -708,7 +694,6 @@ constructs in the same block, which can be confusing and should be avoided.
 Use of the legacy keyword can be detected with the rule **legacy_always**.
 
 See also:
-
 - **case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
 - **legacy_always** - Useful companion rule.
@@ -717,7 +702,6 @@ See also:
 - **sequential_block_in_always_latch** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 12.5 Case statement
 
 
@@ -794,7 +778,6 @@ constructs in the same block, which can be confusing and should be avoided.
 Use of the legacy keyword can be detected with the rule **legacy_always**.
 
 See also:
-
 - **explicit_case_default** - Useful companion rule.
 - **legacy_always** - Useful companion rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
@@ -802,7 +785,6 @@ See also:
 - **sequential_block_in_always_latch** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 12.4 Conditional if-else statement
 
 
@@ -846,11 +828,9 @@ built-in system of the same name (except of the leading `$`) which may lead
 to inconsistent results between tools.
 
 See also:
-
 - **function_with_automatic** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 13.7 Task and function names
 - 20 Utility system tasks and system functions
 - 23.8.1 Task and function name resolution
@@ -960,11 +940,9 @@ function is allocated dynamically for each concurrent function call.
 This behavior can be accurately inferred in synthesis.
 
 See also:
-
 - **function_same_as_system_function** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 13.4.2 Static and automatic functions
 
 
@@ -1014,7 +992,6 @@ loop generate constructs.
 That is, using syntax like `genvar i; for (i=0; ...)`.
 However, several examples of declarations inside loop generate constructs are
 present in other areas of the LRM like `for (genvar i=0; ...`:
-
 - Clause 11.12 Let construct, example d, page 295.
 - Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
 - Clause 20.11 Elaboration system tasks, page 607.
@@ -1027,7 +1004,6 @@ This interpretation matches C99 (ISO/IEC 9899:1999), while a requirement for
 the genvar to be declared outside would match ANSI C (ISO/IEC 9899:1990).
 This rule checks that genvars are declared in a C99-like style so that the
 identifier is declared beside its use which has several advantages:
-
 - The purpose of the genvar is immediately clear, e.g. it is easy to read
   that the `i` in `for (genvar i=0; i < N_BITS; i++) ...` refers to a bit
   index.
@@ -1049,11 +1025,9 @@ not support both ways of declaring genvars, so the related rule
 and checks that declarations must be separate from the generate loop syntax.
 
 See also:
-
 - **genvar_declaration_out_loop** - Opposite reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 27.4 Loop generate constructs
 
 
@@ -1103,7 +1077,6 @@ loop generate constructs.
 That is, using syntax like `genvar i; for (i=0; ...)`.
 However, several examples of declarations inside loop generate constructs are
 present in other areas of the LRM like `for (genvar i=0; ...`:
-
 - Clause 11.12 Let construct, example d, page 295.
 - Clause 16.14.6.1 Arguments to procedural concurrent assertions, page 464.
 - Clause 20.11 Elaboration system tasks, page 607.
@@ -1117,11 +1090,9 @@ C99-like declarations inside loop generate constructs can lead to code which is
 easier to read and review.
 
 See also:
-
 - **genvar_declaration_in_loop** - Opposite reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 27.4 Loop generate constructs
 
 
@@ -1162,7 +1133,6 @@ tri-state net, rather than the default nettype.
 The rules for determining port kind, datatype, and direction are specified in
 IEEE1800-2017 Clause 23.2.2.3 and facilitate various shorthand notations which
 are backwards compatible with the semantics of Verilog (IEEE1364-1995):
-
 - `inout a` -> `inout tri logic a` The implicit datatype is `logic` and the
   default nettype is `tri` (without overriding via the `` `default_nettype ``
   compiler directive).
@@ -1188,14 +1158,12 @@ In order to describe the intended bi-directional behavior, `inout` ports must
 be declared with an explicit `tri` datakind.
 
 See also:
-
 - **default_nettype_none** - Useful companion rule.
 - **input_with_var** - Suggested companion rule.
 - **output_with_var** - Suggested companion rule.
 - **prefix_inout** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.5 Nets and variables
 - 6.6 Net types
 - 22.8 default nettype
@@ -1239,7 +1207,6 @@ variable, rather than the default nettype.
 The rules for determining port kind, datatype, and direction are specified in
 IEEE1800-2017 Clause 23.2.2.3 and facilitate various shorthand notations which
 are backwards compatible with the semantics of Verilog (IEEE1364-1995):
-
 - `input a` -> `input tri logic a` The implicit datatype is `logic` and the
   default nettype is `tri` (without overriding via the `` `default_nettype ``
   compiler directive).
@@ -1266,14 +1233,12 @@ check that the input is not driven from within the module (and if so, emit an
 error).
 
 See also:
-
 - **default_nettype_none** - Useful companion rule.
 - **inout_with_tri** - Suggested companion rule.
 - **output_with_var** - Suggested companion rule.
 - **prefix_input** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.5 Nets and variables
 - 6.6 Net types
 - 22.8 default nettype
@@ -1340,14 +1305,12 @@ This is often undesirable for synthesizable digital designs, so this rule
 requires that each interface port includes a modport identifier.
 
 See also:
-
 - **inout_with_tri** - Useful companion rule.
 - **input_with_var** - Useful companion rule.
 - **non_ansi_module** - Useful companion rule.
 - **output_with_var** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 25.4 Ports in interfaces
 - 25.5 Modports
 
@@ -1385,7 +1348,6 @@ endmodule
 
 In Verilog (IEEE1364), there are two language constructs which can be used to
 model combinatorial logic:
-
 1. Continuous assignment to `wire` signals is specified with the `assign`
   keyword.
 2. `reg` signals are assigned to with an `always` block, which is evaluated
@@ -1399,7 +1361,6 @@ but additional keywords (`always_comb`, `always_ff`, and `always_latch`) should
 be used to clarify intent of digital designs.
 The `always_*` keywords have slightly different semantics which are beneficial
 for synthesizable designs:
-
 1. `always_*` processes require compiler checks that any signals driven on the
   LHS are not driven by any other process, i.e. `always_*` cannot infer
   multi-driven or tri-state logic.
@@ -1425,14 +1386,12 @@ synthesizable design code, but on verification code use
 **level_sensitive_always** instead.
 
 See also:
-
 - **level_sensitive_always** - Alternative rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 - **sequential_block_in_always_if** - Useful companion rule.
 - **sequential_block_in_always_latch** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 9.2.2 Always procedures
 - 9.5 Process execution threads
 
@@ -1484,11 +1443,9 @@ NOTE: Some non-compliant tools may require the use of these keywords, which
 provides an argument against this rule.
 
 See also:
-
 - **keyword_required_generate** - Opposite reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 27.3 Generate construct syntax
 
 
@@ -1569,14 +1526,12 @@ condition, the synthesis tool may produce a netlist with the invalid assumption
 that the condition cannot be met.
 
 See also:
-
 - **case_default** - Useful companion rule.
 - **explicit_case_default** - Useful companion rule.
 - **keyword_forbidden_unique** - Useful companion rule.
 - **keyword_forbidden_unique0** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 12.4 Conditional if-else statement
 - 12.5 Case statement
 
@@ -1668,14 +1623,12 @@ condition, the synthesis tool may produce a netlist with the invalid assumption
 that the conditions can be safely evaluated in parallel.
 
 See also:
-
 - **case_default** - Useful companion rule.
 - **explicit_case_default** - Useful companion rule.
 - **keyword_forbidden_priority** - Useful companion rule.
 - **keyword_forbidden_unique0** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 12.4 Conditional if-else statement
 - 12.5 Case statement
 
@@ -1766,14 +1719,12 @@ condition, the synthesis tool may produce a netlist with the invalid assumption
 that the conditions can be safely evaluated in parallel.
 
 See also:
-
 - **case_default** - Useful companion rule.
 - **explicit_case_default** - Useful companion rule.
 - **keyword_forbidden_priority** - Useful companion rule.
 - **keyword_forbidden_unique** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 12.4 Conditional if-else statement
 - 12.5 Case statement
 
@@ -1814,24 +1765,24 @@ In SystemVerilog, there are additional keywords, such as `logic` and `tri`
 with more refined semantics to better express the programmer's intent.
 
 The LRM covers the use of `wire`:
+
 > The net types `wire` and `tri` shall be identical in their syntax and
 > functions; two names are provided so that the name of a net can indicate the
 > purpose of the net in that model.
 
 The LRM covers the use of `reg`:
+
 > The keyword `reg` does not always accurately describe user intent, as it
 > could be perceived to imply a hardware register. The keyword `logic` is a
 > more descriptive term. `logic` and `reg` denote the same type.
 
 See also:
-
 - **default_nettype** - Useful companion rule.
 - **inout_with_tri** - Useful companion rule.
 - **input_with_var** - Useful companion rule.
 - **output_with_var** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.6.1 Wire and tri nets
 - 6.11.2 2-state (two-value) and 4-state (four-value) data types
 
@@ -1911,11 +1862,9 @@ NOTE: The visual noise introduced by these keywords provides an argument
 against this rule.
 
 See also:
-
 - **keyword_forbidden_generate** - Opposite reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 27.3 Generate construct syntax
 
 
@@ -1962,7 +1911,6 @@ endmodule
 
 In Verilog (IEEE1364), there are two language constructs which can be used to
 model combinatorial logic:
-
 1. Continuous assignment to `wire` signals is specified with the `assign`
   keyword.
 2. `reg` signals are assigned to with an `always` block, which is evaluated
@@ -1976,7 +1924,6 @@ but additional keywords (`always_comb`, `always_ff`, and `always_latch`) should
 be used to clarify intent of digital designs.
 The `always_*` keywords have slightly different semantics which are beneficial
 for synthesizable designs:
-
 1. `always_*` processes require compiler checks that any signals driven on the
   LHS are not driven by any other process, i.e. `always_*` cannot infer
   multi-driven or tri-state logic.
@@ -1996,11 +1943,9 @@ It is appropriate to use **keyword_forbidden_always** on synthesizable design
 code, but on verification code use **level_sensitive_always** instead.
 
 See also:
-
 - **keyword_forbidden_always** - Alternative rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 9.2.2 Always procedures
 - 9.5 Process execution threads
 
@@ -2056,13 +2001,11 @@ paper here:
 <https://github.com/DaveMcEwan/dmpvl/tree/master/prs/paper/ParameterDatatypes>
 
 See also:
-
 - **localparam_type_twostate** - Useful companion rule.
 - **parameter_explicit_type** - Useful companion rule.
 - **parameter_type_twostate** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.3 Value set
 - 6.11 Integer data types
 - 6.20.2 Value parameters
@@ -2187,13 +2130,11 @@ If wildcard equality operators are used with 4-state constants in your code,
 this rule should be considered on a case-by-case basis.
 
 See also:
-
 - **localparam_explicit_type** - Useful companion rule.
 - **parameter_explicit_type** - Useful companion rule.
 - **parameter_type_twostate** - Useful companion rule, equivalent reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.8 Variable declarations
 - 6.11 Integer data types
 - 7.2.1 Packed structures
@@ -2201,7 +2142,6 @@ The most relevant clauses of IEEE1800-2017 are:
 - 11.4.6 Wildcard equality operators
 
 NOTE: The reasoning behind this rule invites the use of other rules:
-
 1. Check that members of a packed structure definition are either all 2-state
   or all 4-state.
 2. Check for the use of case equality operators.
@@ -2251,11 +2191,9 @@ avoid a common class of coding mistake where `i` is erroneously used outside
 the loop.
 
 See also:
-
 - **function_with_automatic** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 12.7 Loop statements
 
 
@@ -2314,12 +2252,10 @@ maintainer attempts to add further statements to the loop, but accidentally
 writes something different.
 
 See also:
-
 - **multiline_if_begin** - Useful companion rule.
 - **style_indent** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 12.7 Loop statements
 
 
@@ -2429,12 +2365,10 @@ maintainer attempts to add further statements to the conditional block, but
 accidentally writes something different.
 
 See also:
-
 - **multiline_for_begin** - Useful companion rule.
 - **style_indent** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 12.4 Conditional if-else statement
 
 
@@ -2489,7 +2423,6 @@ endmodule
 ### Explanation
 
 There are two ways to declare a module header in SystemVerilog:
-
 1. ANSI style - newer, neater, more succinct, compatible with IEEE1364-2001.
 2. non-ANSI style - additionally compatible with older Verilog (IEEE1364-1995).
 
@@ -2504,11 +2437,9 @@ essential attributes may be forgotten.
 This rule requires that module headers are declared using the ANSI style.
 
 See also:
-
 - No related rules.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 23.2 Module definitions
 
 
@@ -2554,11 +2485,9 @@ assignments is written by Clifford E Cummings and presented at SNUG-2000,
 "Nonblocking Assignments in Verilog Synthesis, Coding Styles that Kill".
 
 See also:
-
 - **blocking_assignment_in_always_ff** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 4.9.3 Blocking assignment
 - 4.9.4 Non-blocking assignment
 - 9.2.2.2 Combinational logic `always_comb` procedure
@@ -2604,7 +2533,6 @@ variable, rather than the default nettype or implict datakind.
 The rules for determining port kind, datatype, and direction are specified in
 IEEE1800-2017 Clause 23.2.2.3 and facilitate various shorthand notations which
 are backwards compatible with the semantics of Verilog (IEEE1364-1995):
-
 - `output a` -> `output tri logic a` The implicit datatype is `logic` and the
   default nettype is `tri` (without overriding via the `` `default_nettype ``
   compiler directive).
@@ -2632,14 +2560,12 @@ check that the output is only driven from within the module (otherwise, emit an
 error).
 
 See also:
-
 - **default_nettype_none** - Useful companion rule.
 - **inout_with_tri** - Suggested companion rule.
 - **output_with_var** - Suggested companion rule.
 - **prefix_output** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.5 Nets and variables
 - 6.6 Net types
 - 22.8 default nettype
@@ -2715,7 +2641,6 @@ The example above uses a system elaboration task to explicitly force an
 elaboration error, but there are several ways to implictly cause elaboration
 errors.
 Relying on the type's default value can cause problems for two reasons:
-
 1. Some tools do not support this syntax.
 2. Simply omitting the default value is unclear about the author's intention,
   particularly when the type is also omitted.
@@ -2723,12 +2648,10 @@ Relying on the type's default value can cause problems for two reasons:
 This rule checks that all parameter ports have an explicit default value.
 
 See also:
-
 - **parameter_explicit_type** - Useful companion rule.
 - **parameter_type_twostate** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.20.1 Parameter declaration syntax
 - 6.20.2 Value parameters
 - 23.2.3 Parameterized modules
@@ -2796,13 +2719,11 @@ paper here:
 <https://github.com/DaveMcEwan/dmpvl/tree/master/prs/paper/ParameterDatatypes>
 
 See also:
-
 - **localparam_explicit_type** - Useful companion rule.
 - **localparam_type_twostate** - Useful companion rule.
 - **parameter_type_twostate** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.3 Value set
 - 6.11 Integer data types
 - 6.20.2 Value parameters
@@ -2878,11 +2799,9 @@ This rule encourages the author to consider that the constant may not be
 overridden and convey that explictly.
 
 See also:
-
 - **parameter_in_package**
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.20.4 Local parameters (localparam)
 - 27 Generate constructs, particularly 27.2 Overview.
 
@@ -2922,11 +2841,9 @@ This rule encourages the author to consider that the constant may not be
 overridden and convey that explictly.
 
 See also:
-
 - **parameter_in_generate**
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.20.4 Local parameters (localparam)
 - 26 Packages
 
@@ -2988,13 +2905,11 @@ The reasoning behind this rule is equivalent to that of
 Please see the explanation for **localparam_type_twostate**.
 
 See also:
-
 - **localparam_explicit_type** - Useful companion rule.
 - **localparam_type_twostate** - Useful companion rule, equivalent reasoning.
 - **parameter_explicit_type** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 6.8 Variable declarations
 - 6.11 Integer data types
 - 7.2.1 Packed structures
@@ -3083,7 +2998,6 @@ endmodule
 ### Explanation
 
 This rule has two purposes:
-
 1. Prevent mismatches between simulation and synthesis.
 2. Avoid unnecessarily restricting the simulator's scheduler.
 
@@ -3118,13 +3032,11 @@ dependencies.
 That can lead to a mismatch between simulation and synthesis.
 
 See also:
-
 - **style_indent** - Useful companion rule.
 - **sequential_block_in_always_ff** - Similar rule, different purpose.
 - **sequential_block_in_always_latch** - Similar rule, different purpose.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 4.6 Determinisim
 - 9.2.2.2 Combinational logic always_comb procedure
 - 9.3.1 Sequential blocks
@@ -3294,7 +3206,6 @@ This is the expected form for most signals.
 ```
 
 See also:
-
 - **default_nettype_none** - Useful companion rule.
 - **explicit_case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
@@ -3303,7 +3214,6 @@ See also:
 - **sequential_block_in_always_latch** - Similar rule, different purpose.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 4.6 Determinisim
 - 9.2.2.4 Sequential logic always_ff procedure
 - 9.3.1 Sequential blocks
@@ -3398,7 +3308,6 @@ simple mistakes, provides exclusivity properties by construction, and avoids
 restricting simulator scheduling decisions.
 
 See also:
-
 - **default_nettype_none** - Useful companion rule.
 - **explicit_case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
@@ -3407,7 +3316,6 @@ See also:
 - **sequential_block_in_always_ff** - Similar rule, different purpose.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 4.6 Determinisim
 - 49.2.2.3 Latched logic always_latch procedure
 - 49.3.1 Sequential blocks
@@ -3584,7 +3492,6 @@ IEEE1800-2017 clause 27.6.
 
 These implicit names are not intuitive for human readers, so this rule is
 designed to check three things:
-
 1. The generate block uses `begin`/`end` delimiters.
 2. The generate block has been given a label, e.g. `begin: mylabel`.
 3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
@@ -3596,13 +3503,11 @@ For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
 with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
 
 See also:
-
 - **generate_for_with_label** - Similar reasoning, useful companion rule.
 - **generate_if_with_label** - Equivalent reasoning, useful companion rule.
 - **prefix_instance** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 27.5 Conditional generate constructs
 - 27.6 External names for unnamed generate blocks
 
@@ -3671,7 +3576,6 @@ IEEE1800-2017 clause 27.6.
 
 These implicit names are not intuitive for human readers, so this rule is
 designed to check three things:
-
 1. The generate block uses `begin`/`end` delimiters.
 2. The generate block has been given a label, e.g. `begin: mylabel`.
 3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
@@ -3683,13 +3587,11 @@ For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
 with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
 
 See also:
-
 - **generate_case_with_label** - Similar reasoning, useful companion rule.
 - **generate_if_with_label** - Similar reasoning, useful companion rule.
 - **prefix_instance** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 27.4 Loop generate constructs
 - 27.6 External names for unnamed generate blocks
 
@@ -3848,7 +3750,6 @@ IEEE1800-2017 clause 27.6.
 
 These implicit names are not intuitive for human readers, so this rule is
 designed to check three things:
-
 1. The generate block uses `begin`/`end` delimiters.
 2. The generate block has been given a label, e.g. `begin: mylabel`.
 3. The label has an appropriate prefix, e.g. `begin: l_mylabel` starts with
@@ -3860,13 +3761,11 @@ For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
 with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
 
 See also:
-
 - **generate_case_with_label** - Equivalent reasoning, useful companion rule.
 - **generate_for_with_label** - Similar reasoning, useful companion rule.
 - **prefix_instance** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - 27.5 Conditional generate constructs
 - 27.6 External names for unnamed generate blocks
 
@@ -3908,7 +3807,6 @@ should start with a lowercase letter, and packages should start with an
 uppercase letter.
 
 See also:
-
 - **lowercamelcase_module** - Suggested companion rule.
 - **lowercamelcase_package** - Potential companion rule.
 - **prefix_interface** - Alternative rule.
@@ -3954,7 +3852,6 @@ should start with a lowercase letter, and packages should start with an
 uppercase letter.
 
 See also:
-
 - **lowercamelcase_interface** - Suggested companion rule.
 - **lowercamelcase_package** - Potential companion rule.
 - **prefix_module** - Alternative rule.
@@ -4000,7 +3897,6 @@ should start with an uppercase letter, and packages should start with an
 lowercase letter.
 
 See also:
-
 - **lowercamelcase_interface** - Potential companion rule.
 - **lowercamelcase_module** - Potential companion rule.
 - **prefix_package** - Alternative rule.
@@ -4070,7 +3966,6 @@ This rule requires the prefix `b_` (configurable) on bi-directional signals,
 i.e, ports declared with direction `inout`, which is also the default direction.
 
 See also:
-
 - **prefix_input** - Suggested companion rule.
 - **prefix_instance** - Suggested companion rule.
 - **prefix_output** - Suggested companion rule.
@@ -4120,7 +4015,6 @@ schematic - they're not essential, but they speed up comprehension.
 This rule requires the prefix `i_` (configurable) on `input` signals.
 
 See also:
-
 - **prefix_inout** - Suggested companion rule.
 - **prefix_instance** - Suggested companion rule.
 - **prefix_output** - Suggested companion rule.
@@ -4166,7 +4060,6 @@ reference designator of an inseparable assembly or integrated-circuit package,
 as standardized in IEEE315-1975.
 
 See also:
-
 - **generate_case_with_label** - Suggested companion rule.
 - **generate_for_with_label** - Suggested companion rule.
 - **generate_if_with_label** - Suggested companion rule.
@@ -4211,7 +4104,6 @@ This rule requires that interface identifiers are declared with a prefix of
 module and interface instances.
 
 See also:
-
 - **lowercamelcase_interface** - Alternative rule.
 - **prefix_module** - Potential companion rule.
 - **prefix_package** - Suggested companion rule.
@@ -4254,7 +4146,6 @@ This rule requires that module identifiers are declared with a prefix of `mod_`
 module and interface instances.
 
 See also:
-
 - **lowercamelcase_module** - Alternative rule.
 - **prefix_interface** - Suggested companion rule.
 - **prefix_package** - Suggested companion rule.
@@ -4305,7 +4196,6 @@ schematic - they're not essential, but they speed up comprehension.
 This rule requires the prefix `o_` (configurable) on `output` signals.
 
 See also:
-
 - **prefix_inout** - Suggested companion rule.
 - **prefix_input** - Suggested companion rule.
 - **prefix_instance** - Suggested companion rule.
@@ -4348,7 +4238,6 @@ package declaration per file, and a package `pkg_foo` must be contained in a
 file called `pkg_foo.sv`.", this aids a reader in browsing a source directory.
 
 See also:
-
 - **lowercamelcase_package** - Alternative rule.
 - **prefix_interface** - Suggested companion rule.
 - **prefix_module** - Potential companion rule.
@@ -4430,7 +4319,6 @@ Immediate assertions, including deferred immediate assertions, must not have
 identifiers matching the regex configured via the `re_forbidden_assert` option.
 
 See also:
-
 - **re_required_assert**
 
 
@@ -4489,7 +4377,6 @@ Concurrent assertions must not have identifiers matching the regex configured
 via the `re_forbidden_assert_property` option.
 
 See also:
-
 - **re_required_assert_property**
 
 
@@ -4524,7 +4411,6 @@ Checkers must not have identifiers matching the regex configured via the
 `re_forbidden_checker` option.
 
 See also:
-
 - **re_required_checker**
 
 
@@ -4559,7 +4445,6 @@ Classes must not have identifiers matching the regex configured via the
 `re_forbidden_class` option.
 
 See also:
-
 - **re_required_class**
 
 
@@ -4598,7 +4483,6 @@ Functions must not have identifiers matching the regex configured via the
 `re_forbidden_function` option.
 
 See also:
-
 - **re_required_function**
 - **function_same_as_system_function**
 
@@ -4704,7 +4588,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_required_generateblock**
 - **generate_case_with_label**
 - **generate_for_with_label**
@@ -4762,7 +4645,6 @@ Genvars must not have identifiers matching the regex configured via the
 `re_forbidden_genvar` option.
 
 See also:
-
 - **re_required_genvar**
 
 
@@ -4805,7 +4687,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_required_package**
 - **prefix_instance**
 
@@ -4845,7 +4726,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_required_interface**
 - **prefix_interface**
 - **uppercamelcase_interface**
@@ -4885,7 +4765,6 @@ Local parameters must not have identifiers matching the regex configured via the
 `re_forbidden_localparam` option.
 
 See also:
-
 - **re_required_localparam**
 - **localparam_explicit_type**
 - **localparam_type_twostate**
@@ -4931,7 +4810,6 @@ Modports must not have identifiers matching the regex configured via the
 `re_forbidden_modport` option.
 
 See also:
-
 - **re_required_modport**
 - **interface_port_with_modport**
 
@@ -4971,7 +4849,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_required_module_ansi**
 - **re_forbidden_module_nonansi**
 - **re_required_module_nonansi**
@@ -5024,7 +4901,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_required_module_nonansi**
 - **re_forbidden_module_ansi**
 - **re_required_module_ansi**
@@ -5069,7 +4945,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_required_package**
 - **prefix_package**
 - **uppercamelcase_package**
@@ -5111,7 +4986,6 @@ Parameters must not have identifiers matching the regex configured via the
 `re_forbidden_parameter` option.
 
 See also:
-
 - **re_required_parameter**
 - **localparam_explicit_type**
 - **localparam_type_twostate**
@@ -5177,7 +5051,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_required_port_inout**
 - **prefix_inout**
 
@@ -5239,7 +5112,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_required_port_input**
 - **prefix_input**
 
@@ -5297,7 +5169,6 @@ Interface ports must not have identifiers matching the regex configured via the
 `re_forbidden_port_interface` option.
 
 See also:
-
 - **re_required_port_interface**
 
 
@@ -5358,7 +5229,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_required_port_output**
 - **prefix_output**
 
@@ -5398,7 +5268,6 @@ Reference ports must not have identifiers matching the regex configured via the
 `re_forbidden_port_ref` option.
 
 See also:
-
 - **re_required_port_ref**
 
 
@@ -5433,7 +5302,6 @@ Programs must not have identifiers matching the regex configured via the
 `re_forbidden_program` option.
 
 See also:
-
 - **re_required_program**
 
 
@@ -5474,7 +5342,6 @@ Properties must not have identifiers matching the regex configured via the
 `re_forbidden_property` option.
 
 See also:
-
 - **re_required_property**
 
 
@@ -5515,7 +5382,6 @@ Sequences must not have identifiers matching the regex configured via the
 `re_forbidden_sequence` option.
 
 See also:
-
 - **re_required_sequence**
 
 
@@ -5554,7 +5420,6 @@ Tasks must not have identifiers matching the regex configured via the
 `re_forbidden_task` option.
 
 See also:
-
 - **re_required_task**
 
 
@@ -5591,7 +5456,6 @@ Class-scoped variables must not have identifiers matching the regex configured
 via the `re_forbidden_var_class` option.
 
 See also:
-
 - **re_required_var_class**
 
 
@@ -5632,7 +5496,6 @@ Method-scoped variables must not have identifiers matching the regex configured
 via the `re_forbidden_var_classmethod` option.
 
 See also:
-
 - **re_required_var_classmethod**
 - **re_required_var_class**
 - **re_forbidden_var_class**
@@ -5713,7 +5576,6 @@ Immediate assertions, including deferred immediate assertions, must have
 identifiers matching the regex configured via the `re_required_assert` option.
 
 See also:
-
 - **re_forbidden_assert**
 
 
@@ -5772,7 +5634,6 @@ Concurrent assertions must have identifiers matching the regex configured via
 the `re_required_assert_property` option.
 
 See also:
-
 - **re_forbidden_assert_property**
 
 
@@ -5807,7 +5668,6 @@ Checkers must have identifiers matching the regex configured via the
 `re_required_checker` option.
 
 See also:
-
 - **re_forbidden_checker**
 
 
@@ -5842,7 +5702,6 @@ Classes must have identifiers matching the regex configured via the
 `re_required_class` option.
 
 See also:
-
 - **re_forbidden_class**
 
 
@@ -5881,7 +5740,6 @@ Functions must have identifiers matching the regex configured via the
 `re_required_function` option.
 
 See also:
-
 - **re_forbidden_function**
 - **function_same_as_system_function**
 
@@ -5967,7 +5825,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_forbidden_generateblock**
 - **generate_case_with_label**
 - **generate_for_with_label**
@@ -6015,7 +5872,6 @@ Genvars must have identifiers matching the regex configured via the
 `re_required_genvar` option.
 
 See also:
-
 - **re_forbidden_genvar**
 
 
@@ -6058,7 +5914,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_forbidden_instance**
 - **prefix_instance**
 
@@ -6098,7 +5953,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_forbidden_interface**
 - **prefix_interface**
 - **uppercamelcase_interface**
@@ -6138,7 +5992,6 @@ Local parameters must have identifiers matching the regex configured via the
 `re_required_localparam` option.
 
 See also:
-
 - **re_forbidden_localparam**
 - **localparam_explicit_type**
 - **localparam_type_twostate**
@@ -6184,7 +6037,6 @@ Modports must have identifiers matching the regex configured via the
 `re_required_modport` option.
 
 See also:
-
 - **re_forbidden_modport**
 - **interface_port_with_modport**
 
@@ -6224,7 +6076,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_forbidden_module_ansi**
 - **re_forbidden_module_nonansi**
 - **re_required_module_nonansi**
@@ -6277,7 +6128,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_forbidden_module_nonansi**
 - **re_forbidden_module_ansi**
 - **re_required_module_ansi**
@@ -6322,7 +6172,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_forbidden_package**
 - **prefix_package**
 - **uppercamelcase_package**
@@ -6364,7 +6213,6 @@ Parameters must have identifiers matching the regex configured via the
 `re_required_parameter` option.
 
 See also:
-
 - **re_forbidden_parameter**
 - **localparam_explicit_type**
 - **localparam_type_twostate**
@@ -6424,7 +6272,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_forbidden_inout**
 - **prefix_inout**
 
@@ -6480,7 +6327,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_forbidden_input**
 - **prefix_input**
 
@@ -6532,7 +6378,6 @@ Interface ports must have identifiers matching the regex configured via the
 `re_required_port_interface` option.
 
 See also:
-
 - **re_forbidden_interface**
 
 
@@ -6587,7 +6432,6 @@ NOTE: For performance reasons, particularly within text-editor integrations
 simpler naming rules are not sufficient.
 
 See also:
-
 - **re_forbidden_output**
 - **prefix_output**
 
@@ -6639,7 +6483,6 @@ Reference ports must have identifiers matching the regex configured via the
 `re_required_port_ref` option.
 
 See also:
-
 - **re_forbidden_ref**
 
 
@@ -6674,7 +6517,6 @@ Programs must have identifiers matching the regex configured via the
 `re_required_program` option.
 
 See also:
-
 - **re_forbidden_program**
 
 
@@ -6715,7 +6557,6 @@ Properties must have identifiers matching the regex configured via the
 `re_required_property` option.
 
 See also:
-
 - **re_forbidden_property**
 
 
@@ -6756,7 +6597,6 @@ Sequences must have identifiers matching the regex configured via the
 `re_required_sequence` option.
 
 See also:
-
 - **re_forbidden_sequence**
 
 
@@ -6795,7 +6635,6 @@ Tasks must have identifiers matching the regex configured via the
 `re_required_task` option.
 
 See also:
-
 - **re_forbidden_task**
 
 
@@ -6832,7 +6671,6 @@ Class-scoped variables must have identifiers matching the regex configured via
 the `re_required_var_class` option.
 
 See also:
-
 - **re_forbidden_var_class**
 
 
@@ -6873,7 +6711,6 @@ Method-scoped variables must have identifiers matching the regex configured via
 the `re_required_var_classmethod` option.
 
 See also:
-
 - **re_forbidden_var_classmethod**
 - **re_forbidden_var_class**
 - **re_required_var_class**
@@ -6916,7 +6753,6 @@ should start with an uppercase letter, and packages should start with an
 lowercase letter.
 
 See also:
-
 - **lowercamelcase_interface** - Mutually exclusive alternative rule.
 - **lowercamelcase_module** - Potential companion rule.
 - **lowercamelcase_package** - Suggested companion rule.
@@ -6962,7 +6798,6 @@ should start with an uppercase letter, and packages should start with an
 lowercase letter.
 
 See also:
-
 - **lowercamelcase_interface** - Potential companion rule.
 - **lowercamelcase_module** - Mutually exclusive alternative rule.
 - **lowercamelcase_package** - Suggested companion rule.
@@ -7008,7 +6843,6 @@ should start with a lowercase letter, and packages should start with an
 uppercase letter.
 
 See also:
-
 - **lowercamelcase_interface** - Suggested companion rule.
 - **lowercamelcase_module** - Suggested companion rule.
 - **lowercamelcase_package** - Mutually exclusive alternative rule.
@@ -7199,7 +7033,6 @@ endmodule
 ```
 
 See also:
-
 - **style_indent** - Suggested companion rule.
 
 
@@ -7252,7 +7085,6 @@ This rule simply checks that any newline (outside of string literals) is
 followed by an integer multiple of 2 (configurable) space characters.
 
 See also:
-
 - **tab_character** - Suggested companion rule.
 
 
@@ -7304,7 +7136,6 @@ should be exactly 1 space between the keyword and the following identifier,
 e.g. `return foo;`.
 
 See also:
-
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
@@ -7384,7 +7215,6 @@ the following symbol, e.g.
 , or `super.foo`.
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
@@ -7453,7 +7283,6 @@ endmodule
 ```
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.
@@ -7688,7 +7517,6 @@ followed by a single space, e.g. `if (foo)`, `always_ff @(posedge clk)`,
 or `typedef struct packed {`.
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.
@@ -7787,7 +7615,6 @@ assign // You could use `always_comb` instead.
 ```
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.
@@ -7872,7 +7699,6 @@ These keywords are used to declare the datatype of signals/variables (like
 `logic foo`), and cast expressions (like `int'(foo)`).
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.
@@ -7963,7 +7789,6 @@ end // }}} A closing fold marker.
 ```
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.
@@ -8063,7 +7888,6 @@ end
 ```
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.
@@ -8136,7 +7960,6 @@ endcase
 ```
 
 See also:
-
 - **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.
@@ -8212,7 +8035,6 @@ In relation to Annex A of IEEE1800-2017, this rule applies to the specific
 variants of `binary_operator` specified in Table 11-3.
 
 See also:
-
 - **style_operator_boolean** - Suggested companion rule.
 - **style_operator_integer** - Suggested companion rule.
 - **style_operator_unary** - Suggested companion rule.
@@ -8285,7 +8107,6 @@ In relation to Annex A of IEEE1800-2017, this rule applies to specific variants
 of `binary_operator` and `binary_module_path_operator`.
 
 See also:
-
 - **style_operator_arithmetic** - Suggested companion rule.
 - **style_operator_integer** - Suggested companion rule.
 - **style_operator_unary** - Suggested companion rule.
@@ -8357,7 +8178,6 @@ In relation to Annex A of IEEE1800-2017, this rule applies to specific variants
 of `binary_operator` and `binary_module_path_operator`.
 
 See also:
-
 - **style_operator_arithmetic** - Suggested companion rule.
 - **style_operator_boolean** - Suggested companion rule.
 - **style_operator_unary** - Suggested companion rule.
@@ -8423,7 +8243,6 @@ In relation to Annex A of IEEE1800-2017, this rule applies to all variants of
 `unary_operator`, `unary_module_path_operator`, and `inc_or_dec_operator`.
 
 See also:
-
 - **style_operator_arithmetic** - Suggested companion rule.
 - **style_operator_boolean** - Suggested companion rule.
 - **style_operator_integer** - Suggested companion rule.
@@ -8471,7 +8290,6 @@ not immediately preceeded by a space character.
 You can
 
 See also:
-
 - **style_indent** - Suggested companion rule.
 - **tab_character** - Suggested companion rule.
 - Vim: <https://vimtricks.com/p/vim-remove-trailing-whitespace/>
@@ -8519,11 +8337,9 @@ in UTF-8.
 See `man iconv` for details on how to convert legacy encodings to UTF-8.
 
 See also:
-
 - **style_indent** - Suggested companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-
 - Not applicable.
 
 
