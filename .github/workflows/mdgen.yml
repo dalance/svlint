@@ -42,13 +42,13 @@ jobs:
           (git diff --quiet MANUAL.md && \
             echo "manual_md=not_changed" >> $GITHUB_OUTPUT) || \
             echo "manual_md=is_changed" >> $GITHUB_OUTPUT
-          sed \
-            -e 's/^## Rule: /\\clearpage\n## Rule: /' \
-            -e 's/^## Ruleset: /\\clearpage\n## Ruleset: /' \
-            -e '/^### Hint$/{$!{N;N;s/### Hint\n\n/Hint\n: /;t;P;D}}' \
-            -e '/^### Reason$/{$!{N;N;s/### Reason\n\n/Reason\n: /;t;P;D}}' \
-            MANUAL.md > MANUAL.intermediateTex.md
+          make MANUAL.intermediateTex.md
 
+      # If the manual has changed, check that pandoc can still convert it to
+      # PDF, used in the release workflow.
+      # The PDF generated in this workflow should not be commited.
+      # Developers can create local versions of the PDF manual by running
+      # `make MANUAL-dev`, or `make MANUAL-release`.
       - if: ${{ steps.mdgen.outputs.manual_md == 'is_changed' }}
         uses: docker://pandoc/extra:3.1
         with:
@@ -77,6 +77,7 @@ jobs:
         run: |
           rm -f BUILDENV
           rm -f *.intermediate*.*
+          rm -f MANUAL.pdf
 
       - uses: EndBug/add-and-commit@v9
         env:

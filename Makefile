@@ -46,8 +46,6 @@ PANDOC_FLAGS += --variable=papersize:a4
 # Minor tweaks for nicer formatting of PDF.
 #   - Begin each rule,ruleset description on a new page.
 #   - Compact form for rule's hint and reason.
-# NOTE: If you change these, be sure to reflect the changes in the release and
-# mdgen workflow files too.
 MANUAL.intermediateTex.md:
 	sed \
 		-e 's/^## Rule: /\\clearpage\n## Rule: /' \
@@ -56,7 +54,7 @@ MANUAL.intermediateTex.md:
 		-e '/^### Reason$$/{$$!{N;N;s/### Reason\n\n/Reason\n: /;t;P;D}}' \
 		MANUAL.md > $@
 
-# Convenience recipe for building non-release version of PDF manual.
+# Convenience recipe for building development version of PDF manual.
 # This is normally handled by the GitHub Action `.github/workflows/mdgen.yml`
 # which runs on pushes and pull requests, and does NOT use this recipe.
 .PHONY: MANUAL-dev

@@ -18,12 +18,7 @@ jobs:
           echo "DATE_ISO8601=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
       - name: Modify Markdown
         run: |
-          sed \
-            -e 's/^## Rule: /\\clearpage\n## Rule: /' \
-            -e 's/^## Ruleset: /\\clearpage\n## Ruleset: /' \
-            -e '/^### Hint$/{$!{N;N;s/### Hint\n\n/Hint\n: /;t;P;D}}' \
-            -e '/^### Reason$/{$!{N;N;s/### Reason\n\n/Reason\n: /;t;P;D}}' \
-            MANUAL.md > MANUAL.intermediateTex.md
+          make MANUAL.intermediateTex.md
       - uses: docker://pandoc/extra:3.1
         with:
           args: >-
