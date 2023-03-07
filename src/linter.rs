@@ -208,3 +208,24 @@ pub fn check_regex(
         RuleResult::Fail
     }
 }
+
+// Utility function used by rules `prefix_*`.
+pub fn check_prefix(
+    id: Option<RefNode>,
+    syntax_tree: &SyntaxTree,
+    prefix: &String,
+) -> RuleResult {
+    let loc: &Locate = match id {
+        Some(x) => unwrap_locate!(x),
+        _ => None,
+    }
+    .unwrap();
+
+    let is_prefixed: bool = syntax_tree.get_str(loc).unwrap().starts_with(prefix);
+
+    if is_prefixed {
+        RuleResult::Pass
+    } else {
+        RuleResult::Fail
+    }
+}
