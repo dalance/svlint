@@ -1,9 +1,11 @@
 use crate::config::ConfigOption;
 use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct DefaultNettypeNone;
+pub struct DefaultNettypeNone {
+    directed_nettype: Option<String>,
+}
 
 impl Rule for DefaultNettypeNone {
     fn check(
@@ -19,28 +21,27 @@ impl Rule for DefaultNettypeNone {
             }
         };
 
+        if let RefNode::DefaultNettypeCompilerDirective(x) = node {
+            let (_symbol, _keyword, default_nettype_value) = &x.nodes;
+            let default_nettype_value: String = syntax_tree.get_str_trim(default_nettype_value).unwrap().to_string();
+            self.directed_nettype = Some(default_nettype_value);
+        }
+
         match node {
-            RefNode::SourceText(x) => {
-                // get the top comments of source code
-                let (comments, _, _) = &x.nodes;
-
-                for comment in comments {
-                    let default_nettype = unwrap_node!(comment, DefaultNettypeCompilerDirective);
-                    match default_nettype {
-                        Some(RefNode::DefaultNettypeCompilerDirective(x)) => {
-                            let (_, _, x) = &x.nodes;
-                            let mut nettype = String::from("");
-                            syntax_tree.get_str_trim(x).map(|x| nettype.push_str(x));
-
-                            if nettype == "none" {
-                                return RuleResult::Pass;
-                            }
-                        }
-                        _ => (),
-                    }
+            RefNode::ModuleDeclaration(_) |
+            RefNode::UdpDeclaration(_) |
+            RefNode::InterfaceDeclaration(_) |
+            RefNode::InterfaceClassDeclaration(_) |
+            RefNode::ProgramDeclaration(_) |
+            RefNode::PackageDeclaration(_) |
+            RefNode::PackageItem(_) |
+            RefNode::BindDirective(_) |
+            RefNode::ConfigDeclaration(_) => {
+                if self.directed_nettype == Some(String::from("none")) {
+                    RuleResult::Pass
+                } else {
+                    RuleResult::Fail
                 }
-
-                RuleResult::Fail
             }
             _ => RuleResult::Pass,
         }
