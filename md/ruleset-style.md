@@ -266,6 +266,7 @@ rules.style_keyword_construct = true
 rules.style_keyword_datatype = false # Overly restrictive.
 rules.style_keyword_end = true
 rules.style_keyword_maybelabel = true
+rules.style_keyword_new = true
 rules.style_keyword_newline = true
 ```
 
