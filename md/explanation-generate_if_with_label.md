@@ -24,10 +24,10 @@ For example, `top.l_cpu_array[3].u_cpu.l_debugger.foo_q` provides the reader
 with more useful information than `top.genblk2[3].u_cpu.genblk5.foo_q`.
 
 See also:
-  - **generate_case_with_label** - Equivalent reasoning, useful companion rule.
-  - **generate_for_with_label** - Similar reasoning, useful companion rule.
-  - **prefix_instance** - Useful companion rule.
+- **generate_case_with_label** - Equivalent reasoning, useful companion rule.
+- **generate_for_with_label** - Similar reasoning, useful companion rule.
+- **prefix_instance** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 27.5 Conditional generate constructs
-  - 27.6 External names for unnamed generate blocks
+- 27.5 Conditional generate constructs
+- 27.6 External names for unnamed generate blocks

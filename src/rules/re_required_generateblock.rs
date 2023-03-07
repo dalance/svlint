@@ -56,7 +56,7 @@ impl Rule for ReRequiredGenerateblock {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a generate block identifier matching regex \"{}\".",
+            "Use a generate block identifier matching regex `{}`.",
             &option.re_required_generateblock
         ))
     }

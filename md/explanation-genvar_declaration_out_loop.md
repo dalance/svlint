@@ -25,7 +25,7 @@ C99-like declarations inside loop generate constructs can lead to code which is
 easier to read and review.
 
 See also:
-  - **genvar_declaration_in_loop** - Opposite reasoning.
+- **genvar_declaration_in_loop** - Opposite reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 27.4 Loop generate constructs
+- 27.4 Loop generate constructs

@@ -8,9 +8,9 @@ should start with an uppercase letter, and packages should start with an
 lowercase letter.
 
 See also:
-  - **lowercamelcase_interface** - Potential companion rule.
-  - **lowercamelcase_module** - Mutually exclusive alternative rule.
-  - **lowercamelcase_package** - Suggested companion rule.
-  - **prefix_module** - Alternative rule.
-  - **uppercamelcase_interface** - Suggested companion rule.
-  - **uppercamelcase_package** - Potential companion rule.
+- **lowercamelcase_interface** - Potential companion rule.
+- **lowercamelcase_module** - Mutually exclusive alternative rule.
+- **lowercamelcase_package** - Suggested companion rule.
+- **prefix_module** - Alternative rule.
+- **uppercamelcase_interface** - Suggested companion rule.
+- **uppercamelcase_package** - Potential companion rule.

@@ -2,6 +2,7 @@
 The set of whitespace-only checks which are "suggested" in the explanations
 of the **style_** rules.
 
+
 ### Motivation
 
 Style conventions also help a human reader to quickly and efficiently
@@ -22,6 +23,7 @@ Therefore, the main motivation behind this ruleset is to avoid visual noise.
 
 Two notable style conventions help with a change-review process, i.e. comparing
 multiple versions of a file, rather than reading one version:
+
 - Line length limited to a fixed number of characters, usually 80.
   - Excessively long lines may indicate problems with a program's logic.
   - Excessively long lines prevent viewing differences side-by-side.
@@ -36,6 +38,7 @@ multiple versions of a file, rather than reading one version:
   - Git, a popular version control tool will (by default) warn against trailing
     whitespace with prominent markers specifically because of the unnecessary
     noise introduced to a repository's history.
+
 These conventions help give a consistent view over different ways of viewing
 files which include the writer's text editor (Vim, VSCode, Emacs, etc.),
 consumer's text editor, reviewer's web-based tools (GitHub, BitBucket, GitLab,
@@ -77,6 +80,7 @@ eval "${SVFILES}" | xargs -I {} sh -c "${OBFUSTMT}"
 
 On Windows, the default environment does not contain utilities such as `grep`,
 so some system-specific scripting may be more appropriate.
+
 
 ### Indentation
 
@@ -128,6 +132,7 @@ rules.multiline_if_begin = true
 rules.multiline_for_begin = true
 ```
 
+
 ### Indentation Preprocessor Considerations
 
 A potential source of confusion is in the use of the preprocessor to
@@ -164,16 +169,19 @@ a line with a 2 space indent like this:
 
 Confusing situations like these arise from the fact that SystemVerilog is a
 combination of two languages;
-1) A text processing language (defining the preprocessor) in specified
-informally in IEEE1800-2017 Clause 22 among other compiler directives.
-2) The rest of SystemVerilog syntax is formally called `source_text`, is
-specified formally in IEEE1800-2017 Annex A.
-The svlint tool operates on the `source_text` part of SystemVerilog, after the
+
+1. A text processing language (defining the preprocessor) in specified
+  informally in IEEE1800-2017 Clause 22 among other compiler directives.
+2. The rest of SystemVerilog syntax is formally called `source_text`, is
+  specified formally in IEEE1800-2017 Annex A.
+
+Svlint rules operate on the `source_text` part of SystemVerilog, i.e. after the
 preprocessor has been applied.
 As with other languages with similar text-based templating features, most
 notably C, use of the preprocessor is discouraged except where absolutely
 necessary.
 To avoid confusion with preprocessor, here are two recommendations:
+
 1. Don't indent compiler directives, especially preprocessor statements
   containing any `source_text`.
 2. Don't put any spaces between compiler directives and comments on the same
@@ -261,6 +269,7 @@ rules.style_keyword_maybelabel = true
 rules.style_keyword_newline = true
 ```
 
+
 ### Comma-Separated Lists
 
 SystemVerilog code has many uses for comma-separated lists of items specified
@@ -288,6 +297,7 @@ rules.style_commaleading = true
 
 This rule leads to the comma-leading style which, although perhaps unfamiliar
 to authors with a background in C or Python, has a number of advantages.
+
 - The rule is extremely simple, especially in comparison to the multitude of
   rules requried to format comma-trailing lists consistently.
 - A comma character is visually similar to bullet-point.

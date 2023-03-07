@@ -41,7 +41,7 @@ impl Rule for ReForbiddenSequence {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a sequence identifier not matching regex \"{}\".",
+            "Use a sequence identifier not matching regex `{}`.",
             &option.re_forbidden_sequence
         ))
     }

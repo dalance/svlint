@@ -6,7 +6,7 @@ This rule requires that interface identifiers are declared with a prefix of
 module and interface instances.
 
 See also:
-  - **lowercamelcase_interface** - Alternative rule.
-  - **prefix_module** - Potential companion rule.
-  - **prefix_package** - Suggested companion rule.
-  - **uppercamelcase_interface** - Alternative rule.
+- **lowercamelcase_interface** - Alternative rule.
+- **prefix_module** - Potential companion rule.
+- **prefix_package** - Suggested companion rule.
+- **uppercamelcase_interface** - Alternative rule.

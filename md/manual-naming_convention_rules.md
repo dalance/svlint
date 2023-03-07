@@ -2,6 +2,7 @@
 
 Rules for checking against naming conventions are named with either the suffix
 `_with_label` or one of these prefixes:
+
 - `prefix_`
 - `(lower|upper)camelcase_`
 - `re_(forbidden|required)_`
@@ -10,6 +11,7 @@ Naming conventions are useful to help ensure consistency across components in
 large projects.
 A naming convention might be designed with several, sometimes competing, points
 of view such as:
+
 - Enable simple identification of code's owner, e.g. "Prefix all module
   identifiers with `BlueTeam_` at the point of declaration".
   This makes it easy for the blue team to review their own code, without being

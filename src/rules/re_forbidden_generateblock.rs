@@ -56,7 +56,7 @@ impl Rule for ReForbiddenGenerateblock {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a generate block identifier not matching regex \"{}\".",
+            "Use a generate block identifier not matching regex `{}`.",
             &option.re_forbidden_generateblock
         ))
     }

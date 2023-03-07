@@ -41,7 +41,7 @@ impl Rule for ReForbiddenProperty {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a property identifier not matching regex \"{}\".",
+            "Use a property identifier not matching regex `{}`.",
             &option.re_forbidden_property
         ))
     }

@@ -66,7 +66,7 @@ impl Rule for ReForbiddenVarClassmethod {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a method-scoped variable identifier not matching regex \"{}\".",
+            "Use a method-scoped variable identifier not matching regex `{}`.",
             &option.re_forbidden_var_classmethod
         ))
     }

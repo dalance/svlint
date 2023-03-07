@@ -1,9 +1,10 @@
 In Verilog (IEEE1364), there are two language constructs which can be used to
-model combinatorial logic
+model combinatorial logic:
 1. Continuous assignment to `wire` signals is specified with the `assign`
   keyword.
 2. `reg` signals are assigned to with an `always` block, which is evaluated
   whenever anything in the sensitivity list changes value.
+
 The `always` keyword can also be used for modelling sequential logic by
 including the edge of a signal in the sensitivity list.
 
@@ -31,8 +32,8 @@ It is appropriate to use **keyword_forbidden_always** on synthesizable design
 code, but on verification code use **level_sensitive_always** instead.
 
 See also:
-  - **keyword_forbidden_always** - Alternative rule.
+- **keyword_forbidden_always** - Alternative rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 9.2.2 Always procedures
-  - 9.5 Process execution threads
+- 9.2.2 Always procedures
+- 9.5 Process execution threads

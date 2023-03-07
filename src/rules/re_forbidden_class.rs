@@ -41,7 +41,7 @@ impl Rule for ReForbiddenClass {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a class identifier not matching regex \"{}\".",
+            "Use a class identifier not matching regex `{}`.",
             &option.re_forbidden_class
         ))
     }

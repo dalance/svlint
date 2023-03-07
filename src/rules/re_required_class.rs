@@ -41,7 +41,7 @@ impl Rule for ReRequiredClass {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a class identifier matching regex \"{}\".",
+            "Use a class identifier matching regex `{}`.",
             &option.re_required_class
         ))
     }

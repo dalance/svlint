@@ -8,7 +8,7 @@ package declaration per file, and a package `pkg_foo` must be contained in a
 file called `pkg_foo.sv`.", this aids a reader in browsing a source directory.
 
 See also:
-  - **lowercamelcase_package** - Alternative rule.
-  - **prefix_interface** - Suggested companion rule.
-  - **prefix_module** - Potential companion rule.
-  - **uppercamelcase_package** - Alternative rule.
+- **lowercamelcase_package** - Alternative rule.
+- **prefix_interface** - Suggested companion rule.
+- **prefix_module** - Potential companion rule.
+- **uppercamelcase_package** - Alternative rule.

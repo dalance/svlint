@@ -41,7 +41,7 @@ impl Rule for ReForbiddenModuleAnsi {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a module identifier not matching regex \"{}\".",
+            "Use a module identifier not matching regex `{}`.",
             &option.re_forbidden_module_ansi
         ))
     }

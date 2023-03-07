@@ -65,7 +65,7 @@ impl Rule for ReForbiddenParameter {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a parameter identifier not matching regex \"{}\".",
+            "Use a parameter identifier not matching regex `{}`.",
             &option.re_forbidden_parameter
         ))
     }

@@ -41,7 +41,7 @@ impl Rule for ReRequiredSequence {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a sequence identifier matching regex \"{}\".",
+            "Use a sequence identifier matching regex `{}`.",
             &option.re_required_sequence
         ))
     }

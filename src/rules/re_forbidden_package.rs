@@ -41,7 +41,7 @@ impl Rule for ReForbiddenPackage {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a package identifier not matching regex \"{}\".",
+            "Use a package identifier not matching regex `{}`.",
             &option.re_forbidden_package
         ))
     }

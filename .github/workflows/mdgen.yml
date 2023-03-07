@@ -8,6 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: hecrj/setup-rust-action@v1
+
       - name: BUILDENV
         shell: bash
         run: |
@@ -16,6 +17,15 @@ jobs:
           cargo --version >> BUILDENV
           rustc --version >> BUILDENV
           cat BUILDENV
+
+      - name: Calculate Variables
+        id: CALCVARS
+        shell: bash
+        run: |
+          echo "REPOSITORY=$(grep repository Cargo.toml | sed 's/[^\"]*\"\([^\"]*\).*/\1/')" >> $GITHUB_OUTPUT
+          echo "GIT_REVISION=$(git rev-parse --short=8 HEAD)" >> $GITHUB_OUTPUT
+          echo "DATETIME_ISO8601=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_OUTPUT
+
       - uses: actions/cache@v3
         with:
           path: |
@@ -25,9 +35,50 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('BUILDENV', '**/Cargo.lock') }}
-      - run: |
+
+      - id: mdgen
+        run: |
           cargo run --bin=mdgen
+          (git diff --quiet MANUAL.md && \
+            echo "manual_md=not_changed" >> $GITHUB_OUTPUT) || \
+            echo "manual_md=is_changed" >> $GITHUB_OUTPUT
+          make MANUAL.intermediateTex.md
+
+      # If the manual has changed, check that pandoc can still convert it to
+      # PDF, used in the release workflow.
+      # The PDF generated in this workflow should not be commited.
+      # Developers can create local versions of the PDF manual by running
+      # `make MANUAL-dev`, or `make MANUAL-release`.
+      - if: ${{ steps.mdgen.outputs.manual_md == 'is_changed' }}
+        uses: docker://pandoc/extra:3.1
+        with:
+          args: >-
+            -i MANUAL.intermediateTex.md
+            -f markdown+lists_without_preceding_blankline
+            --template=md/MANUAL_template.tex
+            --metadata "title=Svlint Manual"
+            --metadata "subtitle=DEVELOPMENT ${{steps.CALCVARS.outputs.GIT_REVISION}}"
+            --metadata "author=${{steps.CALCVARS.outputs.REPOSITORY}}"
+            --metadata "date=${{steps.CALCVARS.outputs.DATETIME_ISO8601}}"
+            --metadata "keywords=SystemVerilog"
+            --metadata "keywords=Verilog"
+            --metadata "keywords=IEEE1800-2017"
+            --metadata "keywords=lint"
+            --metadata "keywords=svlint"
+            --metadata "keywords=sv-parser"
+            --metadata "keywords=svls"
+            --toc
+            --toc-depth=2
+            --variable=colorlinks
+            --variable=papersize:a4
+            -o MANUAL.pdf
+
+      - name: Cleanup Before add-and-commit
+        run: |
           rm -f BUILDENV
+          rm -f *.intermediate*.*
+          rm -f MANUAL.pdf
+
       - uses: EndBug/add-and-commit@v9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

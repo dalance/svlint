@@ -73,7 +73,7 @@ impl Rule for ReForbiddenAssert {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use an immediate assertion identifier not matching regex \"{}\".",
+            "Use an immediate assertion identifier not matching regex `{}`.",
             &option.re_forbidden_assert
         ))
     }

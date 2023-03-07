@@ -41,7 +41,7 @@ impl Rule for ReForbiddenFunction {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a function identifier not matching regex \"{}\".",
+            "Use a function identifier not matching regex `{}`.",
             &option.re_forbidden_function
         ))
     }

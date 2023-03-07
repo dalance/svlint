@@ -30,13 +30,13 @@ check that the input is not driven from within the module (and if so, emit an
 error).
 
 See also:
-  - **default_nettype_none** - Useful companion rule.
-  - **inout_with_tri** - Suggested companion rule.
-  - **output_with_var** - Suggested companion rule.
-  - **prefix_input** - Useful companion rule.
+- **default_nettype_none** - Useful companion rule.
+- **inout_with_tri** - Suggested companion rule.
+- **output_with_var** - Suggested companion rule.
+- **prefix_input** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 6.5 Nets and variables
-  - 6.6 Net types
-  - 22.8 default nettype
-  - 23.2.2 Port declarations
+- 6.5 Nets and variables
+- 6.6 Net types
+- 22.8 default nettype
+- 23.2.2 Port declarations

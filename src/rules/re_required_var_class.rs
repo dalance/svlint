@@ -74,7 +74,7 @@ impl Rule for ReRequiredVarClass {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a class-scoped variable identifier matching regex \"{}\".",
+            "Use a class-scoped variable identifier matching regex `{}`.",
             &option.re_required_var_class
         ))
     }

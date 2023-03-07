@@ -14,10 +14,10 @@ Specifically, action blocks should not contain blocking assignments:
   IEEE1800-2017.
 
 See also:
-  - **non_blocking_assignment_in_always_comb** - Useful companion rule.
-  - **blocking_assignment_in_always_ff** - Useful companion rule.
+- **non_blocking_assignment_in_always_comb** - Useful companion rule.
+- **blocking_assignment_in_always_ff** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 15.5.4 Event sequencing: wait\_order()
-  - 16 Assertions
-  - 21 Input/output system tasks and system functions
+- 15.5.4 Event sequencing: wait\_order()
+- 16 Assertions
+- 21 Input/output system tasks and system functions

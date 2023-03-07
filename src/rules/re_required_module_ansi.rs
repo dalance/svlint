@@ -41,7 +41,7 @@ impl Rule for ReRequiredModuleAnsi {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a module identifier matching regex \"{}\".",
+            "Use a module identifier matching regex `{}`.",
             &option.re_required_module_ansi
         ))
     }

@@ -41,7 +41,7 @@ impl Rule for ReRequiredPackage {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a package identifier matching regex \"{}\".",
+            "Use a package identifier matching regex `{}`.",
             &option.re_required_package
         ))
     }

@@ -66,7 +66,7 @@ impl Rule for ReForbiddenGenvar {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a genvar identifier not matching regex \"{}\".",
+            "Use a genvar identifier not matching regex `{}`.",
             &option.re_forbidden_genvar
         ))
     }

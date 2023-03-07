@@ -17,12 +17,12 @@ When `foo` is non-zero, this example may be interpreted in at least two ways:
   A synthesis tool may produce a latching circuit.
 
 See also:
-  - **explicit_case_default** - Useful companion rule.
-  - **explicit_if_else** - Useful companion rule.
-  - **legacy_always** - Useful companion rule.
-  - **sequential_block_in_always_comb** - Useful companion rule.
+- **explicit_case_default** - Useful companion rule.
+- **explicit_if_else** - Useful companion rule.
+- **legacy_always** - Useful companion rule.
+- **sequential_block_in_always_comb** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 9.2.2.2 Combinational logic `always_comb` procedure
-  - 12.5 Case statement
-  - 13.4 Functions
+- 9.2.2.2 Combinational logic `always_comb` procedure
+- 12.5 Case statement
+- 13.4 Functions

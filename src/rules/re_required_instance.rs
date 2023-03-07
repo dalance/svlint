@@ -56,7 +56,7 @@ impl Rule for ReRequiredInstance {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use an instance identifier matching regex \"{}\".",
+            "Use an instance identifier matching regex `{}`.",
             &option.re_required_instance
         ))
     }

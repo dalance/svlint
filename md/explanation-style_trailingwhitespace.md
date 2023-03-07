@@ -6,9 +6,9 @@ not immediately preceeded by a space character.
 You can
 
 See also:
-  - **style_indent** - Suggested companion rule.
-  - **tab_character** - Suggested companion rule.
-  - Vim: <https://vimtricks.com/p/vim-remove-trailing-whitespace/>
-  - Emacs: <https://www.emacswiki.org/emacs/WhiteSpace>
-  - VSCode: `files.trimTrailingWhitespace: true,`
-  - Notepad++: "Trim Trailing Space" on <https://npp-user-manual.org/docs/editing/>
+- **style_indent** - Suggested companion rule.
+- **tab_character** - Suggested companion rule.
+- Vim: <https://vimtricks.com/p/vim-remove-trailing-whitespace/>
+- Emacs: <https://www.emacswiki.org/emacs/WhiteSpace>
+- VSCode: `files.trimTrailingWhitespace: true,`
+- Notepad++: "Trim Trailing Space" on <https://npp-user-manual.org/docs/editing/>

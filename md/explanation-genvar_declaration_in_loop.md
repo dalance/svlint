@@ -45,7 +45,7 @@ not support both ways of declaring genvars, so the related rule
 and checks that declarations must be separate from the generate loop syntax.
 
 See also:
-  - **genvar_declaration_out_loop** - Opposite reasoning.
+- **genvar_declaration_out_loop** - Opposite reasoning.
 
 The most relevant clauses of IEEE1800-2017 are:
-  - 27.4 Loop generate constructs
+- 27.4 Loop generate constructs

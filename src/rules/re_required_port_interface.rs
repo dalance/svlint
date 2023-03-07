@@ -67,7 +67,7 @@ impl Rule for ReRequiredPortInterface {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a port identifier matching regex \"{}\".",
+            "Use a port identifier matching regex `{}`.",
             &option.re_required_port_interface
         ))
     }

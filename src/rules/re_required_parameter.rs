@@ -65,7 +65,7 @@ impl Rule for ReRequiredParameter {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a parameter identifier matching regex \"{}\".",
+            "Use a parameter identifier matching regex `{}`.",
             &option.re_required_parameter
         ))
     }

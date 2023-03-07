@@ -56,7 +56,7 @@ impl Rule for ReForbiddenLocalparam {
 
     fn hint(&self, option: &ConfigOption) -> String {
         String::from(format!(
-            "Use a localparam identifier not matching regex \"{}\".",
+            "Use a localparam identifier not matching regex `{}`.",
             &option.re_forbidden_localparam
         ))
     }
