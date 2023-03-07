@@ -466,11 +466,19 @@ Place `` `default_nettype none`` at the top of source code.
 
 Compiler directive `` `default_nettype none`` detects unintentional implicit wires.
 
-### Pass Example (1 of 1)
+### Pass Example (1 of 2)
 ```systemverilog
 `default_nettype none
 module M;
 endmodule
+```
+
+### Pass Example (2 of 2)
+```systemverilog
+/* svlint off default_nettype_none */
+module M;
+endmodule
+/* svlint on default_nettype_none */
 ```
 
 ### Fail Example (1 of 1)
@@ -7423,6 +7431,7 @@ See also:
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
 - **style_keyword_newline** - Suggested companion rule.
 
 
@@ -7481,7 +7490,6 @@ This rule checks the whitespace immediately following these keywords:
 `break`
 , `continue`
 , `default`
-, `new`
 , `null`
 , `super`
 , and `this`.
@@ -7490,7 +7498,6 @@ the following symbol, e.g.
 `break;`,
 , `continue;`
 , `default:`
-, `new[5]`
 , `(myexample == null)`
 , or `super.foo`.
 
@@ -7503,6 +7510,7 @@ See also:
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
 - **style_keyword_newline** - Suggested companion rule.
 
 
@@ -7571,6 +7579,7 @@ See also:
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
 - **style_keyword_newline** - Suggested companion rule.
 
 
@@ -7805,6 +7814,7 @@ See also:
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
 - **style_keyword_newline** - Suggested companion rule.
 
 
@@ -7903,6 +7913,7 @@ See also:
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
 - **style_keyword_newline** - Suggested companion rule.
 
 
@@ -7987,6 +7998,7 @@ See also:
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_end** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
 - **style_keyword_newline** - Suggested companion rule.
 
 
@@ -8077,6 +8089,7 @@ See also:
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
 - **style_keyword_newline** - Suggested companion rule.
 
 
@@ -8176,6 +8189,103 @@ See also:
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
+- **style_keyword_newline** - Suggested companion rule.
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Rule: `style_keyword_new`
+
+### Hint
+
+Follow keyword with a newline or exactly 0 space.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example (1 of 1)
+```systemverilog
+class Packet; // Example from IEEE1800-2017, page 174.
+  integer command;
+
+  function new(); // Constructor without arguments.
+    command = IDLE;
+  endfunction
+endclass
+
+class C1 extends Packet;
+  function new // Constructor with arguments.
+    ( int cmd = IDLE
+    , int addr = 123
+    , int data = 0
+    );
+    command = cmd;
+  endfunction
+endclass
+
+class C2 extends C1;
+  function new;
+    super.new(5); // Super constructor.
+  endfunction
+endclass
+
+module M;
+  Packet p1 = new; // Construction without arguments
+
+  C1 p2 = new(1, 2, 3); // Construction with short arguments.
+
+  C2 p3 = new // Construction with long arguments.
+    ( STARTUP
+    , A_RATHER_LONG_CONSTANT_IDENTIFIER
+    , 456
+    );
+endmodule
+```
+
+### Fail Example (1 of 3)
+```systemverilog
+module M;
+  Packet p1 = new  ; // Spaces before semicolon.
+endmodule
+```
+
+### Fail Example (2 of 3)
+```systemverilog
+module M;
+  C1 p2 = new (1, 2, 3); // Spaces before parenthesis.
+endmodule
+```
+
+### Fail Example (3 of 3)
+```systemverilog
+module M;
+  C2 p3 = new// No space before comment.
+    ( STARTUP
+    , A_RATHER_LONG_CONSTANT_IDENTIFIER
+    , 456
+    );
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following the`new` keyword.
+The class constructor keyword should always be followed by a newline,
+exactly 0 spaces then a symbol, or exactly 1 space then a comment.
+
+See also:
+- **style_keyword_indent** - Suggested companion rule.
+- **style_keyword_0or1space** - Suggested companion rule.
+- **style_keyword_0space** - Suggested companion rule.
+- **style_keyword_1or2space** - Suggested companion rule.
+- **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_construct** - Suggested companion rule.
+- **style_keyword_datatype** - Potential companion rule.
+- **style_keyword_end** - Suggested companion rule.
+- **style_keyword_maybelabel** - Suggested companion rule.
 - **style_keyword_newline** - Suggested companion rule.
 
 
@@ -8249,6 +8359,7 @@ See also:
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
 
 
 
@@ -9283,6 +9394,7 @@ rules.style_keyword_construct = true
 rules.style_keyword_datatype = false # Overly restrictive.
 rules.style_keyword_end = true
 rules.style_keyword_maybelabel = true
+rules.style_keyword_new = true
 rules.style_keyword_newline = true
 ```
 
