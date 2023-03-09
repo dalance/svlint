@@ -615,6 +615,228 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Rule: `eventlist_comma_always_ff`
+
+### Hint
+
+Use `or` event expression separator instead of comma in `always_ff`.
+
+### Reason
+
+Consistent separators enhance readability.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always_ff @(posedge clk or posedge arst) q <= d;
+
+  always_ff @( a
+            or b
+            or c
+            ) q <= d;
+endmodule
+```
+
+### Fail Example (1 of 3)
+```systemverilog
+module M;
+  always_ff @(posedge clk, posedge arst) q <= d;
+endmodule
+```
+
+### Fail Example (2 of 3)
+```systemverilog
+module M;
+  always_ff @(a
+            , b
+            , c
+            ) q <= d;
+endmodule
+```
+
+### Fail Example (3 of 3)
+```systemverilog
+module M;
+  always_ff @(posedge a or posedge b, c, d or e) q <= d;
+endmodule
+```
+
+### Explanation
+
+Require the `or` keyword as the event expression separator instead of the comma
+character (`,`) in `always_ff` processes, for cosmetics/readability and
+potential textual conversion to Verilog95.
+
+SystemVerilog allows for two synonymous separators (`or` and `,`) in event
+control sensitivity lists.
+The separators may be mixed freely, as shown in the following examples from
+IEEE1800-2017 page 218.
+
+```systemverilog
+always @(a, b, c, d, e)
+always @(posedge clk, negedge rstn)
+always @(a or b, c, d or e)
+```
+
+The first released standard of Verilog (IEEE1364-1995) allows only the `or`
+keyword as a separator in sensitivity lists.
+Perhaps realising that other types of lists required the comma separator,
+subsequent releases of Verilog (IEEE1364-2001 and IEEE1364-2005) and all
+versions of SystemVerilog allow the use of either separator.
+It can be visually jarring for readers to parse lists with more than one
+separator, thus impairing readabilty.
+Therefore, this rule requires that only one type of separator is used, i.e.
+forbidding the use of the comma separator.
+
+The advantage of requiring `or` rather than `,` in the sensitivity list of
+`always_ff` processes is that a codebase may be converted from SystemVerilog to
+Verilog95, with a simple text-replacement of `always_ff` to `always`.
+Naturally, the rest of the codebase must contain only Verilog95-compatible
+syntax for that conversion to be worthwhile.
+This rule only applies to event expressions in `always_ff` processes.
+
+See also:
+- **eventlist_or** - Mutually exclusive rule.
+- **blocking_assignment_in_always_ff** - Useful companion rule.
+- **level_sensitive_always** - Useful companion rule.
+- **style_keyword_1space** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2.2 Always procedures
+- 9.4 Procedural timing controls
+- 9.4.2.1 Event OR operator
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Rule: `eventlist_or`
+
+### Hint
+
+Use comma event expression separator instead of `or`.
+
+### Reason
+
+Consistent separators enhance readability.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always @(a, b, c) q1 <= d;
+
+  always_ff @(a, b, c) q2 <= d;
+
+  always @( a
+          , b
+          , c
+          ) q3 <= d;
+
+  always_ff @(a
+            , b
+            , c
+            ) q4 <= d;
+
+  initial begin
+    z = y;
+    @(posedge a, negedge b, edge c, d)
+    z = x;
+  end
+endmodule
+```
+
+### Fail Example (1 of 5)
+```systemverilog
+module M;
+  always @(a or b) q1 <= d;
+endmodule
+```
+
+### Fail Example (2 of 5)
+```systemverilog
+module M;
+  always_ff @(a, b or c) q2 <= d;
+endmodule
+```
+
+### Fail Example (3 of 5)
+```systemverilog
+module M;
+  always @( a
+          or b
+          , c
+          ) q3 <= d;
+endmodule
+```
+
+### Fail Example (4 of 5)
+```systemverilog
+module M;
+  always_ff @(a
+            , b
+            or c
+            ) q4 <= d;
+endmodule
+```
+
+### Fail Example (5 of 5)
+```systemverilog
+module M;
+  initial begin
+    z = y;
+    @(posedge a, negedge b, edge c or d)
+    z = x;
+  end
+endmodule
+```
+
+### Explanation
+
+Require the comma character (`,`) as the event expression separator instead of
+the `or` keyword, for cosmetics/readability.
+
+SystemVerilog allows for two synonymous separators (`or` and `,`) in event
+control sensitivity lists.
+The separators may be mixed freely, as shown in the following examples from
+IEEE1800-2017 page 218.
+
+```systemverilog
+always @(a, b, c, d, e)
+always @(posedge clk, negedge rstn)
+always @(a or b, c, d or e)
+```
+
+The first released standard of Verilog (IEEE1364-1995) allows only the `or`
+keyword as a separator in sensitivity lists.
+Perhaps realising that other types of lists required the comma separator,
+subsequent releases of Verilog (IEEE1364-2001 and IEEE1364-2005) and all
+versions of SystemVerilog allow the use of either separator.
+It can be visually jarring for readers to parse lists with more than one
+separator, thus impairing readabilty.
+Therefore, this rule requires that only one type of separator is used, i.e.
+forbidding the use of the `or` separator.
+
+The advantage of requiring `,` rather than `or` is that sensitivity lists look
+the same as every other type of list which the reader's eye will be better
+trained to read.
+This rule applies to event expressions in any context, not only `always_ff`
+processes.
+
+See also:
+- **eventlist_comma_always_ff** - Mutually exclusive rule.
+- **blocking_assignment_in_always_ff** - Useful companion rule.
+- **level_sensitive_always** - Useful companion rule.
+- **style_keyword_commaleading** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2.2 Always procedures
+- 9.4 Procedural timing controls
+- 9.4.2.1 Event OR operator
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Rule: `explicit_case_default`
 
 ### Hint
@@ -2494,6 +2716,64 @@ The most relevant clauses of IEEE1800-2017 are:
 - 9.4.2 Event control
 - 10.4.1 Blocking procedural assignments
 - 10.4.2 Nonblocking procedural assignments
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Rule: `operator_case_equality`
+
+### Hint
+
+Use logical equality instead of case equality.
+
+### Reason
+
+Case equality operations are not generally synthesizable.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always_latch if (a == b) z = y;
+
+  always_comb z = (a != b) ? y : x;
+
+  always_latch if (a ==? b) z = y;
+
+  always_comb z = (a !=? b) ? y : x;
+endmodule
+```
+
+### Fail Example (1 of 2)
+```systemverilog
+module M;
+  always_latch if (a === b) z = y;
+endmodule
+```
+
+### Fail Example (2 of 2)
+```systemverilog
+module M;
+  always_comb z = (a !== b) ? y : x;
+endmodule
+```
+
+### Explanation
+
+Case equality operations (using `===` or `!==` operators) include comparison
+against `'z` or `'x`, so they are not generally synthesisable.
+Synthesizable code should use logical or wildcard equality operations instead.
+
+See also:
+- **case_default** - Useful companion rule.
+- **explicit_case_default** - Useful companion rule.
+- **enum_with_type** - Useful companion rule.
+- **localparam_type_twostate** - Useful companion rule.
+- **parameter_type_twostate** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 11.4.5 Equality operators
+- 11.4.6 Wildcard quality operators
 
 
 
