@@ -1,6 +1,6 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
-use sv_parser::{unwrap_locate, unwrap_node, Locate, NodeEvent, RefNode, SyntaxTree};
+use crate::linter::{check_prefix, Rule, RuleResult};
+use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct PrefixPackage;
@@ -19,27 +19,8 @@ impl Rule for PrefixPackage {
             }
         };
         match node {
-            RefNode::PackageIdentifier(x) => {
-                let id: Option<&Locate> = match unwrap_node!(*x, SimpleIdentifier) {
-                    Some(RefNode::SimpleIdentifier(id_)) => {
-                        unwrap_locate!(id_)
-                    }
-                    _ => None,
-                };
-
-                let is_prefixed: bool = match &id {
-                    Some(x) => syntax_tree
-                        .get_str(*x)
-                        .unwrap()
-                        .starts_with(&option.prefix_package),
-                    _ => false,
-                };
-
-                if is_prefixed {
-                    RuleResult::Pass
-                } else {
-                    RuleResult::Fail
-                }
+            RefNode::PackageDeclaration(x) => {
+                check_prefix(unwrap_node!(*x, PackageIdentifier), &syntax_tree, &option.prefix_package)
             }
             _ => RuleResult::Pass,
         }

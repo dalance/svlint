@@ -45,23 +45,6 @@ impl Rule for ExplicitCaseDefault {
             }
             _ => RuleResult::Pass,
         }
-        /*
-        match node {
-            RefNode::AlwaysConstruct(x) => {
-                if let Some(x) = unwrap_node!(*x, CaseStatementNormal) {
-                    let loc = unwrap_locate!(x.clone()).unwrap();
-                    let a = unwrap_node!(x, CaseItemDefault);
-                    if a.is_some() {
-                        RuleResult::Pass
-                    } else {
-                        RuleResult::FailLocate(*loc)
-                    }
-                } else {
-                    RuleResult::Pass
-                }
-            }
-            _ => RuleResult::Pass,
-        }*/
     }
 
     fn name(&self) -> String {

@@ -40,4 +40,5 @@ See also:
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_end** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
 - **style_keyword_newline** - Suggested companion rule.

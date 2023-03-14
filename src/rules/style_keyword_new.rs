@@ -4,13 +4,13 @@ use regex::Regex;
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct StyleKeyword0Space {
+pub struct StyleKeywordNew {
     re_split: Option<Regex>,
     re_kw: Option<Regex>,
     re_succ: Option<Regex>,
 }
 
-impl Rule for StyleKeyword0Space {
+impl Rule for StyleKeywordNew {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
@@ -21,25 +21,22 @@ impl Rule for StyleKeyword0Space {
         re_split extracts keyword from anything following it.
         re_kw is used to selectively apply this rule to specific keywords.
         re_succ matches what is allowed after the keyword.
-            - nothing, immediately followed by a symbol
+            - newline
+            - exactly 0space, then nothing
+            - exactly 1space, then comment
         */
         if self.re_split.is_none() {
             self.re_split = Some(Regex::new(r"(?P<kw>[\\$'BXZa-z_01]+)(?P<succ>(?s:.)*)").unwrap());
         }
         if self.re_kw.is_none() {
             let keywords =
-                [ "break" // {{{
-                , "continue"
-                , "default"
-                , "null"
-                , "super"
-                , "this"
+                [ "new" // {{{
                 ].join("|"); // }}}
 
             self.re_kw = Some(Regex::new(format!("^({})$", keywords).as_str()).unwrap());
         }
         if self.re_succ.is_none() {
-            self.re_succ = Some(Regex::new(r"^$").unwrap());
+            self.re_succ = Some(Regex::new(r"^([\n\v\f\r]|$| /)").unwrap());
         }
 
         let node = match event {
@@ -73,11 +70,11 @@ impl Rule for StyleKeyword0Space {
     }
 
     fn name(&self) -> String {
-        String::from("style_keyword_0space")
+        String::from("style_keyword_new")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("Remove all whitespace between keyword and following symbol.")
+        String::from("Follow keyword with a newline or exactly 0 space.")
     }
 
     fn reason(&self) -> String {
