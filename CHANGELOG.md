@@ -2,6 +2,14 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.6.1...Unreleased) - ReleaseDate
 
+* [Fixed] Bugfix: Addresses #210, #225, #235. [#238](https://github.com/dalance/svlint/pull/238)
+* [Added] Feature: PDF version(s) of the manual. [#236](https://github.com/dalance/svlint/pull/236)
+* [Changed] Improvement: Don't emit control codes to STDOUT for non-colored output. [#229](https://github.com/dalance/svlint/pull/229)
+* [Changed] Improvement: Nicer error message on file of invalid UTF-8. [#227](https://github.com/dalance/svlint/pull/227)
+* [Added] Feature: Add some pre-configured and explained "rulesets" (TOML files) with wrapper scripts. [#224](https://github.com/dalance/svlint/pull/224)
+* [Changed] Improvement: Split testcase examples in documentation. [#220](https://github.com/dalance/svlint/pull/220)
+* [Changed] Improvement: Update mdgen and its workflow. [#215](https://github.com/dalance/svlint/pull/215)
+
 ## [v0.6.1](https://github.com/dalance/svlint/compare/v0.6.0...v0.6.1) - 2022-12-16
 
 * [Changed] Distinguish between parse/preprocess errors. Bump sv-parser. [#196](https://github.com/dalance/svlint/pull/196)
