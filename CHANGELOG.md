@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.7.0...Unreleased) - ReleaseDate
 
+* [Changed] Update sv-parser
+
 ## [v0.7.0](https://github.com/dalance/svlint/compare/v0.6.1...v0.7.0) - 2023-03-22
 
 * [Fixed] Bugfix: Addresses #210, #225, #235. [#238](https://github.com/dalance/svlint/pull/238)
