@@ -34,6 +34,9 @@ That can lead to a mismatch between simulation and synthesis.
 
 See also:
 - **style_indent** - Useful companion rule.
+- **loop_statement_in_always_comb** - Useful companion rule.
+- **loop_statement_in_always_ff** - Useful companion rule.
+- **loop_statement_in_always_latch** - Useful companion rule.
 - **sequential_block_in_always_ff** - Similar rule, different purpose.
 - **sequential_block_in_always_latch** - Similar rule, different purpose.
 
