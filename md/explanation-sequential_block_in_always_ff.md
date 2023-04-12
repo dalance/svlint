@@ -83,6 +83,9 @@ See also:
 - **explicit_case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
 - **style_indent** - Useful companion rule.
+- **loop_statement_in_always_comb** - Useful companion rule.
+- **loop_statement_in_always_ff** - Useful companion rule.
+- **loop_statement_in_always_latch** - Useful companion rule.
 - **sequential_block_in_always_comb** - Similar rule, different purpose.
 - **sequential_block_in_always_latch** - Similar rule, different purpose.
 
