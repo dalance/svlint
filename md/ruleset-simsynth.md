@@ -8,6 +8,7 @@ See the explanations of individual rules for their details.
 
 ```toml
 rules.blocking_assignment_in_always_ff = true
+rules.blocking_assignment_in_always_latch = true
 rules.non_blocking_assignment_in_always_comb = true
 rules.case_default = true
 rules.enum_with_type = true
@@ -16,5 +17,6 @@ rules.keyword_forbidden_priority = true
 rules.keyword_forbidden_unique = true
 rules.keyword_forbidden_unique0 = true
 rules.level_sensitive_always = true
+rules.operator_case_equality = true
 ```
 
