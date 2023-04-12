@@ -370,12 +370,79 @@ Specifically, `always_ff` constructs should not contain blocking assignments:
 - Increment/decrement operators, e.g. `foo++;`, `foo--;`.
 
 See also:
+- **blocking_assignment_in_always_latch** - Useful companion rule.
 - **non_blocking_assignment_in_always_comb** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
 - 4.9.3 Blocking assignment
 - 4.9.4 Non-blocking assignment
-- 9.2.2.4 Sequential logic always_ff procedure
+- 9.2.2.4 Sequential logic `always_ff` procedure
+- 9.4.2 Event control
+- 10.4.1 Blocking procedural assignments
+- 10.4.2 Nonblocking procedural assignments
+- 16.5.1 Sampling
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Rule: `blocking_assignment_in_always_latch`
+
+### Hint
+
+Do not use blocking assignments within `always_latch`.
+
+### Reason
+
+Inconsistent assignments in `always_latch` may cause unexpected event ordering.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always_latch
+    if (load)
+      q <= d;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  always_latch
+    if (load)
+      q = d;
+endmodule
+```
+
+### Explanation
+
+Mixed blocking and non-blocking assignments under `always_latch` processes can
+be difficult to read, and in the worst cases may lead to mismatches between
+simulation and synthesis.
+
+```systemverilog
+always_latch
+  if (load)
+    q_blocking = getD();
+
+always_latch
+  if (load)
+    q_nonblocking <= getD();
+```
+
+Those processes should be equivalent under synthesis, but not necessarily under
+simulation where `getD()` has side effects.
+For consistent results and readability, this rule prefers non-blocking
+assignments in `always_latch` processes.
+
+See also:
+- **blocking_assignment_in_always_ff** - Useful companion rule.
+- **non_blocking_assignment_in_always_comb** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 4.9.3 Blocking assignment
+- 4.9.4 Non-blocking assignment
+- 9.2.2.3 Latched logic `always_latch` procedure
 - 9.4.2 Event control
 - 10.4.1 Blocking procedural assignments
 - 10.4.2 Nonblocking procedural assignments
@@ -2990,6 +3057,7 @@ assignments is written by Clifford E Cummings and presented at SNUG-2000,
 
 See also:
 - **blocking_assignment_in_always_ff** - Useful companion rule.
+- **blocking_assignment_in_always_latch** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
 - 4.9.3 Blocking assignment
@@ -9247,6 +9315,7 @@ These rules don't depend on each other or interact to provide additional
 properties.
 ```toml
 rules.blocking_assignment_in_always_ff = true
+rules.blocking_assignment_in_always_latch = true
 rules.non_blocking_assignment_in_always_comb = true
 rules.case_default = true
 rules.enum_with_type = true
@@ -9255,6 +9324,7 @@ rules.keyword_forbidden_priority = true
 rules.keyword_forbidden_unique = true
 rules.keyword_forbidden_unique0 = true
 rules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
+rules.operator_case_equality = true
 ```
 
 This ruleset has further rules which don't depend on each other or combine
@@ -9324,10 +9394,13 @@ Rules in the below subset combine to provide an important property for the
 robust design of synthesizable hardware - that you can easily draw a schematic
 of what the synthesis result should look like.
 The two rules of thumb are to always fully specify decision logic, and never
-use sequential models for (what will be synthesized to) parallel logic.
+use procedural models for (what will be synthesized to) parallel logic.
 ```toml
 rules.explicit_case_default = true
 rules.explicit_if_else = true
+rules.loop_statement_in_always_comb = true
+rules.loop_statement_in_always_ff = true
+rules.loop_statement_in_always_latch = true
 rules.sequential_block_in_always_comb = true
 rules.sequential_block_in_always_ff = true
 rules.sequential_block_in_always_latch = true
@@ -9394,6 +9467,7 @@ See the explanations of individual rules for their details.
 
 ```toml
 rules.blocking_assignment_in_always_ff = true
+rules.blocking_assignment_in_always_latch = true
 rules.non_blocking_assignment_in_always_comb = true
 rules.case_default = true
 rules.enum_with_type = true
@@ -9402,6 +9476,7 @@ rules.keyword_forbidden_priority = true
 rules.keyword_forbidden_unique = true
 rules.keyword_forbidden_unique0 = true
 rules.level_sensitive_always = true
+rules.operator_case_equality = true
 ```
 
 
@@ -9709,7 +9784,6 @@ rules.style_commaleading = true
 
 This rule leads to the comma-leading style which, although perhaps unfamiliar
 to authors with a background in C or Python, has a number of advantages.
-
 - The rule is extremely simple, especially in comparison to the multitude of
   rules requried to format comma-trailing lists consistently.
 - A comma character is visually similar to bullet-point.
@@ -9733,6 +9807,12 @@ to authors with a background in C or Python, has a number of advantages.
 
 For some examples, please see the explanation of the **style_commaleading**
 rule.
+
+Additionally, `eventlist_or` mandates the use of `,` (comma) as the separator
+in `always_ff` sensitivity lists only for consistency and readabilty.
+```toml
+rules.eventlist_or = true
+```
 
 
 
