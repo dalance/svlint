@@ -36,8 +36,8 @@ rules.non_ansi_module = true
 When synthesised into a netlist, generate blocks should have labels so that
 their inferred logic can be detected in hierarchical paths.
 Although the LRM is clear about the implict naming of unlabelled generate
-blocks, see IEEE1800-2017 clause 27.6, using a well-named label provides some
-clarification about the author's intention for that logic.
+blocks (see IEEE1800-2017 clause 27.6), using a well-named label provides some
+clarification about the intention behind that logic.
 In the similar **ruleset-verifintent**, these rules are not enabled because
 they (mostly) relate to synthesizable hardware.
 ```toml
@@ -46,10 +46,10 @@ rules.generate_for_with_label = true
 rules.generate_if_with_label = true
 ```
 
-Generally, elaboration-time constant (`parameter`, `localparam`) should be
-2-state types and always supplied with some default value.
+Generally, elaboration-time constants (`parameter`, `localparam`) should be
+2-state types and declared with a default value.
 Additionally, where the context defines that `parameter` is an alias for
-`localparam`, author's should demonstate that they understand the constant
+`localparam`, authors should demonstate that they understand the constant
 cannot be overriden by using the `localparam` keyword.
 ```toml
 rules.localparam_type_twostate = true
