@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.7.1...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.7.2...Unreleased) - ReleaseDate
+
+## [v0.7.2](https://github.com/dalance/svlint/compare/v0.7.1...v0.7.2) - 2023-05-02
 
 * [Fixed] Bugfix: insert plugins in enabled hashmap during load [#243](https://github.com/dalance/svlint/pull/243)
 * [Added] New Rules: Addressing 4 of the outstanding new-rule issues. [#242](https://github.com/dalance/svlint/pull/242)
