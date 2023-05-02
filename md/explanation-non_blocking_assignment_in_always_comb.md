@@ -10,6 +10,7 @@ assignments is written by Clifford E Cummings and presented at SNUG-2000,
 
 See also:
 - **blocking_assignment_in_always_ff** - Useful companion rule.
+- **blocking_assignment_in_always_latch** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
 - 4.9.3 Blocking assignment

@@ -370,12 +370,79 @@ Specifically, `always_ff` constructs should not contain blocking assignments:
 - Increment/decrement operators, e.g. `foo++;`, `foo--;`.
 
 See also:
+- **blocking_assignment_in_always_latch** - Useful companion rule.
 - **non_blocking_assignment_in_always_comb** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
 - 4.9.3 Blocking assignment
 - 4.9.4 Non-blocking assignment
-- 9.2.2.4 Sequential logic always_ff procedure
+- 9.2.2.4 Sequential logic `always_ff` procedure
+- 9.4.2 Event control
+- 10.4.1 Blocking procedural assignments
+- 10.4.2 Nonblocking procedural assignments
+- 16.5.1 Sampling
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Rule: `blocking_assignment_in_always_latch`
+
+### Hint
+
+Do not use blocking assignments within `always_latch`.
+
+### Reason
+
+Inconsistent assignments in `always_latch` may cause unexpected event ordering.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always_latch
+    if (load)
+      q <= d;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  always_latch
+    if (load)
+      q = d;
+endmodule
+```
+
+### Explanation
+
+Mixed blocking and non-blocking assignments under `always_latch` processes can
+be difficult to read, and in the worst cases may lead to mismatches between
+simulation and synthesis.
+
+```systemverilog
+always_latch
+  if (load)
+    q_blocking = getD();
+
+always_latch
+  if (load)
+    q_nonblocking <= getD();
+```
+
+Those processes should be equivalent under synthesis, but not necessarily under
+simulation where `getD()` has side effects.
+For consistent results and readability, this rule prefers non-blocking
+assignments in `always_latch` processes.
+
+See also:
+- **blocking_assignment_in_always_ff** - Useful companion rule.
+- **non_blocking_assignment_in_always_comb** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 4.9.3 Blocking assignment
+- 4.9.4 Non-blocking assignment
+- 9.2.2.3 Latched logic `always_latch` procedure
 - 9.4.2 Event control
 - 10.4.1 Blocking procedural assignments
 - 10.4.2 Nonblocking procedural assignments
@@ -618,6 +685,228 @@ The most relevant clauses of IEEE1800-2017 are:
 - 6.19 Enumerations
 - Table 6.7 Default variable initial values
 - Table 6.8 Integer data types
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Rule: `eventlist_comma_always_ff`
+
+### Hint
+
+Use `or` event expression separator instead of comma in `always_ff`.
+
+### Reason
+
+Consistent separators enhance readability.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always_ff @(posedge clk or posedge arst) q <= d;
+
+  always_ff @( a
+            or b
+            or c
+            ) q <= d;
+endmodule
+```
+
+### Fail Example (1 of 3)
+```systemverilog
+module M;
+  always_ff @(posedge clk, posedge arst) q <= d;
+endmodule
+```
+
+### Fail Example (2 of 3)
+```systemverilog
+module M;
+  always_ff @(a
+            , b
+            , c
+            ) q <= d;
+endmodule
+```
+
+### Fail Example (3 of 3)
+```systemverilog
+module M;
+  always_ff @(posedge a or posedge b, c, d or e) q <= d;
+endmodule
+```
+
+### Explanation
+
+Require the `or` keyword as the event expression separator instead of the comma
+character (`,`) in `always_ff` processes, for cosmetics/readability and
+potential textual conversion to Verilog95.
+
+SystemVerilog allows for two synonymous separators (`or` and `,`) in event
+control sensitivity lists.
+The separators may be mixed freely, as shown in the following examples from
+IEEE1800-2017 page 218.
+
+```systemverilog
+always @(a, b, c, d, e)
+always @(posedge clk, negedge rstn)
+always @(a or b, c, d or e)
+```
+
+The first released standard of Verilog (IEEE1364-1995) allows only the `or`
+keyword as a separator in sensitivity lists.
+Perhaps realising that other types of lists required the comma separator,
+subsequent releases of Verilog (IEEE1364-2001 and IEEE1364-2005) and all
+versions of SystemVerilog allow the use of either separator.
+It can be visually jarring for readers to parse lists with more than one
+separator, thus impairing readabilty.
+Therefore, this rule requires that only one type of separator is used, i.e.
+forbidding the use of the comma separator.
+
+The advantage of requiring `or` rather than `,` in the sensitivity list of
+`always_ff` processes is that a codebase may be converted from SystemVerilog to
+Verilog95, with a simple text-replacement of `always_ff` to `always`.
+Naturally, the rest of the codebase must contain only Verilog95-compatible
+syntax for that conversion to be worthwhile.
+This rule only applies to event expressions in `always_ff` processes.
+
+See also:
+- **eventlist_or** - Mutually exclusive rule.
+- **blocking_assignment_in_always_ff** - Useful companion rule.
+- **level_sensitive_always** - Useful companion rule.
+- **style_keyword_1space** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2.2 Always procedures
+- 9.4 Procedural timing controls
+- 9.4.2.1 Event OR operator
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Rule: `eventlist_or`
+
+### Hint
+
+Use comma event expression separator instead of `or`.
+
+### Reason
+
+Consistent separators enhance readability.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always @(a, b, c) q1 <= d;
+
+  always_ff @(a, b, c) q2 <= d;
+
+  always @( a
+          , b
+          , c
+          ) q3 <= d;
+
+  always_ff @(a
+            , b
+            , c
+            ) q4 <= d;
+
+  initial begin
+    z = y;
+    @(posedge a, negedge b, edge c, d)
+    z = x;
+  end
+endmodule
+```
+
+### Fail Example (1 of 5)
+```systemverilog
+module M;
+  always @(a or b) q1 <= d;
+endmodule
+```
+
+### Fail Example (2 of 5)
+```systemverilog
+module M;
+  always_ff @(a, b or c) q2 <= d;
+endmodule
+```
+
+### Fail Example (3 of 5)
+```systemverilog
+module M;
+  always @( a
+          or b
+          , c
+          ) q3 <= d;
+endmodule
+```
+
+### Fail Example (4 of 5)
+```systemverilog
+module M;
+  always_ff @(a
+            , b
+            or c
+            ) q4 <= d;
+endmodule
+```
+
+### Fail Example (5 of 5)
+```systemverilog
+module M;
+  initial begin
+    z = y;
+    @(posedge a, negedge b, edge c or d)
+    z = x;
+  end
+endmodule
+```
+
+### Explanation
+
+Require the comma character (`,`) as the event expression separator instead of
+the `or` keyword, for cosmetics/readability.
+
+SystemVerilog allows for two synonymous separators (`or` and `,`) in event
+control sensitivity lists.
+The separators may be mixed freely, as shown in the following examples from
+IEEE1800-2017 page 218.
+
+```systemverilog
+always @(a, b, c, d, e)
+always @(posedge clk, negedge rstn)
+always @(a or b, c, d or e)
+```
+
+The first released standard of Verilog (IEEE1364-1995) allows only the `or`
+keyword as a separator in sensitivity lists.
+Perhaps realising that other types of lists required the comma separator,
+subsequent releases of Verilog (IEEE1364-2001 and IEEE1364-2005) and all
+versions of SystemVerilog allow the use of either separator.
+It can be visually jarring for readers to parse lists with more than one
+separator, thus impairing readabilty.
+Therefore, this rule requires that only one type of separator is used, i.e.
+forbidding the use of the `or` separator.
+
+The advantage of requiring `,` rather than `or` is that sensitivity lists look
+the same as every other type of list which the reader's eye will be better
+trained to read.
+This rule applies to event expressions in any context, not only `always_ff`
+processes.
+
+See also:
+- **eventlist_comma_always_ff** - Mutually exclusive rule.
+- **blocking_assignment_in_always_ff** - Useful companion rule.
+- **level_sensitive_always** - Useful companion rule.
+- **style_keyword_commaleading** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2.2 Always procedures
+- 9.4 Procedural timing controls
+- 9.4.2.1 Event OR operator
 
 
 
@@ -2159,6 +2448,280 @@ NOTE: The reasoning behind this rule invites the use of other rules:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Rule: `loop_statement_in_always_comb`
+
+### Hint
+
+Keywords `for` is forbidden within `always_comb`.
+
+### Reason
+
+Procedural loops within `always_comb` introduce sequential dependencies.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+
+  for (genvar i = 0; i < 5; i++) begin
+    if (0 == i) begin
+      always_comb a[0] = f();
+    end else begin
+      always_comb a[i] = a[i-1] + 5;
+    end
+  end
+
+endmodule
+```
+
+### Fail Example (1 of 2)
+```systemverilog
+module M;
+
+  always_comb
+    for (int i = 0; i < 5; i++)
+      if (0 == i)
+        a = f();
+      else
+        a = a + 5;
+
+endmodule
+```
+
+### Fail Example (2 of 2)
+```systemverilog
+module M;
+
+  always_comb
+    if (x)
+      for (int i = 0; i < 5; i++)
+        a[i] = a + 5;
+    else
+      for (int i = 0; i < 5; i++)
+        a = b[i] + 5;
+
+endmodule
+```
+
+### Explanation
+
+The SystemVerilog language is specified in terms of simulation and allows
+procedural statements to be used in both combinational (`always_comb`)
+and sequential (`always_ff`, `always_latch`) logic processes.
+The specification of logic with procedures facilitates straightforward
+translation of algorithms which are previously modelled as procedures, e.g. an
+algorithm described in a paper and demonstrated with a Python reference model.
+Logic specified with procedures is also (often) synthesizable which makes this
+a powerful language feature for quickly building a proof-of-concept
+implementation, perhaps on an FPGA.
+However, this language feature has several downsides for designs which are to
+be trusted with large amounts of investment:
+- Visualizing the expected logic with a schematic may be very difficult, thus
+  leading to problems with routing and verification.
+- Trivial-looking code can produce enormously complex logic.
+- Trivial-looking changes can easily result in vastly different outcomes from
+  synthesis.
+
+A good mantra for synthesizable design is: If you find it easy to draw a
+detailed schematic, then a synthesis tool will most likely produce a good
+solution quickly.
+For a production-worthy design, where you want to have full confidence in your
+understanding of how the code works under all the various tools (synthesis,
+LEC, simulation, formal proof, etc.), using only combinatial code to specifiy
+combinational logic reduces the risk of mis-interpretations by different tools.
+This is the same line of reasoning behing the `sequential_block_in_always_*`
+rules.
+
+See also:
+- **loop_statement_in_always_ff** - Useful companion rule.
+- **loop_statement_in_always_latch** - Useful companion rule.
+- **sequential_block_in_always_comb** - Useful companion rule.
+- **sequential_block_in_always_ff** - Useful companion rule.
+- **sequential_block_in_always_latch** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2.2 Always procedures
+- 12.7 Loop statements
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Rule: `loop_statement_in_always_ff`
+
+### Hint
+
+Keywords `for` is forbidden within `always_ff`.
+
+### Reason
+
+Procedural loops within `always_ff` introduce sequential dependencies.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+
+  for (genvar i = 0; i < 5; i++) begin
+    if (0 == i) begin
+      always_ff @(posedge clk) a[0] <= f();
+    end else begin
+      always_ff @(posedge clk) a[i] <= a[i-1] + 5;
+    end
+  end
+
+endmodule
+```
+
+### Fail Example (1 of 2)
+```systemverilog
+module M;
+
+  always_ff @(posedge clk)
+    for (int i = 0; i < 5; i++)
+      if (0 == i)
+        a <= f();
+      else
+        a <= a + 5;
+
+endmodule
+```
+
+### Fail Example (2 of 2)
+```systemverilog
+module M;
+
+  always_ff @(posedge clk)
+    if (x)
+      for (int i = 0; i < 5; i++)
+        a[i] <= a + 5;
+    else
+      for (int i = 0; i < 5; i++)
+        a <= b[i] + 5;
+
+endmodule
+```
+
+### Explanation
+
+The SystemVerilog language is specified in terms of simulation and allows
+procedural statements to be used in both combinational (`always_comb`)
+and sequential (`always_ff`, `always_latch`) logic processes.
+The specification of logic with procedures facilitates straightforward
+translation of algorithms which are previously modelled as procedures, e.g. an
+algorithm described in a paper and demonstrated with a Python reference model.
+Logic specified with procedures is also (often) synthesizable which makes this
+a powerful language feature for quickly building a proof-of-concept
+implementation, perhaps on an FPGA.
+However, this language feature has several downsides for designs which are to
+be trusted with large amounts of investment:
+- Visualizing the expected logic with a diagram may be very difficult, thus
+  leading to problems with routing and verification.
+- Trivial-looking code can produce enormously complex logic.
+- Trivial-looking changes can easily result in vastly different outcomes from
+  synthesis.
+
+See also:
+- **loop_statement_in_always_comb** - Useful companion rule.
+- **loop_statement_in_always_latch** - Useful companion rule.
+- **sequential_block_in_always_comb** - Useful companion rule.
+- **sequential_block_in_always_ff** - Useful companion rule.
+- **sequential_block_in_always_latch** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2.2 Always procedures
+- 12.7 Loop statements
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Rule: `loop_statement_in_always_latch`
+
+### Hint
+
+Keywords `for` is forbidden within `always_latch`.
+
+### Reason
+
+Procedural loops within `always_latch` introduce sequential dependencies.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+
+  for (genvar i = 0; i < 5; i++) begin
+    if (0 == i) begin
+      always_latch if (load) a[0] <= f();
+    end else begin
+      always_latch if (load) a[i] <= a[i-1] + 5;
+    end
+  end
+
+endmodule
+```
+
+### Fail Example (1 of 2)
+```systemverilog
+module M;
+
+  always_latch
+    for (int i = 0; i < 5; i++)
+      if (0 == i)
+        a <= f();
+      else
+        a = a + 5;
+
+endmodule
+```
+
+### Fail Example (2 of 2)
+```systemverilog
+module M;
+
+  always_latch
+    if (x)
+      for (int i = 0; i < 5; i++)
+        a[i] <= a + 5;
+    else
+      for (int i = 0; i < 5; i++)
+        a = b[i] + 5;
+
+endmodule
+```
+
+### Explanation
+
+The SystemVerilog language is specified in terms of simulation and allows
+procedural statements to be used in both combinational (`always_comb`)
+and sequential (`always_ff`, `always_latch`) logic processes.
+The specification of logic with procedures facilitates straightforward
+translation of algorithms which are previously modelled as procedures, e.g. an
+algorithm described in a paper and demonstrated with a Python reference model.
+Logic specified with procedures is also (often) synthesizable which makes this
+a powerful language feature for quickly building a proof-of-concept
+implementation, perhaps on an FPGA.
+However, this language feature has several downsides for designs which are to
+be trusted with large amounts of investment:
+- Visualizing the expected logic with a diagram may be very difficult, thus
+  leading to problems with routing and verification.
+- Trivial-looking code can produce enormously complex logic.
+- Trivial-looking changes can easily result in vastly different outcomes from
+  synthesis.
+
+See also:
+- **loop_statement_in_always_comb** - Useful companion rule.
+- **loop_statement_in_always_ff** - Useful companion rule.
+- **sequential_block_in_always_comb** - Useful companion rule.
+- **sequential_block_in_always_ff** - Useful companion rule.
+- **sequential_block_in_always_latch** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2.2 Always procedures
+- 12.7 Loop statements
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Rule: `loop_variable_declaration`
 
 ### Hint
@@ -2494,6 +3057,7 @@ assignments is written by Clifford E Cummings and presented at SNUG-2000,
 
 See also:
 - **blocking_assignment_in_always_ff** - Useful companion rule.
+- **blocking_assignment_in_always_latch** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
 - 4.9.3 Blocking assignment
@@ -2502,6 +3066,64 @@ The most relevant clauses of IEEE1800-2017 are:
 - 9.4.2 Event control
 - 10.4.1 Blocking procedural assignments
 - 10.4.2 Nonblocking procedural assignments
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Rule: `operator_case_equality`
+
+### Hint
+
+Use logical equality instead of case equality.
+
+### Reason
+
+Case equality operations are not generally synthesizable.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always_latch if (a == b) z = y;
+
+  always_comb z = (a != b) ? y : x;
+
+  always_latch if (a ==? b) z = y;
+
+  always_comb z = (a !=? b) ? y : x;
+endmodule
+```
+
+### Fail Example (1 of 2)
+```systemverilog
+module M;
+  always_latch if (a === b) z = y;
+endmodule
+```
+
+### Fail Example (2 of 2)
+```systemverilog
+module M;
+  always_comb z = (a !== b) ? y : x;
+endmodule
+```
+
+### Explanation
+
+Case equality operations (using `===` or `!==` operators) include comparison
+against `'z` or `'x`, so they are not generally synthesisable.
+Synthesizable code should use logical or wildcard equality operations instead.
+
+See also:
+- **case_default** - Useful companion rule.
+- **explicit_case_default** - Useful companion rule.
+- **enum_with_type** - Useful companion rule.
+- **localparam_type_twostate** - Useful companion rule.
+- **parameter_type_twostate** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 11.4.5 Equality operators
+- 11.4.6 Wildcard quality operators
 
 
 
@@ -3041,6 +3663,9 @@ That can lead to a mismatch between simulation and synthesis.
 
 See also:
 - **style_indent** - Useful companion rule.
+- **loop_statement_in_always_comb** - Useful companion rule.
+- **loop_statement_in_always_ff** - Useful companion rule.
+- **loop_statement_in_always_latch** - Useful companion rule.
 - **sequential_block_in_always_ff** - Similar rule, different purpose.
 - **sequential_block_in_always_latch** - Similar rule, different purpose.
 
@@ -3218,6 +3843,9 @@ See also:
 - **explicit_case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
 - **style_indent** - Useful companion rule.
+- **loop_statement_in_always_comb** - Useful companion rule.
+- **loop_statement_in_always_ff** - Useful companion rule.
+- **loop_statement_in_always_latch** - Useful companion rule.
 - **sequential_block_in_always_comb** - Similar rule, different purpose.
 - **sequential_block_in_always_latch** - Similar rule, different purpose.
 
@@ -3320,6 +3948,9 @@ See also:
 - **explicit_case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
 - **style_indent** - Useful companion rule.
+- **loop_statement_in_always_comb** - Useful companion rule.
+- **loop_statement_in_always_ff** - Useful companion rule.
+- **loop_statement_in_always_latch** - Useful companion rule.
 - **sequential_block_in_always_comb** - Similar rule, different purpose.
 - **sequential_block_in_always_ff** - Similar rule, different purpose.
 
@@ -8684,6 +9315,7 @@ These rules don't depend on each other or interact to provide additional
 properties.
 ```toml
 rules.blocking_assignment_in_always_ff = true
+rules.blocking_assignment_in_always_latch = true
 rules.non_blocking_assignment_in_always_comb = true
 rules.case_default = true
 rules.enum_with_type = true
@@ -8692,6 +9324,7 @@ rules.keyword_forbidden_priority = true
 rules.keyword_forbidden_unique = true
 rules.keyword_forbidden_unique0 = true
 rules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
+rules.operator_case_equality = true
 ```
 
 This ruleset has further rules which don't depend on each other or combine
@@ -8761,10 +9394,13 @@ Rules in the below subset combine to provide an important property for the
 robust design of synthesizable hardware - that you can easily draw a schematic
 of what the synthesis result should look like.
 The two rules of thumb are to always fully specify decision logic, and never
-use sequential models for (what will be synthesized to) parallel logic.
+use procedural models for (what will be synthesized to) parallel logic.
 ```toml
 rules.explicit_case_default = true
 rules.explicit_if_else = true
+rules.loop_statement_in_always_comb = true
+rules.loop_statement_in_always_ff = true
+rules.loop_statement_in_always_latch = true
 rules.sequential_block_in_always_comb = true
 rules.sequential_block_in_always_ff = true
 rules.sequential_block_in_always_latch = true
@@ -8831,6 +9467,7 @@ See the explanations of individual rules for their details.
 
 ```toml
 rules.blocking_assignment_in_always_ff = true
+rules.blocking_assignment_in_always_latch = true
 rules.non_blocking_assignment_in_always_comb = true
 rules.case_default = true
 rules.enum_with_type = true
@@ -8839,6 +9476,7 @@ rules.keyword_forbidden_priority = true
 rules.keyword_forbidden_unique = true
 rules.keyword_forbidden_unique0 = true
 rules.level_sensitive_always = true
+rules.operator_case_equality = true
 ```
 
 
@@ -9146,7 +9784,6 @@ rules.style_commaleading = true
 
 This rule leads to the comma-leading style which, although perhaps unfamiliar
 to authors with a background in C or Python, has a number of advantages.
-
 - The rule is extremely simple, especially in comparison to the multitude of
   rules requried to format comma-trailing lists consistently.
 - A comma character is visually similar to bullet-point.
@@ -9170,6 +9807,12 @@ to authors with a background in C or Python, has a number of advantages.
 
 For some examples, please see the explanation of the **style_commaleading**
 rule.
+
+Additionally, `eventlist_or` mandates the use of `,` (comma) as the separator
+in `always_ff` sensitivity lists only for consistency and readabilty.
+```toml
+rules.eventlist_or = true
+```
 
 
 
