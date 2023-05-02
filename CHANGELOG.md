@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.7.1...Unreleased) - ReleaseDate
 
+* [Fixed] Bugfix: insert plugins in enabled hashmap during load [#243](https://github.com/dalance/svlint/pull/243)
+* [Added] New Rules: Addressing 4 of the outstanding new-rule issues. [#242](https://github.com/dalance/svlint/pull/242)
+
 ## [v0.7.1](https://github.com/dalance/svlint/compare/v0.7.0...v0.7.1) - 2023-03-23
 
 * [Changed] Update sv-parser
