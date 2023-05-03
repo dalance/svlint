@@ -1,6 +1,6 @@
 [package]
 name = "svlint"
-version = "0.7.1"
+version = "0.7.2"
 authors = ["dalance@gmail.com"]
 repository = "https://github.com/dalance/svlint"
 keywords = ["SystemVerilog", "Verilog", "lint", "svls"]
@@ -31,7 +31,7 @@ path = "src/mdgen.rs"
 anyhow                  = "1.0"
 enquote                 = "1.0"
 colored                 = "2.0"
-libloading              = "0.7"
+libloading              = "0.8"
 regex                   = "1.5"
 serde                   = "1.0"
 serde_derive            = "1.0"

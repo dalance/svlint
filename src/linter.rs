@@ -73,6 +73,7 @@ impl Linter {
                 unsafe { lib.get(b"get_plugin") };
             if let Ok(get_plugin) = get_plugin {
                 let plugin = unsafe { Box::from_raw(get_plugin()) };
+                self.ctl_enabled.insert(plugin.name(), true);
                 self.rules.push(plugin);
             }
         }

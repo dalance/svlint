@@ -298,7 +298,6 @@ rules.style_commaleading = true
 
 This rule leads to the comma-leading style which, although perhaps unfamiliar
 to authors with a background in C or Python, has a number of advantages.
-
 - The rule is extremely simple, especially in comparison to the multitude of
   rules requried to format comma-trailing lists consistently.
 - A comma character is visually similar to bullet-point.
@@ -322,4 +321,10 @@ to authors with a background in C or Python, has a number of advantages.
 
 For some examples, please see the explanation of the **style_commaleading**
 rule.
+
+Additionally, `eventlist_or` mandates the use of `,` (comma) as the separator
+in `always_ff` sensitivity lists only for consistency and readabilty.
+```toml
+rules.eventlist_or = true
+```
 

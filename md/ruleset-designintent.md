@@ -7,6 +7,7 @@ These rules don't depend on each other or interact to provide additional
 properties.
 ```toml
 rules.blocking_assignment_in_always_ff = true
+rules.blocking_assignment_in_always_latch = true
 rules.non_blocking_assignment_in_always_comb = true
 rules.case_default = true
 rules.enum_with_type = true
@@ -15,6 +16,7 @@ rules.keyword_forbidden_priority = true
 rules.keyword_forbidden_unique = true
 rules.keyword_forbidden_unique0 = true
 rules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
+rules.operator_case_equality = true
 ```
 
 This ruleset has further rules which don't depend on each other or combine
@@ -84,10 +86,13 @@ Rules in the below subset combine to provide an important property for the
 robust design of synthesizable hardware - that you can easily draw a schematic
 of what the synthesis result should look like.
 The two rules of thumb are to always fully specify decision logic, and never
-use sequential models for (what will be synthesized to) parallel logic.
+use procedural models for (what will be synthesized to) parallel logic.
 ```toml
 rules.explicit_case_default = true
 rules.explicit_if_else = true
+rules.loop_statement_in_always_comb = true
+rules.loop_statement_in_always_ff = true
+rules.loop_statement_in_always_latch = true
 rules.sequential_block_in_always_comb = true
 rules.sequential_block_in_always_ff = true
 rules.sequential_block_in_always_latch = true

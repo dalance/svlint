@@ -20,3 +20,4 @@ rules.style_keyword_maybelabel = true
 rules.style_keyword_new = true
 rules.style_keyword_newline = true
 rules.style_commaleading = true
+rules.eventlist_or = true
