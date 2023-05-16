@@ -1,4 +1,4 @@
--f testcases/resources/parent1.fl
--f testcases/resources/child2.fl
+-f testcases/application/resources/parent1.fl
+-f testcases/application/resources/child2.fl
 grandparent1_file1.sv
 +define+b=456

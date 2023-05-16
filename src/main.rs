@@ -471,6 +471,7 @@ mod tests {
         let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
         let path = Path::new(cargo_manifest_dir.as_str())
             .join("testcases")
+            .join("application")
             .join("resources")
             .join(s);
 
@@ -487,6 +488,7 @@ mod tests {
         let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
         let path = Path::new(cargo_manifest_dir.as_str())
             .join("testcases")
+            .join("application")
             .join("expected")
             .join(s);
 

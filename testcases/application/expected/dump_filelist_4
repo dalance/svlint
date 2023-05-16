@@ -1,4 +1,4 @@
-"$CARGO_MANIFEST_DIR/testcases/resources/child1.fl":
+"$CARGO_MANIFEST_DIR/testcases/application/resources/child1.fl":
   files:
     - "child1_file1.sv"
     - "child1_file2.sv"
@@ -14,7 +14,7 @@
     "B": "b"
     "C": "c"
     "VAR4":
-"$CARGO_MANIFEST_DIR/testcases/resources/child2.fl":
+"$CARGO_MANIFEST_DIR/testcases/application/resources/child2.fl":
   files:
     - "child2_file1.sv"
   incdirs:

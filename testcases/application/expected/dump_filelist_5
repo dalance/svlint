@@ -1,4 +1,4 @@
-"$CARGO_MANIFEST_DIR/testcases/resources/grandparent1.fl":
+"$CARGO_MANIFEST_DIR/testcases/application/resources/grandparent1.fl":
   files:
     - "child1_file1.sv"
     - "child1_file2.sv"
