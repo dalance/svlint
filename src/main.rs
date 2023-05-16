@@ -521,7 +521,7 @@ mod tests {
         }
     }
 
-    fn test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
+    fn syntaxrules_test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
         let s = format!("[rules]\n{} = true", rulename);
         let config: Config = toml::from_str(&s).unwrap();
 

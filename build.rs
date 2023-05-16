@@ -5,7 +5,7 @@ use std::io::{BufRead, BufReader, Read, Write};
 use std::path::Path;
 use walkdir::WalkDir;
 
-const RENAMED_RULES: &[(&str, &str, &str)] = &[
+const RENAMED_SYNTAXRULES: &[(&str, &str, &str)] = &[
     (
         "generate_keyword",
         "keyword_forbidden_generate",
@@ -56,29 +56,29 @@ const RENAMED_RULES: &[(&str, &str, &str)] = &[
     ),
 ];
 
-fn write_rules_rs(rules: &Vec<(String, String)>) -> () {
+fn write_rules_rs(syntaxrules: &Vec<(String, String)>) -> () {
     let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let out_dir = env::var("OUT_DIR").unwrap();
 
-    let o = Path::new(&out_dir).join("rules.rs");
+    let o = Path::new(&out_dir).join("syntaxrules.rs");
     let mut o = File::create(&o).unwrap();
 
-    for (rulename, _) in rules {
+    for (rulename, _) in syntaxrules {
         let _ = writeln!(
             o,
-            "#[path = \"{}/src/rules/{}.rs\"]",
+            "#[path = \"{}/src/syntaxrules/{}.rs\"]",
             root_dir.replace("\\", "\\\\"),
             rulename
         );
         let _ = writeln!(o, "pub mod {};", rulename);
     }
 
-    for (rulename, _) in rules {
+    for (rulename, _) in syntaxrules {
         let _ = writeln!(o, "pub use {}::*;", rulename);
     }
 }
 
-fn write_config_rules_rs(rules: &Vec<(String, String)>) -> () {
+fn write_config_rules_rs(syntaxrules: &Vec<(String, String)>) -> () {
     let out_dir = env::var("OUT_DIR").unwrap();
     let o = Path::new(&out_dir).join("config_rules.rs");
     let mut o = File::create(&o).unwrap();
@@ -86,16 +86,16 @@ fn write_config_rules_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "");
     let _ = writeln!(o, "#[derive(Clone, Debug, Deserialize, Serialize)]");
     let _ = writeln!(o, "#[serde(deny_unknown_fields)]");
-    let _ = writeln!(o, "pub struct ConfigRules {{");
+    let _ = writeln!(o, "pub struct ConfigSyntaxRules {{");
 
-    for (rulename, _) in rules {
+    for (rulename, _) in syntaxrules {
         let _ = writeln!(o, "    #[serde(default = \"default_as_false\")]");
         let _ = writeln!(o, "    pub {}: bool,", rulename);
     }
 
     let _ = writeln!(o, "");
 
-    for (original_rulename, _, _) in RENAMED_RULES {
+    for (original_rulename, _, _) in RENAMED_SYNTAXRULES {
         let _ = writeln!(
             o,
             "    #[serde(default = \"default_as_false\", skip_serializing)]"
@@ -106,7 +106,7 @@ fn write_config_rules_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "}}");
 }
 
-fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
+fn write_impl_config_rs(syntaxrules: &Vec<(String, String)>) -> () {
     let out_dir = env::var("OUT_DIR").unwrap();
     let o = Path::new(&out_dir).join("impl_config.rs");
     let mut o = File::create(&o).unwrap();
@@ -119,8 +119,8 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
 
     let _ = writeln!(o, "");
     let _ = writeln!(o, "    pub fn enable_all(mut self) -> Self {{");
-    for (rulename, _) in rules {
-        let _ = writeln!(o, "        self.rules.{} = true;", rulename);
+    for (rulename, _) in syntaxrules {
+        let _ = writeln!(o, "        self.syntaxrules.{} = true;", rulename);
     }
     let _ = writeln!(o, "");
     let _ = writeln!(o, "        self");
@@ -129,8 +129,8 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "");
     let _ = writeln!(o, "    pub fn gen_rules(&self) -> Vec<Box<dyn Rule>> {{");
     let _ = writeln!(o, "        let mut ret: Vec<Box<dyn Rule>> = Vec::new();");
-    for (rulename, structname) in rules {
-        let _ = writeln!(o, "        if self.rules.{} {{", rulename);
+    for (rulename, structname) in syntaxrules {
+        let _ = writeln!(o, "        if self.syntaxrules.{} {{", rulename);
         let _ = writeln!(
             o,
             "            ret.push(Box::new({}::default()));",
@@ -138,8 +138,8 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
         );
         let _ = writeln!(o, "        }}");
     }
-    for (original_rulename, _, structname) in RENAMED_RULES {
-        let _ = writeln!(o, "        if self.rules.{} {{", original_rulename);
+    for (original_rulename, _, structname) in RENAMED_SYNTAXRULES {
+        let _ = writeln!(o, "        if self.syntaxrules.{} {{", original_rulename);
         let _ = writeln!(
             o,
             "            ret.push(Box::new({}::default()));",
@@ -154,7 +154,7 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "");
     let _ = writeln!(o, "    pub fn gen_all_rules() -> Vec<Box<dyn Rule>> {{");
     let _ = writeln!(o, "        let mut ret: Vec<Box<dyn Rule>> = Vec::new();");
-    for (_, structname) in rules {
+    for (_, structname) in syntaxrules {
         let _ = writeln!(o, "        ret.push(Box::new({}::default()));", structname);
     }
     let _ = writeln!(o, "");
@@ -170,8 +170,8 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
         o,
         "        let mut ret: Vec<(String, String)> = Vec::new();"
     );
-    for (original_rulename, rulename, _) in RENAMED_RULES {
-        let _ = writeln!(o, "        if self.rules.{} {{", original_rulename);
+    for (original_rulename, rulename, _) in RENAMED_SYNTAXRULES {
+        let _ = writeln!(o, "        if self.syntaxrules.{} {{", original_rulename);
         let _ = writeln!(
             o,
             "            ret.push((String::from(\"{}\"), String::from(\"{}\")));",
@@ -185,10 +185,10 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
 
     let _ = writeln!(o, "");
     let _ = writeln!(o, "    pub fn migrate(&mut self) {{");
-    for (original_rulename, rulename, _) in RENAMED_RULES {
+    for (original_rulename, rulename, _) in RENAMED_SYNTAXRULES {
         let _ = writeln!(
             o,
-            "        self.rules.{} = self.rules.{};",
+            "        self.syntaxrules.{} = self.syntaxrules.{};",
             rulename, original_rulename
         );
     }
@@ -197,7 +197,7 @@ fn write_impl_config_rs(rules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "}} // impl Config");
 }
 
-fn write_test_rs(rules: &Vec<(String, String)>) -> () {
+fn write_test_rs(syntaxrules: &Vec<(String, String)>) -> () {
     let out_dir = env::var("OUT_DIR").unwrap();
     let o = Path::new(&out_dir).join("test.rs");
     let mut o = File::create(&o).unwrap();
@@ -206,7 +206,7 @@ fn write_test_rs(rules: &Vec<(String, String)>) -> () {
     // so visibility is useful when running `cargo test`.
     let test_verbose = ["blocking_assignment_in_always_ff"];
 
-    for (rulename, _) in rules {
+    for (rulename, _) in syntaxrules {
         let silent = if test_verbose.contains(&rulename.as_str()) {
             "false"
         } else {
@@ -216,7 +216,7 @@ fn write_test_rs(rules: &Vec<(String, String)>) -> () {
         for pass_not_fail in [true, false].iter() {
             let passfail = if *pass_not_fail { "pass" } else { "fail" };
 
-            let test_filename = format!("testcases/{}/{}.sv", passfail, rulename);
+            let test_filename = format!("testcases/syntaxrules/{}/{}.sv", passfail, rulename);
             let lines = BufReader::new(File::open(test_filename).unwrap())
                 .lines()
                 .collect::<Result<Vec<_>, _>>()
@@ -232,29 +232,29 @@ fn write_test_rs(rules: &Vec<(String, String)>) -> () {
             for (t, testcase) in testcases.into_iter().enumerate().map(|(i, x)| (i + 1, x)) {
                 // Write subtest to its own file.
                 let subtest_path = Path::new(&out_dir)
-                    .join(format!("{rulename}.{passfail}.{t}of{n_testcases}.sv"));
+                    .join(format!("syntaxrules.{rulename}.{passfail}.{t}of{n_testcases}.sv"));
                 let mut out_subtest = File::create(&subtest_path).unwrap();
                 for line in testcase {
                     let _ = writeln!(out_subtest, "{}", line);
                 }
 
-                // Create call to `main.rs::tests::test()` via `tests.rs`.
-                let subtest_name = format!("{rulename}_{passfail}_{t}of{n_testcases}");
+                // Create call to `main.rs::tests::syntaxrules_test()` via `tests.rs`.
+                let subtest_name = format!("syntaxrules_{rulename}_{passfail}_{t}of{n_testcases}");
                 let _ = writeln!(o, "#[test]");
                 let _ = writeln!(o, "fn {}() {{", subtest_name);
                 if *pass_not_fail {
                     let _ = writeln!(
                         o,
-                        "    test(\"{rulename}\", {subtest_path:?}, true, {silent}, false);"
+                        "    syntaxrules_test(\"{rulename}\", {subtest_path:?}, true, {silent}, false);"
                     );
                 } else {
                     let _ = writeln!(
                         o,
-                        "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, false);"
+                        "    syntaxrules_test(\"{rulename}\", {subtest_path:?}, false, {silent}, false);"
                     );
                     let _ = writeln!(
                         o,
-                        "    test(\"{rulename}\", {subtest_path:?}, false, {silent}, true);"
+                        "    syntaxrules_test(\"{rulename}\", {subtest_path:?}, false, {silent}, true);"
                     );
                 }
                 let _ = writeln!(o, "}}");
@@ -266,8 +266,8 @@ fn write_test_rs(rules: &Vec<(String, String)>) -> () {
 fn main() {
     let re_struct = Regex::new(r"pub struct ([a-zA-Z0-9]*)").unwrap();
 
-    let mut rules = Vec::new();
-    for entry in WalkDir::new("src/rules") {
+    let mut syntaxrules = Vec::new();
+    for entry in WalkDir::new("src/syntaxrules") {
         let entry = entry.unwrap();
         if entry.file_type().is_file() {
             let f = File::open(entry.path()).unwrap();
@@ -278,15 +278,15 @@ fn main() {
             if let Some(cap) = cap {
                 let struct_name = String::from(&cap[1]);
                 let file_name = String::from(entry.path().file_stem().unwrap().to_string_lossy());
-                rules.push((file_name, struct_name));
+                syntaxrules.push((file_name, struct_name));
             }
         }
     }
 
-    rules.sort_by(|a, b| a.0.cmp(&b.0));
+    syntaxrules.sort_by(|a, b| a.0.cmp(&b.0));
 
-    write_rules_rs(&rules);
-    write_config_rules_rs(&rules);
-    write_impl_config_rs(&rules);
-    write_test_rs(&rules);
+    write_rules_rs(&syntaxrules);
+    write_config_rules_rs(&syntaxrules);
+    write_impl_config_rs(&syntaxrules);
+    write_test_rs(&syntaxrules);
 }

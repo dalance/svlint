@@ -7,8 +7,13 @@ use serde_derive::{Deserialize, Serialize};
 pub struct Config {
     #[serde(default)]
     pub option: ConfigOption,
-    #[serde(default)]
-    pub rules: ConfigRules,
+
+    // Pre-v0.7.2, svlint supports only syntaxrules, so they're just called
+    // "rules" (instead of "syntaxrules").
+    // The serde alias allows either "rules" or "syntaxrules" to be used in
+    // the configuration files, usually `.svlint.toml`.
+    #[serde(default, alias = "rules")]
+    pub syntaxrules: ConfigSyntaxRules,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -150,7 +155,7 @@ impl Default for ConfigOption {
     }
 }
 
-impl Default for ConfigRules {
+impl Default for ConfigSyntaxRules {
     fn default() -> Self {
         toml::from_str("").unwrap()
     }

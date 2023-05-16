@@ -1,1 +1,1 @@
-include!(concat!(env!("OUT_DIR"), "/rules.rs"));
+include!(concat!(env!("OUT_DIR"), "/syntaxrules.rs"));
