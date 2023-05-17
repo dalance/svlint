@@ -1,4 +1,4 @@
-# Naming Convention Rules
+# Naming Convention Syntax Rules
 
 Rules for checking against naming conventions are named with either the suffix
 `_with_label` or one of these prefixes:

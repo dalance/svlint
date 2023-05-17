@@ -1,1 +1,1 @@
-# Functional Rules
+# Functional Syntax Rules
