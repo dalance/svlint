@@ -6,7 +6,7 @@ mod printer;
 mod rules;
 
 use crate::config::{Config, ConfigOption};
-use crate::linter::SyntaxRule;
+use crate::linter::{TextRule, SyntaxRule};
 use regex::Regex;
 use std::env;
 use std::fs::{File, read_dir};
@@ -172,7 +172,11 @@ fn partition_syntaxrules(
     (part_functional, part_naming, part_style)
 }
 
-fn write_manual_md(syntaxrules: Vec<Box<dyn SyntaxRule>>, rulesets: Vec<Ruleset>) -> () {
+fn write_manual_md(
+    _textrules: Vec<Box<dyn TextRule>>, // TODO
+    syntaxrules: Vec<Box<dyn SyntaxRule>>,
+    rulesets: Vec<Ruleset>,
+) -> () {
     let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let o = Path::new(&cargo_manifest_dir).join("MANUAL.md");
     let mut o = File::create(&o).unwrap();
@@ -322,6 +326,7 @@ pub fn main() {
         write_ruleset_toml(ruleset);
     }
 
+    let textrules = Config::gen_all_textrules();
     let syntaxrules = Config::gen_all_syntaxrules();
-    write_manual_md(syntaxrules, rulesets);
+    write_manual_md(textrules, syntaxrules, rulesets);
 }

@@ -2,13 +2,13 @@ use anyhow::{Context, Error};
 use clap::Parser;
 use enquote;
 use std::collections::HashMap;
-use std::fs::{File, OpenOptions};
+use std::fs::{read_to_string, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use sv_filelist_parser;
 use sv_parser::Error as SvParserError;
-use sv_parser::{parse_sv, preprocess, Define, DefineText};
+use sv_parser::{parse_sv_str, preprocess, Define, DefineText};
 use svlint::config::Config;
 use svlint::linter::Linter;
 use svlint::printer::Printer;
@@ -261,7 +261,22 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                 }
             }
         } else {
-            match parse_sv(&path, &defines, &includes, opt.ignore_include, false) {
+            let text: String = read_to_string(&path)?;
+
+            let mut beg: usize = 0;
+            for line in text.lines() {
+                for failed in linter.textrules_check(&line, &path, &beg) {
+                    pass = false;
+                    if !opt.silent {
+                        printer.print_failed(&failed, opt.single, opt.github_actions)?;
+                    }
+                }
+                beg += line.len(); // Track the byte offset.
+                // TODO: Does this work on Windows newlines?
+                beg += 1; // Account for the trailing newline character on each line.
+            }
+
+            match parse_sv_str(text.as_str(), &path, &defines, &includes, opt.ignore_include, false) {
                 Ok((syntax_tree, new_defines)) => {
                     for node in syntax_tree.into_iter().event() {
                         for failed in linter.syntaxrules_check(&syntax_tree, &node) {
@@ -521,8 +536,27 @@ mod tests {
         }
     }
 
+    fn textrules_test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
+        let s = format!("[textrules]\n{} = true", rulename);
+        let config: Config = toml::from_str(&s).unwrap();
+
+        let mut args = vec!["svlint"];
+        if silent {
+            args.push("--silent");
+        }
+        if oneline {
+            args.push("-1");
+        }
+        args.push(filename);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(false);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), pass_not_fail);
+    }
+
     fn syntaxrules_test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
-        let s = format!("[rules]\n{} = true", rulename);
+        let s = format!("[syntaxrules]\n{} = true", rulename);
         let config: Config = toml::from_str(&s).unwrap();
 
         let mut args = vec!["svlint"];

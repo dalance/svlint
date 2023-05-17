@@ -1,4 +1,4 @@
-use crate::linter::SyntaxRule;
+use crate::linter::{TextRule, SyntaxRule};
 use crate::rules::*;
 use regex::Regex;
 use serde_derive::{Deserialize, Serialize};
@@ -7,6 +7,9 @@ use serde_derive::{Deserialize, Serialize};
 pub struct Config {
     #[serde(default)]
     pub option: ConfigOption,
+
+    #[serde(default)]
+    pub textrules: ConfigTextRules,
 
     // Pre-v0.7.2, svlint supports only syntaxrules, so they're just called
     // "rules" (instead of "syntaxrules").
@@ -20,6 +23,9 @@ pub struct Config {
 pub struct ConfigOption {
     #[serde(with = "serde_regex", default)]
     pub exclude_paths: Vec<Regex>,
+
+    #[serde(default = "default_textwidth")]
+    pub textwidth: usize,
 
     #[serde(default = "default_indent")]
     pub indent: usize,
@@ -155,6 +161,12 @@ impl Default for ConfigOption {
     }
 }
 
+impl Default for ConfigTextRules {
+    fn default() -> Self {
+        toml::from_str("").unwrap()
+    }
+}
+
 impl Default for ConfigSyntaxRules {
     fn default() -> Self {
         toml::from_str("").unwrap()
@@ -169,6 +181,10 @@ fn default_as_true() -> bool {
 #[allow(dead_code)]
 fn default_as_false() -> bool {
     false
+}
+
+fn default_textwidth() -> usize {
+    80
 }
 
 fn default_indent() -> usize {

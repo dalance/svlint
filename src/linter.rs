@@ -6,6 +6,26 @@ use std::path::{Path, PathBuf};
 use sv_parser::{unwrap_locate, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Clone, Copy)]
+pub enum TextRuleResult {
+    Pass,
+    Fail {
+        offset: usize, // Character index, on this line, beginning failure.
+        len: usize, // Number of characters causing failure.
+    },
+}
+
+pub trait TextRule: Sync + Send {
+    fn check(
+        &mut self,
+        text: &str,
+        config: &ConfigOption,
+    ) -> TextRuleResult;
+    fn name(&self) -> String;
+    fn hint(&self, config: &ConfigOption) -> String;
+    fn reason(&self) -> String;
+}
+
+#[derive(Clone, Copy)]
 pub enum SyntaxRuleResult {
     Pass,
     Fail,
@@ -27,6 +47,7 @@ pub trait SyntaxRule: Sync + Send {
 
 pub struct Linter {
     option: ConfigOption,
+    textrules: Vec<Box<dyn TextRule>>,
     syntaxrules: Vec<Box<dyn SyntaxRule>>,
     plugins: Vec<Library>,
     re_ctl: Regex,
@@ -45,10 +66,11 @@ pub struct LintFailed {
 
 impl Linter {
     pub fn new(config: Config) -> Linter {
+        let textrules = config.gen_textrules();
         let syntaxrules = config.gen_syntaxrules();
 
+        // NOTE: Only syntaxrules are comment-controllable, not textrules.
         let re_ctl = Regex::new(r"/\*\s*svlint\s+(on|off)\s+([a-z0-9_]+)\s*\*/").unwrap();
-
         let mut ctl_enabled = HashMap::new();
         for rule in &syntaxrules {
             ctl_enabled.insert(rule.name(), true);
@@ -56,6 +78,7 @@ impl Linter {
 
         Linter {
             option: config.option,
+            textrules,
             syntaxrules,
             plugins: Vec::new(),
             re_ctl,
@@ -77,6 +100,34 @@ impl Linter {
                 self.syntaxrules.push(plugin);
             }
         }
+    }
+
+    pub fn textrules_check(&mut self, line: &str, path: &Path, beg: &usize) -> Vec<LintFailed> {
+
+        let mut ret = Vec::new();
+        'outer: for rule in &mut self.textrules {
+
+            match rule.check(line, &self.option) {
+                TextRuleResult::Fail {offset, len} => {
+                    for exclude in &self.option.exclude_paths {
+                        if exclude.is_match(&path.to_string_lossy()) {
+                            continue 'outer;
+                        }
+                    }
+                    let result = LintFailed {
+                        path: path.to_path_buf(),
+                        beg: beg + offset,
+                        len,
+                        name: rule.name(),
+                        hint: rule.hint(&self.option),
+                        reason: rule.reason(),
+                    };
+                    ret.push(result);
+                }
+                _ => (),
+            }
+        }
+        ret
     }
 
     fn update_ctl_enabled(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) {

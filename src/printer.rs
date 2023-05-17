@@ -284,13 +284,8 @@ impl Printer {
 
             self.write(&format!("{} |", column), Some(Color::BrightBlue));
 
-            self.write(
-                &format!(
-                    " {}\n",
-                    String::from_utf8_lossy(&src.as_bytes()[beg..next_crlf])
-                ),
-                Some(Color::White),
-            );
+            let line = String::from_utf8_lossy(&src.as_bytes()[beg..next_crlf]);
+            self.write(&format!(" {}\n", line), Some(Color::White));
 
             self.write(
                 &format!("{}|", " ".repeat(column_len + 1)),
@@ -300,7 +295,7 @@ impl Printer {
             self.write(
                 &format!(
                     " {}{}",
-                    " ".repeat(pos - beg),
+                    " ".repeat(pos - beg), // TODO: Use number of characters, not bytes.
                     "^".repeat(cmp::min(print_pos + print_len, next_crlf) - print_pos)
                 ),
                 Some(Color::BrightYellow),
@@ -319,7 +314,7 @@ impl Printer {
                 self.write(
                     &format!(
                         " {}{}",
-                        " ".repeat(pos - beg),
+                        " ".repeat(pos - beg), // TODO: Use number of characters, not bytes.
                         " ".repeat(cmp::min(print_pos + print_len, next_crlf) - print_pos)
                     ),
                     Some(Color::Yellow),
