@@ -128,7 +128,7 @@ fn write_md_syntaxrules(o: &mut File, syntaxrules: Vec<Box<dyn SyntaxRule>>) -> 
         let _ = writeln!(o, "");
         let _ = writeln!(o, "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         let _ = writeln!(o, "");
-        let _ = writeln!(o, "## Rule: `{}`\n", rule.name());
+        let _ = writeln!(o, "## Syntax Rule: `{}`\n", rule.name());
 
         let _ = writeln!(o, "### Hint\n");
         let _ = writeln!(o, "{}\n", rule.hint(&ConfigOption::default()));
