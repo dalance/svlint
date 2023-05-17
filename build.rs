@@ -152,7 +152,7 @@ fn write_impl_config_rs(syntaxrules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "    }}");
 
     let _ = writeln!(o, "");
-    let _ = writeln!(o, "    pub fn gen_all_rules() -> Vec<Box<dyn Rule>> {{");
+    let _ = writeln!(o, "    pub fn gen_all_syntaxrules() -> Vec<Box<dyn Rule>> {{");
     let _ = writeln!(o, "        let mut ret: Vec<Box<dyn Rule>> = Vec::new();");
     for (_, structname) in syntaxrules {
         let _ = writeln!(o, "        ret.push(Box::new({}::default()));", structname);
