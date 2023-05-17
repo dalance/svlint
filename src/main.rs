@@ -264,7 +264,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
             match parse_sv(&path, &defines, &includes, opt.ignore_include, false) {
                 Ok((syntax_tree, new_defines)) => {
                     for node in syntax_tree.into_iter().event() {
-                        for failed in linter.check(&syntax_tree, &node) {
+                        for failed in linter.syntaxrules_check(&syntax_tree, &node) {
                             pass = false;
                             if !opt.silent {
                                 printer.print_failed(&failed, opt.single, opt.github_actions)?;

@@ -104,7 +104,7 @@ impl Linter {
         }
     }
 
-    pub fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> Vec<LintFailed> {
+    pub fn syntaxrules_check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> Vec<LintFailed> {
         self.update_ctl_enabled(syntax_tree, event);
 
         let node = match event {
