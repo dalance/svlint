@@ -107,8 +107,8 @@ Svlint supports plugin rules, an example of which is available
 
 A plugin rule is one which is compiled separately to the main svlint binary,
 and is loaded at runtime.
-In the same way as integrated rules, a plugin rule must implement the `Rule`
-trait, i.e. `check`, `name`, `hint`, and `reason`.
+In the same way as integrated rules, a plugin rule must implement the
+`SyntaxRule` trait, i.e. `check`, `name`, `hint`, and `reason`.
 The `hint` and `reason` methods allow plugin rules to provide information back
 to the user on the terminal, but they do not require testcases or an
 explanation.
