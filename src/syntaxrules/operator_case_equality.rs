@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_node, unwrap_locate, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -11,11 +11,11 @@ impl SyntaxRule for OperatorCaseEquality {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
 
@@ -32,15 +32,15 @@ impl SyntaxRule for OperatorCaseEquality {
                     let s = syntax_tree.get_str(loc).unwrap();
 
                     if (s == "===") || (s == "!==") {
-                        RuleResult::Fail
+                        SyntaxRuleResult::Fail
                     } else {
-                        RuleResult::Pass
+                        SyntaxRuleResult::Pass
                     }
                 } else {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

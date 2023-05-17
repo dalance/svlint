@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use regex::Regex;
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, WhiteSpace};
 
@@ -15,7 +15,7 @@ impl SyntaxRule for StyleTrailingwhitespace {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         if self.re.is_none() {
             self.re = Some(Regex::new(r"[ \t]+[\n\v\f\r]").unwrap());
         }
@@ -60,19 +60,19 @@ impl SyntaxRule for StyleTrailingwhitespace {
                 n
             }
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
             RefNode::WhiteSpace(_) => {
                 let re = self.re.as_ref().unwrap();
                 if re.is_match(&self.buffer) {
-                    RuleResult::Fail
+                    SyntaxRuleResult::Fail
                 } else {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

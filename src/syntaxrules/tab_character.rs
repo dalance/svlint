@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, WhiteSpace};
 
 #[derive(Default)]
@@ -11,29 +11,29 @@ impl SyntaxRule for TabCharacter {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
             RefNode::WhiteSpace(WhiteSpace::Space(x)) => {
                 let text = syntax_tree.get_str(x).unwrap();
                 match text.find('\t') {
-                    Some(x) => RuleResult::FailAt(x, 1),
-                    None => RuleResult::Pass,
+                    Some(x) => SyntaxRuleResult::FailAt(x, 1),
+                    None => SyntaxRuleResult::Pass,
                 }
             }
             RefNode::WhiteSpace(WhiteSpace::Newline(x)) => {
                 let text = syntax_tree.get_str(x).unwrap();
                 match text.find('\t') {
-                    Some(x) => RuleResult::FailAt(x, 1),
-                    None => RuleResult::Pass,
+                    Some(x) => SyntaxRuleResult::FailAt(x, 1),
+                    None => SyntaxRuleResult::Pass,
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -13,38 +13,38 @@ impl SyntaxRule for KeywordRequiredGenerate {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         match event {
             NodeEvent::Enter(RefNode::GenerateRegion(_)) => {
                 self.generate_region.push(());
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
             NodeEvent::Leave(RefNode::GenerateRegion(_)) => {
                 self.generate_region.pop();
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
             NodeEvent::Enter(RefNode::IfGenerateConstruct(_)) => {
                 if self.generate_region.last().is_some() {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 } else {
-                    RuleResult::Fail
+                    SyntaxRuleResult::Fail
                 }
             }
             NodeEvent::Enter(RefNode::CaseGenerateConstruct(_)) => {
                 if self.generate_region.last().is_some() {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 } else {
-                    RuleResult::Fail
+                    SyntaxRuleResult::Fail
                 }
             }
             NodeEvent::Enter(RefNode::LoopGenerateConstruct(_)) => {
                 if self.generate_region.last().is_some() {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 } else {
-                    RuleResult::Fail
+                    SyntaxRuleResult::Fail
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

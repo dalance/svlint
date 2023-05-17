@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -11,11 +11,11 @@ impl SyntaxRule for SequentialBlockInAlwaysFf {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
 
@@ -26,15 +26,15 @@ impl SyntaxRule for SequentialBlockInAlwaysFf {
                     AlwaysKeyword::AlwaysFf(_) => {
                         if let Some(x) = unwrap_node!(x, SeqBlock) {
                             let loc = unwrap_locate!(x.clone()).unwrap();
-                            RuleResult::FailLocate(*loc)
+                            SyntaxRuleResult::FailLocate(*loc)
                         } else {
-                            RuleResult::Pass
+                            SyntaxRuleResult::Pass
                         }
                     }
-                    _ => RuleResult::Pass,
+                    _ => SyntaxRuleResult::Pass,
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

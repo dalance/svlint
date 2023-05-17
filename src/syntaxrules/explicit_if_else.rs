@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -13,7 +13,7 @@ impl SyntaxRule for ExplicitIfElse {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => {
                 match x {
@@ -31,7 +31,7 @@ impl SyntaxRule for ExplicitIfElse {
                     }
                     _ => ()
                 }
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match (self.under_always_construct, node) {
@@ -39,12 +39,12 @@ impl SyntaxRule for ExplicitIfElse {
                 let (_, ref b, _, _, _, ref f) = &x.nodes;
                 let loc = unwrap_locate!(b).unwrap();
                 if f.is_none() {
-                    RuleResult::FailLocate(*loc)
+                    SyntaxRuleResult::FailLocate(*loc)
                 } else {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

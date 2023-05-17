@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use sv_parser::{unwrap_locate, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Clone, Copy)]
-pub enum RuleResult {
+pub enum SyntaxRuleResult {
     Pass,
     Fail,
     FailAt(usize, usize),
@@ -19,7 +19,7 @@ pub trait SyntaxRule: Sync + Send {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         config: &ConfigOption,
-    ) -> RuleResult;
+    ) -> SyntaxRuleResult;
     fn name(&self) -> String;
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
@@ -127,7 +127,7 @@ impl Linter {
             }
 
             match rule.check(syntax_tree, event, &self.option) {
-                RuleResult::Fail => {
+                SyntaxRuleResult::Fail => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
                         for exclude in &self.option.exclude_paths {
                             if exclude.is_match(&path.to_string_lossy()) {
@@ -145,7 +145,7 @@ impl Linter {
                         ret.push(result);
                     }
                 }
-                RuleResult::FailAt(offset, len) => {
+                SyntaxRuleResult::FailAt(offset, len) => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
                         for exclude in &self.option.exclude_paths {
                             if exclude.is_match(&path.to_string_lossy()) {
@@ -163,7 +163,7 @@ impl Linter {
                         ret.push(result);
                     }
                 }
-                RuleResult::FailLocate(x) => {
+                SyntaxRuleResult::FailLocate(x) => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&x) {
                         for exclude in &self.option.exclude_paths {
                             if exclude.is_match(&path.to_string_lossy()) {
@@ -194,7 +194,7 @@ pub fn check_regex(
     id: Option<RefNode>,
     syntax_tree: &SyntaxTree,
     re: &Regex,
-) -> RuleResult {
+) -> SyntaxRuleResult {
     let loc: &Locate = match id {
         Some(x) => unwrap_locate!(x),
         _ => None,
@@ -204,9 +204,9 @@ pub fn check_regex(
     let is_match: bool = re.is_match(syntax_tree.get_str(loc).unwrap());
 
     if is_match == required_not_forbidden {
-        RuleResult::Pass
+        SyntaxRuleResult::Pass
     } else {
-        RuleResult::Fail
+        SyntaxRuleResult::Fail
     }
 }
 
@@ -215,7 +215,7 @@ pub fn check_prefix(
     id: Option<RefNode>,
     syntax_tree: &SyntaxTree,
     prefix: &String,
-) -> RuleResult {
+) -> SyntaxRuleResult {
     let loc: &Locate = match id {
         Some(x) => unwrap_locate!(x),
         _ => None,
@@ -225,8 +225,8 @@ pub fn check_prefix(
     let is_prefixed: bool = syntax_tree.get_str(loc).unwrap().starts_with(prefix);
 
     if is_prefixed {
-        RuleResult::Pass
+        SyntaxRuleResult::Pass
     } else {
-        RuleResult::Fail
+        SyntaxRuleResult::Fail
     }
 }

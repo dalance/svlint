@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -11,11 +11,11 @@ impl SyntaxRule for LowercamelcaseInterface {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
@@ -39,12 +39,12 @@ impl SyntaxRule for LowercamelcaseInterface {
                 };
 
                 if is_lowercamelcase {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 } else {
-                    RuleResult::Fail
+                    SyntaxRuleResult::Fail
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

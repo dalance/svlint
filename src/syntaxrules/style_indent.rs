@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use regex::Regex;
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
@@ -14,7 +14,7 @@ impl SyntaxRule for StyleIndent {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         if self.re.is_none() {
             self.re = Some(Regex::new(r"(?P<nl>[\n\v\f\r]+)(?P<sp>[ ]*)").unwrap());
         }
@@ -22,7 +22,7 @@ impl SyntaxRule for StyleIndent {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
@@ -32,12 +32,12 @@ impl SyntaxRule for StyleIndent {
                 for cap in re.captures_iter(&t) {
                     let sp = &cap["sp"];
                     if 0 != (sp.len() % option.indent) {
-                        return RuleResult::Fail;
+                        return SyntaxRuleResult::Fail;
                     }
                 }
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -11,16 +11,16 @@ impl SyntaxRule for KeywordForbiddenAlways {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
-            RefNode::AlwaysKeyword(AlwaysKeyword::Always(_)) => RuleResult::Fail,
-            _ => RuleResult::Pass,
+            RefNode::AlwaysKeyword(AlwaysKeyword::Always(_)) => SyntaxRuleResult::Fail,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

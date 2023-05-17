@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -13,7 +13,7 @@ impl SyntaxRule for ParameterDefaultValue {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => {
                 match x {
@@ -31,7 +31,7 @@ impl SyntaxRule for ParameterDefaultValue {
                     }
                     _ => ()
                 }
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match (self.under_parameter_port_list, node) {
@@ -39,12 +39,12 @@ impl SyntaxRule for ParameterDefaultValue {
                 let (_, _, a) = &x.nodes;
 
                 if a.is_none() {
-                    RuleResult::Fail
+                    SyntaxRuleResult::Fail
                 } else {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

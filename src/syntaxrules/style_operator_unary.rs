@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use regex::Regex;
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
@@ -14,7 +14,7 @@ impl SyntaxRule for StyleOperatorUnary {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         /*
         re_succ matches the unary symbol, then what is allowed after the
         operator symbol.
@@ -27,7 +27,7 @@ impl SyntaxRule for StyleOperatorUnary {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
 
@@ -47,12 +47,12 @@ impl SyntaxRule for StyleOperatorUnary {
         if let Some(t) = s {
             let re_succ = self.re_succ.as_ref().unwrap();
             if re_succ.is_match(t) {
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             } else {
-                RuleResult::Fail
+                SyntaxRuleResult::Fail
             }
         } else {
-            RuleResult::Pass
+            SyntaxRuleResult::Pass
         }
     }
 

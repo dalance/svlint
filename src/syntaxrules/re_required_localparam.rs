@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, SyntaxRule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, SyntaxRuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -15,7 +15,7 @@ impl SyntaxRule for ReRequiredLocalparam {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         if self.re.is_none() {
             self.re = Some(Regex::new(&option.re_required_localparam).unwrap());
         }
@@ -37,7 +37,7 @@ impl SyntaxRule for ReRequiredLocalparam {
                     }
                     _ => ()
                 }
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
 
@@ -46,7 +46,7 @@ impl SyntaxRule for ReRequiredLocalparam {
                 check_regex(true, unwrap_node!(*x, Identifier),
                             &syntax_tree, &self.re.as_ref().unwrap())
             }
-            _ => RuleResult::Pass
+            _ => SyntaxRuleResult::Pass
         }
     }
 

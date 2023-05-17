@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{ForInitialization, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -11,18 +11,18 @@ impl SyntaxRule for LoopVariableDeclaration {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
             RefNode::ForInitialization(ForInitialization::ListOfVariableAssignments(_)) => {
-                RuleResult::Fail
+                SyntaxRuleResult::Fail
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

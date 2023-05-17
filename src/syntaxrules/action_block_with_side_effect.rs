@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -14,7 +14,7 @@ impl SyntaxRule for ActionBlockWithSideEffect {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         if self.re.is_none() {
             let io_tasks =
                 [ "[f]?display[bho]?" // {{{
@@ -58,7 +58,7 @@ impl SyntaxRule for ActionBlockWithSideEffect {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
 
@@ -84,12 +84,12 @@ impl SyntaxRule for ActionBlockWithSideEffect {
                 };
 
                 if let Some(loc) = loc {
-                    RuleResult::FailLocate(*loc)
+                    SyntaxRuleResult::FailLocate(*loc)
                 } else {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

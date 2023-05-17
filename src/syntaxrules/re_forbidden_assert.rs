@@ -1,12 +1,12 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, SyntaxRule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, SyntaxRuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct ReForbiddenAssert {
     re: Option<Regex>,
-    under_statement: Option<RuleResult>,
+    under_statement: Option<SyntaxRuleResult>,
 }
 
 impl SyntaxRule for ReForbiddenAssert {
@@ -15,7 +15,7 @@ impl SyntaxRule for ReForbiddenAssert {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         if self.re.is_none() {
             self.re = Some(Regex::new(&option.re_forbidden_assert).unwrap());
         }
@@ -43,7 +43,7 @@ impl SyntaxRule for ReForbiddenAssert {
                     }
                     _ => ()
                 }
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
 
@@ -53,17 +53,17 @@ impl SyntaxRule for ReForbiddenAssert {
                     check_regex(false, unwrap_node!(*x, BlockIdentifier),
                                 &syntax_tree, &self.re.as_ref().unwrap())
                 } else {
-                    RuleResult::Pass // No check on anonymous immediate assertions.
+                    SyntaxRuleResult::Pass // No check on anonymous immediate assertions.
                 }
             }
             RefNode::SimpleImmediateAssertStatement(_) |
             RefNode::DeferredImmediateAssertStatement(_) => {
                 match self.under_statement {
                     Some(r) => r,
-                    None => RuleResult::Pass,
+                    None => SyntaxRuleResult::Pass,
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

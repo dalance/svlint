@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{
     unwrap_locate, unwrap_node, GenerateBlock, Locate, NodeEvent, RefNode, SyntaxTree,
 };
@@ -13,11 +13,11 @@ impl SyntaxRule for GenerateForWithLabel {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
@@ -44,14 +44,14 @@ impl SyntaxRule for GenerateForWithLabel {
                         };
 
                         match (a.is_some(), is_prefixed) {
-                            (true, true) => RuleResult::Pass,
-                            _ => RuleResult::Fail,
+                            (true, true) => SyntaxRuleResult::Pass,
+                            _ => SyntaxRuleResult::Fail,
                         }
                     }
-                    _ => RuleResult::Fail,
+                    _ => SyntaxRuleResult::Fail,
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

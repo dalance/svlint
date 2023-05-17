@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -141,11 +141,11 @@ impl SyntaxRule for FunctionSameAsSystemFunction {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
@@ -155,15 +155,15 @@ impl SyntaxRule for FunctionSameAsSystemFunction {
                     RefNode::FunctionIdentifier(a) => {
                         let a = syntax_tree.get_str(a).unwrap();
                         if SYSTEM_FUNCTION.contains(&a) {
-                            RuleResult::Fail
+                            SyntaxRuleResult::Fail
                         } else {
-                            RuleResult::Pass
+                            SyntaxRuleResult::Pass
                         }
                     }
                     _ => unreachable!(),
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

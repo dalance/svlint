@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{
     unwrap_locate, unwrap_node, GenerateBlock, Locate, NodeEvent, RefNode, SyntaxTree,
 };
@@ -13,11 +13,11 @@ impl SyntaxRule for GenerateIfWithLabel {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
@@ -63,41 +63,41 @@ impl SyntaxRule for GenerateIfWithLabel {
                                                 };
 
                                                 if is_prefixed {
-                                                    RuleResult::Pass
+                                                    SyntaxRuleResult::Pass
                                                 } else {
                                                     // failed because a label of 'else' doesn't have prefix
-                                                    RuleResult::FailLocate(*else_locate)
+                                                    SyntaxRuleResult::FailLocate(*else_locate)
                                                 }
                                             }
                                             _ => {
                                                 // failed because a label of 'else' is not found
-                                                RuleResult::FailLocate(*else_locate)
+                                                SyntaxRuleResult::FailLocate(*else_locate)
                                             }
                                         }
                                     }
                                     _ => {
                                         if is_prefixed {
-                                            RuleResult::Pass
+                                            SyntaxRuleResult::Pass
                                         } else {
                                             // failed because a label of 'if' doesn't have prefix
-                                            RuleResult::Fail
+                                            SyntaxRuleResult::Fail
                                         }
                                     }
                                 },
                                 // there is no 'else' to have a label
-                                None => RuleResult::Pass,
+                                None => SyntaxRuleResult::Pass,
                             }
                         } else {
                             // failed because a label of 'if' is not found
                             // OR the label doesn't have prefix
-                            RuleResult::Fail
+                            SyntaxRuleResult::Fail
                         }
                     }
                     // failed because 'begin' of 'if' is not found
-                    _ => RuleResult::Fail,
+                    _ => SyntaxRuleResult::Fail,
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{
     unwrap_node, DataType, IntegerAtomType, IntegerVectorType, NodeEvent, RefNode, SyntaxTree,
 };
@@ -13,11 +13,11 @@ impl SyntaxRule for ParameterTypeTwostate {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
@@ -28,8 +28,8 @@ impl SyntaxRule for ParameterTypeTwostate {
                     Some(RefNode::DataType(DataType::Atom(x))) => {
                         let (t, _) = &x.nodes;
                         match t {
-                            IntegerAtomType::Integer(_) => RuleResult::Fail,
-                            _ => RuleResult::Pass,
+                            IntegerAtomType::Integer(_) => SyntaxRuleResult::Fail,
+                            _ => SyntaxRuleResult::Pass,
                         }
                     }
 
@@ -37,17 +37,17 @@ impl SyntaxRule for ParameterTypeTwostate {
                         let (t, _, _) = &x.nodes;
                         match t {
                             IntegerVectorType::Logic(_) | IntegerVectorType::Reg(_) => {
-                                RuleResult::Fail
+                                SyntaxRuleResult::Fail
                             }
-                            _ => RuleResult::Pass,
+                            _ => SyntaxRuleResult::Pass,
                         }
                     }
 
                     // Non-integer type -> verif not a synthesizable design.
-                    _ => RuleResult::Pass,
+                    _ => SyntaxRuleResult::Pass,
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

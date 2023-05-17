@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
 #[derive(Default)]
@@ -11,11 +11,11 @@ impl SyntaxRule for MultilineForBegin {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
@@ -31,15 +31,15 @@ impl SyntaxRule for MultilineForBegin {
                         StatementItem::SeqBlock(_) => (),
                         _ => {
                             if for_str.contains('\n') {
-                                return RuleResult::Fail;
+                                return SyntaxRuleResult::Fail;
                             }
                         }
                     }
                 }
 
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

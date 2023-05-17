@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -18,7 +18,7 @@ impl SyntaxRule for FunctionWithAutomatic {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         match event {
             NodeEvent::Enter(RefNode::ModuleAnsiHeader(x)) => {
                 let (_, _, ref a, _, _, _, _, _) = x.nodes;
@@ -29,7 +29,7 @@ impl SyntaxRule for FunctionWithAutomatic {
                     Some(sv_parser::Lifetime::Static(_)) => self.lifetimes.push(Lifetime::Static),
                     _ => (),
                 }
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
             NodeEvent::Enter(RefNode::ModuleNonansiHeader(x)) => {
                 let (_, _, ref a, _, _, _, _, _) = x.nodes;
@@ -40,7 +40,7 @@ impl SyntaxRule for FunctionWithAutomatic {
                     Some(sv_parser::Lifetime::Static(_)) => self.lifetimes.push(Lifetime::Static),
                     _ => (),
                 }
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
             NodeEvent::Enter(RefNode::InterfaceAnsiHeader(x)) => {
                 let (_, _, ref a, _, _, _, _, _) = x.nodes;
@@ -51,7 +51,7 @@ impl SyntaxRule for FunctionWithAutomatic {
                     Some(sv_parser::Lifetime::Static(_)) => self.lifetimes.push(Lifetime::Static),
                     _ => (),
                 }
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
             NodeEvent::Enter(RefNode::InterfaceNonansiHeader(x)) => {
                 let (_, _, ref a, _, _, _, _, _) = x.nodes;
@@ -62,7 +62,7 @@ impl SyntaxRule for FunctionWithAutomatic {
                     Some(sv_parser::Lifetime::Static(_)) => self.lifetimes.push(Lifetime::Static),
                     _ => (),
                 }
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
             NodeEvent::Enter(RefNode::ProgramAnsiHeader(x)) => {
                 let (_, _, ref a, _, _, _, _, _) = x.nodes;
@@ -73,7 +73,7 @@ impl SyntaxRule for FunctionWithAutomatic {
                     Some(sv_parser::Lifetime::Static(_)) => self.lifetimes.push(Lifetime::Static),
                     _ => (),
                 }
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
             NodeEvent::Enter(RefNode::ProgramNonansiHeader(x)) => {
                 let (_, _, ref a, _, _, _, _, _) = x.nodes;
@@ -84,7 +84,7 @@ impl SyntaxRule for FunctionWithAutomatic {
                     Some(sv_parser::Lifetime::Static(_)) => self.lifetimes.push(Lifetime::Static),
                     _ => (),
                 }
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
             NodeEvent::Enter(RefNode::PackageDeclaration(x)) => {
                 let (_, _, ref a, _, _, _, _, _, _) = x.nodes;
@@ -95,25 +95,25 @@ impl SyntaxRule for FunctionWithAutomatic {
                     Some(sv_parser::Lifetime::Static(_)) => self.lifetimes.push(Lifetime::Static),
                     _ => (),
                 }
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
             NodeEvent::Enter(RefNode::ClassDeclaration(_)) => {
                 self.lifetimes.push(Lifetime::Automatic);
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
             NodeEvent::Enter(RefNode::FunctionDeclaration(x)) => {
                 let (_, ref a, _) = x.nodes;
                 match a {
-                    Some(sv_parser::Lifetime::Automatic(_)) => RuleResult::Pass,
-                    Some(sv_parser::Lifetime::Static(_)) => RuleResult::Fail,
+                    Some(sv_parser::Lifetime::Automatic(_)) => SyntaxRuleResult::Pass,
+                    Some(sv_parser::Lifetime::Static(_)) => SyntaxRuleResult::Fail,
                     None => {
                         if let Some(x) = self.lifetimes.last() {
                             match x {
-                                Lifetime::Automatic => RuleResult::Pass,
-                                Lifetime::Static => RuleResult::Fail,
+                                Lifetime::Automatic => SyntaxRuleResult::Pass,
+                                Lifetime::Static => SyntaxRuleResult::Fail,
                             }
                         } else {
-                            RuleResult::Fail
+                            SyntaxRuleResult::Fail
                         }
                     }
                 }
@@ -127,9 +127,9 @@ impl SyntaxRule for FunctionWithAutomatic {
             | NodeEvent::Leave(RefNode::PackageDeclaration(_))
             | NodeEvent::Leave(RefNode::ClassDeclaration(_)) => {
                 self.lifetimes.pop();
-                RuleResult::Pass
+                SyntaxRuleResult::Pass
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

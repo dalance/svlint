@@ -1,13 +1,13 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, SyntaxRule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, SyntaxRuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct ReRequiredAssertProperty {
     re: Option<Regex>,
-    under_statement: Option<RuleResult>,
-    under_concurrent_assertion_item_statement: Option<RuleResult>,
+    under_statement: Option<SyntaxRuleResult>,
+    under_concurrent_assertion_item_statement: Option<SyntaxRuleResult>,
 }
 
 impl SyntaxRule for ReRequiredAssertProperty {
@@ -16,7 +16,7 @@ impl SyntaxRule for ReRequiredAssertProperty {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         if self.re.is_none() {
             self.re = Some(Regex::new(&option.re_required_assert_property).unwrap());
         }
@@ -56,7 +56,7 @@ impl SyntaxRule for ReRequiredAssertProperty {
                     }
                     _ => ()
                 }
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
 
@@ -65,10 +65,10 @@ impl SyntaxRule for ReRequiredAssertProperty {
                 match (self.under_statement, self.under_concurrent_assertion_item_statement) {
                     (Some(r), None) => r,
                     (None, Some(r)) => r,
-                    _ => RuleResult::Pass,
+                    _ => SyntaxRuleResult::Pass,
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

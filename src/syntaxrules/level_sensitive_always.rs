@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -11,11 +11,11 @@ impl SyntaxRule for LevelSensitiveAlways {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
@@ -26,15 +26,15 @@ impl SyntaxRule for LevelSensitiveAlways {
                 match always {
                     RefNode::AlwaysKeyword(AlwaysKeyword::Always(_)) => {
                         if edge.is_some() {
-                            RuleResult::Pass
+                            SyntaxRuleResult::Pass
                         } else {
-                            RuleResult::Fail
+                            SyntaxRuleResult::Fail
                         }
                     }
-                    _ => RuleResult::Pass,
+                    _ => SyntaxRuleResult::Pass,
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

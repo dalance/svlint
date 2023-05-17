@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, SyntaxRule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, SyntaxRuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -14,7 +14,7 @@ impl SyntaxRule for ReForbiddenModport {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         if self.re.is_none() {
             self.re = Some(Regex::new(&option.re_forbidden_modport).unwrap());
         }
@@ -22,7 +22,7 @@ impl SyntaxRule for ReForbiddenModport {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
 
@@ -31,7 +31,7 @@ impl SyntaxRule for ReForbiddenModport {
                 check_regex(false, unwrap_node!(*x, ModportIdentifier),
                             &syntax_tree, &self.re.as_ref().unwrap())
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

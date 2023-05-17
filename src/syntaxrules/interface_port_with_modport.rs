@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -11,23 +11,23 @@ impl SyntaxRule for InterfacePortWithModport {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
             RefNode::InterfacePortHeader(x) => {
                 let a = unwrap_node!(*x, ModportIdentifier);
                 if a.is_some() {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 } else {
-                    RuleResult::Fail
+                    SyntaxRuleResult::Fail
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

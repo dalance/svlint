@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_prefix, SyntaxRule, RuleResult};
+use crate::linter::{check_prefix, SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -11,11 +11,11 @@ impl SyntaxRule for PrefixModule {
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
@@ -25,7 +25,7 @@ impl SyntaxRule for PrefixModule {
             RefNode::ModuleNonansiHeader(x) => {
                 check_prefix(unwrap_node!(*x, ModuleIdentifier), &syntax_tree, &option.prefix_module)
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 

@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{SyntaxRule, RuleResult};
+use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -11,11 +11,11 @@ impl SyntaxRule for CaseDefault {
         _syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         _option: &ConfigOption,
-    ) -> RuleResult {
+    ) -> SyntaxRuleResult {
         let node = match event {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(_) => {
-                return RuleResult::Pass;
+                return SyntaxRuleResult::Pass;
             }
         };
         match node {
@@ -27,15 +27,15 @@ impl SyntaxRule for CaseDefault {
                             let loc = unwrap_locate!(x.clone()).unwrap();
                             let a = unwrap_node!(x, CaseItemDefault);
                             if a.is_some() {
-                                RuleResult::Pass
+                                SyntaxRuleResult::Pass
                             } else {
-                                RuleResult::FailLocate(*loc)
+                                SyntaxRuleResult::FailLocate(*loc)
                             }
                         } else {
-                            RuleResult::Pass
+                            SyntaxRuleResult::Pass
                         }
                     }
-                    _ => RuleResult::Pass,
+                    _ => SyntaxRuleResult::Pass,
                 }
             }
             RefNode::FunctionDeclaration(x) => {
@@ -43,15 +43,15 @@ impl SyntaxRule for CaseDefault {
                     let loc = unwrap_locate!(x.clone()).unwrap();
                     let a = unwrap_node!(x, CaseItemDefault);
                     if a.is_some() {
-                        RuleResult::Pass
+                        SyntaxRuleResult::Pass
                     } else {
-                        RuleResult::FailLocate(*loc)
+                        SyntaxRuleResult::FailLocate(*loc)
                     }
                 } else {
-                    RuleResult::Pass
+                    SyntaxRuleResult::Pass
                 }
             }
-            _ => RuleResult::Pass,
+            _ => SyntaxRuleResult::Pass,
         }
     }
 
