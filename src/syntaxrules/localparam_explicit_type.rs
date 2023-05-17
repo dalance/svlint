@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct LocalparamExplicitType;
 
-impl Rule for LocalparamExplicitType {
+impl SyntaxRule for LocalparamExplicitType {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

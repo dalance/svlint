@@ -1,4 +1,4 @@
-use crate::linter::Rule;
+use crate::linter::SyntaxRule;
 use crate::rules::*;
 use regex::Regex;
 use serde_derive::{Deserialize, Serialize};

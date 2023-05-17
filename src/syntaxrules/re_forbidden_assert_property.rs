@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, Rule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, RuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -10,7 +10,7 @@ pub struct ReForbiddenAssertProperty {
     under_concurrent_assertion_item_statement: Option<RuleResult>,
 }
 
-impl Rule for ReForbiddenAssertProperty {
+impl SyntaxRule for ReForbiddenAssertProperty {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

@@ -13,7 +13,7 @@ pub enum RuleResult {
     FailLocate(Locate),
 }
 
-pub trait Rule: Sync + Send {
+pub trait SyntaxRule: Sync + Send {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
@@ -27,7 +27,7 @@ pub trait Rule: Sync + Send {
 
 pub struct Linter {
     option: ConfigOption,
-    rules: Vec<Box<dyn Rule>>,
+    syntaxrules: Vec<Box<dyn SyntaxRule>>,
     plugins: Vec<Library>,
     re_ctl: Regex,
     pub ctl_enabled: HashMap<String, bool>,
@@ -45,18 +45,18 @@ pub struct LintFailed {
 
 impl Linter {
     pub fn new(config: Config) -> Linter {
-        let rules = config.gen_rules();
+        let syntaxrules = config.gen_syntaxrules();
 
         let re_ctl = Regex::new(r"/\*\s*svlint\s+(on|off)\s+([a-z0-9_]+)\s*\*/").unwrap();
 
         let mut ctl_enabled = HashMap::new();
-        for rule in &rules {
+        for rule in &syntaxrules {
             ctl_enabled.insert(rule.name(), true);
         }
 
         Linter {
             option: config.option,
-            rules,
+            syntaxrules,
             plugins: Vec::new(),
             re_ctl,
             ctl_enabled,
@@ -69,12 +69,12 @@ impl Linter {
             self.plugins.push(lib);
             let lib = self.plugins.last().unwrap();
 
-            let get_plugin: Result<Symbol<extern "C" fn() -> *mut dyn Rule>, _> =
+            let get_plugin: Result<Symbol<extern "C" fn() -> *mut dyn SyntaxRule>, _> =
                 unsafe { lib.get(b"get_plugin") };
             if let Ok(get_plugin) = get_plugin {
                 let plugin = unsafe { Box::from_raw(get_plugin()) };
                 self.ctl_enabled.insert(plugin.name(), true);
-                self.rules.push(plugin);
+                self.syntaxrules.push(plugin);
             }
         }
     }
@@ -118,7 +118,7 @@ impl Linter {
         };
 
         let mut ret = Vec::new();
-        'outer: for rule in &mut self.rules {
+        'outer: for rule in &mut self.syntaxrules {
             match self.ctl_enabled[&rule.name()] {
                 true => {}
                 _ => {
@@ -188,7 +188,7 @@ impl Linter {
     }
 }
 
-// Utility function used by rules `re_(required|forbidden)_*`.
+// Utility function used by syntaxrules `re_(required|forbidden)_*`.
 pub fn check_regex(
     required_not_forbidden: bool,
     id: Option<RefNode>,
@@ -210,7 +210,7 @@ pub fn check_regex(
     }
 }
 
-// Utility function used by rules `prefix_*`.
+// Utility function used by syntaxrules `prefix_*`.
 pub fn check_prefix(
     id: Option<RefNode>,
     syntax_tree: &SyntaxTree,

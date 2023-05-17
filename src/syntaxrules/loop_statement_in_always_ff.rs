@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct LoopStatementInAlwaysFf;
 
-impl Rule for LoopStatementInAlwaysFf {
+impl SyntaxRule for LoopStatementInAlwaysFf {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct SequentialBlockInAlwaysComb;
 
-impl Rule for SequentialBlockInAlwaysComb {
+impl SyntaxRule for SequentialBlockInAlwaysComb {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

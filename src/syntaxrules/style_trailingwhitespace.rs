@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use regex::Regex;
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, WhiteSpace};
 
@@ -9,7 +9,7 @@ pub struct StyleTrailingwhitespace {
     buffer: String,
 }
 
-impl Rule for StyleTrailingwhitespace {
+impl SyntaxRule for StyleTrailingwhitespace {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

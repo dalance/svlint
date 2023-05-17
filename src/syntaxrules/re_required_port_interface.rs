@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, Rule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, RuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -10,7 +10,7 @@ pub struct ReRequiredPortInterface {
     under_ansi_port_declaration: bool,
 }
 
-impl Rule for ReRequiredPortInterface {
+impl SyntaxRule for ReRequiredPortInterface {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

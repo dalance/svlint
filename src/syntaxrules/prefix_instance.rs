@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_prefix, Rule, RuleResult};
+use crate::linter::{check_prefix, SyntaxRule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct PrefixInstance;
 
-impl Rule for PrefixInstance {
+impl SyntaxRule for PrefixInstance {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

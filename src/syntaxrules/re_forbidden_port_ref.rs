@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, Rule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, RuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree, PortDirection};
 
@@ -11,7 +11,7 @@ pub struct ReForbiddenPortRef {
     previous_port_direction_ref: bool,
 }
 
-impl Rule for ReForbiddenPortRef {
+impl SyntaxRule for ReForbiddenPortRef {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

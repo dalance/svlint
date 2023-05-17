@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -7,7 +7,7 @@ pub struct DefaultNettypeNone {
     directed_nettype: Option<String>,
 }
 
-impl Rule for DefaultNettypeNone {
+impl SyntaxRule for DefaultNettypeNone {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, StatementItem, StatementOrNull, SyntaxTree};
 
 #[derive(Default)]
 pub struct MultilineForBegin;
 
-impl Rule for MultilineForBegin {
+impl SyntaxRule for MultilineForBegin {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

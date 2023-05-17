@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{unwrap_locate, unwrap_node, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct LowercamelcaseInterface;
 
-impl Rule for LowercamelcaseInterface {
+impl SyntaxRule for LowercamelcaseInterface {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

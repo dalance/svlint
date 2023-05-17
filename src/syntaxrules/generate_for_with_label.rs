@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{
     unwrap_locate, unwrap_node, GenerateBlock, Locate, NodeEvent, RefNode, SyntaxTree,
 };
@@ -7,7 +7,7 @@ use sv_parser::{
 #[derive(Default)]
 pub struct GenerateForWithLabel;
 
-impl Rule for GenerateForWithLabel {
+impl SyntaxRule for GenerateForWithLabel {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

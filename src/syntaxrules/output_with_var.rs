@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, PortDirection, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct OutputWithVar;
 
-impl Rule for OutputWithVar {
+impl SyntaxRule for OutputWithVar {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

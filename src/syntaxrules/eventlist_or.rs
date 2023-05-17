@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct EventlistOr;
 
-impl Rule for EventlistOr {
+impl SyntaxRule for EventlistOr {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

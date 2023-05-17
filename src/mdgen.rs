@@ -6,7 +6,7 @@ mod printer;
 mod rules;
 
 use crate::config::{Config, ConfigOption};
-use crate::linter::Rule;
+use crate::linter::SyntaxRule;
 use regex::Regex;
 use std::env;
 use std::fs::{File, read_dir};
@@ -95,7 +95,7 @@ fn get_rulesets() -> Vec<Ruleset> {
     ret
 }
 
-fn write_md_syntaxrule_testcases(o: &mut File, rule: &Box<dyn Rule>, pass_not_fail: bool) -> () {
+fn write_md_syntaxrule_testcases(o: &mut File, rule: &Box<dyn SyntaxRule>, pass_not_fail: bool) -> () {
         let sep = "/".repeat(80);
         let rulename = rule.name();
 
@@ -123,7 +123,7 @@ fn write_md_syntaxrule_testcases(o: &mut File, rule: &Box<dyn Rule>, pass_not_fa
         }
 }
 
-fn write_md_syntaxrules(o: &mut File, syntaxrules: Vec<Box<dyn Rule>>) -> () {
+fn write_md_syntaxrules(o: &mut File, syntaxrules: Vec<Box<dyn SyntaxRule>>) -> () {
     for rule in syntaxrules {
         let _ = writeln!(o, "");
         let _ = writeln!(o, "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
@@ -146,8 +146,8 @@ fn write_md_syntaxrules(o: &mut File, syntaxrules: Vec<Box<dyn Rule>>) -> () {
 }
 
 fn partition_syntaxrules(
-    syntaxrules: Vec<Box<dyn Rule>>,
-) -> (Vec<Box<dyn Rule>>, Vec<Box<dyn Rule>>, Vec<Box<dyn Rule>>) {
+    syntaxrules: Vec<Box<dyn SyntaxRule>>,
+) -> (Vec<Box<dyn SyntaxRule>>, Vec<Box<dyn SyntaxRule>>, Vec<Box<dyn SyntaxRule>>) {
     let style_prefixes = ["style_", "tab_"].join("|");
     let re_style: Regex = Regex::new(format!("^({})", style_prefixes).as_str()).unwrap();
 
@@ -155,9 +155,9 @@ fn partition_syntaxrules(
     let re_naming: Regex =
         Regex::new(format!("(^({})|_with_label$)", naming_prefixes).as_str()).unwrap();
 
-    let mut part_style: Vec<Box<dyn Rule>> = Vec::new();
-    let mut part_naming: Vec<Box<dyn Rule>> = Vec::new();
-    let mut part_functional: Vec<Box<dyn Rule>> = Vec::new();
+    let mut part_style: Vec<Box<dyn SyntaxRule>> = Vec::new();
+    let mut part_naming: Vec<Box<dyn SyntaxRule>> = Vec::new();
+    let mut part_functional: Vec<Box<dyn SyntaxRule>> = Vec::new();
 
     for rule in syntaxrules {
         if re_style.is_match(&rule.name()) {
@@ -172,7 +172,7 @@ fn partition_syntaxrules(
     (part_functional, part_naming, part_style)
 }
 
-fn write_manual_md(syntaxrules: Vec<Box<dyn Rule>>, rulesets: Vec<Ruleset>) -> () {
+fn write_manual_md(syntaxrules: Vec<Box<dyn SyntaxRule>>, rulesets: Vec<Ruleset>) -> () {
     let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let o = Path::new(&cargo_manifest_dir).join("MANUAL.md");
     let mut o = File::create(&o).unwrap();

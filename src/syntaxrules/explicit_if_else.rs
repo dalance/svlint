@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{unwrap_locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -7,7 +7,7 @@ pub struct ExplicitIfElse {
     under_always_construct: bool,
 }
 
-impl Rule for ExplicitIfElse {
+impl SyntaxRule for ExplicitIfElse {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

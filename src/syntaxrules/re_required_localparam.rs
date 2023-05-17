@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, Rule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, RuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -9,7 +9,7 @@ pub struct ReRequiredLocalparam {
     under_local_parameter_declaration: bool,
 }
 
-impl Rule for ReRequiredLocalparam {
+impl SyntaxRule for ReRequiredLocalparam {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

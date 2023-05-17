@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct KeywordForbiddenAlways;
 
-impl Rule for KeywordForbiddenAlways {
+impl SyntaxRule for KeywordForbiddenAlways {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

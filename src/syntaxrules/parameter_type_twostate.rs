@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{
     unwrap_node, DataType, IntegerAtomType, IntegerVectorType, NodeEvent, RefNode, SyntaxTree,
 };
@@ -7,7 +7,7 @@ use sv_parser::{
 #[derive(Default)]
 pub struct ParameterTypeTwostate;
 
-impl Rule for ParameterTypeTwostate {
+impl SyntaxRule for ParameterTypeTwostate {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

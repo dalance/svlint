@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree, UniquePriority};
 
 #[derive(Default)]
 pub struct KeywordForbiddenPriority;
 
-impl Rule for KeywordForbiddenPriority {
+impl SyntaxRule for KeywordForbiddenPriority {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

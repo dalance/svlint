@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{ForInitialization, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct LoopVariableDeclaration;
 
-impl Rule for LoopVariableDeclaration {
+impl SyntaxRule for LoopVariableDeclaration {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

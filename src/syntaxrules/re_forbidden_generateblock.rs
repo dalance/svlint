@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, Rule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, RuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -9,7 +9,7 @@ pub struct ReForbiddenGenerateblock {
     under_generate_block: bool,
 }
 
-impl Rule for ReForbiddenGenerateblock {
+impl SyntaxRule for ReForbiddenGenerateblock {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

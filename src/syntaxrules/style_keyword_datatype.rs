@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use regex::Regex;
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
@@ -10,7 +10,7 @@ pub struct StyleKeywordDatatype {
     re_succ: Option<Regex>,
 }
 
-impl Rule for StyleKeywordDatatype {
+impl SyntaxRule for StyleKeywordDatatype {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

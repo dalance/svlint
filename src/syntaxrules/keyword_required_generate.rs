@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -7,7 +7,7 @@ pub struct KeywordRequiredGenerate {
     generate_region: Vec<()>,
 }
 
-impl Rule for KeywordRequiredGenerate {
+impl SyntaxRule for KeywordRequiredGenerate {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

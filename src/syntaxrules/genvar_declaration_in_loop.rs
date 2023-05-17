@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct GenvarDeclarationInLoop;
 
-impl Rule for GenvarDeclarationInLoop {
+impl SyntaxRule for GenvarDeclarationInLoop {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,

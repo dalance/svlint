@@ -127,8 +127,8 @@ fn write_impl_config_rs(syntaxrules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "    }}");
 
     let _ = writeln!(o, "");
-    let _ = writeln!(o, "    pub fn gen_rules(&self) -> Vec<Box<dyn Rule>> {{");
-    let _ = writeln!(o, "        let mut ret: Vec<Box<dyn Rule>> = Vec::new();");
+    let _ = writeln!(o, "    pub fn gen_syntaxrules(&self) -> Vec<Box<dyn SyntaxRule>> {{");
+    let _ = writeln!(o, "        let mut ret: Vec<Box<dyn SyntaxRule>> = Vec::new();");
     for (rulename, structname) in syntaxrules {
         let _ = writeln!(o, "        if self.syntaxrules.{} {{", rulename);
         let _ = writeln!(
@@ -152,8 +152,8 @@ fn write_impl_config_rs(syntaxrules: &Vec<(String, String)>) -> () {
     let _ = writeln!(o, "    }}");
 
     let _ = writeln!(o, "");
-    let _ = writeln!(o, "    pub fn gen_all_syntaxrules() -> Vec<Box<dyn Rule>> {{");
-    let _ = writeln!(o, "        let mut ret: Vec<Box<dyn Rule>> = Vec::new();");
+    let _ = writeln!(o, "    pub fn gen_all_syntaxrules() -> Vec<Box<dyn SyntaxRule>> {{");
+    let _ = writeln!(o, "        let mut ret: Vec<Box<dyn SyntaxRule>> = Vec::new();");
     for (_, structname) in syntaxrules {
         let _ = writeln!(o, "        ret.push(Box::new({}::default()));", structname);
     }

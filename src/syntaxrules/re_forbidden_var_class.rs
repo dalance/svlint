@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, Rule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, RuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -11,7 +11,7 @@ pub struct ReForbiddenVarClass {
     under_list_of_variable_decl_assignments: bool,
 }
 
-impl Rule for ReForbiddenVarClass {
+impl SyntaxRule for ReForbiddenVarClass {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

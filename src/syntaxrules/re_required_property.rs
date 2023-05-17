@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{check_regex, Rule, RuleResult};
+use crate::linter::{check_regex, SyntaxRule, RuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -8,7 +8,7 @@ pub struct ReRequiredProperty {
     re: Option<Regex>,
 }
 
-impl Rule for ReRequiredProperty {
+impl SyntaxRule for ReRequiredProperty {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
@@ -135,7 +135,7 @@ const SYSTEM_FUNCTION: &[&str] = &[
     "system",
 ];
 
-impl Rule for FunctionSameAsSystemFunction {
+impl SyntaxRule for FunctionSameAsSystemFunction {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

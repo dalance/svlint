@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use sv_parser::{unwrap_node, unwrap_locate, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct OperatorCaseEquality;
 
-impl Rule for OperatorCaseEquality {
+impl SyntaxRule for OperatorCaseEquality {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,

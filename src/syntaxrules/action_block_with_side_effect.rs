@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{Rule, RuleResult};
+use crate::linter::{SyntaxRule, RuleResult};
 use regex::Regex;
 use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
@@ -8,7 +8,7 @@ pub struct ActionBlockWithSideEffect {
     re: Option<Regex>,
 }
 
-impl Rule for ActionBlockWithSideEffect {
+impl SyntaxRule for ActionBlockWithSideEffect {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
