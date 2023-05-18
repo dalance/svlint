@@ -95,12 +95,11 @@ fn get_rulesets() -> Vec<Ruleset> {
     ret
 }
 
-fn write_md_syntaxrule_testcases(o: &mut File, rule: &Box<dyn SyntaxRule>, pass_not_fail: bool) -> () {
+fn write_md_rule_testcases(o: &mut File, ruletype: &str, rulename: &str, pass_not_fail: bool) -> () {
         let sep = "/".repeat(80);
-        let rulename = rule.name();
 
         let passfail = if pass_not_fail { "pass" } else { "fail" };
-        let filename = format!("testcases/syntaxrules/{}/{}.sv", passfail, rulename);
+        let filename = format!("testcases/{}rules/{}/{}.sv", ruletype, passfail, rulename);
         let lines = BufReader::new(File::open(filename).unwrap())
             .lines()
             .collect::<Result<Vec<_>, _>>()
@@ -123,8 +122,34 @@ fn write_md_syntaxrule_testcases(o: &mut File, rule: &Box<dyn SyntaxRule>, pass_
         }
 }
 
+fn write_md_textrules(o: &mut File, textrules: Vec<Box<dyn TextRule>>) -> () {
+    for rule in textrules {
+        let rulename = rule.name();
+
+        let _ = writeln!(o, "");
+        let _ = writeln!(o, "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        let _ = writeln!(o, "");
+        let _ = writeln!(o, "## Text Rule: `{}`\n", rulename);
+
+        let _ = writeln!(o, "### Hint\n");
+        let _ = writeln!(o, "{}\n", rule.hint(&ConfigOption::default()));
+
+        let _ = writeln!(o, "### Reason\n");
+        let _ = writeln!(o, "{}\n", rule.reason());
+
+        write_md_rule_testcases(o, "text", &rulename, true);
+        write_md_rule_testcases(o, "text", &rulename, false);
+
+        let _ = writeln!(o, "### Explanation\n");
+        let p: String = format!("md/textrules-explanation-{}.md", rule.name());
+        let _ = writeln!(o, "{}\n", file_contents(&p));
+    }
+}
+
 fn write_md_syntaxrules(o: &mut File, syntaxrules: Vec<Box<dyn SyntaxRule>>) -> () {
     for rule in syntaxrules {
+        let rulename = rule.name();
+
         let _ = writeln!(o, "");
         let _ = writeln!(o, "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         let _ = writeln!(o, "");
@@ -136,8 +161,8 @@ fn write_md_syntaxrules(o: &mut File, syntaxrules: Vec<Box<dyn SyntaxRule>>) -> 
         let _ = writeln!(o, "### Reason\n");
         let _ = writeln!(o, "{}\n", rule.reason());
 
-        write_md_syntaxrule_testcases(o, &rule, true);
-        write_md_syntaxrule_testcases(o, &rule, false);
+        write_md_rule_testcases(o, "syntax", &rulename, true);
+        write_md_rule_testcases(o, "syntax", &rulename, false);
 
         let _ = writeln!(o, "### Explanation\n");
         let p: String = format!("md/syntaxrules-explanation-{}.md", rule.name());
@@ -173,7 +198,7 @@ fn partition_syntaxrules(
 }
 
 fn write_manual_md(
-    _textrules: Vec<Box<dyn TextRule>>, // TODO
+    textrules: Vec<Box<dyn TextRule>>,
     syntaxrules: Vec<Box<dyn SyntaxRule>>,
     rulesets: Vec<Ruleset>,
 ) -> () {
@@ -188,6 +213,13 @@ fn write_manual_md(
         "{}",
         file_contents(format!("md/manual-introduction.md").as_str())
     );
+
+    let _ = writeln!(
+        o,
+        "{}",
+        file_contents(format!("md/manual-textrules.md").as_str())
+    );
+    write_md_textrules(&mut o, textrules);
 
     let _ = writeln!(
         o,
