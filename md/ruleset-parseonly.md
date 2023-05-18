@@ -16,5 +16,6 @@ preprocessed and parsed, i.e. internally processed from text to a syntax tree.
 
 ```toml
 [option]
-[rules]
+[textrules]
+[syntaxrules]
 ```

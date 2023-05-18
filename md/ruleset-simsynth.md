@@ -7,16 +7,16 @@ do not depend on each other or combine to check additional properties.
 See the explanations of individual rules for their details.
 
 ```toml
-rules.blocking_assignment_in_always_ff = true
-rules.blocking_assignment_in_always_latch = true
-rules.non_blocking_assignment_in_always_comb = true
-rules.case_default = true
-rules.enum_with_type = true
-rules.function_with_automatic = true
-rules.keyword_forbidden_priority = true
-rules.keyword_forbidden_unique = true
-rules.keyword_forbidden_unique0 = true
-rules.level_sensitive_always = true
-rules.operator_case_equality = true
+syntaxrules.blocking_assignment_in_always_ff = true
+syntaxrules.blocking_assignment_in_always_latch = true
+syntaxrules.non_blocking_assignment_in_always_comb = true
+syntaxrules.case_default = true
+syntaxrules.enum_with_type = true
+syntaxrules.function_with_automatic = true
+syntaxrules.keyword_forbidden_priority = true
+syntaxrules.keyword_forbidden_unique = true
+syntaxrules.keyword_forbidden_unique0 = true
+syntaxrules.level_sensitive_always = true
+syntaxrules.operator_case_equality = true
 ```
 

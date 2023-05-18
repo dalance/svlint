@@ -45,6 +45,11 @@ consumer's text editor, reviewer's web-based tools (GitHub, BitBucket, GitLab,
 etc.), printed material (e.g. via PDF), and logfiles from CI/CD tools (GitHub
 Actions, Bamboo, Jenkins, etc).
 
+```toml
+option.textwidth = 2
+textrules.style_textwidth = true
+```
+
 
 ### Test Each File for Excessively Long Lines
 
@@ -92,8 +97,8 @@ so tab indentations are shown differently, depending on the reader's personal
 configuration.
 ```toml
 option.indent = 2
-rules.tab_character = true
-rules.style_indent = true
+syntaxrules.tab_character = true
+syntaxrules.style_indent = true
 ```
 Note that the **style_indent** rule does not check that indentations are the
 correct level - only that the indentation is an integer multiple of 2 spaces.
@@ -128,8 +133,8 @@ loops, two further rules are enabled to check that either `begin`/`end`
 keyword delimiters are used, or the statement is moved to the same line as the
 condition.
 ```toml
-rules.multiline_if_begin = true
-rules.multiline_for_begin = true
+syntaxrules.multiline_if_begin = true
+syntaxrules.multiline_for_begin = true
 ```
 
 
@@ -175,8 +180,8 @@ combination of two languages;
 2. The rest of SystemVerilog syntax is formally called `source_text`, is
   specified formally in IEEE1800-2017 Annex A.
 
-Svlint rules operate on the `source_text` part of SystemVerilog, i.e. after the
-preprocessor has been applied.
+Svlint syntax rules operate on the `source_text` part of SystemVerilog, i.e.
+after the preprocessor has been applied.
 As with other languages with similar text-based templating features, most
 notably C, use of the preprocessor is discouraged except where absolutely
 necessary.
@@ -227,7 +232,7 @@ One method which can help catch unintended whitespace, both from the
 preprocessor and written by hand, is to forbid trailing spaces, i.e. space
 characters followed immediately by a newline.
 ```toml
-rules.style_trailingwhitespace = true
+syntaxrules.style_trailingwhitespace = true
 ```
 
 Problems around indented preprocessor directives must be caught before svlint's
@@ -253,21 +258,21 @@ eval "${SVFILES}" | xargs -I {} sh -c "${PPINDENT}"
 Consistent use of whitespace around operators and keywords makes it easier to
 read expressions quickly and accurately.
 ```toml
-rules.style_operator_arithmetic = true
-rules.style_operator_boolean = true
-rules.style_operator_integer = true
-rules.style_operator_unary = true
+syntaxrules.style_operator_arithmetic = true
+syntaxrules.style_operator_boolean = true
+syntaxrules.style_operator_integer = true
+syntaxrules.style_operator_unary = true
 
-rules.style_keyword_0or1space = true
-rules.style_keyword_0space = true
-rules.style_keyword_1or2space = true
-rules.style_keyword_1space = true
-rules.style_keyword_construct = true
-rules.style_keyword_datatype = false # Overly restrictive.
-rules.style_keyword_end = true
-rules.style_keyword_maybelabel = true
-rules.style_keyword_new = true
-rules.style_keyword_newline = true
+syntaxrules.style_keyword_0or1space = true
+syntaxrules.style_keyword_0space = true
+syntaxrules.style_keyword_1or2space = true
+syntaxrules.style_keyword_1space = true
+syntaxrules.style_keyword_construct = true
+syntaxrules.style_keyword_datatype = false # Overly restrictive.
+syntaxrules.style_keyword_end = true
+syntaxrules.style_keyword_maybelabel = true
+syntaxrules.style_keyword_new = true
+syntaxrules.style_keyword_newline = true
 ```
 
 
@@ -293,7 +298,7 @@ The most common style in functional programming language Haskell provides
 inspiration for such a rule:
 "Every comma must be followed by exactly one space".
 ```toml
-rules.style_commaleading = true
+syntaxrules.style_commaleading = true
 ```
 
 This rule leads to the comma-leading style which, although perhaps unfamiliar
@@ -325,6 +330,6 @@ rule.
 Additionally, `eventlist_or` mandates the use of `,` (comma) as the separator
 in `always_ff` sensitivity lists only for consistency and readabilty.
 ```toml
-rules.eventlist_or = true
+syntaxrules.eventlist_or = true
 ```
 

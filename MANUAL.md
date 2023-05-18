@@ -9398,17 +9398,17 @@ This ruleset is a superset of **ruleset-simsynth**.
 These rules don't depend on each other or interact to provide additional
 properties.
 ```toml
-rules.blocking_assignment_in_always_ff = true
-rules.blocking_assignment_in_always_latch = true
-rules.non_blocking_assignment_in_always_comb = true
-rules.case_default = true
-rules.enum_with_type = true
-rules.function_with_automatic = true
-rules.keyword_forbidden_priority = true
-rules.keyword_forbidden_unique = true
-rules.keyword_forbidden_unique0 = true
-rules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
-rules.operator_case_equality = true
+syntaxrules.blocking_assignment_in_always_ff = true
+syntaxrules.blocking_assignment_in_always_latch = true
+syntaxrules.non_blocking_assignment_in_always_comb = true
+syntaxrules.case_default = true
+syntaxrules.enum_with_type = true
+syntaxrules.function_with_automatic = true
+syntaxrules.keyword_forbidden_priority = true
+syntaxrules.keyword_forbidden_unique = true
+syntaxrules.keyword_forbidden_unique0 = true
+syntaxrules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
+syntaxrules.operator_case_equality = true
 ```
 
 This ruleset has further rules which don't depend on each other or combine
@@ -9419,12 +9419,12 @@ Note, in the related **ruleset-verifintent**, the rule
 for a simulation testbench to schedule assignments, tasks, and functions in
 ways that wouldn't make sense for synthesizable hardware.
 ```toml
-rules.action_block_with_side_effect = true
-rules.default_nettype_none = true
-rules.function_same_as_system_function = true
-rules.keyword_forbidden_always = true
-rules.keyword_forbidden_wire_reg = true
-rules.non_ansi_module = true
+syntaxrules.action_block_with_side_effect = true
+syntaxrules.default_nettype_none = true
+syntaxrules.function_same_as_system_function = true
+syntaxrules.keyword_forbidden_always = true
+syntaxrules.keyword_forbidden_wire_reg = true
+syntaxrules.non_ansi_module = true
 ```
 
 When synthesised into a netlist, generate blocks should have labels so that
@@ -9435,9 +9435,9 @@ clarification about the author's intention for that logic.
 In the similar **ruleset-verifintent**, these rules are not enabled because
 they (mostly) relate to synthesizable hardware.
 ```toml
-rules.generate_case_with_label = true
-rules.generate_for_with_label = true
-rules.generate_if_with_label = true
+syntaxrules.generate_case_with_label = true
+syntaxrules.generate_for_with_label = true
+syntaxrules.generate_if_with_label = true
 ```
 
 Generally, elaboration-time constant (`parameter`, `localparam`) should be
@@ -9446,13 +9446,13 @@ Additionally, where the context defines that `parameter` is an alias for
 `localparam`, author's should demonstate that they understand the constant
 cannot be overriden by using the `localparam` keyword.
 ```toml
-rules.localparam_type_twostate = true
-rules.parameter_type_twostate = true
-rules.localparam_explicit_type = true
-rules.parameter_explicit_type = true
-rules.parameter_default_value = true
-rules.parameter_in_generate = true
-rules.parameter_in_package = true
+syntaxrules.localparam_type_twostate = true
+syntaxrules.parameter_type_twostate = true
+syntaxrules.localparam_explicit_type = true
+syntaxrules.parameter_explicit_type = true
+syntaxrules.parameter_default_value = true
+syntaxrules.parameter_in_generate = true
+syntaxrules.parameter_in_package = true
 ```
 
 Genvars, which are also elaboration-time constants, should be declared within
@@ -9468,10 +9468,10 @@ generate blocks.
 Further, the use of `generate` and `endgenerate` is entirely optional with no
 semantic difference to not using them.
 ```toml
-rules.genvar_declaration_in_loop = true
-rules.genvar_declaration_out_loop = false
-rules.keyword_forbidden_generate = true
-rules.keyword_required_generate = false
+syntaxrules.genvar_declaration_in_loop = true
+syntaxrules.genvar_declaration_out_loop = false
+syntaxrules.keyword_forbidden_generate = true
+syntaxrules.keyword_required_generate = false
 ```
 
 Rules in the below subset combine to provide an important property for the
@@ -9480,14 +9480,14 @@ of what the synthesis result should look like.
 The two rules of thumb are to always fully specify decision logic, and never
 use procedural models for (what will be synthesized to) parallel logic.
 ```toml
-rules.explicit_case_default = true
-rules.explicit_if_else = true
-rules.loop_statement_in_always_comb = true
-rules.loop_statement_in_always_ff = true
-rules.loop_statement_in_always_latch = true
-rules.sequential_block_in_always_comb = true
-rules.sequential_block_in_always_ff = true
-rules.sequential_block_in_always_latch = true
+syntaxrules.explicit_case_default = true
+syntaxrules.explicit_if_else = true
+syntaxrules.loop_statement_in_always_comb = true
+syntaxrules.loop_statement_in_always_ff = true
+syntaxrules.loop_statement_in_always_latch = true
+syntaxrules.sequential_block_in_always_comb = true
+syntaxrules.sequential_block_in_always_ff = true
+syntaxrules.sequential_block_in_always_latch = true
 ```
 
 Where sequential modelling of parallel logic is an unavoidable pragmatic
@@ -9496,8 +9496,8 @@ proper indentation.
 Note, this ruleset does *not* check the amount of indentation like
 **style_indent**.
 ```toml
-rules.multiline_for_begin = true
-rules.multiline_if_begin = true
+syntaxrules.multiline_for_begin = true
+syntaxrules.multiline_if_begin = true
 ```
 
 The semantics around port declarations are, perhaps, unintuitive but were
@@ -9505,10 +9505,10 @@ designed for backward compliance with Verilog (IEEE1364-1995).
 The below subset ensures that port declarations clearly convey important
 information about the direction and update mechanism of each signal port.
 ```toml
-rules.inout_with_tri = true
-rules.input_with_var = true
-rules.output_with_var = true
-rules.interface_port_with_modport = true
+syntaxrules.inout_with_tri = true
+syntaxrules.input_with_var = true
+syntaxrules.output_with_var = true
+syntaxrules.interface_port_with_modport = true
 ```
 
 
@@ -9534,7 +9534,8 @@ preprocessed and parsed, i.e. internally processed from text to a syntax tree.
 
 ```toml
 [option]
-[rules]
+[textrules]
+[syntaxrules]
 ```
 
 
@@ -9550,17 +9551,17 @@ do not depend on each other or combine to check additional properties.
 See the explanations of individual rules for their details.
 
 ```toml
-rules.blocking_assignment_in_always_ff = true
-rules.blocking_assignment_in_always_latch = true
-rules.non_blocking_assignment_in_always_comb = true
-rules.case_default = true
-rules.enum_with_type = true
-rules.function_with_automatic = true
-rules.keyword_forbidden_priority = true
-rules.keyword_forbidden_unique = true
-rules.keyword_forbidden_unique0 = true
-rules.level_sensitive_always = true
-rules.operator_case_equality = true
+syntaxrules.blocking_assignment_in_always_ff = true
+syntaxrules.blocking_assignment_in_always_latch = true
+syntaxrules.non_blocking_assignment_in_always_comb = true
+syntaxrules.case_default = true
+syntaxrules.enum_with_type = true
+syntaxrules.function_with_automatic = true
+syntaxrules.keyword_forbidden_priority = true
+syntaxrules.keyword_forbidden_unique = true
+syntaxrules.keyword_forbidden_unique0 = true
+syntaxrules.level_sensitive_always = true
+syntaxrules.operator_case_equality = true
 ```
 
 
@@ -9615,6 +9616,11 @@ consumer's text editor, reviewer's web-based tools (GitHub, BitBucket, GitLab,
 etc.), printed material (e.g. via PDF), and logfiles from CI/CD tools (GitHub
 Actions, Bamboo, Jenkins, etc).
 
+```toml
+option.textwidth = 2
+textrules.style_textwidth = true
+```
+
 
 ### Test Each File for Excessively Long Lines
 
@@ -9662,8 +9668,8 @@ so tab indentations are shown differently, depending on the reader's personal
 configuration.
 ```toml
 option.indent = 2
-rules.tab_character = true
-rules.style_indent = true
+syntaxrules.tab_character = true
+syntaxrules.style_indent = true
 ```
 Note that the **style_indent** rule does not check that indentations are the
 correct level - only that the indentation is an integer multiple of 2 spaces.
@@ -9698,8 +9704,8 @@ loops, two further rules are enabled to check that either `begin`/`end`
 keyword delimiters are used, or the statement is moved to the same line as the
 condition.
 ```toml
-rules.multiline_if_begin = true
-rules.multiline_for_begin = true
+syntaxrules.multiline_if_begin = true
+syntaxrules.multiline_for_begin = true
 ```
 
 
@@ -9745,8 +9751,8 @@ combination of two languages;
 2. The rest of SystemVerilog syntax is formally called `source_text`, is
   specified formally in IEEE1800-2017 Annex A.
 
-Svlint rules operate on the `source_text` part of SystemVerilog, i.e. after the
-preprocessor has been applied.
+Svlint syntax rules operate on the `source_text` part of SystemVerilog, i.e.
+after the preprocessor has been applied.
 As with other languages with similar text-based templating features, most
 notably C, use of the preprocessor is discouraged except where absolutely
 necessary.
@@ -9797,7 +9803,7 @@ One method which can help catch unintended whitespace, both from the
 preprocessor and written by hand, is to forbid trailing spaces, i.e. space
 characters followed immediately by a newline.
 ```toml
-rules.style_trailingwhitespace = true
+syntaxrules.style_trailingwhitespace = true
 ```
 
 Problems around indented preprocessor directives must be caught before svlint's
@@ -9823,21 +9829,21 @@ eval "${SVFILES}" | xargs -I {} sh -c "${PPINDENT}"
 Consistent use of whitespace around operators and keywords makes it easier to
 read expressions quickly and accurately.
 ```toml
-rules.style_operator_arithmetic = true
-rules.style_operator_boolean = true
-rules.style_operator_integer = true
-rules.style_operator_unary = true
+syntaxrules.style_operator_arithmetic = true
+syntaxrules.style_operator_boolean = true
+syntaxrules.style_operator_integer = true
+syntaxrules.style_operator_unary = true
 
-rules.style_keyword_0or1space = true
-rules.style_keyword_0space = true
-rules.style_keyword_1or2space = true
-rules.style_keyword_1space = true
-rules.style_keyword_construct = true
-rules.style_keyword_datatype = false # Overly restrictive.
-rules.style_keyword_end = true
-rules.style_keyword_maybelabel = true
-rules.style_keyword_new = true
-rules.style_keyword_newline = true
+syntaxrules.style_keyword_0or1space = true
+syntaxrules.style_keyword_0space = true
+syntaxrules.style_keyword_1or2space = true
+syntaxrules.style_keyword_1space = true
+syntaxrules.style_keyword_construct = true
+syntaxrules.style_keyword_datatype = false # Overly restrictive.
+syntaxrules.style_keyword_end = true
+syntaxrules.style_keyword_maybelabel = true
+syntaxrules.style_keyword_new = true
+syntaxrules.style_keyword_newline = true
 ```
 
 
@@ -9863,7 +9869,7 @@ The most common style in functional programming language Haskell provides
 inspiration for such a rule:
 "Every comma must be followed by exactly one space".
 ```toml
-rules.style_commaleading = true
+syntaxrules.style_commaleading = true
 ```
 
 This rule leads to the comma-leading style which, although perhaps unfamiliar
@@ -9895,7 +9901,7 @@ rule.
 Additionally, `eventlist_or` mandates the use of `,` (comma) as the separator
 in `always_ff` sensitivity lists only for consistency and readabilty.
 ```toml
-rules.eventlist_or = true
+syntaxrules.eventlist_or = true
 ```
 
 
@@ -9917,12 +9923,12 @@ processes is useful to prevent the specification of processes with scheduling
 semantics which are difficult to reason about.
 
 ```toml
-rules.blocking_assignment_in_always_ff = true
-rules.non_blocking_assignment_in_always_comb = true
-rules.enum_with_type = true
-rules.keyword_forbidden_priority = true
-rules.keyword_forbidden_unique = true
-rules.keyword_forbidden_unique0 = true
+syntaxrules.blocking_assignment_in_always_ff = true
+syntaxrules.non_blocking_assignment_in_always_comb = true
+syntaxrules.enum_with_type = true
+syntaxrules.keyword_forbidden_priority = true
+syntaxrules.keyword_forbidden_unique = true
+syntaxrules.keyword_forbidden_unique0 = true
 ```
 
 This ruleset has further rules which don't depend on each other or combine
@@ -9931,11 +9937,11 @@ Please see their individual explanations for details.
 Note, in the related **ruleset-designintent**, an additional rule
 **keyword_forbidden_always** is enabled.
 ```toml
-rules.action_block_with_side_effect = true
-rules.default_nettype_none = true
-rules.function_same_as_system_function = true
-rules.keyword_forbidden_wire_reg = true
-rules.non_ansi_module = true
+syntaxrules.action_block_with_side_effect = true
+syntaxrules.default_nettype_none = true
+syntaxrules.function_same_as_system_function = true
+syntaxrules.keyword_forbidden_wire_reg = true
+syntaxrules.non_ansi_module = true
 ```
 
 Generally, elaboration-time constant (`parameter`, `localparam`) should be
@@ -9944,13 +9950,13 @@ Additionally, where the context defines that `parameter` is an alias for
 `localparam`, author's should demonstate that they understand the constant
 cannot be overriden by using the `localparam` keyword.
 ```toml
-rules.localparam_type_twostate = true
-rules.parameter_type_twostate = true
-rules.localparam_explicit_type = true
-rules.parameter_explicit_type = true
-rules.parameter_default_value = true
-rules.parameter_in_generate = true
-rules.parameter_in_package = true
+syntaxrules.localparam_type_twostate = true
+syntaxrules.parameter_type_twostate = true
+syntaxrules.localparam_explicit_type = true
+syntaxrules.parameter_explicit_type = true
+syntaxrules.parameter_default_value = true
+syntaxrules.parameter_in_generate = true
+syntaxrules.parameter_in_package = true
 ```
 
 Genvars, which are also elaboration-time constants, should be declared within
@@ -9966,10 +9972,10 @@ generate blocks.
 Further, the use of `generate` and `endgenerate` is entirely optional with no
 semantic difference to not using them.
 ```toml
-rules.genvar_declaration_in_loop = true
-rules.genvar_declaration_out_loop = false
-rules.keyword_forbidden_generate = true
-rules.keyword_required_generate = false
+syntaxrules.genvar_declaration_in_loop = true
+syntaxrules.genvar_declaration_out_loop = false
+syntaxrules.keyword_forbidden_generate = true
+syntaxrules.keyword_required_generate = false
 ```
 
 To prevent difficult-to-read procedural code, using the `begin` and `end`
@@ -9977,8 +9983,8 @@ keywords should be done carefully with proper indentation.
 Note, this ruleset does *not* check the amount of indentation like
 **style_indent**.
 ```toml
-rules.multiline_for_begin = true
-rules.multiline_if_begin = true
+syntaxrules.multiline_for_begin = true
+syntaxrules.multiline_if_begin = true
 ```
 
 The semantics around port declarations are, perhaps, unintuitive but were
@@ -9986,10 +9992,10 @@ designed for backward compliance with Verilog (IEEE1364-1995).
 The below subset ensures that port declarations clearly convey important
 information about the direction and update mechanism of each signal port.
 ```toml
-rules.inout_with_tri = true
-rules.input_with_var = true
-rules.output_with_var = true
-rules.interface_port_with_modport = true
+syntaxrules.inout_with_tri = true
+syntaxrules.input_with_var = true
+syntaxrules.output_with_var = true
+syntaxrules.interface_port_with_modport = true
 ```
 
 
