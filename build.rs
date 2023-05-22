@@ -279,8 +279,11 @@ fn write_test_rs(
 
     // blocking_assignment_in_always_ff testcases demonstrate comment control,
     // so visibility is useful when running `cargo test`.
-    let textrules_test_verbose = ["style_textwidth"];
-    let syntaxrules_test_verbose = ["blocking_assignment_in_always_ff"];
+    // E.g:
+    //    let textrules_test_verbose = ["style_textwidth"];
+    //    let syntaxrules_test_verbose = ["blocking_assignment_in_always_ff"];
+    let textrules_test_verbose = [];
+    let syntaxrules_test_verbose = [];
 
     for (rulename, _) in textrules {
         let silent = if textrules_test_verbose.contains(&rulename.as_str()) {
