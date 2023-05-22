@@ -292,10 +292,11 @@ impl Printer {
                 Some(Color::BrightBlue),
             );
 
+            let hr_indent = String::from_utf8_lossy(&src.as_bytes()[beg..pos]).chars().count();
             self.write(
                 &format!(
                     " {}{}",
-                    " ".repeat(pos - beg), // TODO: Use number of characters, not bytes.
+                    " ".repeat(hr_indent),
                     "^".repeat(cmp::min(print_pos + print_len, next_crlf) - print_pos)
                 ),
                 Some(Color::BrightYellow),
@@ -314,7 +315,7 @@ impl Printer {
                 self.write(
                     &format!(
                         " {}{}",
-                        " ".repeat(pos - beg), // TODO: Use number of characters, not bytes.
+                        " ".repeat(hr_indent),
                         " ".repeat(cmp::min(print_pos + print_len, next_crlf) - print_pos)
                     ),
                     Some(Color::Yellow),
