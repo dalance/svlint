@@ -249,6 +249,97 @@ as arbitrary text, not necessarily valid SystemVerilog.
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Text Rule: `header_copyright`
+
+### Hint
+
+Copyright notice must be present on line 1.
+
+### Reason
+
+Copyright notices are required for legal purposes.
+
+### Pass Example (1 of 4)
+```systemverilog
+// Copyright (c) 1234 HOLDER
+// The string "Copyright" is lowercase but capitalized.
+// The symbol "(c)" may be either uppercase or lowercase.
+```
+
+### Pass Example (2 of 4)
+```systemverilog
+// copyright (c) 1234 HOLDER
+// The string "copyright" is fully lowercase.
+```
+
+### Pass Example (3 of 4)
+```systemverilog
+// COPYRIGHT   (C)    1234    HOLDER
+// The string "COPYRIGHT" is fully uppercase.
+// Components may be separated by multiple spaces.
+```
+
+### Pass Example (4 of 4)
+```systemverilog
+// foo bar Copyright (c) 1234 HOLDER foo bar
+// There may be other text on either end of the same line.
+```
+
+### Fail Example (1 of 3)
+```systemverilog
+// The year and holder are correct, but linenum is incorrect.
+// The default value of `option.copyright_linenum` is 1.
+// copyright (c) 1234 HOLDER
+// foo
+// bar
+```
+
+### Fail Example (2 of 3)
+```systemverilog
+// Copyright (c) 4567 HOLDER
+// The linenum and holder are correct, but year is incorrect.
+// The default value of `option.copyright_year` is 1234.
+// foo
+// bar
+```
+
+### Fail Example (3 of 3)
+```systemverilog
+// COPYRIGHT (C) 1234 WRONGUN
+// The linenum and year are correct, but holder is incorrect.
+// The default value of `option.copyright_holder` is HOLDER.
+// foo
+// bar
+```
+
+### Explanation
+
+Check that a file contains a copyright header something like this:
+
+```
+// Copyright (c) 1984 George Orwell
+```
+
+The format is specified with a regular expression and 3 parameters:
+
+- `copyright_linenum`: Line number that must contain the copyright notice,
+  beginning at number 1, like you normally see in a text editor.
+- `copyright_year`: String containing the year(s) the work was created.
+  In the above example, that would be "1984".
+- `copyright_holder`: String containing the name(s) of the copyright holder(s).
+  In the above example, that would be "George Orwell" .
+
+The regex allows for simple permutations such as C-style comments and using
+uppercase.
+
+See also:
+- <https://en.wikipedia.org/wiki/Copyright_notice>
+- <https://en.wikipedia.org/wiki/MIT_License>
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Text Rule: `style_textwidth`
 
 ### Hint

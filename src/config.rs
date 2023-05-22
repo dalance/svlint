@@ -27,6 +27,13 @@ pub struct ConfigOption {
     #[serde(default = "default_textwidth")]
     pub textwidth: usize,
 
+    #[serde(default = "default_copyright_linenum")]
+    pub copyright_linenum: usize,
+    #[serde(default = "default_copyright_year")]
+    pub copyright_year: String,
+    #[serde(default = "default_copyright_holder")]
+    pub copyright_holder: String,
+
     #[serde(default = "default_indent")]
     pub indent: usize,
     #[serde(default = "default_prefix_inout")]
@@ -241,6 +248,18 @@ fn default_re_unconfigured() -> String {
     // redundant.
     // A special prefix "X" is required only for the testcases.
     String::from(r"^[^X](UNCONFIGURED|.*)$")
+}
+
+fn default_copyright_linenum() -> usize {
+    1
+}
+
+fn default_copyright_year() -> String {
+    String::from("1234")
+}
+
+fn default_copyright_holder() -> String {
+    String::from(r"HOLDER")
 }
 
 include!(concat!(env!("OUT_DIR"), "/impl_config.rs"));
