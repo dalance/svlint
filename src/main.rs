@@ -261,6 +261,9 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                 }
             }
         } else {
+            // Iterate over lines in the file, applying each textrule to each
+            // line in turn.
+
             let text: String = read_to_string(&path)?;
 
             let mut beg: usize = 0;
@@ -271,13 +274,17 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                         printer.print_failed(&failed, opt.single, opt.github_actions)?;
                     }
                 }
-                beg += line.len(); // Track the byte offset.
-                // TODO: Does this work on Windows newlines?
-                beg += 1; // Account for the trailing newline character on each line.
+
+                // Newlines are not included in each line and `text` does not
+                // contain CRLF because `read_to_string` convents CRLF to LF.
+                beg += line.len() + 1; // Track the beginning byte index.
             }
 
             match parse_sv_str(text.as_str(), &path, &defines, &includes, opt.ignore_include, false) {
                 Ok((syntax_tree, new_defines)) => {
+                    // Iterate over nodes in the concrete syntax tree, applying
+                    // each syntaxrule to each node in turn.
+
                     for node in syntax_tree.into_iter().event() {
                         for failed in linter.syntaxrules_check(&syntax_tree, &node) {
                             pass = false;
