@@ -46,32 +46,18 @@ etc.), printed material (e.g. via PDF), and logfiles from CI/CD tools (GitHub
 Actions, Bamboo, Jenkins, etc).
 
 ```toml
-option.textwidth = 2
+option.textwidth = 80
 textrules.style_textwidth = true
 ```
 
 
-### Test Each File for Excessively Long Lines
+### Test for Obfuscated Statements
 
 To get a list of all the files examined by a particular invocation of svlint,
 use the variable `${SVFILES}`, which is provided in all POSIX wrapper scripts.
 
-The `grep` utility can be used to detect, and report, lines longer than a given
-number of characters.
-```sh
-TEXTWIDTH='80'
-LINELEN="grep -EvIxHn --color '.{0,${TEXTWIDTH}}' {};"
-LINELEN="${LINELEN} if [ \"\$?\" -eq \"0\" ]; then"
-LINELEN="${LINELEN}   echo '!!! Lines longer than ${TEXTWIDTH} characters !!!';"
-LINELEN="${LINELEN}   exit 1;"
-LINELEN="${LINELEN} else"
-LINELEN="${LINELEN}   exit 0;"
-LINELEN="${LINELEN} fi"
-eval "${SVFILES}" | xargs -I {} sh -c "${LINELEN}"
-```
-
-Another use of `grep` is to report obfuscated statements where semicolons are
-pushed off the RHS of the screen.
+The `grep` utility can be used to report obfuscated statements where semicolons
+are pushed off the RHS of the screen.
 ```sh
 OBFUSTMT="grep -EIHn --color '[ ]+;' {};"
 OBFUSTMT="${OBFUSTMT} if [ \"\$?\" -eq \"0\" ]; then"
@@ -236,20 +222,9 @@ syntaxrules.style_trailingwhitespace = true
 ```
 
 Problems around indented preprocessor directives must be caught before svlint's
-preprocessor stage, so searching with `grep` beforehand is appropriate.
-```sh
-PPDIRECTIVES="define|undef|undefineall|resetall"
-PPDIRECTIVES="${PPDIRECTIVES}|ifdef|ifndef|elsif|else|endif"
-PPDIRECTIVES="${PPDIRECTIVES}|include"
-
-PPINDENT="grep -EIHn --color '[ ]+\`(${PPDIRECTIVES})' {};"
-PPINDENT="${PPINDENT} if [ \"\$?\" -eq \"0\" ]; then"
-PPINDENT="${PPINDENT}   echo '!!! Indented preprocessor directives !!!';"
-PPINDENT="${PPINDENT}   exit 1;"
-PPINDENT="${PPINDENT} else"
-PPINDENT="${PPINDENT}   exit 0;"
-PPINDENT="${PPINDENT} fi"
-eval "${SVFILES}" | xargs -I {} sh -c "${PPINDENT}"
+preprocessor stage.
+```toml
+textrules.style_directives = true
 ```
 
 

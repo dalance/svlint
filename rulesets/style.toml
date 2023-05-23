@@ -1,4 +1,4 @@
-option.textwidth = 2
+option.textwidth = 80
 textrules.style_textwidth = true
 option.indent = 2
 syntaxrules.tab_character = true
@@ -6,6 +6,7 @@ syntaxrules.style_indent = true
 syntaxrules.multiline_if_begin = true
 syntaxrules.multiline_for_begin = true
 syntaxrules.style_trailingwhitespace = true
+textrules.style_directives = true
 syntaxrules.style_operator_arithmetic = true
 syntaxrules.style_operator_boolean = true
 syntaxrules.style_operator_integer = true

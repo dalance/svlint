@@ -340,6 +340,127 @@ See also:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Text Rule: `style_directives`
+
+### Hint
+
+Remove whitespace preceeding compiler directive.
+
+### Reason
+
+Compiler directives should not cause whitespace issues or hide in other code.
+
+### Pass Example (1 of 1)
+```systemverilog
+
+`begin_keywords "1800-2017"
+`end_keywords
+`celldefine
+`endcelldefine
+`unconnected_drive pull0
+`nounconnected_drive
+`pragma foo
+`timescale 1ns / 1ps
+`default_nettype none
+`line 5 "foo.sv" 0
+`resetall
+/* This FILE is `__FILE__ */
+/* This LINE is `__LINE__ */
+`include "testcases/syntaxrules/pass/blocking_assignment_in_always_ff.sv"
+`define FOO 5
+`ifdef FOO
+`elsif BAR
+`else
+`endif
+`ifndef BAZ
+`endif
+`undef FOO
+`undefineall
+
+```
+
+### Fail Example (1 of 3)
+```systemverilog
+module `ifdef FOO Foo `else Bar `endif
+  (); // ifdef, else, and endif are on a single line.
+endmodule
+```
+
+### Fail Example (2 of 3)
+```systemverilog
+`ifdef FOO
+  `ifdef BAR
+    // Preprocessor directives are indented with respect to surrounding
+    // preprocessor code.
+    `define FOOBAR
+  `endif
+`endif
+```
+
+### Fail Example (3 of 3)
+```systemverilog
+module M ();
+  always_comb
+    // Preprocessor directives are indented with respect to source description.
+    `ifdef FOO
+      if (a)
+        b = c;
+      else
+        b = d;
+    `else
+      b = e;
+    `endif
+endmodule
+```
+
+### Explanation
+
+Check that (most) preprocessor and compiler directives are not indented, and
+that there are no items preceeding a directive on the same line.
+
+There are 22 compiler directives defined in IEEE1800-2017:
+
+- `begin_keywords`
+- `end_keywords`
+- `celldefine`
+- `endcelldefine`
+- `unconnected_drive`
+- `nounconnected_drive`
+- `pragma`
+- `timescale`
+- `default_nettype`
+- `line`
+- `resetall`
+- `__LINE__`
+- `__FILE__`
+- `include`
+- `define`
+- `ifdef`
+- `ifndef`
+- `elsif`
+- `else`
+- `endif`
+- `undef`
+- `undefineall`
+
+Each of these can have profound effects on the surrounding source code, so it's
+important that these stand out such that they're difficult to overlook.
+To ensure that directives are prominently displayed, and to discourage
+deep/complex ifdef logic, this rule uses a regular expression to check that
+there are no characters before any directive (excluding `__LINE__` or
+`__FILE__`).
+This does not affect user-defined preprocessor macros.
+
+See also:
+- The "Indentation Preprocessor Considerations" section of **ruleset-style**.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 22 Compiler directives
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Text Rule: `style_textwidth`
 
 ### Hint
@@ -9708,32 +9829,18 @@ etc.), printed material (e.g. via PDF), and logfiles from CI/CD tools (GitHub
 Actions, Bamboo, Jenkins, etc).
 
 ```toml
-option.textwidth = 2
+option.textwidth = 80
 textrules.style_textwidth = true
 ```
 
 
-### Test Each File for Excessively Long Lines
+### Test for Obfuscated Statements
 
 To get a list of all the files examined by a particular invocation of svlint,
 use the variable `${SVFILES}`, which is provided in all POSIX wrapper scripts.
 
-The `grep` utility can be used to detect, and report, lines longer than a given
-number of characters.
-```sh
-TEXTWIDTH='80'
-LINELEN="grep -EvIxHn --color '.{0,${TEXTWIDTH}}' {};"
-LINELEN="${LINELEN} if [ \"\$?\" -eq \"0\" ]; then"
-LINELEN="${LINELEN}   echo '!!! Lines longer than ${TEXTWIDTH} characters !!!';"
-LINELEN="${LINELEN}   exit 1;"
-LINELEN="${LINELEN} else"
-LINELEN="${LINELEN}   exit 0;"
-LINELEN="${LINELEN} fi"
-eval "${SVFILES}" | xargs -I {} sh -c "${LINELEN}"
-```
-
-Another use of `grep` is to report obfuscated statements where semicolons are
-pushed off the RHS of the screen.
+The `grep` utility can be used to report obfuscated statements where semicolons
+are pushed off the RHS of the screen.
 ```sh
 OBFUSTMT="grep -EIHn --color '[ ]+;' {};"
 OBFUSTMT="${OBFUSTMT} if [ \"\$?\" -eq \"0\" ]; then"
@@ -9898,20 +10005,9 @@ syntaxrules.style_trailingwhitespace = true
 ```
 
 Problems around indented preprocessor directives must be caught before svlint's
-preprocessor stage, so searching with `grep` beforehand is appropriate.
-```sh
-PPDIRECTIVES="define|undef|undefineall|resetall"
-PPDIRECTIVES="${PPDIRECTIVES}|ifdef|ifndef|elsif|else|endif"
-PPDIRECTIVES="${PPDIRECTIVES}|include"
-
-PPINDENT="grep -EIHn --color '[ ]+\`(${PPDIRECTIVES})' {};"
-PPINDENT="${PPINDENT} if [ \"\$?\" -eq \"0\" ]; then"
-PPINDENT="${PPINDENT}   echo '!!! Indented preprocessor directives !!!';"
-PPINDENT="${PPINDENT}   exit 1;"
-PPINDENT="${PPINDENT} else"
-PPINDENT="${PPINDENT}   exit 0;"
-PPINDENT="${PPINDENT} fi"
-eval "${SVFILES}" | xargs -I {} sh -c "${PPINDENT}"
+preprocessor stage.
+```toml
+textrules.style_directives = true
 ```
 
 
