@@ -38,6 +38,9 @@ multiple versions of a file, rather than reading one version:
   - Git, a popular version control tool will (by default) warn against trailing
     whitespace with prominent markers specifically because of the unnecessary
     noise introduced to a repository's history.
+  - Closely related, is the obfuscation of statements by using whitespace to
+    push a semicolon off the RHS of the screen, thus misleading the viewer into
+    thinking that the next line is a continuation instead of a new statement.
 
 These conventions help give a consistent view over different ways of viewing
 files which include the writer's text editor (Vim, VSCode, Emacs, etc.),
@@ -48,29 +51,8 @@ Actions, Bamboo, Jenkins, etc).
 ```toml
 option.textwidth = 80
 textrules.style_textwidth = true
+textrules.style_semicolon = true
 ```
-
-
-### Test for Obfuscated Statements
-
-To get a list of all the files examined by a particular invocation of svlint,
-use the variable `${SVFILES}`, which is provided in all POSIX wrapper scripts.
-
-The `grep` utility can be used to report obfuscated statements where semicolons
-are pushed off the RHS of the screen.
-```sh
-OBFUSTMT="grep -EIHn --color '[ ]+;' {};"
-OBFUSTMT="${OBFUSTMT} if [ \"\$?\" -eq \"0\" ]; then"
-OBFUSTMT="${OBFUSTMT}   echo '!!! Potentially obfuscated statements !!!';"
-OBFUSTMT="${OBFUSTMT}   exit 1;"
-OBFUSTMT="${OBFUSTMT} else"
-OBFUSTMT="${OBFUSTMT}   exit 0;"
-OBFUSTMT="${OBFUSTMT} fi"
-eval "${SVFILES}" | xargs -I {} sh -c "${OBFUSTMT}"
-```
-
-On Windows, the default environment does not contain utilities such as `grep`,
-so some system-specific scripting may be more appropriate.
 
 
 ### Indentation

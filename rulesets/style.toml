@@ -1,5 +1,6 @@
 option.textwidth = 80
 textrules.style_textwidth = true
+textrules.style_semicolon = true
 option.indent = 2
 syntaxrules.tab_character = true
 syntaxrules.style_indent = true

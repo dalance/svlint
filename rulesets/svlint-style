@@ -25,13 +25,5 @@ SANS_CONTROL="${SANS_CONTROL} | tr -d '[\\000-\\011\\013-\\037\\177]'"
 SVFILES="svlint --dump-filelist=files $* ${SANS_CONTROL}"
 SVINCDIRS="svlint --dump-filelist=incdirs $* ${SANS_CONTROL}"
 
-OBFUSTMT="grep -EIHn --color '[ ]+;' {};"
-OBFUSTMT="${OBFUSTMT} if [ \"\$?\" -eq \"0\" ]; then"
-OBFUSTMT="${OBFUSTMT}   echo '!!! Potentially obfuscated statements !!!';"
-OBFUSTMT="${OBFUSTMT}   exit 1;"
-OBFUSTMT="${OBFUSTMT} else"
-OBFUSTMT="${OBFUSTMT}   exit 0;"
-OBFUSTMT="${OBFUSTMT} fi"
-eval "${SVFILES}" | xargs -I {} sh -c "${OBFUSTMT}"
 
 env SVLINT_CONFIG="${SVLINT_CONFIG}" svlint $*
