@@ -69,12 +69,15 @@ impl Linter {
             self.plugins.push(lib);
             let lib = self.plugins.last().unwrap();
 
-            let get_plugin: Result<Symbol<extern "C" fn() -> *mut dyn Rule>, _> =
+            let get_plugin: Result<Symbol<extern "C" fn() -> Vec<*mut dyn Rule>>, _> =
                 unsafe { lib.get(b"get_plugin") };
             if let Ok(get_plugin) = get_plugin {
-                let plugin = unsafe { Box::from_raw(get_plugin()) };
-                self.ctl_enabled.insert(plugin.name(), true);
-                self.rules.push(plugin);
+                let vec = get_plugin();
+                for plug in vec {
+                    let plugin = unsafe { Box::from_raw(plug) };
+                    self.ctl_enabled.insert(plugin.name(), true);
+                    self.rules.push(plugin);
+                }
             }
         }
     }
