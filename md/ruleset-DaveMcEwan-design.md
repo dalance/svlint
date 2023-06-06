@@ -517,13 +517,46 @@ rules.re_forbidden_task = false
 ### Naming Conventions
 
 TODO: Replicate this section as **ruleset-DaveMcEwan-designnaming**.
-
 TODO: Haskell-style hierarchy distinctions.
 
+In synthesizable design code, there are three main types of description
+(package, module, and interface), which should normally be kept in separate
+files for each description.
+A straightforward way to manage these in a filesystem is to have the filename
+match the identifier of the description inside, i.e. `myModule.sv` should
+contain only the module named `myModule`, and `pkg1.sv` should contain
+only the package named `pkg1`.
+
+Additionally, it is useful for the identifiers used in code to be immediately
+obvious which type of description they refer to.
+References to packages are always obvious because of the scope resolution
+operator `::` (see IEEE1800-2017 clause 26.3).
+However, interfaces and modules use identical instantiation syntax which makes
+it difficult to easily identify if an instance refers to a module or interface
+(see the definitions of `module_instantiation` and `interface_instantiation` in
+IEEE1800-2017 Annex A.4 Instantiations).
+A good naming scheme should make these easy to distinguish without introducing
+too much visual noise.
+
+The approach in this ruleset is similar to that in typical Haskell - the case
+of the first letter of the identifier signifies what it refers to.
+To begin, modules should have the first letter as Uppercase - Modules are the
+most common thing to instance, so they should use the minimum number of
+characters to avoid visual noise.
+Next, packages are referred to more often than interfaces, so these are
+distinguished by their first letter as lowercase.
+Interface identifiers are usually used less often in a module than package
+identifies - for example constants and functions in a package might be used
+in the declarations and assignments of many signals, but interface identifiers
+are only used for instantiations.
+To distinguish instances of interfaces from modules, interface identifiers
+should be prefixed with `ifc_`.
+
 ```toml
-rules.lowercamelcase_interface = true
+rules.lowercamelcase_package = true
 rules.uppercamelcase_module = true
-rules.uppercamelcase_package = true
+rules.prefix_interface = true
+option.prefix_interface = "ifc_"
 rules.prefix_instance = true
 rules.re_required_generateblock = true
 ```
