@@ -27,11 +27,19 @@ a developer's interest to make the process as easy as possible for reviewers.
 
 There are several ways that this ruleset aims to reduce the mental burden on
 reviewers:
-1. Assure the reviewer that common assumptions hold true, e.g. "*all* variables
-  are declared before use" and "*all* constants are 2-state".
-2. Minimise scope of objects, i.e. how much information a reader must keep in
+1. Present code in a consistent format, i.e. using *explicitly specified*
+  conventions for style/whitespace and naming/identifiers.
+2. Assure the reviewer that common assumptions hold true, e.g. "*all* constants
+  are 2-state".
+3. Minimise scope of objects, i.e. how much information a reader must keep in
   mind while reading a section of code.
-3. Clarify intent.
+4. Encourage canonicalisation.
+  The infamous [Zen of Python](https://peps.python.org/pep-0020/) phrases this
+  concept as "There should be one-- and preferably only one --obvious way to do
+  it."
+  By enforcing a strict style, readers can read and comprehend a large body of
+  code quickly and accurately.
+5. Above all else, ensure that the intention is crystal clear.
   An author should demonstrate (to their readers) that they have considered the
   precise meaning of what they wrote, thus giving little room for
   mis-interpretation by blurry-eyed readers or tools operating in the grey
@@ -40,16 +48,11 @@ reviewers:
   Another prominent example is in the rules `sequential block_in_*`, i.e.
   specifying and implementing purely combinatorial logic is clearer with purely
   combinatorial code (rather than procedures).
-4. Encourage canonicalisation.
-  The infamous [Zen of Python](https://peps.python.org/pep-0020/) phrases this
-  concept as "There should be one-- and preferably only one --obvious way to do
-  it."
-  By enforcing a strict style, readers can read and comprehend a large body of
-  code quickly and accurately.
 
-Through rules which detect code that goes against those aims, reviewers are
+Through using rules which align with those 5 aims, reviewers are
 free to concentrate on aspects which require high-level thought such as
-"Is this an efficient design?", instead of "Is this code formatted prettily?".
+"Is this an efficient design?", instead of less interesting things like "Will
+this code be synthesised as I expect?".
 This ruleset builds upon **ruleset-style** for cosmetic consistency,
 **ruleset-designintent** for consistent intepretation across tools, and
 **ruleset-DaveMcEwan-designnaming** for naming conventions.
@@ -416,17 +419,6 @@ rules.keyword_forbidden_wire_reg = true
 rules.non_ansi_module = true
 ```
 
-When synthesised into a netlist, generate blocks should have labels so that
-their inferred logic can be detected in hierarchical paths.
-Although the LRM is clear about the implict naming of unlabelled generate
-blocks (see IEEE1800-2017 clause 27.6), using a well-named label provides some
-clarification about the intention behind that logic.
-```toml
-rules.generate_case_with_label = true
-rules.generate_for_with_label = true
-rules.generate_if_with_label = true
-```
-
 Generally, elaboration-time constants (`parameter`, `localparam`) should be
 2-state types and declared with a default value.
 Additionally, where the context defines that `parameter` is an alias for
@@ -460,6 +452,7 @@ rules.genvar_declaration_out_loop = false
 rules.keyword_forbidden_generate = true
 rules.keyword_required_generate = false
 ```
+TODO: Note compatibility issue with Precision.
 
 Rules in the following subset combine to provide an important property for the
 robust design of synthesisable hardware - that you can easily draw a schematic
@@ -500,32 +493,37 @@ TODO: `re_forbidden_*` for objects which should not be declared in designs.
 
 ```toml
 option.re_forbidden_checker = ".*"
-rules.re_forbidden_checker = false
+rules.re_forbidden_checker = true
 option.re_forbidden_class = ".*"
-rules.re_forbidden_class = false
+rules.re_forbidden_class = true
 option.re_forbidden_port_ref = ".*"
-rules.re_forbidden_port_ref = false
+rules.re_forbidden_port_ref = true
 option.re_forbidden_property = ".*"
-rules.re_forbidden_property = false
+rules.re_forbidden_property = true
 option.re_forbidden_sequence = ".*"
-rules.re_forbidden_sequence = false
+rules.re_forbidden_sequence = true
 option.re_forbidden_task = ".*"
-rules.re_forbidden_task = false
+rules.re_forbidden_task = true
 ```
 
 
 ### Naming Conventions
 
+These rules around naming conventions are also available in the specialised
+ruleset **ruleset-DaveMcEwan-designnaming**.
 TODO: Replicate this section as **ruleset-DaveMcEwan-designnaming**.
-TODO: Haskell-style hierarchy distinctions.
 
-In synthesizable design code, there are three main types of description
+
+#### Filesystem and Logical Hierarchy
+
+In synthesisable design code, there are three main types of description
 (package, module, and interface), which should normally be kept in separate
 files for each description.
 A straightforward way to manage these in a filesystem is to have the filename
 match the identifier of the description inside, i.e. `myModule.sv` should
 contain only the module named `myModule`, and `pkg1.sv` should contain
 only the package named `pkg1`.
+Note, this ruleset does not perform checks on file names.
 
 Additionally, it is useful for the identifiers used in code to be immediately
 obvious which type of description they refer to.
@@ -549,33 +547,148 @@ Interface identifiers are usually used less often in a module than package
 identifies - for example constants and functions in a package might be used
 in the declarations and assignments of many signals, but interface identifiers
 are only used for instantiations.
-To distinguish instances of interfaces from modules, interface identifiers
+To distinguish instantiations of interfaces from modules, interface identifiers
 should be prefixed with `ifc_`.
+There are no restrictions on the rest of an interface identifier (everything
+after the `ifc_` prefix) or modport or variable identifiers within an
+interface declaration.
 
 ```toml
 rules.lowercamelcase_package = true
 rules.uppercamelcase_module = true
-rules.prefix_interface = true
 option.prefix_interface = "ifc_"
-rules.prefix_instance = true
-rules.re_required_generateblock = true
+rules.prefix_interface = true
 ```
 
-TODO: Port direction
+The above rules help readers to navigate a filesystem to find the right source
+files containing packages, modules, and interfaces.
+Another common situation where it is necessary to distinguish between these is
+in examining tool output such as netlists and waveforms.
+In these scenarios, naming conventions on hierarchical nodes can help engineers
+distinguish between modules, interfaces, and generate blocks.
+Although the LRM is clear about the implict naming of unlabelled generate
+blocks (see IEEE1800-2017 clause 27.6), using a well-named label provides some
+clarification about the intention behind that logic.
+Instance identifiers of both modules and interfaces should be prefixed with
+`u_` whereas generate block labels should be prefixed with `l_`.
+
+```toml
+option.prefix_instance = "u_"
+rules.prefix_instance = true
+option.prefix_label = "l_"
+rules.generate_case_with_label = true
+rules.generate_for_with_label = true
+rules.generate_if_with_label = true
+```
+
+A further convention, which is not checked by this ruleset, is to assist users
+in waveform viewers to distinguish between instances of modules vs interfaces
+by using Uppercase vs lowercase for the first letter after the `u_` prefix.
+For example, a module instance looks like `u_Foo` and an interface instance
+looks like `u_foo`.
+
+These rules around filesystem and logical hierarchy are demonstrated in the
+example below:
+
+```systemverilog
+/* filename: path/to/usb.sv */
+package usb;                                    // Package declaration.
+...
+endpackage
+
+////////////////////////////////////////////////////////////////////////////////
+
+/* filename: path/to/ifc_fifo.sv */
+interface ifc_fifo;                             // Interface declaration.
+...
+endinterface
+
+////////////////////////////////////////////////////////////////////////////////
+
+/* filename: path/to/UsbRx.sv */
+module UsbRx                                    // Module declaration.
+  ( ...
+  , ifc_fifo.read                     rdData    // Interface port.
+  , output var logic [usb::PID_W-1:0] o_pid     // Package reference.
+  );
+...
+  ifc_fifo u_packer;                            // Interface instance.
+...
+  Fifo u_Queue ( ... );                         // Module instance.
+...
+  if (FOO) begin: l_foo                         // Generate block.
+...
+  end: l_foo
+endmodule
+```
+
+
+#### Ports and Direction
+
+TODO: text
+
+Enhance readability of code for integrators and reviewers, e.g. "Prefix all
+ports with `i_`, `o_`, or `b_` for inputs, outputs, and bi-directionals
+respectively".
+This allows a reader to glean important information about how ports and
+internal logic are connected without the need to scroll back-and-forth
+through a file and/or memorize the portlist.
 
 ```toml
 rules.prefix_inout = true
 rules.prefix_input = true
 rules.prefix_output = true
+option.re_required_port_interface = "^[a-z]+[a-zA-Z0-9_]*$"
 rules.re_required_port_interface = true
 ```
 
-TODO: Constant/variable distinction.
+TODO: example
+
+
+#### Elaboration-Time Constants
+
+TODO: text
 
 ```toml
+option.re_required_port_interface = "^([a-z]{1,1}[a-z0-9]{0,9}|f_[a-zA-Z0-9_]+)$"
 rules.re_required_function = true
+option.re_required_localparam = "^[A-Z]+[A-Z0-9_]*)$"
 rules.re_required_localparam = true
+option.re_required_parameter = "^[A-Z]+[A-Z0-9_]*)$"
 rules.re_required_parameter = true
+option.re_required_genvar = "^[a-z]{1,3}$"
 rules.re_required_genvar = true
 ```
+
+TODO: example
+
+
+#### Variables
+
+Finally, some elements of design intent can be clarified by adding some useful
+redundancy in the form of suffixes on identifiers, e.g. "Every signal which
+should infer the output of a flip-flop with `_q`".
+By using conventional terminology (`d` for input, `q` for output) readers
+will be alerted to investigate any flip-flops (in a netlist) without this
+suffix as the tools may not be treating the code as the original author
+intended.
+
+Some common suffixes include:
+
+- `_d`: Input to a flip-flop.
+- `_q`: Output from a flip-flop.
+- `_lat`: Output from a latch.
+- `_mem`: Memory model.
+- `_a`: Asynchronous signal.
+- `_n`: Active-low signal.
+- `_dp`, `_dn`: Differential positive/negative pair.
+- `_ana`: Analog signal.
+- `_55MHz`: A signal with a required operating frequency.
+
+Throughout this ruleset, prefixes are (usefully) redundant re-statements of
+information already defined in SystemVerilog semantics, whereas suffixes are
+(usefully) redundant clarifications of information which can only be implied
+with SystemVerilog.
+Note, svlint does not perform semantic analysis, so there are no rules to
+check for these conventions.
 
