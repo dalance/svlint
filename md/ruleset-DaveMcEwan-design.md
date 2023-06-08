@@ -381,7 +381,7 @@ rule.
 Additionally, `eventlist_or` mandates the use of `,` (comma) as the separator
 in `always_ff` sensitivity lists only for consistency and readabilty.
 ```toml
-#rules.eventlist_or = true TODO: Uncomment when eventlist_or is available.
+rules.eventlist_or = true
 ```
 
 
@@ -444,27 +444,29 @@ Rules on the use of the `generate` and `endgenerate` keywords is similarly
 subjective, but this ruleset forbids their use because readers should be aware
 that all `case`, `for`, and `if` blocks outside of assignment processes are
 generate blocks.
-Further, the use of `generate` and `endgenerate` is entirely optional with no
+According to the LRM, use of `generate` and `endgenerate` is optional with no
 semantic difference to not using them.
+However, at least one (older) FPGA synthesis tool is prone to crashing when
+generate blocks are used outside explicit generate regions.
 ```toml
 rules.genvar_declaration_in_loop = true
 rules.genvar_declaration_out_loop = false
-rules.keyword_forbidden_generate = true
-rules.keyword_required_generate = false
+rules.keyword_forbidden_generate = false
+rules.keyword_required_generate = true
 ```
-TODO: Note compatibility issue with Precision.
 
 Rules in the following subset combine to provide an important property for the
 robust design of synthesisable hardware - that you can easily draw a schematic
 of what the synthesis result should look like.
 The two rules of thumb are to always fully specify decision logic, and never
 use sequential models for (what will be synthesised to) parallel logic.
+A sequential block is one delimited by `begin`/`end` keywords.
 ```toml
 rules.explicit_case_default = true
 rules.explicit_if_else = true
-#rules.loop_statement_in_always_comb = true TODO
-#rules.loop_statement_in_always_ff = true TODO
-#rules.loop_statement_in_always_latch = true TODO
+rules.loop_statement_in_always_comb = true
+rules.loop_statement_in_always_ff = true
+rules.loop_statement_in_always_latch = true
 rules.sequential_block_in_always_comb = true
 rules.sequential_block_in_always_ff = true
 rules.sequential_block_in_always_latch = true
@@ -581,42 +583,43 @@ rules.generate_for_with_label = true
 rules.generate_if_with_label = true
 ```
 
-A further convention, which is not checked by this ruleset, is to assist users
-in waveform viewers to distinguish between instances of modules vs interfaces
-by using Uppercase vs lowercase for the first letter after the `u_` prefix.
+A further convention, not checked by this ruleset, is to use Uppercase vs
+lowercase for the first letter after the `u_` prefix to distinguish between
+instances of modules vs interfaces.
 For example, a module instance looks like `u_Foo` and an interface instance
 looks like `u_foo`.
+This makes it easier in navigate hierarchy in, for example, waveform viewers.
 
-These rules around filesystem and logical hierarchy are demonstrated in the
+The above rules around filesystem and logical hierarchy are demonstrated in the
 example below:
 
 ```systemverilog
 /* filename: path/to/usb.sv */
-package usb;                                    // Package declaration.
+package usb;                                    // package declaration
 ...
 endpackage
 
 ////////////////////////////////////////////////////////////////////////////////
 
 /* filename: path/to/ifc_fifo.sv */
-interface ifc_fifo;                             // Interface declaration.
+interface ifc_fifo;                             // interface declaration
 ...
 endinterface
 
 ////////////////////////////////////////////////////////////////////////////////
 
 /* filename: path/to/UsbRx.sv */
-module UsbRx                                    // Module declaration.
+module UsbRx                                    // module declaration
   ( ...
-  , ifc_fifo.read                     rdData    // Interface port.
-  , output var logic [usb::PID_W-1:0] o_pid     // Package reference.
+  , ifc_fifo.read                     rdData    // interface port
+  , output var logic [usb::PID_W-1:0] o_pid     // package reference
   );
 ...
-  ifc_fifo u_packer;                            // Interface instance.
+  ifc_fifo u_packer;                            // interface instance
 ...
-  Fifo u_Queue ( ... );                         // Module instance.
+  Fifo u_Queue ( ... );                         // module instance
 ...
-  if (FOO) begin: l_foo                         // Generate block.
+  if (FOO) begin: l_foo                         // generate block
 ...
   end: l_foo
 endmodule
@@ -650,7 +653,7 @@ TODO: example
 TODO: text
 
 ```toml
-option.re_required_port_interface = "^([a-z]{1,1}[a-z0-9]{0,9}|f_[a-zA-Z0-9_]+)$"
+option.re_required_function = "^([a-z]{1,1}[a-z0-9]{0,9}|f_[a-zA-Z0-9_]+)$"
 rules.re_required_function = true
 option.re_required_localparam = "^[A-Z]+[A-Z0-9_]*)$"
 rules.re_required_localparam = true
