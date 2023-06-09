@@ -48,7 +48,7 @@ PANDOC_FLAGS += --variable=papersize:a4
 #   - Compact form for rule's hint and reason.
 MANUAL.intermediateTex.md:
 	sed \
-		-e 's/^## Rule: /\\clearpage\n## Rule: /' \
+		-e 's/^## Syntax Rule: /\\clearpage\n## Syntax Rule: /' \
 		-e 's/^## Ruleset: /\\clearpage\n## Ruleset: /' \
 		-e '/^### Hint$$/{$$!{N;N;s/### Hint\n\n/Hint\n: /;t;P;D}}' \
 		-e '/^### Reason$$/{$$!{N;N;s/### Reason\n\n/Reason\n: /;t;P;D}}' \

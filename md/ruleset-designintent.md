@@ -6,17 +6,17 @@ This ruleset is a superset of **ruleset-simsynth**.
 These rules don't depend on each other or interact to provide additional
 properties.
 ```toml
-rules.blocking_assignment_in_always_ff = true
-rules.blocking_assignment_in_always_latch = true
-rules.non_blocking_assignment_in_always_comb = true
-rules.case_default = true
-rules.enum_with_type = true
-rules.function_with_automatic = true
-rules.keyword_forbidden_priority = true
-rules.keyword_forbidden_unique = true
-rules.keyword_forbidden_unique0 = true
-rules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
-rules.operator_case_equality = true
+syntaxrules.blocking_assignment_in_always_ff = true
+syntaxrules.blocking_assignment_in_always_latch = true
+syntaxrules.non_blocking_assignment_in_always_comb = true
+syntaxrules.case_default = true
+syntaxrules.enum_with_type = true
+syntaxrules.function_with_automatic = true
+syntaxrules.keyword_forbidden_priority = true
+syntaxrules.keyword_forbidden_unique = true
+syntaxrules.keyword_forbidden_unique0 = true
+syntaxrules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
+syntaxrules.operator_case_equality = true
 ```
 
 This ruleset has further rules which don't depend on each other or combine
@@ -27,12 +27,12 @@ Note, in the related **ruleset-verifintent**, the rule
 for a simulation testbench to schedule assignments, tasks, and functions in
 ways that wouldn't make sense for synthesizable hardware.
 ```toml
-rules.action_block_with_side_effect = true
-rules.default_nettype_none = true
-rules.function_same_as_system_function = true
-rules.keyword_forbidden_always = true
-rules.keyword_forbidden_wire_reg = true
-rules.non_ansi_module = true
+syntaxrules.action_block_with_side_effect = true
+syntaxrules.default_nettype_none = true
+syntaxrules.function_same_as_system_function = true
+syntaxrules.keyword_forbidden_always = true
+syntaxrules.keyword_forbidden_wire_reg = true
+syntaxrules.non_ansi_module = true
 ```
 
 When synthesised into a netlist, generate blocks should have labels so that
@@ -43,9 +43,9 @@ clarification about the author's intention for that logic.
 In the similar **ruleset-verifintent**, these rules are not enabled because
 they (mostly) relate to synthesizable hardware.
 ```toml
-rules.generate_case_with_label = true
-rules.generate_for_with_label = true
-rules.generate_if_with_label = true
+syntaxrules.generate_case_with_label = true
+syntaxrules.generate_for_with_label = true
+syntaxrules.generate_if_with_label = true
 ```
 
 Generally, elaboration-time constant (`parameter`, `localparam`) should be
@@ -54,13 +54,13 @@ Additionally, where the context defines that `parameter` is an alias for
 `localparam`, author's should demonstate that they understand the constant
 cannot be overriden by using the `localparam` keyword.
 ```toml
-rules.localparam_type_twostate = true
-rules.parameter_type_twostate = true
-rules.localparam_explicit_type = true
-rules.parameter_explicit_type = true
-rules.parameter_default_value = true
-rules.parameter_in_generate = true
-rules.parameter_in_package = true
+syntaxrules.localparam_type_twostate = true
+syntaxrules.parameter_type_twostate = true
+syntaxrules.localparam_explicit_type = true
+syntaxrules.parameter_explicit_type = true
+syntaxrules.parameter_default_value = true
+syntaxrules.parameter_in_generate = true
+syntaxrules.parameter_in_package = true
 ```
 
 Genvars, which are also elaboration-time constants, should be declared within
@@ -76,10 +76,10 @@ generate blocks.
 Further, the use of `generate` and `endgenerate` is entirely optional with no
 semantic difference to not using them.
 ```toml
-rules.genvar_declaration_in_loop = true
-rules.genvar_declaration_out_loop = false
-rules.keyword_forbidden_generate = true
-rules.keyword_required_generate = false
+syntaxrules.genvar_declaration_in_loop = true
+syntaxrules.genvar_declaration_out_loop = false
+syntaxrules.keyword_forbidden_generate = true
+syntaxrules.keyword_required_generate = false
 ```
 
 Rules in the below subset combine to provide an important property for the
@@ -88,14 +88,14 @@ of what the synthesis result should look like.
 The two rules of thumb are to always fully specify decision logic, and never
 use procedural models for (what will be synthesized to) parallel logic.
 ```toml
-rules.explicit_case_default = true
-rules.explicit_if_else = true
-rules.loop_statement_in_always_comb = true
-rules.loop_statement_in_always_ff = true
-rules.loop_statement_in_always_latch = true
-rules.sequential_block_in_always_comb = true
-rules.sequential_block_in_always_ff = true
-rules.sequential_block_in_always_latch = true
+syntaxrules.explicit_case_default = true
+syntaxrules.explicit_if_else = true
+syntaxrules.loop_statement_in_always_comb = true
+syntaxrules.loop_statement_in_always_ff = true
+syntaxrules.loop_statement_in_always_latch = true
+syntaxrules.sequential_block_in_always_comb = true
+syntaxrules.sequential_block_in_always_ff = true
+syntaxrules.sequential_block_in_always_latch = true
 ```
 
 Where sequential modelling of parallel logic is an unavoidable pragmatic
@@ -104,8 +104,8 @@ proper indentation.
 Note, this ruleset does *not* check the amount of indentation like
 **style_indent**.
 ```toml
-rules.multiline_for_begin = true
-rules.multiline_if_begin = true
+syntaxrules.multiline_for_begin = true
+syntaxrules.multiline_if_begin = true
 ```
 
 The semantics around port declarations are, perhaps, unintuitive but were
@@ -113,9 +113,9 @@ designed for backward compliance with Verilog (IEEE1364-1995).
 The below subset ensures that port declarations clearly convey important
 information about the direction and update mechanism of each signal port.
 ```toml
-rules.inout_with_tri = true
-rules.input_with_var = true
-rules.output_with_var = true
-rules.interface_port_with_modport = true
+syntaxrules.inout_with_tri = true
+syntaxrules.input_with_var = true
+syntaxrules.output_with_var = true
+syntaxrules.interface_port_with_modport = true
 ```
 

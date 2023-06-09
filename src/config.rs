@@ -1,4 +1,4 @@
-use crate::linter::Rule;
+use crate::linter::{TextRule, SyntaxRule};
 use crate::rules::*;
 use regex::Regex;
 use serde_derive::{Deserialize, Serialize};
@@ -7,14 +7,32 @@ use serde_derive::{Deserialize, Serialize};
 pub struct Config {
     #[serde(default)]
     pub option: ConfigOption,
+
     #[serde(default)]
-    pub rules: ConfigRules,
+    pub textrules: ConfigTextRules,
+
+    // Pre-v0.7.2, svlint supports only syntaxrules, so they're just called
+    // "rules" (instead of "syntaxrules").
+    // The serde alias allows either "rules" or "syntaxrules" to be used in
+    // the configuration files, usually `.svlint.toml`.
+    #[serde(default, alias = "rules")]
+    pub syntaxrules: ConfigSyntaxRules,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ConfigOption {
     #[serde(with = "serde_regex", default)]
     pub exclude_paths: Vec<Regex>,
+
+    #[serde(default = "default_textwidth")]
+    pub textwidth: usize,
+
+    #[serde(default = "default_copyright_linenum")]
+    pub copyright_linenum: usize,
+    #[serde(default = "default_copyright_year")]
+    pub copyright_year: String,
+    #[serde(default = "default_copyright_holder")]
+    pub copyright_holder: String,
 
     #[serde(default = "default_indent")]
     pub indent: usize,
@@ -150,7 +168,13 @@ impl Default for ConfigOption {
     }
 }
 
-impl Default for ConfigRules {
+impl Default for ConfigTextRules {
+    fn default() -> Self {
+        toml::from_str("").unwrap()
+    }
+}
+
+impl Default for ConfigSyntaxRules {
     fn default() -> Self {
         toml::from_str("").unwrap()
     }
@@ -164,6 +188,10 @@ fn default_as_true() -> bool {
 #[allow(dead_code)]
 fn default_as_false() -> bool {
     false
+}
+
+fn default_textwidth() -> usize {
+    80
 }
 
 fn default_indent() -> usize {
@@ -220,6 +248,18 @@ fn default_re_unconfigured() -> String {
     // redundant.
     // A special prefix "X" is required only for the testcases.
     String::from(r"^[^X](UNCONFIGURED|.*)$")
+}
+
+fn default_copyright_linenum() -> usize {
+    1
+}
+
+fn default_copyright_year() -> String {
+    String::from("1234")
+}
+
+fn default_copyright_holder() -> String {
+    String::from(r"HOLDER")
 }
 
 include!(concat!(env!("OUT_DIR"), "/impl_config.rs"));

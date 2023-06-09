@@ -6,20 +6,40 @@ use std::path::{Path, PathBuf};
 use sv_parser::{unwrap_locate, Locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Clone, Copy)]
-pub enum RuleResult {
+pub enum TextRuleResult {
+    Pass,
+    Fail {
+        offset: usize, // Character index, on this line, beginning failure.
+        len: usize, // Number of characters causing failure.
+    },
+}
+
+pub trait TextRule: Sync + Send {
+    fn check(
+        &mut self,
+        text: &str,
+        config: &ConfigOption,
+    ) -> TextRuleResult;
+    fn name(&self) -> String;
+    fn hint(&self, config: &ConfigOption) -> String;
+    fn reason(&self) -> String;
+}
+
+#[derive(Clone, Copy)]
+pub enum SyntaxRuleResult {
     Pass,
     Fail,
     FailAt(usize, usize),
     FailLocate(Locate),
 }
 
-pub trait Rule: Sync + Send {
+pub trait SyntaxRule: Sync + Send {
     fn check(
         &mut self,
         syntax_tree: &SyntaxTree,
         event: &NodeEvent,
         config: &ConfigOption,
-    ) -> RuleResult;
+    ) -> SyntaxRuleResult;
     fn name(&self) -> String;
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
@@ -27,7 +47,8 @@ pub trait Rule: Sync + Send {
 
 pub struct Linter {
     option: ConfigOption,
-    rules: Vec<Box<dyn Rule>>,
+    textrules: Vec<Box<dyn TextRule>>,
+    syntaxrules: Vec<Box<dyn SyntaxRule>>,
     plugins: Vec<Library>,
     re_ctl: Regex,
     pub ctl_enabled: HashMap<String, bool>,
@@ -45,18 +66,20 @@ pub struct LintFailed {
 
 impl Linter {
     pub fn new(config: Config) -> Linter {
-        let rules = config.gen_rules();
+        let textrules = config.gen_textrules();
+        let syntaxrules = config.gen_syntaxrules();
 
+        // NOTE: Only syntaxrules are comment-controllable, not textrules.
         let re_ctl = Regex::new(r"/\*\s*svlint\s+(on|off)\s+([a-z0-9_]+)\s*\*/").unwrap();
-
         let mut ctl_enabled = HashMap::new();
-        for rule in &rules {
+        for rule in &syntaxrules {
             ctl_enabled.insert(rule.name(), true);
         }
 
         Linter {
             option: config.option,
-            rules,
+            textrules,
+            syntaxrules,
             plugins: Vec::new(),
             re_ctl,
             ctl_enabled,
@@ -69,17 +92,45 @@ impl Linter {
             self.plugins.push(lib);
             let lib = self.plugins.last().unwrap();
 
-            let get_plugin: Result<Symbol<extern "C" fn() -> Vec<*mut dyn Rule>>, _> =
+            let get_plugin: Result<Symbol<extern "C" fn() -> Vec<*mut dyn SyntaxRule>>, _> =
                 unsafe { lib.get(b"get_plugin") };
             if let Ok(get_plugin) = get_plugin {
                 let vec = get_plugin();
                 for plug in vec {
                     let plugin = unsafe { Box::from_raw(plug) };
                     self.ctl_enabled.insert(plugin.name(), true);
-                    self.rules.push(plugin);
+                    self.syntaxrules.push(plugin);
                 }
             }
         }
+    }
+
+    pub fn textrules_check(&mut self, line: &str, path: &Path, beg: &usize) -> Vec<LintFailed> {
+
+        let mut ret = Vec::new();
+        'outer: for rule in &mut self.textrules {
+
+            match rule.check(line, &self.option) {
+                TextRuleResult::Fail {offset, len} => {
+                    for exclude in &self.option.exclude_paths {
+                        if exclude.is_match(&path.to_string_lossy()) {
+                            continue 'outer;
+                        }
+                    }
+                    let result = LintFailed {
+                        path: path.to_path_buf(),
+                        beg: beg + offset,
+                        len,
+                        name: rule.name(),
+                        hint: rule.hint(&self.option),
+                        reason: rule.reason(),
+                    };
+                    ret.push(result);
+                }
+                _ => (),
+            }
+        }
+        ret
     }
 
     fn update_ctl_enabled(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) {
@@ -107,7 +158,7 @@ impl Linter {
         }
     }
 
-    pub fn check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> Vec<LintFailed> {
+    pub fn syntaxrules_check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> Vec<LintFailed> {
         self.update_ctl_enabled(syntax_tree, event);
 
         let node = match event {
@@ -121,7 +172,7 @@ impl Linter {
         };
 
         let mut ret = Vec::new();
-        'outer: for rule in &mut self.rules {
+        'outer: for rule in &mut self.syntaxrules {
             match self.ctl_enabled[&rule.name()] {
                 true => {}
                 _ => {
@@ -130,7 +181,7 @@ impl Linter {
             }
 
             match rule.check(syntax_tree, event, &self.option) {
-                RuleResult::Fail => {
+                SyntaxRuleResult::Fail => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
                         for exclude in &self.option.exclude_paths {
                             if exclude.is_match(&path.to_string_lossy()) {
@@ -148,7 +199,7 @@ impl Linter {
                         ret.push(result);
                     }
                 }
-                RuleResult::FailAt(offset, len) => {
+                SyntaxRuleResult::FailAt(offset, len) => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&locate) {
                         for exclude in &self.option.exclude_paths {
                             if exclude.is_match(&path.to_string_lossy()) {
@@ -166,7 +217,7 @@ impl Linter {
                         ret.push(result);
                     }
                 }
-                RuleResult::FailLocate(x) => {
+                SyntaxRuleResult::FailLocate(x) => {
                     if let Some((path, beg)) = syntax_tree.get_origin(&x) {
                         for exclude in &self.option.exclude_paths {
                             if exclude.is_match(&path.to_string_lossy()) {
@@ -191,13 +242,13 @@ impl Linter {
     }
 }
 
-// Utility function used by rules `re_(required|forbidden)_*`.
+// Utility function used by syntaxrules `re_(required|forbidden)_*`.
 pub fn check_regex(
     required_not_forbidden: bool,
     id: Option<RefNode>,
     syntax_tree: &SyntaxTree,
     re: &Regex,
-) -> RuleResult {
+) -> SyntaxRuleResult {
     let loc: &Locate = match id {
         Some(x) => unwrap_locate!(x),
         _ => None,
@@ -207,18 +258,18 @@ pub fn check_regex(
     let is_match: bool = re.is_match(syntax_tree.get_str(loc).unwrap());
 
     if is_match == required_not_forbidden {
-        RuleResult::Pass
+        SyntaxRuleResult::Pass
     } else {
-        RuleResult::Fail
+        SyntaxRuleResult::Fail
     }
 }
 
-// Utility function used by rules `prefix_*`.
+// Utility function used by syntaxrules `prefix_*`.
 pub fn check_prefix(
     id: Option<RefNode>,
     syntax_tree: &SyntaxTree,
     prefix: &String,
-) -> RuleResult {
+) -> SyntaxRuleResult {
     let loc: &Locate = match id {
         Some(x) => unwrap_locate!(x),
         _ => None,
@@ -228,8 +279,8 @@ pub fn check_prefix(
     let is_prefixed: bool = syntax_tree.get_str(loc).unwrap().starts_with(prefix);
 
     if is_prefixed {
-        RuleResult::Pass
+        SyntaxRuleResult::Pass
     } else {
-        RuleResult::Fail
+        SyntaxRuleResult::Fail
     }
 }
