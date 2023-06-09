@@ -2,13 +2,13 @@ use anyhow::{Context, Error};
 use clap::Parser;
 use enquote;
 use std::collections::HashMap;
-use std::fs::{File, OpenOptions};
+use std::fs::{read_to_string, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
 use sv_filelist_parser;
 use sv_parser::Error as SvParserError;
-use sv_parser::{parse_sv, preprocess, Define, DefineText};
+use sv_parser::{parse_sv_str, preprocess, Define, DefineText};
 use svlint::config::Config;
 use svlint::linter::Linter;
 use svlint::printer::Printer;
@@ -261,10 +261,32 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                 }
             }
         } else {
-            match parse_sv(&path, &defines, &includes, opt.ignore_include, false) {
+            // Iterate over lines in the file, applying each textrule to each
+            // line in turn.
+
+            let text: String = read_to_string(&path)?;
+
+            let mut beg: usize = 0;
+            for line in text.lines() {
+                for failed in linter.textrules_check(&line, &path, &beg) {
+                    pass = false;
+                    if !opt.silent {
+                        printer.print_failed(&failed, opt.single, opt.github_actions)?;
+                    }
+                }
+
+                // Newlines are not included in each line and `text` does not
+                // contain CRLF because `read_to_string` convents CRLF to LF.
+                beg += line.len() + 1; // Track the beginning byte index.
+            }
+
+            match parse_sv_str(text.as_str(), &path, &defines, &includes, opt.ignore_include, false) {
                 Ok((syntax_tree, new_defines)) => {
+                    // Iterate over nodes in the concrete syntax tree, applying
+                    // each syntaxrule to each node in turn.
+
                     for node in syntax_tree.into_iter().event() {
-                        for failed in linter.check(&syntax_tree, &node) {
+                        for failed in linter.syntaxrules_check(&syntax_tree, &node) {
                             pass = false;
                             if !opt.silent {
                                 printer.print_failed(&failed, opt.single, opt.github_actions)?;
@@ -471,6 +493,7 @@ mod tests {
         let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
         let path = Path::new(cargo_manifest_dir.as_str())
             .join("testcases")
+            .join("application")
             .join("resources")
             .join(s);
 
@@ -487,6 +510,7 @@ mod tests {
         let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
         let path = Path::new(cargo_manifest_dir.as_str())
             .join("testcases")
+            .join("application")
             .join("expected")
             .join(s);
 
@@ -519,8 +543,27 @@ mod tests {
         }
     }
 
-    fn test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
-        let s = format!("[rules]\n{} = true", rulename);
+    fn textrules_test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
+        let s = format!("[textrules]\n{} = true", rulename);
+        let config: Config = toml::from_str(&s).unwrap();
+
+        let mut args = vec!["svlint"];
+        if silent {
+            args.push("--silent");
+        }
+        if oneline {
+            args.push("-1");
+        }
+        args.push(filename);
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(false);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+        assert_eq!(ret.unwrap(), pass_not_fail);
+    }
+
+    fn syntaxrules_test(rulename: &str, filename: &str, pass_not_fail: bool, silent: bool, oneline: bool) {
+        let s = format!("[syntaxrules]\n{} = true", rulename);
         let config: Config = toml::from_str(&s).unwrap();
 
         let mut args = vec!["svlint"];

@@ -284,23 +284,19 @@ impl Printer {
 
             self.write(&format!("{} |", column), Some(Color::BrightBlue));
 
-            self.write(
-                &format!(
-                    " {}\n",
-                    String::from_utf8_lossy(&src.as_bytes()[beg..next_crlf])
-                ),
-                Some(Color::White),
-            );
+            let line = String::from_utf8_lossy(&src.as_bytes()[beg..next_crlf]);
+            self.write(&format!(" {}\n", line), Some(Color::White));
 
             self.write(
                 &format!("{}|", " ".repeat(column_len + 1)),
                 Some(Color::BrightBlue),
             );
 
+            let hr_indent = String::from_utf8_lossy(&src.as_bytes()[beg..pos]).chars().count();
             self.write(
                 &format!(
                     " {}{}",
-                    " ".repeat(pos - beg),
+                    " ".repeat(hr_indent),
                     "^".repeat(cmp::min(print_pos + print_len, next_crlf) - print_pos)
                 ),
                 Some(Color::BrightYellow),
@@ -319,7 +315,7 @@ impl Printer {
                 self.write(
                     &format!(
                         " {}{}",
-                        " ".repeat(pos - beg),
+                        " ".repeat(hr_indent),
                         " ".repeat(cmp::min(print_pos + print_len, next_crlf) - print_pos)
                     ),
                     Some(Color::Yellow),

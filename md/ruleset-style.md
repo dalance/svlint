@@ -38,6 +38,9 @@ multiple versions of a file, rather than reading one version:
   - Git, a popular version control tool will (by default) warn against trailing
     whitespace with prominent markers specifically because of the unnecessary
     noise introduced to a repository's history.
+  - Closely related, is the obfuscation of statements by using whitespace to
+    push a semicolon off the RHS of the screen, thus misleading the viewer into
+    thinking that the next line is a continuation instead of a new statement.
 
 These conventions help give a consistent view over different ways of viewing
 files which include the writer's text editor (Vim, VSCode, Emacs, etc.),
@@ -45,41 +48,11 @@ consumer's text editor, reviewer's web-based tools (GitHub, BitBucket, GitLab,
 etc.), printed material (e.g. via PDF), and logfiles from CI/CD tools (GitHub
 Actions, Bamboo, Jenkins, etc).
 
-
-### Test Each File for Excessively Long Lines
-
-To get a list of all the files examined by a particular invocation of svlint,
-use the variable `${SVFILES}`, which is provided in all POSIX wrapper scripts.
-
-The `grep` utility can be used to detect, and report, lines longer than a given
-number of characters.
-```sh
-TEXTWIDTH='80'
-LINELEN="grep -EvIxHn --color '.{0,${TEXTWIDTH}}' {};"
-LINELEN="${LINELEN} if [ \"\$?\" -eq \"0\" ]; then"
-LINELEN="${LINELEN}   echo '!!! Lines longer than ${TEXTWIDTH} characters !!!';"
-LINELEN="${LINELEN}   exit 1;"
-LINELEN="${LINELEN} else"
-LINELEN="${LINELEN}   exit 0;"
-LINELEN="${LINELEN} fi"
-eval "${SVFILES}" | xargs -I {} sh -c "${LINELEN}"
+```toml
+option.textwidth = 80
+textrules.style_textwidth = true
+textrules.style_semicolon = true
 ```
-
-Another use of `grep` is to report obfuscated statements where semicolons are
-pushed off the RHS of the screen.
-```sh
-OBFUSTMT="grep -EIHn --color '[ ]+;' {};"
-OBFUSTMT="${OBFUSTMT} if [ \"\$?\" -eq \"0\" ]; then"
-OBFUSTMT="${OBFUSTMT}   echo '!!! Potentially obfuscated statements !!!';"
-OBFUSTMT="${OBFUSTMT}   exit 1;"
-OBFUSTMT="${OBFUSTMT} else"
-OBFUSTMT="${OBFUSTMT}   exit 0;"
-OBFUSTMT="${OBFUSTMT} fi"
-eval "${SVFILES}" | xargs -I {} sh -c "${OBFUSTMT}"
-```
-
-On Windows, the default environment does not contain utilities such as `grep`,
-so some system-specific scripting may be more appropriate.
 
 
 ### Indentation
@@ -92,8 +65,8 @@ so tab indentations are shown differently, depending on the reader's personal
 configuration.
 ```toml
 option.indent = 2
-rules.tab_character = true
-rules.style_indent = true
+syntaxrules.tab_character = true
+syntaxrules.style_indent = true
 ```
 Note that the **style_indent** rule does not check that indentations are the
 correct level - only that the indentation is an integer multiple of 2 spaces.
@@ -128,8 +101,8 @@ loops, two further rules are enabled to check that either `begin`/`end`
 keyword delimiters are used, or the statement is moved to the same line as the
 condition.
 ```toml
-rules.multiline_if_begin = true
-rules.multiline_for_begin = true
+syntaxrules.multiline_if_begin = true
+syntaxrules.multiline_for_begin = true
 ```
 
 
@@ -175,8 +148,8 @@ combination of two languages;
 2. The rest of SystemVerilog syntax is formally called `source_text`, is
   specified formally in IEEE1800-2017 Annex A.
 
-Svlint rules operate on the `source_text` part of SystemVerilog, i.e. after the
-preprocessor has been applied.
+Svlint syntax rules operate on the `source_text` part of SystemVerilog, i.e.
+after the preprocessor has been applied.
 As with other languages with similar text-based templating features, most
 notably C, use of the preprocessor is discouraged except where absolutely
 necessary.
@@ -227,24 +200,13 @@ One method which can help catch unintended whitespace, both from the
 preprocessor and written by hand, is to forbid trailing spaces, i.e. space
 characters followed immediately by a newline.
 ```toml
-rules.style_trailingwhitespace = true
+syntaxrules.style_trailingwhitespace = true
 ```
 
 Problems around indented preprocessor directives must be caught before svlint's
-preprocessor stage, so searching with `grep` beforehand is appropriate.
-```sh
-PPDIRECTIVES="define|undef|undefineall|resetall"
-PPDIRECTIVES="${PPDIRECTIVES}|ifdef|ifndef|elsif|else|endif"
-PPDIRECTIVES="${PPDIRECTIVES}|include"
-
-PPINDENT="grep -EIHn --color '[ ]+\`(${PPDIRECTIVES})' {};"
-PPINDENT="${PPINDENT} if [ \"\$?\" -eq \"0\" ]; then"
-PPINDENT="${PPINDENT}   echo '!!! Indented preprocessor directives !!!';"
-PPINDENT="${PPINDENT}   exit 1;"
-PPINDENT="${PPINDENT} else"
-PPINDENT="${PPINDENT}   exit 0;"
-PPINDENT="${PPINDENT} fi"
-eval "${SVFILES}" | xargs -I {} sh -c "${PPINDENT}"
+preprocessor stage.
+```toml
+textrules.style_directives = true
 ```
 
 
@@ -253,21 +215,21 @@ eval "${SVFILES}" | xargs -I {} sh -c "${PPINDENT}"
 Consistent use of whitespace around operators and keywords makes it easier to
 read expressions quickly and accurately.
 ```toml
-rules.style_operator_arithmetic = true
-rules.style_operator_boolean = true
-rules.style_operator_integer = true
-rules.style_operator_unary = true
+syntaxrules.style_operator_arithmetic = true
+syntaxrules.style_operator_boolean = true
+syntaxrules.style_operator_integer = true
+syntaxrules.style_operator_unary = true
 
-rules.style_keyword_0or1space = true
-rules.style_keyword_0space = true
-rules.style_keyword_1or2space = true
-rules.style_keyword_1space = true
-rules.style_keyword_construct = true
-rules.style_keyword_datatype = false # Overly restrictive.
-rules.style_keyword_end = true
-rules.style_keyword_maybelabel = true
-rules.style_keyword_new = true
-rules.style_keyword_newline = true
+syntaxrules.style_keyword_0or1space = true
+syntaxrules.style_keyword_0space = true
+syntaxrules.style_keyword_1or2space = true
+syntaxrules.style_keyword_1space = true
+syntaxrules.style_keyword_construct = true
+syntaxrules.style_keyword_datatype = false # Overly restrictive.
+syntaxrules.style_keyword_end = true
+syntaxrules.style_keyword_maybelabel = true
+syntaxrules.style_keyword_new = true
+syntaxrules.style_keyword_newline = true
 ```
 
 
@@ -293,7 +255,7 @@ The most common style in functional programming language Haskell provides
 inspiration for such a rule:
 "Every comma must be followed by exactly one space".
 ```toml
-rules.style_commaleading = true
+syntaxrules.style_commaleading = true
 ```
 
 This rule leads to the comma-leading style which, although perhaps unfamiliar
@@ -325,6 +287,6 @@ rule.
 Additionally, `eventlist_or` mandates the use of `,` (comma) as the separator
 in `always_ff` sensitivity lists only for consistency and readabilty.
 ```toml
-rules.eventlist_or = true
+syntaxrules.eventlist_or = true
 ```
 

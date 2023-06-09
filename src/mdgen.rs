@@ -6,7 +6,7 @@ mod printer;
 mod rules;
 
 use crate::config::{Config, ConfigOption};
-use crate::linter::Rule;
+use crate::linter::{TextRule, SyntaxRule};
 use regex::Regex;
 use std::env;
 use std::fs::{File, read_dir};
@@ -95,12 +95,11 @@ fn get_rulesets() -> Vec<Ruleset> {
     ret
 }
 
-fn write_md_rule_testcases(o: &mut File, rule: &Box<dyn Rule>, pass_not_fail: bool) -> () {
+fn write_md_rule_testcases(o: &mut File, ruletype: &str, rulename: &str, pass_not_fail: bool) -> () {
         let sep = "/".repeat(80);
-        let rulename = rule.name();
 
         let passfail = if pass_not_fail { "pass" } else { "fail" };
-        let filename = format!("testcases/{}/{}.sv", passfail, rulename);
+        let filename = format!("testcases/{}rules/{}/{}.sv", ruletype, passfail, rulename);
         let lines = BufReader::new(File::open(filename).unwrap())
             .lines()
             .collect::<Result<Vec<_>, _>>()
@@ -123,12 +122,14 @@ fn write_md_rule_testcases(o: &mut File, rule: &Box<dyn Rule>, pass_not_fail: bo
         }
 }
 
-fn write_md_rules(o: &mut File, rules: Vec<Box<dyn Rule>>) -> () {
-    for rule in rules {
+fn write_md_textrules(o: &mut File, textrules: Vec<Box<dyn TextRule>>) -> () {
+    for rule in textrules {
+        let rulename = rule.name();
+
         let _ = writeln!(o, "");
         let _ = writeln!(o, "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         let _ = writeln!(o, "");
-        let _ = writeln!(o, "## Rule: `{}`\n", rule.name());
+        let _ = writeln!(o, "## Text Rule: `{}`\n", rulename);
 
         let _ = writeln!(o, "### Hint\n");
         let _ = writeln!(o, "{}\n", rule.hint(&ConfigOption::default()));
@@ -136,18 +137,42 @@ fn write_md_rules(o: &mut File, rules: Vec<Box<dyn Rule>>) -> () {
         let _ = writeln!(o, "### Reason\n");
         let _ = writeln!(o, "{}\n", rule.reason());
 
-        write_md_rule_testcases(o, &rule, true);
-        write_md_rule_testcases(o, &rule, false);
+        write_md_rule_testcases(o, "text", &rulename, true);
+        write_md_rule_testcases(o, "text", &rulename, false);
 
         let _ = writeln!(o, "### Explanation\n");
-        let p: String = format!("md/explanation-{}.md", rule.name());
+        let p: String = format!("md/textrules-explanation-{}.md", rule.name());
         let _ = writeln!(o, "{}\n", file_contents(&p));
     }
 }
 
-fn partition_rules(
-    rules: Vec<Box<dyn Rule>>,
-) -> (Vec<Box<dyn Rule>>, Vec<Box<dyn Rule>>, Vec<Box<dyn Rule>>) {
+fn write_md_syntaxrules(o: &mut File, syntaxrules: Vec<Box<dyn SyntaxRule>>) -> () {
+    for rule in syntaxrules {
+        let rulename = rule.name();
+
+        let _ = writeln!(o, "");
+        let _ = writeln!(o, "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        let _ = writeln!(o, "");
+        let _ = writeln!(o, "## Syntax Rule: `{}`\n", rule.name());
+
+        let _ = writeln!(o, "### Hint\n");
+        let _ = writeln!(o, "{}\n", rule.hint(&ConfigOption::default()));
+
+        let _ = writeln!(o, "### Reason\n");
+        let _ = writeln!(o, "{}\n", rule.reason());
+
+        write_md_rule_testcases(o, "syntax", &rulename, true);
+        write_md_rule_testcases(o, "syntax", &rulename, false);
+
+        let _ = writeln!(o, "### Explanation\n");
+        let p: String = format!("md/syntaxrules-explanation-{}.md", rule.name());
+        let _ = writeln!(o, "{}\n", file_contents(&p));
+    }
+}
+
+fn partition_syntaxrules(
+    syntaxrules: Vec<Box<dyn SyntaxRule>>,
+) -> (Vec<Box<dyn SyntaxRule>>, Vec<Box<dyn SyntaxRule>>, Vec<Box<dyn SyntaxRule>>) {
     let style_prefixes = ["style_", "tab_"].join("|");
     let re_style: Regex = Regex::new(format!("^({})", style_prefixes).as_str()).unwrap();
 
@@ -155,29 +180,33 @@ fn partition_rules(
     let re_naming: Regex =
         Regex::new(format!("(^({})|_with_label$)", naming_prefixes).as_str()).unwrap();
 
-    let mut ruleset_style: Vec<Box<dyn Rule>> = Vec::new();
-    let mut ruleset_naming: Vec<Box<dyn Rule>> = Vec::new();
-    let mut ruleset_functional: Vec<Box<dyn Rule>> = Vec::new();
+    let mut part_style: Vec<Box<dyn SyntaxRule>> = Vec::new();
+    let mut part_naming: Vec<Box<dyn SyntaxRule>> = Vec::new();
+    let mut part_functional: Vec<Box<dyn SyntaxRule>> = Vec::new();
 
-    for rule in rules {
+    for rule in syntaxrules {
         if re_style.is_match(&rule.name()) {
-            ruleset_style.push(rule);
+            part_style.push(rule);
         } else if re_naming.is_match(&rule.name()) {
-            ruleset_naming.push(rule);
+            part_naming.push(rule);
         } else {
-            ruleset_functional.push(rule);
+            part_functional.push(rule);
         }
     }
 
-    (ruleset_functional, ruleset_naming, ruleset_style)
+    (part_functional, part_naming, part_style)
 }
 
-fn write_manual_md(rules: Vec<Box<dyn Rule>>, rulesets: Vec<Ruleset>) -> () {
+fn write_manual_md(
+    textrules: Vec<Box<dyn TextRule>>,
+    syntaxrules: Vec<Box<dyn SyntaxRule>>,
+    rulesets: Vec<Ruleset>,
+) -> () {
     let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let o = Path::new(&cargo_manifest_dir).join("MANUAL.md");
     let mut o = File::create(&o).unwrap();
 
-    let (functional_rules, naming_rules, style_rules) = partition_rules(rules);
+    let (syntaxrules_functional, syntaxrules_naming, syntaxrules_style) = partition_syntaxrules(syntaxrules);
 
     let _ = writeln!(
         o,
@@ -188,23 +217,30 @@ fn write_manual_md(rules: Vec<Box<dyn Rule>>, rulesets: Vec<Ruleset>) -> () {
     let _ = writeln!(
         o,
         "{}",
-        file_contents(format!("md/manual-functional_rules.md").as_str())
+        file_contents(format!("md/manual-textrules.md").as_str())
     );
-    write_md_rules(&mut o, functional_rules);
+    write_md_textrules(&mut o, textrules);
 
     let _ = writeln!(
         o,
         "{}",
-        file_contents(format!("md/manual-naming_convention_rules.md").as_str())
+        file_contents(format!("md/manual-syntaxrules-functional.md").as_str())
     );
-    write_md_rules(&mut o, naming_rules);
+    write_md_syntaxrules(&mut o, syntaxrules_functional);
 
     let _ = writeln!(
         o,
         "{}",
-        file_contents(format!("md/manual-style_convention_rules.md").as_str())
+        file_contents(format!("md/manual-syntaxrules-naming.md").as_str())
     );
-    write_md_rules(&mut o, style_rules);
+    write_md_syntaxrules(&mut o, syntaxrules_naming);
+
+    let _ = writeln!(
+        o,
+        "{}",
+        file_contents(format!("md/manual-syntaxrules-style.md").as_str())
+    );
+    write_md_syntaxrules(&mut o, syntaxrules_style);
 
     let _ = writeln!(o, "");
     let _ = writeln!(o, "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
@@ -322,6 +358,7 @@ pub fn main() {
         write_ruleset_toml(ruleset);
     }
 
-    let rules = Config::gen_all_rules();
-    write_manual_md(rules, rulesets);
+    let textrules = Config::gen_all_textrules();
+    let syntaxrules = Config::gen_all_syntaxrules();
+    write_manual_md(textrules, syntaxrules, rulesets);
 }
