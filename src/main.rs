@@ -171,14 +171,18 @@ pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
             _ => true,
         };
 
-        if !opt.silent && !do_dump_filelist && !opt.preprocess_only {
-            let msg = format!(
-                "Config file '{}' is not found. Enable all rules",
-                opt.config.to_string_lossy()
-            );
-            printer.print_warning(&msg)?;
+        if !opt.plugins.is_empty() {
+            Config::new()
+        } else {
+            if !opt.silent && !do_dump_filelist && !opt.preprocess_only {
+                let msg = format!(
+                    "Config file '{}' is not found. Enable all rules",
+                    opt.config.to_string_lossy()
+                );
+                printer.print_warning(&msg)?;
+            }
+            Config::new().enable_all()
         }
-        Config::new().enable_all()
     };
 
     run_opt_config(printer, opt, config)
