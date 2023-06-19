@@ -97,8 +97,7 @@ under the Developer Certificate of Origin <https://developercertificate.org/>.
 - Naoya Hatta (@dalance)
 - David McEwan (@DaveMcEwan)
 - Aadi Desai (@supleed2)
-- TODO A. Raamakrishnan (@Raamakrishnan)
-  Contacted on GitHub and LinkedIn.
+- A. Raamakrishnan (@Raamakrishnan)
 - Thomas Heuschling (@skjdbg)
 - Andreas K. Berg (@akberg)
 - Damien Pretet (@dpretet)
