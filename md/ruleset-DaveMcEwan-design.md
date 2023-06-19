@@ -590,24 +590,90 @@ endmodule
 
 #### Ports and Direction
 
-TODO: text
+A distinctive feature of this naming convention is that all ports have prefix
+denoting their direction: `i_`, `o_`, or `b_` for inputs, outputs, and
+bi-directionals respectively.
+This technique adds useful redundancy for readers/reviewers, which is
+especially useful for very large modules.
+By analogy, this is similar to the use of arrowheads in a electical schematic -
+sure, arrowheads are not essential but they can be very useful in helping
+readers understand the flow of information!
+There are at least 6 ways in which this naming convention technique adds value:
 
-Enhance readability of code for integrators and reviewers, e.g. "Prefix all
-ports with `i_`, `o_`, or `b_` for inputs, outputs, and bi-directionals
-respectively".
-This allows a reader to glean important information about how ports and
-internal logic are connected without the need to scroll back-and-forth
-through a file and/or memorize the portlist.
+- Visually highlight port connections.
+  Internal signals should not have any prefix but ports should, so the prefixes
+  make ports stand out clearly.
+- Provide assurance that inputs are not accidentally connected to the wrong
+  thing.
+  For example, an input that should be connected directly to a DFF, but must
+  not feed into any combinational logic.
+- Clarify that the direction is the one which the author intended.
+  For example, in `output var logic o_foo`, the direction is written twice
+  (`output` keyword, then `o_` prefix).
+  It isn't foolproof, but a mismatch such as `input o_foo` indicates a
+  copy-pasta error which might be otherwise easily overlooked, especially
+  because the rules about assignments to ports are not intuitive or
+  consistently implemented across tools.
+- In assertions (or other testbench code) where signals are connected via
+  `bind`, assure readers that only inputs are `assume`d and that outputs are
+  only `assert`d or `cover`ed (but outputs aren't `assume`d).
+- In long files which don't fit on one screen, the reader doesn't need to
+  scroll back-and-forth or memorize the portlist to determine which parts are
+  connected to the boundary and which are purely internal.
+- In complex synthesis flows, ports are often considered more stable API points
+  than internal signals, so this naming convention highlights to script owners
+  if they are using unstable points which might require more script
+  maintenance.
+
+Interface ports do not benefit in all of the same ways because `modport`s can
+change the component signals' direction.
+The only benefit which interface port prefixes would give is to highlight
+connections to the module boundary vs internal interfaces.
+This reason is deemed too weak to require the use of another prefix.
 
 ```toml
+option.prefix_inout = "b_"
 rules.prefix_inout = true
+option.prefix_input = "i_"
 rules.prefix_input = true
+option.prefix_output = "o_"
 rules.prefix_output = true
 option.re_required_port_interface = "^[a-z]+[a-zA-Z0-9_]*$"
 rules.re_required_port_interface = true
 ```
 
-TODO: example
+This illustrative example shows some of the common features addressed by this
+convention:
+
+```systemverilog
+module Fifo
+  ( input  var logic i_data   // Same name `data` used in both directions.
+  , output var logic o_data
+
+  , input  var logic i_push
+  , input  var logic o_full   // Copy/paste error, now might be caught.
+
+  , input  var logic i_pop
+  , output var logic o_empty  // This looks better.
+
+  , ifc_fifo.debug   dbg      // Interface port has no prefix.
+  );
+
+  ...
+
+  RAMBLOCK u_ram
+    ( RDATA   (o_data)        // Connected directly to port.
+    , WDATA   (dataRetime_q)  // Connected to an internal DFF.
+    );
+
+  always_comb i_data = foo;   // Assignment to input looks wrong.
+  always_comb o_full = i_pop && foo; // Feedthrough logic may be wrong.
+
+  always_comb dbg.foo = foo;  // Direction of connection to interface
+                              // port is not clear, regardless of the
+                              // lack of prefix on `dbg`.
+endmodule
+```
 
 
 #### Elaboration-Time Constants
