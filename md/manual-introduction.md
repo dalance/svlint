@@ -4,8 +4,8 @@
 ## About This Document
 
 This document is generated from the Markdown files in `md/*.md`, the rules'
-source code (`svlint/src/rules/*.rs`), and their testcases
-(`testcases/(fail|pass)/*.sv`) using the `mdgen` utility.
+source code (`svlint/src/*rules/*.rs`), and their testcases
+(`testcases/*rules/(fail|pass)/*.sv`) using the `mdgen` utility.
 
 
 ## Purpose of Lint Checks
