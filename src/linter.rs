@@ -33,6 +33,12 @@ pub enum SyntaxRuleResult {
     FailLocate(Locate),
 }
 
+#[derive(Clone, Copy)]
+pub enum Rule {
+    Text(*mut dyn TextRule),
+    Syntax(*mut dyn SyntaxRule),
+}
+
 pub trait SyntaxRule: Sync + Send {
     fn check(
         &mut self,
@@ -92,14 +98,22 @@ impl Linter {
             self.plugins.push(lib);
             let lib = self.plugins.last().unwrap();
 
-            let get_plugin: Result<Symbol<extern "C" fn() -> Vec<*mut dyn SyntaxRule>>, _> =
+            let get_plugin: Result<Symbol<extern "C" fn() -> Vec<Rule>>, _> =
                 unsafe { lib.get(b"get_plugin") };
             if let Ok(get_plugin) = get_plugin {
-                let vec = get_plugin();
-                for plug in vec {
-                    let plugin = unsafe { Box::from_raw(plug) };
-                    self.ctl_enabled.insert(plugin.name(), true);
-                    self.syntaxrules.push(plugin);
+                let plugins = get_plugin();
+                for plugin in plugins {
+                    match plugin {
+                        Rule::Text(p) => {
+                            let plugin = unsafe { Box::from_raw(p) };
+                            self.textrules.push(plugin);
+                        },
+                        Rule::Syntax(p) => {
+                            let plugin = unsafe { Box::from_raw(p) };
+                            self.ctl_enabled.insert(plugin.name(), true);
+                            self.syntaxrules.push(plugin);
+                        },
+                    }
                 }
             }
         }
