@@ -360,7 +360,7 @@ These rules don't intentionally interact to provide additional properties.
 ```toml
 # Common to **ruleset-simsynth** (a subset of **ruleset-designintent**).
 rules.blocking_assignment_in_always_ff = true
-#rules.blocking_assignment_in_always_latch = true TODO
+rules.blocking_assignment_in_always_latch = true
 rules.non_blocking_assignment_in_always_comb = true
 rules.case_default = true
 rules.enum_with_type = true
@@ -369,7 +369,7 @@ rules.keyword_forbidden_priority = true
 rules.keyword_forbidden_unique = true
 rules.keyword_forbidden_unique0 = true
 rules.level_sensitive_always = true
-#rules.operator_case_equality = true # TODO
+rules.operator_case_equality = true
 
 # Common to **ruleset-designintent**.
 rules.action_block_with_side_effect = true
@@ -452,7 +452,8 @@ rules.output_with_var = true
 rules.interface_port_with_modport = true
 ```
 
-TODO: `re_forbidden_*` for objects which should not be declared in designs.
+Some kinds of SystemVerilog objects should never be declared in synthesizable
+code, so regex rules can be used to forbid declarations with *any* name.
 
 ```toml
 option.re_forbidden_checker = ".*"
@@ -533,7 +534,7 @@ Although the LRM is clear about the implict naming of unlabelled generate
 blocks (see IEEE1800-2017 clause 27.6), using a well-named label provides some
 clarification about the intention behind that logic.
 Instance identifiers of both modules and interfaces should be prefixed with
-`u_` whereas generate block labels should be prefixed with `l_`.
+`u_`, whereas generate block labels should be prefixed with `l_`.
 
 ```toml
 option.prefix_instance = "u_"
