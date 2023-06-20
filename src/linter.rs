@@ -86,31 +86,32 @@ impl Linter {
         }
     }
 
-    pub fn load(&mut self, path: &Path) {
-        let lib = unsafe { Library::new(path) };
-        if let Ok(lib) = lib {
-            self.plugins.push(lib);
-            let lib = self.plugins.last().unwrap();
+    pub fn load(&mut self, path: &Path) -> Result<(), libloading::Error> {
+        let lib = unsafe { Library::new(path) }?;
 
-            let get_plugin: Result<Symbol<extern "C" fn() -> Vec<Rule>>, _> =
-                unsafe { lib.get(b"get_plugin") };
-            if let Ok(get_plugin) = get_plugin {
-                let plugins = get_plugin();
-                for plugin in plugins {
-                    match plugin {
-                        Rule::Text(p) => {
-                            let plugin = unsafe { Box::from_raw(p) };
-                            self.textrules.push(plugin);
-                        },
-                        Rule::Syntax(p) => {
-                            let plugin = unsafe { Box::from_raw(p) };
-                            self.ctl_enabled.insert(plugin.name(), true);
-                            self.syntaxrules.push(plugin);
-                        },
-                    }
+        self.plugins.push(lib);
+        let lib = self.plugins.last().unwrap();
+
+        let get_plugin: Result<Symbol<extern "C" fn() -> Vec<Rule>>, _> =
+            unsafe { lib.get(b"get_plugin") };
+        if let Ok(get_plugin) = get_plugin {
+            let plugins = get_plugin();
+            for plugin in plugins {
+                match plugin {
+                    Rule::Text(p) => {
+                        let plugin = unsafe { Box::from_raw(p) };
+                        self.textrules.push(plugin);
+                    },
+                    Rule::Syntax(p) => {
+                        let plugin = unsafe { Box::from_raw(p) };
+                        self.ctl_enabled.insert(plugin.name(), true);
+                        self.syntaxrules.push(plugin);
+                    },
                 }
             }
         }
+
+        Ok(())
     }
 
     pub fn textrules_check(&mut self, line: &str, path: &Path, beg: &usize) -> Vec<LintFailed> {

@@ -202,7 +202,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
 
     let mut linter = Linter::new(config);
     for plugin in &opt.plugins {
-        linter.load(&plugin);
+        linter.load(&plugin)?;
     }
 
     let mut defines = HashMap::new();
