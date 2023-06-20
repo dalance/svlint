@@ -5,6 +5,33 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use sv_parser::{unwrap_locate, Locate, NodeEvent, RefNode, SyntaxTree};
 
+// Rule enum is for use by plugins.
+#[derive(Clone, Copy)]
+pub enum Rule {
+    Text(*mut dyn TextRule),
+    Syntax(*mut dyn SyntaxRule),
+}
+
+// Macro for use within plugins.
+// Example usage in a plugin's `get_plugin` function:
+//    pluginrules!(
+//        SamplePlugin,
+//        AnotherPlugin,
+//    )
+#[macro_export]
+macro_rules! pluginrules {
+    ( $( $x:ty ),* $(,)? ) => {
+        {
+            let mut vec: Vec<Rule> = Vec::new();
+            $(
+                let rule = <$x>::default();
+                vec.push(rule.into_rule());
+            )*
+            vec
+        }
+    };
+}
+
 #[derive(Clone, Copy)]
 pub enum TextRuleResult {
     Pass,
@@ -23,6 +50,14 @@ pub trait TextRule: Sync + Send {
     fn name(&self) -> String;
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
+
+	fn into_rule(self) -> Rule
+	where
+		Self: Sized + 'static,
+	{
+		let temp = Box::new(self);
+		Rule::Text(Box::into_raw(temp))
+	}
 }
 
 #[derive(Clone, Copy)]
@@ -43,6 +78,14 @@ pub trait SyntaxRule: Sync + Send {
     fn name(&self) -> String;
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
+
+	fn into_rule(self) -> Rule
+	where
+		Self: Sized + 'static,
+	{
+		let temp = Box::new(self);
+		Rule::Syntax(Box::into_raw(temp))
+	}
 }
 
 pub struct Linter {
@@ -248,27 +291,6 @@ impl Linter {
             }
         }
         ret
-    }
-}
-
-// Rule enum is for use by plugins.
-#[derive(Clone, Copy)]
-pub enum Rule {
-    Text(*mut dyn TextRule),
-    Syntax(*mut dyn SyntaxRule),
-}
-
-// Macro for use within plugins.
-// Example usage within a plugin's `get_plugin` function:
-//      let mut ret: Vec<Rule> = Vec::new();
-//      ret.push(pluginrule!(Syntax, SamplePlugin));
-#[macro_export]
-macro_rules! pluginrule {
-    ( $e:ident,$t:ty ) => {
-        {
-            let boxed = Box::<$t>::default();
-            Rule::$e(Box::into_raw(boxed))
-        }
     }
 }
 
