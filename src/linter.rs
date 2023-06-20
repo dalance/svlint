@@ -33,12 +33,6 @@ pub enum SyntaxRuleResult {
     FailLocate(Locate),
 }
 
-#[derive(Clone, Copy)]
-pub enum Rule {
-    Text(*mut dyn TextRule),
-    Syntax(*mut dyn SyntaxRule),
-}
-
 pub trait SyntaxRule: Sync + Send {
     fn check(
         &mut self,
@@ -253,6 +247,27 @@ impl Linter {
             }
         }
         ret
+    }
+}
+
+// Rule enum is for use by plugins.
+#[derive(Clone, Copy)]
+pub enum Rule {
+    Text(*mut dyn TextRule),
+    Syntax(*mut dyn SyntaxRule),
+}
+
+// Macro for use within plugins.
+// Example usage within a plugin's `get_plugin` function:
+//      let mut ret: Vec<Rule> = Vec::new();
+//      ret.push(pluginrule!(Syntax, SamplePlugin));
+#[macro_export]
+macro_rules! pluginrule {
+    ( $e:ident,$t:ty ) => {
+        {
+            let boxed = Box::<$t>::default();
+            Rule::$e(Box::into_raw(boxed))
+        }
     }
 }
 
