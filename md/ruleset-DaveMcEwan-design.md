@@ -52,7 +52,7 @@ reviewers:
 Through using rules which align with those 5 aims, reviewers are
 free to concentrate on aspects which require high-level thought such as
 "Is this an efficient design?", instead of less interesting things like "Will
-this code be synthesised as I expect?".
+this code be synthesized as I expect?".
 This ruleset builds upon **ruleset-style** for cosmetic consistency,
 **ruleset-designintent** for consistent intepretation across tools, and
 **ruleset-DaveMcEwan-designnaming** for naming conventions.
@@ -348,8 +348,6 @@ syntaxrules.eventlist_or = true
 
 ### Tool Consistency
 
-TODO: Introduction and examples of tool incompatibilities.
-
 Rules that forbid suspicious constructions, i.e. ways of specifying hardware
 that are legal according to the LRM, but may express their intention unclearly.
 
@@ -420,7 +418,7 @@ Rules in the following subset combine to provide an important property for the
 robust design of synthesisable hardware - that you can easily draw a schematic
 of what the synthesis result should look like.
 The two rules of thumb are to always fully specify decision logic, and never
-use sequential models for (what will be synthesised to) parallel logic.
+use sequential models for (what will be synthesized to) parallel logic.
 A sequential block is one delimited by `begin`/`end` keywords.
 ```toml
 rules.explicit_case_default = true
@@ -473,9 +471,8 @@ rules.re_forbidden_task = true
 
 ### Naming Conventions
 
-These rules around naming conventions are also available in the specialised
+These rules around naming conventions are also available in the specialized
 ruleset **ruleset-DaveMcEwan-designnaming**.
-TODO: Replicate this section as **ruleset-DaveMcEwan-designnaming**.
 
 
 #### Filesystem and Logical Hierarchy
@@ -645,7 +642,7 @@ rules.re_required_port_interface = true
 This illustrative example shows some of the common features addressed by this
 convention:
 
-```systemverilog
+```systemveilog
 module Fifo
   ( input  var logic i_data   // Same name `data` used in both directions.
   , output var logic o_data
@@ -678,7 +675,25 @@ endmodule
 
 #### Elaboration-Time Constants
 
-TODO: text
+Functions may have a short lowercase name where the functionality is "obvious
+and frequently used" but not provided in IEEE1800-2017 clause 20 Utility
+system tasks and system functions, e.g. `flog2`.
+More complex functions should have an `f_` prefix which can help readers
+navigate a large codebase using text-based tools like `grep`.
+Use good judgement to decide if a particular function is obvious and
+frequently used.
+
+Parameters, either overridable (`parameter`) or non-overridable (`localparam`)
+must be fully UPPERCASE.
+This helps clarify which portions of logic may be optimized during synthesis,
+e.g. `assign foo = bar && MYCONST;` should be optimized to either
+`assign foo = bar;` or `assign foo = 1'b0;`.
+
+Generate loop variables (declared with `genvar`) should have lowercase names of
+no more than 3 characters.
+This rule aims to easily distinguish genvars from signals, allow the common
+usage of single-character names like `i`, and prevent hard-to-read code with
+long genvar names like `index_of element`.
 
 ```toml
 option.re_required_function = "^([a-z]{1,1}[a-z0-9]{0,9}|f_[a-zA-Z0-9_]+)$"
@@ -691,7 +706,39 @@ option.re_required_genvar = "^[a-z]{1,3}$"
 rules.re_required_genvar = true
 ```
 
-TODO: example
+The above rules are shown in this example:
+
+```systemveilog
+module Buffer
+  #(parameter int WIDTH = 8
+  , localparam int N_STAGE = 5
+  )
+  ( ... );
+
+  localparam bit MYBOOL = 1'b0;
+
+  // Check that element of parameter `MYARRAY` satisfy constraints.
+  function automatic bit [N_ITEM-1:0] f_paramcheck_MYARRAY ();
+    for (int i=0; i < N_ITEM; i++)
+      f_paramcheck_MYARRAY[i] =
+        &{(0 <= MYARRAY[i])
+        , (MYARRAY[i] < DEPTH)
+        , (MYARRAY[i] != 2)
+        , IS_ODD[i] ? (MYARRAY[i] % 2) : 1'b1
+        };
+  endfunction
+
+  function automatic int unsigned flog2 (int x);
+		...
+	endfunction
+
+	for (genvar i = 0; i < N_ITEM; i++) begin: l_foo
+		...
+	end: l_foo
+
+  ...
+endmodule
+```
 
 
 #### Variables
@@ -718,8 +765,6 @@ Some common suffixes include:
 
 Throughout this ruleset, prefixes are (usefully) redundant re-statements of
 information already defined in SystemVerilog semantics, whereas suffixes are
-(usefully) redundant clarifications of information which can only be implied
-with SystemVerilog.
+(usefully) redundant clarifications of information which can only be inferred.
 Note, svlint does not perform semantic analysis, so there are no rules to
 check for these conventions.
-
