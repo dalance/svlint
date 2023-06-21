@@ -51,13 +51,13 @@ pub trait TextRule: Sync + Send {
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
 
-	fn into_rule(self) -> Rule
-	where
-		Self: Sized + 'static,
-	{
-		let temp = Box::new(self);
-		Rule::Text(Box::into_raw(temp))
-	}
+    fn into_rule(self) -> Rule
+    where
+        Self: Sized + 'static,
+    {
+        let temp = Box::new(self);
+        Rule::Text(Box::into_raw(temp))
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -79,13 +79,13 @@ pub trait SyntaxRule: Sync + Send {
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
 
-	fn into_rule(self) -> Rule
-	where
-		Self: Sized + 'static,
-	{
-		let temp = Box::new(self);
-		Rule::Syntax(Box::into_raw(temp))
-	}
+    fn into_rule(self) -> Rule
+    where
+        Self: Sized + 'static,
+    {
+        let temp = Box::new(self);
+        Rule::Syntax(Box::into_raw(temp))
+    }
 }
 
 pub struct Linter {
