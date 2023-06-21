@@ -44,10 +44,10 @@ after the `ifc_` prefix) or modport or variable identifiers within an
 interface declaration.
 
 ```toml
-rules.lowercamelcase_package = true
-rules.uppercamelcase_module = true
+syntaxrules.lowercamelcase_package = true
+syntaxrules.uppercamelcase_module = true
 option.prefix_interface = "ifc_"
-rules.prefix_interface = true
+syntaxrules.prefix_interface = true
 ```
 
 The above rules help readers to navigate a filesystem to find the right source
@@ -64,11 +64,11 @@ Instance identifiers of both modules and interfaces should be prefixed with
 
 ```toml
 option.prefix_instance = "u_"
-rules.prefix_instance = true
+syntaxrules.prefix_instance = true
 option.prefix_label = "l_"
-rules.generate_case_with_label = true
-rules.generate_for_with_label = true
-rules.generate_if_with_label = true
+syntaxrules.generate_case_with_label = true
+syntaxrules.generate_for_with_label = true
+syntaxrules.generate_if_with_label = true
 ```
 
 A further convention, not checked by this ruleset, is to use Uppercase vs
@@ -159,13 +159,13 @@ This reason is deemed too weak to require the use of another prefix.
 
 ```toml
 option.prefix_inout = "b_"
-rules.prefix_inout = true
+syntaxrules.prefix_inout = true
 option.prefix_input = "i_"
-rules.prefix_input = true
+syntaxrules.prefix_input = true
 option.prefix_output = "o_"
-rules.prefix_output = true
+syntaxrules.prefix_output = true
 option.re_required_port_interface = "^[a-z]+[a-zA-Z0-9_]*$"
-rules.re_required_port_interface = true
+syntaxrules.re_required_port_interface = true
 ```
 
 This illustrative example shows some of the common features addressed by this
@@ -226,13 +226,13 @@ long genvar names like `index_of element`.
 
 ```toml
 option.re_required_function = "^([a-z]{1,1}[a-z0-9]{0,9}|f_[a-zA-Z0-9_]+)$"
-rules.re_required_function = true
-option.re_required_localparam = "^[A-Z]+[A-Z0-9_]*)$"
-rules.re_required_localparam = true
-option.re_required_parameter = "^[A-Z]+[A-Z0-9_]*)$"
-rules.re_required_parameter = true
+syntaxrules.re_required_function = true
+option.re_required_localparam = "^[A-Z]+[A-Z0-9_]*$"
+syntaxrules.re_required_localparam = true
+option.re_required_parameter = "^[A-Z]+[A-Z0-9_]*$"
+syntaxrules.re_required_parameter = true
 option.re_required_genvar = "^[a-z]{1,3}$"
-rules.re_required_genvar = true
+syntaxrules.re_required_genvar = true
 ```
 
 The above rules are shown in this example:

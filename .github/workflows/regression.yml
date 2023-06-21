@@ -35,3 +35,10 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('BUILDENV', '**/Cargo.lock') }}
       - run: cargo test
+      - name: Run with every ruleset TOML configuration.
+        shell: bash
+        run: |
+          for r in rulesets/*.toml; do
+            SVLINT_CONFIG="$r" cargo run -- \
+              testcases/application/resources/must_pass_all_rulesets.sv
+          done
