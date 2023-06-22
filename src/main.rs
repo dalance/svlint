@@ -271,17 +271,16 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
             let text: String = read_to_string(&path)?;
 
             let mut beg: usize = 0;
-            for line in text.lines() {
-                for failed in linter.textrules_check(&line, &path, &beg) {
+            for line in text.split_inclusive('\n') {
+                let line_stripped = line.trim_end_matches(&['\n', '\r']);
+
+                for failed in linter.textrules_check(&line_stripped, &path, &beg) {
                     pass = false;
                     if !opt.silent {
                         printer.print_failed(&failed, opt.single, opt.github_actions)?;
                     }
                 }
-
-                // Newlines are not included in each line and `text` does not
-                // contain CRLF because `read_to_string` convents CRLF to LF.
-                beg += line.len() + 1; // Track the beginning byte index.
+                beg += line.len();
             }
 
             match parse_sv_str(text.as_str(), &path, &defines, &includes, opt.ignore_include, false) {
