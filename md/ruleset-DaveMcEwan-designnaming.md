@@ -122,13 +122,13 @@ bi-directionals respectively.
 This technique adds useful redundancy for readers/reviewers, which is
 especially useful for very large modules.
 By analogy, this is similar to the use of arrowheads in a electical schematic -
-sure, arrowheads are not essential but they can be very useful in helping
+sure, arrowheads aren't essential but they can be very useful in helping
 readers understand the flow of information!
-There are at least 6 ways in which this naming convention technique adds value:
+There are several ways in which this naming convention technique adds value:
 
 - Visually highlight port connections.
   Internal signals should not have any prefix but ports should, so the prefixes
-  make ports stand out clearly.
+  make port connections stand out clearly in code reviews.
 - Provide assurance that inputs are not accidentally connected to the wrong
   thing.
   For example, an input that should be connected directly to a DFF, but must
@@ -137,7 +137,7 @@ There are at least 6 ways in which this naming convention technique adds value:
   For example, in `output var logic o_foo`, the direction is written twice
   (`output` keyword, then `o_` prefix).
   It isn't foolproof, but a mismatch such as `input o_foo` indicates a
-  copy-pasta error which might be otherwise easily overlooked, especially
+  copy-pasta error which might otherwise be easily overlooked, especially
   because the rules about assignments to ports are not intuitive or
   consistently implemented across tools.
 - In assertions (or other testbench code) where signals are connected via
@@ -146,12 +146,18 @@ There are at least 6 ways in which this naming convention technique adds value:
 - In long files which don't fit on one screen, the reader doesn't need to
   scroll back-and-forth or memorize the portlist to determine which parts are
   connected to the boundary and which are purely internal.
-- In complex synthesis flows, ports are often considered more stable API points
+- When viewing a colleague's waveforms in a viewer like
+  [GTKWave](https://github.com/gtkwave/gtkwave), prefixes clearly show whether
+  each wave is for a port or a module-internal signal.
+  A common task in examining waveforms is to search for only inputs or only
+  outputs, made easy by searching for `i_*` or `o_*`.
+- In complex synthesis flows, ports are often considered more stable
+  [API points](https://davemcewan.github.io/SemVerSoC/)
   than internal signals, so this naming convention highlights to script owners
   if they are using unstable points which might require more script
   maintenance.
 
-Interface ports do not benefit in all of the same ways because `modport`s can
+Interface ports do not benefit in the same ways because `modport`s can
 change the component signals' direction.
 The only benefit which interface port prefixes would give is to highlight
 connections to the module boundary vs internal interfaces.
