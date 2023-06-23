@@ -23,9 +23,9 @@ logic, e.g.:
 always_ff @(posedge clk) begin
   if (cond) begin
     foo_q <= foo_d;       // Block was originally written for foo.
-    bar_q <= bar_d;       // This was added later.
+    bar_q <= red_d;       // This was added later.
   end
-  bar_q <= bar_d;         // What happens to bar_q?
+  bar_q <= blue_d;        // What happens to bar_q?
 end
 ```
 By forbidding sequential blocks, you enforce that exactly signal is assigned to
