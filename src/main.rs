@@ -171,14 +171,18 @@ pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
             _ => true,
         };
 
-        if !opt.silent && !do_dump_filelist && !opt.preprocess_only {
-            let msg = format!(
-                "Config file '{}' is not found. Enable all rules",
-                opt.config.to_string_lossy()
-            );
-            printer.print_warning(&msg)?;
+        if !opt.plugins.is_empty() {
+            Config::new()
+        } else {
+            if !opt.silent && !do_dump_filelist && !opt.preprocess_only {
+                let msg = format!(
+                    "Config file '{}' is not found. Enable all rules",
+                    opt.config.to_string_lossy()
+                );
+                printer.print_warning(&msg)?;
+            }
+            Config::new().enable_all()
         }
-        Config::new().enable_all()
     };
 
     run_opt_config(printer, opt, config)
@@ -198,7 +202,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
 
     let mut linter = Linter::new(config);
     for plugin in &opt.plugins {
-        linter.load(&plugin);
+        linter.load(&plugin)?;
     }
 
     let mut defines = HashMap::new();
@@ -267,17 +271,16 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
             let text: String = read_to_string(&path)?;
 
             let mut beg: usize = 0;
-            for line in text.lines() {
-                for failed in linter.textrules_check(&line, &path, &beg) {
+            for line in text.split_inclusive('\n') {
+                let line_stripped = line.trim_end_matches(&['\n', '\r']);
+
+                for failed in linter.textrules_check(&line_stripped, &path, &beg) {
                     pass = false;
                     if !opt.silent {
                         printer.print_failed(&failed, opt.single, opt.github_actions)?;
                     }
                 }
-
-                // Newlines are not included in each line and `text` does not
-                // contain CRLF because `read_to_string` convents CRLF to LF.
-                beg += line.len() + 1; // Track the beginning byte index.
+                beg += line.len();
             }
 
             match parse_sv_str(text.as_str(), &path, &defines, &includes, opt.ignore_include, false) {

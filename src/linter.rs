@@ -5,6 +5,33 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use sv_parser::{unwrap_locate, Locate, NodeEvent, RefNode, SyntaxTree};
 
+// Rule enum is for use by plugins.
+#[derive(Clone, Copy)]
+pub enum Rule {
+    Text(*mut dyn TextRule),
+    Syntax(*mut dyn SyntaxRule),
+}
+
+// Macro for use within plugins.
+// Example usage in a plugin's `get_plugin` function:
+//    pluginrules!(
+//        SamplePlugin,
+//        AnotherPlugin,
+//    )
+#[macro_export]
+macro_rules! pluginrules {
+    ( $( $x:ty ),* $(,)? ) => {
+        {
+            let mut vec: Vec<Rule> = Vec::new();
+            $(
+                let rule = <$x>::default();
+                vec.push(rule.into_rule());
+            )*
+            vec
+        }
+    };
+}
+
 #[derive(Clone, Copy)]
 pub enum TextRuleResult {
     Pass,
@@ -23,6 +50,14 @@ pub trait TextRule: Sync + Send {
     fn name(&self) -> String;
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
+
+    fn into_rule(self) -> Rule
+    where
+        Self: Sized + 'static,
+    {
+        let temp = Box::new(self);
+        Rule::Text(Box::into_raw(temp))
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -43,6 +78,14 @@ pub trait SyntaxRule: Sync + Send {
     fn name(&self) -> String;
     fn hint(&self, config: &ConfigOption) -> String;
     fn reason(&self) -> String;
+
+    fn into_rule(self) -> Rule
+    where
+        Self: Sized + 'static,
+    {
+        let temp = Box::new(self);
+        Rule::Syntax(Box::into_raw(temp))
+    }
 }
 
 pub struct Linter {
@@ -86,20 +129,32 @@ impl Linter {
         }
     }
 
-    pub fn load(&mut self, path: &Path) {
-        let lib = unsafe { Library::new(path) };
-        if let Ok(lib) = lib {
-            self.plugins.push(lib);
-            let lib = self.plugins.last().unwrap();
+    pub fn load(&mut self, path: &Path) -> Result<(), libloading::Error> {
+        let lib = unsafe { Library::new(path) }?;
 
-            let get_plugin: Result<Symbol<extern "C" fn() -> *mut dyn SyntaxRule>, _> =
-                unsafe { lib.get(b"get_plugin") };
-            if let Ok(get_plugin) = get_plugin {
-                let plugin = unsafe { Box::from_raw(get_plugin()) };
-                self.ctl_enabled.insert(plugin.name(), true);
-                self.syntaxrules.push(plugin);
+        self.plugins.push(lib);
+        let lib = self.plugins.last().unwrap();
+
+        let get_plugin: Result<Symbol<extern "C" fn() -> Vec<Rule>>, _> =
+            unsafe { lib.get(b"get_plugin") };
+        if let Ok(get_plugin) = get_plugin {
+            let plugins = get_plugin();
+            for plugin in plugins {
+                match plugin {
+                    Rule::Text(p) => {
+                        let plugin = unsafe { Box::from_raw(p) };
+                        self.textrules.push(plugin);
+                    },
+                    Rule::Syntax(p) => {
+                        let plugin = unsafe { Box::from_raw(p) };
+                        self.ctl_enabled.insert(plugin.name(), true);
+                        self.syntaxrules.push(plugin);
+                    },
+                }
             }
         }
+
+        Ok(())
     }
 
     pub fn textrules_check(&mut self, line: &str, path: &Path, beg: &usize) -> Vec<LintFailed> {
