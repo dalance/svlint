@@ -4,6 +4,12 @@
 
 ## [v0.8.0](https://github.com/dalance/svlint/compare/v0.7.2...v0.8.0) - 2023-06-26
 
+* [Changed] Feature: Update plugin API. [#255](https://github.com/dalance/svlint/pull/255)
+* [Added] Improvement: Add 2 examples of user-specific rulesets. [#254](https://github.com/dalance/svlint/pull/254)
+* [Changed] Improvement Add document CONTRIBUTING.md, based on Verilator's one. [#250](https://github.com/dalance/svlint/pull/250)
+* [Added] Feature: Textrules [#247](https://github.com/dalance/svlint/pull/247)
+* [Changed] textrules-move Move "rules" to "syntaxrules" in preparation for adding textrules [#246](https://github.com/dalance/svlint/pull/246)
+
 ## [v0.7.2](https://github.com/dalance/svlint/compare/v0.7.1...v0.7.2) - 2023-05-02
 
 * [Fixed] Bugfix: insert plugins in enabled hashmap during load [#243](https://github.com/dalance/svlint/pull/243)
