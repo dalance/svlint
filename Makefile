@@ -86,9 +86,14 @@ RELEASE_MANUAL := pdf/svlint_MANUAL_${VERSION}.pdf
 
 release_lnx:
 	cargo build --release --target=x86_64-unknown-linux-musl
-	zip -j ${BIN_NAME}-${VERSION}-x86_64-lnx.zip \
-		${RELEASE_MANUAL} \
-		target/x86_64-unknown-linux-musl/release/${BIN_NAME}
+	mkdir -p tmp/bin/ tmp/doc/
+	cp ${RELEASE_MANUAL} tmp/doc/
+	cp target/x86_64-unknown-linux-musl/release/${BIN_NAME} tmp/bin/
+	cp rulesets/*.toml tmp/bin/
+	cp $$(find rulesets/ -type f -perm -u+x) tmp/bin/
+	cd tmp/ && \
+		zip ${BIN_NAME}-${VERSION}-x86_64-lnx.zip -r *
+	rm -rf tmp
 
 release_win:
 	cargo build --release --target=x86_64-pc-windows-msvc
