@@ -3,7 +3,8 @@ set -e
 
 # If flag/options are given that don't use the ruleset config, simply run
 # svlint with the given arguments.
-NONRULESET="-h|--help|-V|--version|--dump-filelist|-E|--example|--update"
+NONRULESET="-h|--help|-V|--version|--dump-filelist|-E|--config-example|--config-update"
+NONRULESET="${NONRULESET}|--example|--update"
 if printf "%b\n" " $*" | grep -Eq " (${NONRULESET})";
 then
   svlint $*

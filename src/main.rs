@@ -29,8 +29,8 @@ pub enum DumpFilelistMode {
 #[clap(name = "svlint")]
 #[clap(long_version(option_env!("LONG_VERSION").unwrap_or(env!("CARGO_PKG_VERSION"))))]
 pub struct Opt {
-    /// Source file
-    #[clap(required_unless_present_any = &["filelist", "example", "update-config"])]
+    /// Source file(s)
+    #[clap(required_unless_present_any = &["filelist", "config-example", "config-update"])]
     pub files: Vec<PathBuf>,
 
     /// File list
@@ -88,13 +88,13 @@ pub struct Opt {
     #[clap(long = "github-actions")]
     pub github_actions: bool,
 
-    /// Update configuration
-    #[clap(long = "update")]
-    pub update_config: bool,
+    /// Update TOML configuration file in-place
+    #[clap(long = "config-update", alias = "update")]
+    pub config_update: bool,
 
-    /// Print TOML configuration example
-    #[clap(long = "example")]
-    pub example: bool,
+    /// Print an example TOML configuration
+    #[clap(long = "config-example", alias = "example")]
+    pub config_example: bool,
 
     /// Print data from filelists
     #[clap(value_enum, default_value = "no", long = "dump-filelist")]
@@ -136,7 +136,7 @@ pub fn main() {
 
 #[cfg_attr(tarpaulin, skip)]
 pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
-    if opt.example {
+    if opt.config_example {
         let config = Config::new();
         let config = format!("{}", toml::to_string(&config).unwrap());
         printer.println(&config)?;
@@ -153,7 +153,7 @@ pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
         let mut ret: Config = toml::from_str(&s)
             .with_context(|| format!("failed to parse toml '{}'", config.to_string_lossy()))?;
 
-        if opt.update_config {
+        if opt.config_update {
             ret.migrate();
             let mut f = OpenOptions::new()
                 .write(true)
