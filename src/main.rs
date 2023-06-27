@@ -74,9 +74,9 @@ pub struct Opt {
     #[clap(long = "ignore-include")]
     pub ignore_include: bool,
 
-    /// Print results by single line
-    #[clap(short = '1')]
-    pub single: bool,
+    /// Print one rule failure message per line
+    #[clap(short = '1', long = "oneline")]
+    pub oneline: bool,
 
     /// Suppress messages
     #[clap(short = 's', long = "silent")]
@@ -262,7 +262,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                     defines = new_defines;
                 }
                 Err(x) => {
-                    print_parser_error(printer, x, opt.single)?;
+                    print_parser_error(printer, x, opt.oneline)?;
                     pass = false;
                 }
             }
@@ -279,7 +279,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                 for failed in linter.textrules_check(&line_stripped, &path, &beg) {
                     pass = false;
                     if !opt.silent {
-                        printer.print_failed(&failed, opt.single, opt.github_actions)?;
+                        printer.print_failed(&failed, opt.oneline, opt.github_actions)?;
                     }
                 }
                 beg += line.len();
@@ -294,7 +294,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                         for failed in linter.syntaxrules_check(&syntax_tree, &node) {
                             pass = false;
                             if !opt.silent {
-                                printer.print_failed(&failed, opt.single, opt.github_actions)?;
+                                printer.print_failed(&failed, opt.oneline, opt.github_actions)?;
                             }
                         }
                     }
@@ -306,7 +306,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                     }
                 }
                 Err(x) => {
-                    print_parser_error(printer, x, opt.single)?;
+                    print_parser_error(printer, x, opt.oneline)?;
                     pass = false;
                 }
             }
@@ -328,14 +328,14 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
 fn print_parser_error(
     printer: &mut Printer,
     error: SvParserError,
-    single: bool,
+    oneline: bool,
 ) -> Result<(), Error> {
     match error {
         SvParserError::Parse(Some((path, pos))) => {
-            printer.print_parse_error(&path, pos, single)?;
+            printer.print_parse_error(&path, pos, oneline)?;
         }
         SvParserError::Preprocess(Some((path, pos))) => {
-            printer.print_preprocess_error(&path, pos, single)?;
+            printer.print_preprocess_error(&path, pos, oneline)?;
         }
         SvParserError::Include { source: x } => {
             if let SvParserError::File { path: x, .. } = *x {

@@ -206,7 +206,7 @@ impl Printer {
     }
 
     #[cfg_attr(tarpaulin, skip)]
-    fn print_single(
+    fn print_oneline(
         &mut self,
         src: &str,
         print_pos: usize,
@@ -332,7 +332,7 @@ impl Printer {
     pub fn print_failed(
         &mut self,
         failed: &LintFailed,
-        single: bool,
+        oneline: bool,
         github_actions: bool,
     ) -> Result<(), Error> {
         let mut f = File::open(&failed.path)
@@ -340,8 +340,8 @@ impl Printer {
         let mut s = String::new();
         let _ = f.read_to_string(&mut s);
 
-        if single {
-            self.print_single(&s, failed.beg, "Fail", &failed.path, Some(&failed.hint));
+        if oneline {
+            self.print_oneline(&s, failed.beg, "Fail", &failed.path, Some(&failed.hint));
         } else {
             self.print_pretty(
                 &s,
@@ -375,15 +375,15 @@ impl Printer {
         &mut self,
         path: &Path,
         error_pos: usize,
-        single: bool,
+        oneline: bool,
     ) -> Result<(), Error> {
         let mut f = File::open(path)
             .with_context(|| format!("failed to open: '{}'", path.to_string_lossy()))?;
         let mut s = String::new();
         let _ = f.read_to_string(&mut s);
 
-        if single {
-            self.print_single(&s, error_pos, "Error", path, Some("parse error"));
+        if oneline {
+            self.print_oneline(&s, error_pos, "Error", path, Some("parse error"));
         } else {
             self.print_pretty(&s, error_pos, 1, "Error", "parse error", path, None, None);
         }
@@ -395,15 +395,15 @@ impl Printer {
         &mut self,
         path: &Path,
         error_pos: usize,
-        single: bool,
+        oneline: bool,
     ) -> Result<(), Error> {
         let mut f = File::open(path)
             .with_context(|| format!("failed to open: '{}'", path.to_string_lossy()))?;
         let mut s = String::new();
         let _ = f.read_to_string(&mut s);
 
-        if single {
-            self.print_single(&s, error_pos, "Error", path, Some("preprocess error"));
+        if oneline {
+            self.print_oneline(&s, error_pos, "Error", path, Some("preprocess error"));
         } else {
             self.print_pretty(
                 &s,
