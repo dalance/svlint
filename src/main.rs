@@ -37,18 +37,20 @@ pub struct Opt {
     #[clap(short = 'f', long = "filelist", conflicts_with = "files")]
     pub filelist: Vec<PathBuf>,
 
-    /// Define
+    /// Define macro for preprocessor, e.g. `-D FOO` or `-D FOO=123`
     #[clap(
-        short = 'd',
+        short = 'D',
+        short_alias = 'd',
         long = "define",
         multiple_occurrences = true,
         number_of_values = 1
     )]
     pub defines: Vec<String>,
 
-    /// Include directory path
+    /// Include directory for preprocessor, e.g. `-I path/to/headerfiles/`
     #[clap(
-        short = 'i',
+        short = 'I',
+        short_alias = 'i',
         long = "include",
         multiple_occurrences = true,
         number_of_values = 1
