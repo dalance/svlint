@@ -17,12 +17,18 @@ Svlint is also integrated with most text editors via
 ## Installation
 
 svlint can be installed in several ways:
-- Download a [release](https://github.com/dalance/svlint/releases/latest), and
-  extract to a directory in your `$PATH`.
+- Download a [release](https://github.com/dalance/svlint/releases/latest),
+  extract, and add the `bin/` directory to your `$PATH`.
+  A PDF copy of the MANUAL is included in the `doc/` directory.
+- If you have a [Rust toolchain](https://www.rust-lang.org/tools/install), then
+  you can install the binary with [cargo](https://crates.io/crates/svlint), via
+  `cargo install svlint`.
+  This will copy the `svlint` binary (and the dev-only `mdgen` binary) to
+  ([usually](https://doc.rust-lang.org/cargo/commands/cargo-install.html#description))
+  `~/.cargo/bin`, but not the wrapper scripts (e.g. `svlint-parseonly`) or
+  pre-written configurations (e.g. `parseonly.toml`) from `rulesets/`.
 - [snapcraft](https://snapcraft.io/svlint), via
   `sudo snap install svlint`.
-- [cargo](https://crates.io/crates/svlint), via
-  `cargo install svlint`.
 
 
 ## Usage
