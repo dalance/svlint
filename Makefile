@@ -85,10 +85,7 @@ MANUAL-release: MANUAL.intermediateTex.md
 RELEASE_MANUAL := pdf/svlint_MANUAL_${VERSION}.pdf
 
 release_lnx:
-	#cargo build --release --target=x86_64-unknown-linux-musl
-	mkdir -p target/x86_64-unknown-linux-musl/release/
-	echo FOO > target/x86_64-unknown-linux-musl/release/${BIN_NAME}
-	# TODO: Undo above
+	cargo build --release --target=x86_64-unknown-linux-musl
 	rm -rf tmp
 	mkdir -p tmp/bin/ tmp/doc/
 	cp ${RELEASE_MANUAL} tmp/doc/
@@ -101,10 +98,7 @@ release_lnx:
 	rm -rf tmp/
 
 release_win:
-	#cargo build --release --target=x86_64-pc-windows-msvc
-	mkdir -p target/x86_64-pc-windows-msvc/release/
-	echo FOO > target/x86_64-pc-windows-msvc/release/${BIN_NAME}.exe
-	# TODO: Undo above
+	cargo build --release --target=x86_64-pc-windows-msvc
 	rm -rf tmp
 	mkdir -p tmp/bin/ tmp/doc/
 	cp ${RELEASE_MANUAL} tmp/doc/
@@ -117,10 +111,7 @@ release_win:
 	rm -rf tmp/
 
 release_mac:
-	#cargo build --release --target=x86_64-apple-darwin
-	mkdir -p target/x86_64-apple-darwin/release/
-	echo FOO > target/x86_64-apple-darwin/release/${BIN_NAME}
-	# TODO: Undo above
+	cargo build --release --target=x86_64-apple-darwin
 	rm -rf tmp
 	mkdir -p tmp/bin/ tmp/doc/
 	cp ${RELEASE_MANUAL} tmp/doc/
