@@ -106,7 +106,7 @@ release_win:
 	cp rulesets/*.cmd tmp/bin/
 	cp target/x86_64-pc-windows-msvc/release/${BIN_NAME}.exe tmp/bin/
 	cd tmp && \
-		7z a ${BIN_NAME}-${VERSION}-x86_64-win.zip bin/ doc/
+		7z a ${BIN_NAME}-${VERSION}-x86_64-win.zip *
 	mv tmp/${BIN_NAME}-${VERSION}-x86_64-win.zip ./
 	rm -rf tmp/
 
