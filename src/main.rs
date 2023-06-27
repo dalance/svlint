@@ -33,7 +33,7 @@ pub struct Opt {
     #[clap(required_unless_present_any = &["filelist", "config-example", "config-update"])]
     pub files: Vec<PathBuf>,
 
-    /// File list
+    /// Filelist file(s)
     #[clap(short = 'f', long = "filelist", conflicts_with = "files")]
     pub filelist: Vec<PathBuf>,
 
@@ -57,11 +57,11 @@ pub struct Opt {
     )]
     pub includes: Vec<PathBuf>,
 
-    /// TOML configuration file
+    /// TOML configuration file, searched for hierarchically upwards
     #[clap(short = 'c', long = "config", default_value = ".svlint.toml")]
     pub config: PathBuf,
 
-    /// Plugin file
+    /// Plugin file, e.g. `-p path/to/libfoo.so` or `-p path\to\foo.dll`
     #[clap(
         short = 'p',
         long = "plugin",
@@ -70,7 +70,7 @@ pub struct Opt {
     )]
     pub plugins: Vec<PathBuf>,
 
-    /// Ignore any include
+    /// Ignore all preprocessor `include directives
     #[clap(long = "ignore-include")]
     pub ignore_include: bool,
 
@@ -78,7 +78,7 @@ pub struct Opt {
     #[clap(short = '1', long = "oneline")]
     pub oneline: bool,
 
-    /// Suppress messages
+    /// Suppress printing, useful for scripting
     #[clap(short = 's', long = "silent")]
     pub silent: bool,
 
@@ -86,7 +86,7 @@ pub struct Opt {
     #[clap(short = 'v', long = "verbose")]
     pub verbose: bool,
 
-    /// Print message for GitHub Actions
+    /// Format rule failure messages for GitHub Actions
     #[clap(long = "github-actions")]
     pub github_actions: bool,
 
@@ -102,11 +102,11 @@ pub struct Opt {
     #[clap(value_enum, default_value = "no", long = "dump-filelist")]
     pub dump_filelist: DumpFilelistMode,
 
-    /// Print syntax trees
+    /// Print syntax trees (for debug or syntax analysis)
     #[clap(long = "dump-syntaxtree")]
     pub dump_syntaxtree: bool,
 
-    /// Print preprocessor output instead of performing checks
+    /// Print preprocessor output then exit before parsing syntax
     #[clap(short = 'E')]
     pub preprocess_only: bool,
 }
