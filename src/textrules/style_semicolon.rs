@@ -10,9 +10,15 @@ pub struct StyleSemicolon {
 impl TextRule for StyleSemicolon {
     fn check(
         &mut self,
-        line: &str,
+        line: Option<&str>,
         _option: &ConfigOption,
     ) -> TextRuleResult {
+        let line: &str = if line.is_none() {
+            return TextRuleResult::Pass;
+        } else {
+            line.unwrap()
+        };
+
         if self.re.is_none() {
             self.re = Some(Regex::new("([ ]+);").unwrap());
         }

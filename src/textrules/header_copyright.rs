@@ -5,15 +5,23 @@ use regex::Regex;
 #[derive(Default)]
 pub struct HeaderCopyright {
     re: Option<Regex>,
-    linenum: Option<usize>,
+    linenum: usize,
 }
 
 impl TextRule for HeaderCopyright {
     fn check(
         &mut self,
-        line: &str,
+        line: Option<&str>,
         option: &ConfigOption,
     ) -> TextRuleResult {
+        let line: &str = if line.is_none() {
+            self.linenum = 0;
+            return TextRuleResult::Pass;
+        } else {
+            line.unwrap()
+        };
+        self.linenum += 1;
+
         if self.re.is_none() {
             let year = &option.copyright_year;
             let holder = &option.copyright_holder;
@@ -22,14 +30,7 @@ impl TextRule for HeaderCopyright {
         }
         let re = self.re.as_ref().unwrap();
 
-        if self.linenum.is_none() {
-            self.linenum = Some(0);
-        }
-        if let Some(x) = self.linenum {
-            self.linenum = Some(x+1)
-        }
-
-        if self.linenum.unwrap() == option.copyright_linenum {
+        if self.linenum == option.copyright_linenum {
             let is_match: bool = re.is_match(line);
             if is_match {
                 TextRuleResult::Pass

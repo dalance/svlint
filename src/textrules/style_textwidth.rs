@@ -7,9 +7,15 @@ pub struct StyleTextwidth;
 impl TextRule for StyleTextwidth {
     fn check(
         &mut self,
-        line: &str,
+        line: Option<&str>,
         option: &ConfigOption,
     ) -> TextRuleResult {
+        let line: &str = if line.is_none() {
+            return TextRuleResult::Pass;
+        } else {
+            line.unwrap()
+        };
+
         let char_indices: Vec<_> = line.char_indices().collect();
         let n_chars = char_indices.len();
         if n_chars > option.textwidth {
