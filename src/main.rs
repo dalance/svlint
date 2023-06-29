@@ -51,11 +51,12 @@ pub struct Opt {
     #[clap(
         short = 'I',
         short_alias = 'i',
-        long = "include",
+        long = "incdir",
+        alias = "include",
         multiple_occurrences = true,
         number_of_values = 1
     )]
-    pub includes: Vec<PathBuf>,
+    pub incdirs: Vec<PathBuf>,
 
     /// TOML configuration file, searched for hierarchically upwards
     #[clap(short = 'c', long = "config", default_value = ".svlint.toml")]
@@ -221,9 +222,9 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
         defines.insert(ident, Some(define));
     }
 
-    let (files, includes) = if !opt.filelist.is_empty() {
+    let (files, incdirs) = if !opt.filelist.is_empty() {
         let mut files = opt.files.clone();
-        let mut includes = opt.includes.clone();
+        let mut incdirs = opt.incdirs.clone();
 
         for filelist in &opt.filelist {
             let (mut f, mut i, d) = parse_filelist(filelist)?;
@@ -231,21 +232,21 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                 dump_filelist(printer, &opt.dump_filelist, &filelist, &f, &i, &d)?;
             }
             files.append(&mut f);
-            includes.append(&mut i);
+            incdirs.append(&mut i);
             for (k, v) in d {
                 defines.insert(k, v);
             }
         }
 
-        (files, includes)
+        (files, incdirs)
     } else {
-        (opt.files.clone(), opt.includes.clone())
+        (opt.files.clone(), opt.incdirs.clone())
     };
 
     match opt.dump_filelist {
         DumpFilelistMode::No => {}
         _ => {
-            dump_filelist(printer, &opt.dump_filelist, &Path::new("."), &files, &includes, &defines)?;
+            dump_filelist(printer, &opt.dump_filelist, &Path::new("."), &files, &incdirs, &defines)?;
             return Ok(true);
         }
     }
@@ -255,7 +256,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
     for path in &files {
         let mut pass = true;
         if opt.preprocess_only {
-            match preprocess(&path, &defines, &includes, false, opt.ignore_include) {
+            match preprocess(&path, &defines, &incdirs, false, opt.ignore_include) {
                 Ok((text, new_defines)) => {
                     let msg = format!("{}", text.text());
                     printer.print(&msg)?;
@@ -285,7 +286,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                 beg += line.len();
             }
 
-            match parse_sv_str(text.as_str(), &path, &defines, &includes, opt.ignore_include, false) {
+            match parse_sv_str(text.as_str(), &path, &defines, &incdirs, opt.ignore_include, false) {
                 Ok((syntax_tree, new_defines)) => {
                     // Iterate over nodes in the concrete syntax tree, applying
                     // each syntaxrule to each node in turn.
