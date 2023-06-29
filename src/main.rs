@@ -1,5 +1,6 @@
 use anyhow::{Context, Error};
-use clap::Parser;
+use clap::{Parser, CommandFactory};
+use clap_complete;
 use enquote;
 use std::collections::HashMap;
 use std::fs::{read_to_string, File, OpenOptions};
@@ -29,7 +30,7 @@ pub enum DumpFilelistMode {
 #[clap(long_version(option_env!("LONG_VERSION").unwrap_or(env!("CARGO_PKG_VERSION"))))]
 pub struct Opt {
     /// Source file(s)
-    #[clap(required_unless_present_any = &["filelist", "config-example", "config-update"])]
+    #[clap(required_unless_present_any = &["filelist", "config-example", "config-update", "dump-completion"])]
     pub files: Vec<PathBuf>,
 
     /// Filelist file(s)
@@ -102,6 +103,10 @@ pub struct Opt {
     #[clap(value_enum, long = "dump-filelist")]
     pub dump_filelist: Option<DumpFilelistMode>,
 
+    /// Print shell completion script
+    #[clap(value_enum, long = "dump-completion")]
+    pub dump_completion: Option<clap_complete::Shell>,
+
     /// Print syntax trees (for debug or syntax analysis)
     #[clap(long = "dump-syntaxtree")]
     pub dump_syntaxtree: bool,
@@ -142,6 +147,12 @@ pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
         let config = Config::new();
         let config = format!("{}", toml::to_string(&config).unwrap());
         printer.println(&config)?;
+        return Ok(true);
+    }
+
+    if let Some(generator) = opt.dump_completion {
+        let mut cmd = Opt::command();
+        dump_completion(generator, &mut cmd);
         return Ok(true);
     }
 
@@ -477,6 +488,10 @@ fn dump_filelist(
     };
 
     Ok(())
+}
+
+fn dump_completion<G: clap_complete::Generator>(gen: G, cmd: &mut clap::Command) {
+    clap_complete::generate(gen, cmd, cmd.get_name().to_string(), &mut std::io::stdout());
 }
 
 #[cfg(test)]
