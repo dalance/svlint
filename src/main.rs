@@ -18,7 +18,6 @@ use svlint::printer::Printer;
 // -------------------------------------------------------------------------------------------------
 #[derive(clap::ValueEnum, Clone, Debug)]
 pub enum DumpFilelistMode {
-    No,
     Yaml,
     Files,
     Incdirs,
@@ -100,8 +99,8 @@ pub struct Opt {
     pub config_example: bool,
 
     /// Print data from filelists
-    #[clap(value_enum, default_value = "no", long = "dump-filelist")]
-    pub dump_filelist: DumpFilelistMode,
+    #[clap(value_enum, long = "dump-filelist")]
+    pub dump_filelist: Option<DumpFilelistMode>,
 
     /// Print syntax trees (for debug or syntax analysis)
     #[clap(long = "dump-syntaxtree")]
@@ -169,15 +168,10 @@ pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
 
         ret
     } else {
-        let do_dump_filelist: bool = match opt.dump_filelist {
-            DumpFilelistMode::No => false,
-            _ => true,
-        };
-
         if !opt.plugins.is_empty() {
             Config::new()
         } else {
-            if !opt.silent && !do_dump_filelist && !opt.preprocess_only {
+            if !opt.silent && opt.dump_filelist.is_none() && !opt.preprocess_only {
                 let msg = format!(
                     "Config file '{}' is not found. Enable all rules",
                     opt.config.to_string_lossy()
@@ -228,8 +222,8 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
 
         for filelist in &opt.filelist {
             let (mut f, mut i, d) = parse_filelist(filelist)?;
-            if let DumpFilelistMode::Yaml = opt.dump_filelist {
-                dump_filelist(printer, &opt.dump_filelist, &filelist, &f, &i, &d)?;
+            if let Some(DumpFilelistMode::Yaml) = opt.dump_filelist {
+                dump_filelist(printer, &DumpFilelistMode::Yaml, &filelist, &f, &i, &d)?;
             }
             files.append(&mut f);
             incdirs.append(&mut i);
@@ -243,12 +237,9 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
         (opt.files.clone(), opt.incdirs.clone())
     };
 
-    match opt.dump_filelist {
-        DumpFilelistMode::No => {}
-        _ => {
-            dump_filelist(printer, &opt.dump_filelist, &Path::new("."), &files, &incdirs, &defines)?;
-            return Ok(true);
-        }
+    if let Some(mode) = &opt.dump_filelist {
+        dump_filelist(printer, &mode, &Path::new("."), &files, &incdirs, &defines)?;
+        return Ok(true);
     }
 
     let mut all_pass = true;
@@ -483,7 +474,6 @@ fn dump_filelist(
                 }?;
             }
         }
-        _ => {}
     };
 
     Ok(())
