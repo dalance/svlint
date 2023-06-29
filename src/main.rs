@@ -107,7 +107,7 @@ pub struct Opt {
     #[clap(value_enum, long = "dump-completion")]
     pub dump_completion: Option<clap_complete::Shell>,
 
-    /// Print syntax trees (for debug or syntax analysis)
+    /// Print syntax trees, useful for debug or syntax analysis
     #[clap(long = "dump-syntaxtree")]
     pub dump_syntaxtree: bool,
 
