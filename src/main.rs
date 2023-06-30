@@ -30,7 +30,7 @@ pub enum DumpFilelistMode {
 #[clap(long_version(option_env!("LONG_VERSION").unwrap_or(env!("CARGO_PKG_VERSION"))))]
 pub struct Opt {
     /// Source file(s)
-    #[clap(required_unless_present_any = &["filelist", "config-example", "config-update", "dump-completion"])]
+    #[clap(required_unless_present_any = &["filelist", "config-example", "config-update", "shell-completion"])]
     pub files: Vec<PathBuf>,
 
     /// Filelist file(s)
@@ -104,8 +104,8 @@ pub struct Opt {
     pub dump_filelist: Option<DumpFilelistMode>,
 
     /// Print shell completion script
-    #[clap(value_enum, long = "dump-completion")]
-    pub dump_completion: Option<clap_complete::Shell>,
+    #[clap(value_enum, long = "shell-completion")]
+    pub shell_completion: Option<clap_complete::Shell>,
 
     /// Print syntax trees, useful for debug or syntax analysis
     #[clap(long = "dump-syntaxtree")]
@@ -150,9 +150,9 @@ pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
         return Ok(true);
     }
 
-    if let Some(generator) = opt.dump_completion {
+    if let Some(generator) = opt.shell_completion {
         let mut cmd = Opt::command();
-        dump_completion(generator, &mut cmd);
+        shell_completion(generator, &mut cmd);
         return Ok(true);
     }
 
@@ -490,7 +490,7 @@ fn dump_filelist(
     Ok(())
 }
 
-fn dump_completion<G: clap_complete::Generator>(gen: G, cmd: &mut clap::Command) {
+fn shell_completion<G: clap_complete::Generator>(gen: G, cmd: &mut clap::Command) {
     clap_complete::generate(gen, cmd, cmd.get_name().to_string(), &mut std::io::stdout());
 }
 
@@ -742,26 +742,26 @@ mod tests {
 
     #[test]
     #[allow(unused_variables)]
-    fn cli_dump_completion() {
+    fn cli_shell_completion() {
         // {{{
         let mut args = vec!["svlint"];
-        args.push("--dump-completion=bash");
+        args.push("--shell-completion=bash");
         let opt = Opt::parse_from(args.iter());
 
         let mut args = vec!["svlint"];
-        args.push("--dump-completion=elvish");
+        args.push("--shell-completion=elvish");
         let opt = Opt::parse_from(args.iter());
 
         let mut args = vec!["svlint"];
-        args.push("--dump-completion=fish");
+        args.push("--shell-completion=fish");
         let opt = Opt::parse_from(args.iter());
 
         let mut args = vec!["svlint"];
-        args.push("--dump-completion=powershell");
+        args.push("--shell-completion=powershell");
         let opt = Opt::parse_from(args.iter());
 
         let mut args = vec!["svlint"];
-        args.push("--dump-completion=zsh");
+        args.push("--shell-completion=zsh");
         let opt = Opt::parse_from(args.iter());
     } // }}}
 
