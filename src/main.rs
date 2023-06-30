@@ -112,7 +112,7 @@ pub struct Opt {
     pub dump_syntaxtree: bool,
 
     /// Print preprocessor output then exit before parsing syntax
-    #[clap(short = 'E')]
+    #[clap(short = 'E', long = "preprocess-only")]
     pub preprocess_only: bool,
 }
 
