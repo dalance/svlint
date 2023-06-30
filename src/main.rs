@@ -30,12 +30,12 @@ pub enum DumpFilelistMode {
 #[clap(long_version(option_env!("LONG_VERSION").unwrap_or(env!("CARGO_PKG_VERSION"))))]
 pub struct Opt {
     /// Source file(s)
-    #[clap(required_unless_present_any = &["filelist", "config-example", "config-update", "shell-completion"])]
+    #[clap(required_unless_present_any = &["filelists", "config-example", "config-update", "shell-completion"])]
     pub files: Vec<PathBuf>,
 
     /// Filelist file(s)
     #[clap(short = 'f', long = "filelist", conflicts_with = "files")]
-    pub filelist: Vec<PathBuf>,
+    pub filelists: Vec<PathBuf>,
 
     /// Define macro for preprocessor, e.g. `-D FOO` or `-D FOO=123`
     #[clap(
@@ -227,11 +227,11 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
         defines.insert(ident, Some(define));
     }
 
-    let (files, incdirs) = if !opt.filelist.is_empty() {
+    let (files, incdirs) = if !opt.filelists.is_empty() {
         let mut files = opt.files.clone();
         let mut incdirs = opt.incdirs.clone();
 
-        for filelist in &opt.filelist {
+        for filelist in &opt.filelists {
             let (mut f, mut i, d) = parse_filelist(filelist)?;
             if let Some(DumpFilelistMode::Yaml) = opt.dump_filelist {
                 dump_filelist(printer, &DumpFilelistMode::Yaml, &filelist, &f, &i, &d)?;
