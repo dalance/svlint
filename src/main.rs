@@ -595,6 +595,425 @@ mod tests {
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
 
     #[test]
+    #[allow(unused_variables)]
+    fn cli_oneline() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-1");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--oneline");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_config() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-c");
+        args.push("foo.toml");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--config");
+        args.push("foo.toml");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_config_example() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--config-example");
+        let opt = Opt::parse_from(args.iter());
+
+        // Alias for backwards compatibility svlint v0.8.0 and earlier. ////////
+        let mut args = vec!["svlint"];
+        args.push("--example");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_config_update() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--config-update");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--config");
+        args.push("foo.toml");
+        args.push("--config-update");
+        let opt = Opt::parse_from(args.iter());
+
+        // Alias for backwards compatibility svlint v0.8.0 and earlier. ////////
+        let mut args = vec!["svlint"];
+        args.push("--update");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_defines() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-D");
+        args.push("FOO");
+        args.push("-D");
+        args.push("BAR");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-D");
+        args.push("FOO=123");
+        args.push("-D");
+        args.push("BAR=456");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-DFOO");
+        args.push("-DBAR");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-DFOO=123");
+        args.push("-DBAR=456");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        // Long option. ////////////////////////////////////////////////////////
+        let mut args = vec!["svlint"];
+        args.push("--define");
+        args.push("FOO");
+        args.push("--define");
+        args.push("BAR");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--define");
+        args.push("FOO=123");
+        args.push("--define");
+        args.push("BAR=456");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        // Alias for backwards compatibility svlint v0.8.0 and earlier. ////////
+        let mut args = vec!["svlint"];
+        args.push("-d");
+        args.push("FOO");
+        args.push("-d");
+        args.push("BAR");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-d");
+        args.push("FOO=123");
+        args.push("-d");
+        args.push("BAR=456");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-dFOO");
+        args.push("-dBAR");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-dFOO=123");
+        args.push("-dBAR=456");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_dump_completion() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--dump-completion=bash");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-completion=elvish");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-completion=fish");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-completion=powershell");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-completion=zsh");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_dump_filelist() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=yaml");
+        args.push("--filelist");
+        args.push("foo.f");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=files");
+        args.push("--filelist");
+        args.push("foo.f");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--filelist");
+        args.push("foo.f");
+        args.push("--dump-filelist=incdirs");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--filelist");
+        args.push("foo.f");
+        args.push("--dump-filelist=defines");
+
+        // Without the -f/--filelist. //////////////////////////////////////////
+        // Useful for debugging other ways of passing long/complex commands.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=yaml");
+        args.push("-DFOO");
+        args.push("-Ipath/to/headers/");
+        args.push("foo.sv");
+        args.push("bar.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=files");
+        args.push("-DFOO");
+        args.push("-Ipath/to/headers/");
+        args.push("foo.sv");
+        args.push("bar.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=incdirs");
+        args.push("-DFOO");
+        args.push("-Ipath/to/headers/");
+        args.push("foo.sv");
+        args.push("bar.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=defines");
+        args.push("-DFOO");
+        args.push("-Ipath/to/headers/");
+        args.push("foo.sv");
+        args.push("bar.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_dump_syntaxtree() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--dump-syntaxtree");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_preprocess_only() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-E");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--preprocess-only");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_filelist() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-f");
+        args.push("Foo.f");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-fFoo.f");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--filelist");
+        args.push("foo.f");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_github_actions() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--github-actions");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    // NOTE: Testing clap's -h/--help interfers with `cargo test`.
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_incdirs() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-I");
+        args.push("path/to/foo");
+        args.push("-I");
+        args.push("/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-Ipath/to/foo");
+        args.push("-I/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--incdir");
+        args.push("path/to/foo");
+        args.push("--incdir");
+        args.push("/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        // Aliases for backwards compatibility svlint v0.8.0 and earlier. //////
+        let mut args = vec!["svlint"];
+        args.push("-i");
+        args.push("path/to/foo");
+        args.push("-i");
+        args.push("/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-ipath/to/foo");
+        args.push("-i/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--include");
+        args.push("path/to/foo");
+        args.push("--include");
+        args.push("/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_ignore_include() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--ignore-include");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_plugins() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-p");
+        args.push("path/to/libfoo.so"); // Linux
+        args.push("-p");
+        args.push("path/to/libbar.so");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-p");
+        args.push("path/to/libfoo.dylib"); // MacOS
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-p");
+        args.push("path\\to\\foo.dll"); // Windows
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-pfoo.so");
+        args.push("-pbar.so");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--plugin");
+        args.push("foo.so");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_silent() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-s");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--silent");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_verbose() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-v");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--verbose");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    // NOTE: Testing clap's -V/--version interfers with `cargo test`.
+
+    #[test]
     fn dump_filelist_1() {
         // {{{
         let config: Config = toml::from_str("").unwrap();
