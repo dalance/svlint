@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{TextRule, TextRuleResult};
+use crate::linter::{TextRule, TextRuleEvent, TextRuleResult};
 use regex::Regex;
 
 #[derive(Default)]
@@ -11,14 +11,15 @@ pub struct HeaderCopyright {
 impl TextRule for HeaderCopyright {
     fn check(
         &mut self,
-        line: Option<&str>,
+        event: TextRuleEvent,
         option: &ConfigOption,
     ) -> TextRuleResult {
-        let line: &str = if line.is_none() {
-            self.linenum = 0;
-            return TextRuleResult::Pass;
-        } else {
-            line.unwrap()
+        let line: &str = match event {
+            TextRuleEvent::StartOfFile => {
+                self.linenum = 0;
+                return TextRuleResult::Pass;
+            }
+            TextRuleEvent::Line(x) => x,
         };
         self.linenum += 1;
 

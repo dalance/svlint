@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{TextRule, TextRuleResult};
+use crate::linter::{TextRule, TextRuleEvent, TextRuleResult};
 use regex::Regex;
 
 #[derive(Default)]
@@ -10,13 +10,14 @@ pub struct StyleDirectives {
 impl TextRule for StyleDirectives {
     fn check(
         &mut self,
-        line: Option<&str>,
+        event: TextRuleEvent,
         _option: &ConfigOption,
     ) -> TextRuleResult {
-        let line: &str = if line.is_none() {
-            return TextRuleResult::Pass;
-        } else {
-            line.unwrap()
+        let line: &str = match event {
+            TextRuleEvent::StartOfFile => {
+                return TextRuleResult::Pass;
+            }
+            TextRuleEvent::Line(x) => x,
         };
 
         if self.re.is_none() {

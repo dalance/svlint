@@ -33,6 +33,12 @@ macro_rules! pluginrules {
 }
 
 #[derive(Clone, Copy)]
+pub enum TextRuleEvent<'a> {
+    StartOfFile,
+    Line(&'a str),
+}
+
+#[derive(Clone, Copy)]
 pub enum TextRuleResult {
     Pass,
     Fail {
@@ -44,7 +50,7 @@ pub enum TextRuleResult {
 pub trait TextRule: Sync + Send {
     fn check(
         &mut self,
-        line: Option<&str>,
+        event: TextRuleEvent,
         config: &ConfigOption,
     ) -> TextRuleResult;
     fn name(&self) -> String;
@@ -157,27 +163,30 @@ impl Linter {
         Ok(())
     }
 
-    pub fn textrules_check(&mut self, line: Option<&str>, path: &Path, beg: &usize) -> Vec<LintFailed> {
+    pub fn textrules_check(&mut self, event: TextRuleEvent, path: &Path, beg: &usize) -> Vec<LintFailed> {
 
         let mut ret = Vec::new();
         'outer: for rule in &mut self.textrules {
-            match rule.check(line, &self.option) {
+            match rule.check(event, &self.option) {
                 TextRuleResult::Fail {offset, len} => {
-                    if line.is_some() {
-                        for exclude in &self.option.exclude_paths {
-                            if exclude.is_match(&path.to_string_lossy()) {
-                                continue 'outer;
+                    match event {
+                        TextRuleEvent::StartOfFile => {}
+                        TextRuleEvent::Line(_) => {
+                            for exclude in &self.option.exclude_paths {
+                                if exclude.is_match(&path.to_string_lossy()) {
+                                    continue 'outer;
+                                }
                             }
+                            let result = LintFailed {
+                                path: path.to_path_buf(),
+                                beg: beg + offset,
+                                len,
+                                name: rule.name(),
+                                hint: rule.hint(&self.option),
+                                reason: rule.reason(),
+                            };
+                            ret.push(result);
                         }
-                        let result = LintFailed {
-                            path: path.to_path_buf(),
-                            beg: beg + offset,
-                            len,
-                            name: rule.name(),
-                            hint: rule.hint(&self.option),
-                            reason: rule.reason(),
-                        };
-                        ret.push(result);
                     }
                 }
                 _ => (),
