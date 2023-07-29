@@ -15,7 +15,7 @@ operation returns a boolean:
 , `->`
 , and `<->`.
 Uses of these operators must have a single space between the operator's symbol
-and the following symbol or identifier, e.g.
+and the leading symbol or identifier, e.g.
 `a && b`,
 , `c !== d`
 , or `0 < 5`.
@@ -25,7 +25,5 @@ of `binary_operator` and `binary_module_path_operator`.
 
 See also:
 
-- **style_operator_arithmetic** - Suggested companion rule.
-- **style_operator_integer** - Suggested companion rule.
-- **style_operator_unary** - Suggested companion rule.
-- **style_operator_boolean_leading_space** - Suggestions companion rule. This is the rule for leading whitespace.
+- **style_operator_boolean** - Suggested companion rule. This is the rule for trailing whitespace.
+- **style_operator_arithmetic_leading_space** - Suggested companion rule.

@@ -16,3 +16,4 @@ variants of `binary_operator` specified in Table 11-3.
 See also:
 
 - **style_operator_arithmetic** - Suggested companion rule. This is the rule for trailing whitespace.
+- **style_operator_boolean_leading_space** - Suggested companion rule.

@@ -9097,7 +9097,7 @@ See also:
 
 ### Hint
 
-Put exact one space before binary operators.
+Put exact one space before binary boolean operators.
 
 ### Reason
 
@@ -9188,6 +9188,7 @@ variants of `binary_operator` specified in Table 11-3.
 See also:
 
 - **style_operator_arithmetic** - Suggested companion rule. This is the rule for trailing whitespace.
+- **style_operator_boolean_leading_space** - Suggested companion rule.
 
 
 
@@ -9257,9 +9258,79 @@ In relation to Annex A of IEEE1800-2017, this rule applies to specific variants
 of `binary_operator` and `binary_module_path_operator`.
 
 See also:
+
 - **style_operator_arithmetic** - Suggested companion rule.
 - **style_operator_integer** - Suggested companion rule.
 - **style_operator_unary** - Suggested companion rule.
+- **style_operator_boolean_leading_space** - Suggestions companion rule. This is the rule for leading whitespace.
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `style_operator_boolean_leading_space`
+
+### Hint
+
+Put exact one space before binary boolean operators.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  localparam bit P1 = a && b; // One space before `&&`.
+
+  for (genvar i=0; i < 5; i++) begin // One space around `<`.
+  end
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  localparam bit P1 = a&&b; // No space before `&&`.
+
+  localparam bit P2 = a   < b; // Multiple spaces after `<`.
+
+  for (genvar i=0; i<5; i++) begin // No space around `<`.
+  end
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following any binary operator whose
+operation returns a boolean:
+`==`
+, `!=`
+, `===`
+, `!==`
+, `==?`
+, `!=?`
+, `&&`
+, `||`
+, `<`
+, `<=`
+, `>`
+, `>=`
+, `->`
+, and `<->`.
+Uses of these operators must have a single space between the operator's symbol
+and the leading symbol or identifier, e.g.
+`a && b`,
+, `c !== d`
+, or `0 < 5`.
+
+In relation to Annex A of IEEE1800-2017, this rule applies to specific variants
+of `binary_operator` and `binary_module_path_operator`.
+
+See also:
+
+- **style_operator_boolean** - Suggested companion rule. This is the rule for trailing whitespace.
+- **style_operator_arithmetic_leading_space** - Suggested companion rule.
 
 
 
