@@ -9083,9 +9083,111 @@ In relation to Annex A of IEEE1800-2017, this rule applies to the specific
 variants of `binary_operator` specified in Table 11-3.
 
 See also:
+
 - **style_operator_boolean** - Suggested companion rule.
 - **style_operator_integer** - Suggested companion rule.
 - **style_operator_unary** - Suggested companion rule.
+- **style_operator_arithmetic_leading_space** - Suggested companion rule. This is the rule for leading whitespace.
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `style_operator_arithmetic_leading_space`
+
+### Hint
+
+Put exact one space before binary operators.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  localparam int P2 = a + b; // Multiple spaces before `+`.
+
+  // One space before `*`.
+  localparam int P3 = a * b;
+
+  // One space before `**`.
+  localparam int P4 = a ** b;
+
+  // One space before `+`.
+  localparam int P5 = a + b;
+
+  // One space before `%`.
+  localparam int P6 = a % b;
+
+  // One space before `/`.
+  localparam int P7 = a / b;
+
+  // When the previous expression is (`expr`) type
+  localparam int P13 = (a + b) * c;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  localparam int P2 = a  + b; // Multiple spaces before `+`.
+
+  // No space before `*`.
+  localparam int P3 = a* b;
+
+  // No space before `**`.
+  localparam int P4 = a** b;
+
+  // No space before `+`.
+  localparam int P5 = a+ b;
+
+  // No space before `%`.
+  localparam int P6 = a% b;
+
+  // No space before `/`.
+  localparam int P7 = a/ b;
+
+  // Multiple spaces before `+`.
+  localparam int P8 = a  + b;
+
+  // Multiple spaces before `*`.
+  localparam int P9 = a  * b;
+
+  // Multiple spaces before `**`.
+  localparam int P10 = a  ** b;
+
+  // Multiple spaces before `%`.
+  localparam int P11 = a  % b;
+
+  // Multiple spaces before `/`.
+  localparam int P12 = a  / b;
+
+  // When the previous expression is (`expr`) type
+  localparam int P13 = (a + b)    * c;
+endmodule
+```
+
+### Explanation
+
+This rule checks the leading whitespace immediately following any arithmetic operator:
+`+`
+, `-`
+, `*`
+, `/`
+, `%`
+, and `**`.
+Uses of these operators may have a single space between the
+operator's symbol and the leading symbol or identifier, e.g.
+`a + b`,
+, or `a+b`.
+
+In relation to Annex A of IEEE1800-2017, this rule applies to the specific
+variants of `binary_operator` specified in Table 11-3.
+
+See also:
+
+- **style_operator_arithmetic** - Suggested companion rule. This is the rule for trailing whitespace.
 
 
 
