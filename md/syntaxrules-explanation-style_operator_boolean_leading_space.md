@@ -27,3 +27,4 @@ See also:
 
 - **style_operator_boolean** - Suggested companion rule. This is the rule for trailing whitespace.
 - **style_operator_arithmetic_leading_space** - Suggested companion rule.
+- **style_operator_integer_leading_space** - Suggested companion rule.
