@@ -70,7 +70,7 @@ impl SyntaxRule for StyleOperatorArithmeticLeadingSpace {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from(format!("Put exact one space before binary arithmetic operators."))
+        String::from(format!("Put exactly one space before binary arithmetic operators."))
     }
 
     fn reason(&self) -> String {

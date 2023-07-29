@@ -71,7 +71,7 @@ impl SyntaxRule for StyleOperatorIntegerLeadingSpace {
 
     fn hint(&self, _option: &ConfigOption) -> String {
         String::from(format!(
-            "Put exact one space before binary integer operators."
+            "Put exactly one space before binary integer operators."
         ))
     }
 
