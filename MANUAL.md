@@ -9097,7 +9097,7 @@ See also:
 
 ### Hint
 
-Put exact one space before binary boolean operators.
+Put exactly one space before binary arithmetic operators.
 
 ### Reason
 
@@ -9273,7 +9273,7 @@ See also:
 
 ### Hint
 
-Put exact one space before binary boolean operators.
+Put exactly one space before binary boolean operators.
 
 ### Reason
 
@@ -9415,7 +9415,7 @@ See also:
 
 ### Hint
 
-Put exact one space before binary integer operators.
+Put exactly one space before binary integer operators.
 
 ### Reason
 
@@ -11335,6 +11335,9 @@ syntaxrules.style_operator_arithmetic = true
 syntaxrules.style_operator_boolean = true
 syntaxrules.style_operator_integer = true
 syntaxrules.style_operator_unary = true
+syntaxrules.style_operator_arithmetic_leading_space = true
+syntaxrules.style_operator_boolean_leading_space = true
+syntaxrules.style_operator_integer_leading_space = true
 
 syntaxrules.style_keyword_0or1space = true
 syntaxrules.style_keyword_0space = true
