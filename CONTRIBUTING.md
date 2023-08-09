@@ -102,3 +102,4 @@ under the Developer Certificate of Origin <https://developercertificate.org/>.
 - Andreas K. Berg (@akberg)
 - Damien Pretet (@dpretet)
 - Taichi Ishitani (@taichi-ishitani)
+- Sosuke Hosokawa (@so298)
