@@ -280,7 +280,10 @@ fn write_ruleset_sh(ruleset: &Ruleset) -> () {
         let _ = writeln!(o, "");
         let _ = writeln!(o, "# If flag/options are given that don't use the ruleset config, simply run");
         let _ = writeln!(o, "# svlint with the given arguments.");
-        let _ = writeln!(o, "NONRULESET=\"-h|--help|-V|--version|--dump-filelist|-E|--example|--update\"");
+        let _ = writeln!(o, "NONRULESET=\"-h|--help|-V|--version\"");
+        let _ = writeln!(o, "NONRULESET=\"${{NONRULESET}}|--dump-filelist|--shell-completion\"");
+        let _ = writeln!(o, "NONRULESET=\"${{NONRULESET}}|-E|--preprocess-only\"");
+        let _ = writeln!(o, "NONRULESET=\"${{NONRULESET}}|--config-example|--config-update|--example|--update\"");
         let _ = writeln!(o, "if printf \"%b\\n\" \" $*\" | grep -Eq \" (${{NONRULESET}})\";");
         let _ = writeln!(o, "then");
         let _ = writeln!(o, "  svlint $*");

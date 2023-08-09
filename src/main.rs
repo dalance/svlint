@@ -1,5 +1,6 @@
 use anyhow::{Context, Error};
-use clap::Parser;
+use clap::{Parser, CommandFactory};
+use clap_complete;
 use enquote;
 use std::collections::HashMap;
 use std::fs::{read_to_string, File, OpenOptions};
@@ -18,7 +19,6 @@ use svlint::printer::Printer;
 // -------------------------------------------------------------------------------------------------
 #[derive(clap::ValueEnum, Clone, Debug)]
 pub enum DumpFilelistMode {
-    No,
     Yaml,
     Files,
     Incdirs,
@@ -29,37 +29,40 @@ pub enum DumpFilelistMode {
 #[clap(name = "svlint")]
 #[clap(long_version(option_env!("LONG_VERSION").unwrap_or(env!("CARGO_PKG_VERSION"))))]
 pub struct Opt {
-    /// Source file
-    #[clap(required_unless_present_any = &["filelist", "example", "update-config"])]
+    /// Source file(s)
+    #[clap(required_unless_present_any = &["filelists", "config-example", "config-update", "shell-completion"])]
     pub files: Vec<PathBuf>,
 
-    /// File list
+    /// Filelist file(s)
     #[clap(short = 'f', long = "filelist", conflicts_with = "files")]
-    pub filelist: Vec<PathBuf>,
+    pub filelists: Vec<PathBuf>,
 
-    /// Define
+    /// Define macro for preprocessor, e.g. `-D FOO` or `-D FOO=123`
     #[clap(
-        short = 'd',
+        short = 'D',
+        short_alias = 'd',
         long = "define",
         multiple_occurrences = true,
         number_of_values = 1
     )]
     pub defines: Vec<String>,
 
-    /// Include directory path
+    /// Include directory for preprocessor, e.g. `-I path/to/headerfiles/`
     #[clap(
-        short = 'i',
-        long = "include",
+        short = 'I',
+        short_alias = 'i',
+        long = "incdir",
+        alias = "include",
         multiple_occurrences = true,
         number_of_values = 1
     )]
-    pub includes: Vec<PathBuf>,
+    pub incdirs: Vec<PathBuf>,
 
-    /// TOML configuration file
+    /// TOML configuration file, searched for hierarchically upwards
     #[clap(short = 'c', long = "config", default_value = ".svlint.toml")]
     pub config: PathBuf,
 
-    /// Plugin file
+    /// Plugin file, e.g. `-p path/to/libfoo.so` or `-p path\to\foo.dll`
     #[clap(
         short = 'p',
         long = "plugin",
@@ -68,15 +71,15 @@ pub struct Opt {
     )]
     pub plugins: Vec<PathBuf>,
 
-    /// Ignore any include
+    /// Ignore all preprocessor `include directives
     #[clap(long = "ignore-include")]
     pub ignore_include: bool,
 
-    /// Print results by single line
-    #[clap(short = '1')]
-    pub single: bool,
+    /// Print one rule failure message per line
+    #[clap(short = '1', long = "oneline")]
+    pub oneline: bool,
 
-    /// Suppress messages
+    /// Suppress printing, useful for scripting
     #[clap(short = 's', long = "silent")]
     pub silent: bool,
 
@@ -84,28 +87,32 @@ pub struct Opt {
     #[clap(short = 'v', long = "verbose")]
     pub verbose: bool,
 
-    /// Print message for GitHub Actions
+    /// Format rule failure messages for GitHub Actions
     #[clap(long = "github-actions")]
     pub github_actions: bool,
 
-    /// Update configuration
-    #[clap(long = "update")]
-    pub update_config: bool,
+    /// Update TOML configuration file in-place
+    #[clap(long = "config-update", alias = "update")]
+    pub config_update: bool,
 
-    /// Print TOML configuration example
-    #[clap(long = "example")]
-    pub example: bool,
+    /// Print an example TOML configuration
+    #[clap(long = "config-example", alias = "example")]
+    pub config_example: bool,
 
     /// Print data from filelists
-    #[clap(value_enum, default_value = "no", long = "dump-filelist")]
-    pub dump_filelist: DumpFilelistMode,
+    #[clap(value_enum, long = "dump-filelist")]
+    pub dump_filelist: Option<DumpFilelistMode>,
 
-    /// Print syntax trees
+    /// Print shell completion script
+    #[clap(value_enum, long = "shell-completion")]
+    pub shell_completion: Option<clap_complete::Shell>,
+
+    /// Print syntax trees, useful for debug or syntax analysis
     #[clap(long = "dump-syntaxtree")]
     pub dump_syntaxtree: bool,
 
-    /// Print preprocessor output instead of performing checks
-    #[clap(short = 'E')]
+    /// Print preprocessor output then exit before parsing syntax
+    #[clap(short = 'E', long = "preprocess-only")]
     pub preprocess_only: bool,
 }
 
@@ -136,10 +143,16 @@ pub fn main() {
 
 #[cfg_attr(tarpaulin, skip)]
 pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
-    if opt.example {
+    if opt.config_example {
         let config = Config::new();
         let config = format!("{}", toml::to_string(&config).unwrap());
         printer.println(&config)?;
+        return Ok(true);
+    }
+
+    if let Some(generator) = opt.shell_completion {
+        let mut cmd = Opt::command();
+        shell_completion(generator, &mut cmd);
         return Ok(true);
     }
 
@@ -153,7 +166,7 @@ pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
         let mut ret: Config = toml::from_str(&s)
             .with_context(|| format!("failed to parse toml '{}'", config.to_string_lossy()))?;
 
-        if opt.update_config {
+        if opt.config_update {
             ret.migrate();
             let mut f = OpenOptions::new()
                 .write(true)
@@ -166,15 +179,10 @@ pub fn run_opt(printer: &mut Printer, opt: &Opt) -> Result<bool, Error> {
 
         ret
     } else {
-        let do_dump_filelist: bool = match opt.dump_filelist {
-            DumpFilelistMode::No => false,
-            _ => true,
-        };
-
         if !opt.plugins.is_empty() {
             Config::new()
         } else {
-            if !opt.silent && !do_dump_filelist && !opt.preprocess_only {
+            if !opt.silent && opt.dump_filelist.is_none() && !opt.preprocess_only {
                 let msg = format!(
                     "Config file '{}' is not found. Enable all rules",
                     opt.config.to_string_lossy()
@@ -219,33 +227,30 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
         defines.insert(ident, Some(define));
     }
 
-    let (files, includes) = if !opt.filelist.is_empty() {
+    let (files, incdirs) = if !opt.filelists.is_empty() {
         let mut files = opt.files.clone();
-        let mut includes = opt.includes.clone();
+        let mut incdirs = opt.incdirs.clone();
 
-        for filelist in &opt.filelist {
+        for filelist in &opt.filelists {
             let (mut f, mut i, d) = parse_filelist(filelist)?;
-            if let DumpFilelistMode::Yaml = opt.dump_filelist {
-                dump_filelist(printer, &opt.dump_filelist, &filelist, &f, &i, &d)?;
+            if let Some(DumpFilelistMode::Yaml) = opt.dump_filelist {
+                dump_filelist(printer, &DumpFilelistMode::Yaml, &filelist, &f, &i, &d)?;
             }
             files.append(&mut f);
-            includes.append(&mut i);
+            incdirs.append(&mut i);
             for (k, v) in d {
                 defines.insert(k, v);
             }
         }
 
-        (files, includes)
+        (files, incdirs)
     } else {
-        (opt.files.clone(), opt.includes.clone())
+        (opt.files.clone(), opt.incdirs.clone())
     };
 
-    match opt.dump_filelist {
-        DumpFilelistMode::No => {}
-        _ => {
-            dump_filelist(printer, &opt.dump_filelist, &Path::new("."), &files, &includes, &defines)?;
-            return Ok(true);
-        }
+    if let Some(mode) = &opt.dump_filelist {
+        dump_filelist(printer, &mode, &Path::new("."), &files, &incdirs, &defines)?;
+        return Ok(true);
     }
 
     let mut all_pass = true;
@@ -253,14 +258,14 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
     for path in &files {
         let mut pass = true;
         if opt.preprocess_only {
-            match preprocess(&path, &defines, &includes, false, opt.ignore_include) {
+            match preprocess(&path, &defines, &incdirs, false, opt.ignore_include) {
                 Ok((text, new_defines)) => {
                     let msg = format!("{}", text.text());
                     printer.print(&msg)?;
                     defines = new_defines;
                 }
                 Err(x) => {
-                    print_parser_error(printer, x, opt.single)?;
+                    print_parser_error(printer, x, opt.oneline)?;
                     pass = false;
                 }
             }
@@ -281,13 +286,13 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                 for failed in linter.textrules_check(TextRuleEvent::Line(&line_stripped), &path, &beg) {
                     pass = false;
                     if !opt.silent {
-                        printer.print_failed(&failed, opt.single, opt.github_actions)?;
+                        printer.print_failed(&failed, opt.oneline, opt.github_actions)?;
                     }
                 }
                 beg += line.len();
             }
 
-            match parse_sv_str(text.as_str(), &path, &defines, &includes, opt.ignore_include, false) {
+            match parse_sv_str(text.as_str(), &path, &defines, &incdirs, opt.ignore_include, false) {
                 Ok((syntax_tree, new_defines)) => {
 
                     // Iterate over nodes in the concrete syntax tree, applying
@@ -296,7 +301,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                         for failed in linter.syntaxrules_check(&syntax_tree, &node) {
                             pass = false;
                             if !opt.silent {
-                                printer.print_failed(&failed, opt.single, opt.github_actions)?;
+                                printer.print_failed(&failed, opt.oneline, opt.github_actions)?;
                             }
                         }
                     }
@@ -308,7 +313,7 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
                     }
                 }
                 Err(x) => {
-                    print_parser_error(printer, x, opt.single)?;
+                    print_parser_error(printer, x, opt.oneline)?;
                     pass = false;
                 }
             }
@@ -330,14 +335,14 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
 fn print_parser_error(
     printer: &mut Printer,
     error: SvParserError,
-    single: bool,
+    oneline: bool,
 ) -> Result<(), Error> {
     match error {
         SvParserError::Parse(Some((path, pos))) => {
-            printer.print_parse_error(&path, pos, single)?;
+            printer.print_parse_error(&path, pos, oneline)?;
         }
         SvParserError::Preprocess(Some((path, pos))) => {
-            printer.print_preprocess_error(&path, pos, single)?;
+            printer.print_preprocess_error(&path, pos, oneline)?;
         }
         SvParserError::Include { source: x } => {
             if let SvParserError::File { path: x, .. } = *x {
@@ -484,10 +489,13 @@ fn dump_filelist(
                 }?;
             }
         }
-        _ => {}
     };
 
     Ok(())
+}
+
+fn shell_completion<G: clap_complete::Generator>(gen: G, cmd: &mut clap::Command) {
+    clap_complete::generate(gen, cmd, cmd.get_name().to_string(), &mut std::io::stdout());
 }
 
 #[cfg(test)]
@@ -589,6 +597,425 @@ mod tests {
     }
 
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_oneline() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-1");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--oneline");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_config() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-c");
+        args.push("foo.toml");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--config");
+        args.push("foo.toml");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_config_example() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--config-example");
+        let opt = Opt::parse_from(args.iter());
+
+        // Alias for backwards compatibility svlint v0.8.0 and earlier. ////////
+        let mut args = vec!["svlint"];
+        args.push("--example");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_config_update() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--config-update");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--config");
+        args.push("foo.toml");
+        args.push("--config-update");
+        let opt = Opt::parse_from(args.iter());
+
+        // Alias for backwards compatibility svlint v0.8.0 and earlier. ////////
+        let mut args = vec!["svlint"];
+        args.push("--update");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_defines() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-D");
+        args.push("FOO");
+        args.push("-D");
+        args.push("BAR");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-D");
+        args.push("FOO=123");
+        args.push("-D");
+        args.push("BAR=456");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-DFOO");
+        args.push("-DBAR");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-DFOO=123");
+        args.push("-DBAR=456");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        // Long option. ////////////////////////////////////////////////////////
+        let mut args = vec!["svlint"];
+        args.push("--define");
+        args.push("FOO");
+        args.push("--define");
+        args.push("BAR");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--define");
+        args.push("FOO=123");
+        args.push("--define");
+        args.push("BAR=456");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        // Alias for backwards compatibility svlint v0.8.0 and earlier. ////////
+        let mut args = vec!["svlint"];
+        args.push("-d");
+        args.push("FOO");
+        args.push("-d");
+        args.push("BAR");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-d");
+        args.push("FOO=123");
+        args.push("-d");
+        args.push("BAR=456");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-dFOO");
+        args.push("-dBAR");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-dFOO=123");
+        args.push("-dBAR=456");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_shell_completion() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--shell-completion=bash");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--shell-completion=elvish");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--shell-completion=fish");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--shell-completion=powershell");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--shell-completion=zsh");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_dump_filelist() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=yaml");
+        args.push("--filelist");
+        args.push("foo.f");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=files");
+        args.push("--filelist");
+        args.push("foo.f");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--filelist");
+        args.push("foo.f");
+        args.push("--dump-filelist=incdirs");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--filelist");
+        args.push("foo.f");
+        args.push("--dump-filelist=defines");
+
+        // Without the -f/--filelist. //////////////////////////////////////////
+        // Useful for debugging other ways of passing long/complex commands.
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=yaml");
+        args.push("-DFOO");
+        args.push("-Ipath/to/headers/");
+        args.push("foo.sv");
+        args.push("bar.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=files");
+        args.push("-DFOO");
+        args.push("-Ipath/to/headers/");
+        args.push("foo.sv");
+        args.push("bar.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=incdirs");
+        args.push("-DFOO");
+        args.push("-Ipath/to/headers/");
+        args.push("foo.sv");
+        args.push("bar.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--dump-filelist=defines");
+        args.push("-DFOO");
+        args.push("-Ipath/to/headers/");
+        args.push("foo.sv");
+        args.push("bar.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_dump_syntaxtree() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--dump-syntaxtree");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_preprocess_only() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-E");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--preprocess-only");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_filelist() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-f");
+        args.push("Foo.f");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-fFoo.f");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--filelist");
+        args.push("foo.f");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_github_actions() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--github-actions");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    // NOTE: Testing clap's -h/--help interfers with `cargo test`.
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_incdirs() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-I");
+        args.push("path/to/foo");
+        args.push("-I");
+        args.push("/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-Ipath/to/foo");
+        args.push("-I/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--incdir");
+        args.push("path/to/foo");
+        args.push("--incdir");
+        args.push("/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        // Aliases for backwards compatibility svlint v0.8.0 and earlier. //////
+        let mut args = vec!["svlint"];
+        args.push("-i");
+        args.push("path/to/foo");
+        args.push("-i");
+        args.push("/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-ipath/to/foo");
+        args.push("-i/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--include");
+        args.push("path/to/foo");
+        args.push("--include");
+        args.push("/path/to/bar");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_ignore_include() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("--ignore-include");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_plugins() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-p");
+        args.push("path/to/libfoo.so"); // Linux
+        args.push("-p");
+        args.push("path/to/libbar.so");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-p");
+        args.push("path/to/libfoo.dylib"); // MacOS
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-p");
+        args.push("path\\to\\foo.dll"); // Windows
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("-pfoo.so");
+        args.push("-pbar.so");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--plugin");
+        args.push("foo.so");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_silent() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-s");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--silent");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    #[test]
+    #[allow(unused_variables)]
+    fn cli_verbose() {
+        // {{{
+        let mut args = vec!["svlint"];
+        args.push("-v");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+
+        let mut args = vec!["svlint"];
+        args.push("--verbose");
+        args.push("foo.sv");
+        let opt = Opt::parse_from(args.iter());
+    } // }}}
+
+    // NOTE: Testing clap's -V/--version interfers with `cargo test`.
 
     #[test]
     fn dump_filelist_1() {
