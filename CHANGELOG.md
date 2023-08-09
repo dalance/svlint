@@ -2,9 +2,15 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.8.0...Unreleased) - ReleaseDate
 
+* [Added] New rules for leading spaces of binary operators [#263](https://github.com/dalance/svlint/pull/263)
+* [Breaking Changed] Bugfix: Change textrules API to pass line: Option<&str>. [#261](https://github.com/dalance/svlint/pull/261)
+* [Changed] Improvement: Bundle rulesets in release ZIP files. [#260](https://github.com/dalance/svlint/pull/260)
+* [Added] Feature: Provide wrapper scripts for svls, in addition to svlint. [#259](https://github.com/dalance/svlint/pull/259)
+* [Changed] Improvement: Cleanup the command-line interface. [#258](https://github.com/dalance/svlint/pull/258)
+
 ## [v0.8.0](https://github.com/dalance/svlint/compare/v0.7.2...v0.8.0) - 2023-06-26
 
-* [Changed] Feature: Update plugin API. [#255](https://github.com/dalance/svlint/pull/255)
+* [Breaking Changed] Feature: Update plugin API. [#255](https://github.com/dalance/svlint/pull/255)
 * [Added] Improvement: Add 2 examples of user-specific rulesets. [#254](https://github.com/dalance/svlint/pull/254)
 * [Changed] Improvement Add document CONTRIBUTING.md, based on Verilator's one. [#250](https://github.com/dalance/svlint/pull/250)
 * [Added] Feature: Textrules [#247](https://github.com/dalance/svlint/pull/247)
