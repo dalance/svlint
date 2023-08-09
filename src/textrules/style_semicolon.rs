@@ -1,5 +1,5 @@
 use crate::config::ConfigOption;
-use crate::linter::{TextRule, TextRuleResult};
+use crate::linter::{TextRule, TextRuleEvent, TextRuleResult};
 use regex::Regex;
 
 #[derive(Default)]
@@ -10,9 +10,16 @@ pub struct StyleSemicolon {
 impl TextRule for StyleSemicolon {
     fn check(
         &mut self,
-        line: &str,
+        event: TextRuleEvent,
         _option: &ConfigOption,
     ) -> TextRuleResult {
+        let line: &str = match event {
+            TextRuleEvent::StartOfFile => {
+                return TextRuleResult::Pass;
+            }
+            TextRuleEvent::Line(x) => x,
+        };
+
         if self.re.is_none() {
             self.re = Some(Regex::new("([ ]+);").unwrap());
         }
