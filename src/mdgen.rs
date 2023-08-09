@@ -266,7 +266,7 @@ fn write_manual_md(
     }
 }
 
-fn write_ruleset_sh(ruleset: &Ruleset) -> () {
+fn write_ruleset_sh_svlint(ruleset: &Ruleset) -> () {
     let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let p = Path::new(&cargo_manifest_dir)
         .join("rulesets")
@@ -320,7 +320,41 @@ fn write_ruleset_sh(ruleset: &Ruleset) -> () {
     }
 }
 
-fn write_ruleset_cmd(ruleset: &Ruleset) -> () {
+fn write_ruleset_sh_svls(ruleset: &Ruleset) -> () {
+    let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let p = Path::new(&cargo_manifest_dir)
+        .join("rulesets")
+        .join(format!("svls-{}", ruleset.name));
+
+    {
+        let mut o = File::create(&p).unwrap();
+
+        let _ = writeln!(o, "#!/usr/bin/env sh");
+        let _ = writeln!(o, "set -e");
+        let _ = writeln!(o, "");
+        let _ = writeln!(o, "# If flag/options are given that don't use the ruleset config, simply run");
+        let _ = writeln!(o, "# svls with the given arguments.");
+        let _ = writeln!(o, "NONRULESET=\"-h|--help|-V|--version\"");
+        let _ = writeln!(o, "if printf \"%b\\n\" \" $*\" | grep -Eq \" (${{NONRULESET}})\";");
+        let _ = writeln!(o, "then");
+        let _ = writeln!(o, "  svls $*");
+        let _ = writeln!(o, "  exit $?");
+        let _ = writeln!(o, "fi");
+        let _ = writeln!(o, "");
+        let _ = writeln!(o, "SVLINT_CONFIG=\"$(dirname $(command -v svls-{0}))/{0}.toml\"", ruleset.name);
+        let _ = writeln!(o, "");
+        let _ = writeln!(o, "env SVLINT_CONFIG=\"${{SVLINT_CONFIG}}\" svls $*");
+    }
+
+    #[cfg(unix)]
+    {
+        use std::fs::{set_permissions, Permissions};
+        use std::os::unix::fs::PermissionsExt;
+        set_permissions(&p, Permissions::from_mode(0o755)).unwrap();
+    }
+}
+
+fn write_ruleset_cmd_svlint(ruleset: &Ruleset) -> () {
     let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let p = Path::new(&cargo_manifest_dir)
         .join("rulesets")
@@ -336,6 +370,22 @@ fn write_ruleset_cmd(ruleset: &Ruleset) -> () {
         let _ = write!(o, "{}\r\n", line);
     }
     let _ = write!(o, "svlint %*\r\n");
+    let _ = write!(o, "\r\n");
+}
+
+fn write_ruleset_cmd_svls(ruleset: &Ruleset) -> () {
+    let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let p = Path::new(&cargo_manifest_dir)
+        .join("rulesets")
+        .join(format!("svls-{}.cmd", ruleset.name));
+    let mut o = File::create(&p).unwrap();
+
+    let _ = write!(o, "\r\n");
+    let _ = write!(o, "@echo off\r\n");
+    let _ = write!(o, "for /f %%E in ('where.exe svls-{0}') do (\r\n", ruleset.name);
+    let _ = write!(o, "    set \"SVLINT_CONFIG=%%~dpE{0}.toml\"\r\n", ruleset.name);
+    let _ = write!(o, ")\r\n");
+    let _ = write!(o, "svls %*\r\n");
     let _ = write!(o, "\r\n");
 }
 
@@ -356,8 +406,10 @@ fn write_ruleset_toml(ruleset: &Ruleset) -> () {
 pub fn main() {
     let rulesets = get_rulesets();
     for ruleset in &rulesets {
-        write_ruleset_sh(ruleset);
-        write_ruleset_cmd(ruleset);
+        write_ruleset_sh_svlint(ruleset);
+        write_ruleset_sh_svls(ruleset);
+        write_ruleset_cmd_svlint(ruleset);
+        write_ruleset_cmd_svls(ruleset);
         write_ruleset_toml(ruleset);
     }
 
