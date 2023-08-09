@@ -86,18 +86,39 @@ RELEASE_MANUAL := pdf/svlint_MANUAL_${VERSION}.pdf
 
 release_lnx:
 	cargo build --release --target=x86_64-unknown-linux-musl
-	zip -j ${BIN_NAME}-${VERSION}-x86_64-lnx.zip \
-		${RELEASE_MANUAL} \
-		target/x86_64-unknown-linux-musl/release/${BIN_NAME}
+	rm -rf tmp
+	mkdir -p tmp/bin/ tmp/doc/
+	cp ${RELEASE_MANUAL} tmp/doc/
+	cp rulesets/*.toml tmp/bin/
+	cp $$(find rulesets/ -type f -perm -u+x) tmp/bin/
+	cp target/x86_64-unknown-linux-musl/release/${BIN_NAME} tmp/bin/
+	cd tmp/ && \
+		zip ${BIN_NAME}-${VERSION}-x86_64-lnx.zip -r *
+	mv tmp/${BIN_NAME}-${VERSION}-x86_64-lnx.zip ./
+	rm -rf tmp/
 
 release_win:
 	cargo build --release --target=x86_64-pc-windows-msvc
-	7z a ${BIN_NAME}-${VERSION}-x86_64-win.zip \
-		${RELEASE_MANUAL} \
-		target/x86_64-pc-windows-msvc/release/${BIN_NAME}.exe
+	rm -rf tmp
+	mkdir -p tmp/bin/ tmp/doc/
+	cp ${RELEASE_MANUAL} tmp/doc/
+	cp rulesets/*.toml tmp/bin/
+	cp rulesets/*.cmd tmp/bin/
+	cp target/x86_64-pc-windows-msvc/release/${BIN_NAME}.exe tmp/bin/
+	cd tmp && \
+		7z a ${BIN_NAME}-${VERSION}-x86_64-win.zip *
+	mv tmp/${BIN_NAME}-${VERSION}-x86_64-win.zip ./
+	rm -rf tmp/
 
 release_mac:
 	cargo build --release --target=x86_64-apple-darwin
-	zip -j ${BIN_NAME}-${VERSION}-x86_64-mac.zip \
-		${RELEASE_MANUAL} \
-		target/x86_64-apple-darwin/release/${BIN_NAME}
+	rm -rf tmp
+	mkdir -p tmp/bin/ tmp/doc/
+	cp ${RELEASE_MANUAL} tmp/doc/
+	cp rulesets/*.toml tmp/bin/
+	cp $$(find rulesets/ -type f -perm -u+x) tmp/bin/
+	cp target/x86_64-apple-darwin/release/${BIN_NAME} tmp/bin/
+	cd tmp/ && \
+		zip ${BIN_NAME}-${VERSION}-x86_64-mac.zip -r *
+	mv tmp/${BIN_NAME}-${VERSION}-x86_64-mac.zip ./
+	rm -rf tmp/
