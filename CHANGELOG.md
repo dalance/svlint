@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.8.0...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.9.0...Unreleased) - ReleaseDate
+
+## [v0.9.0](https://github.com/dalance/svlint/compare/v0.8.0...v0.9.0) - 2023-08-09
 
 * [Added] New rules for leading spaces of binary operators [#263](https://github.com/dalance/svlint/pull/263)
 * [Breaking Changed] Bugfix: Change textrules API to pass line: Option<&str>. [#261](https://github.com/dalance/svlint/pull/261)
