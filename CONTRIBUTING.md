@@ -58,16 +58,16 @@ Adding A New Rule
   Write this in `md/explanation-$RULENAME.md`, preferably keeping a similar
   format to similar existing rules.
 3. Write at least one testcase which the new rule passes in
-  `testcases/pass/$RULENAME.sv`.
+  `testcases/(text|syntax)rules/pass/$RULENAME.sv`.
   If you have more than one testcase which must pass, they should all go into
   the same file but be separated by a comment line of 80 forward slashes like
   `////////////////////////////////////////////////////////////////////////////////`.
 4. Write at least one testcase which the new rule fails in
-  `testcases/fail/$RULENAME.sv`.
+  `testcases/(text|syntax)rules/fail/$RULENAME.sv`.
   Again, you can separate multiple testcases with a comment line of 80 forward
   slash characters.
   For an example, see
-  [`testcases/fail/generate_case_with_label.sv`](https://github.com/dalance/svlint/blob/master/testcases/fail/generate_case_with_label.sv).
+  [`testcases/syntaxrules/fail/generate_case_with_label.sv`](https://github.com/dalance/svlint/blob/master/testcases/syntaxrules/fail/generate_case_with_label.sv).
 5. Implement the rule in `src/rules/$RULENAME.rs`.
   This includes writing a short hint and reason to be displayed to the user.
   - Both the hint and reason should be as short as possible (maximum 80
