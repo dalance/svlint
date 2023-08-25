@@ -58,16 +58,16 @@ Adding A New Rule
   Write this in `md/explanation-$RULENAME.md`, preferably keeping a similar
   format to similar existing rules.
 3. Write at least one testcase which the new rule passes in
-  `testcases/pass/$RULENAME.sv`.
+  `testcases/(text|syntax)rules/pass/$RULENAME.sv`.
   If you have more than one testcase which must pass, they should all go into
   the same file but be separated by a comment line of 80 forward slashes like
   `////////////////////////////////////////////////////////////////////////////////`.
 4. Write at least one testcase which the new rule fails in
-  `testcases/fail/$RULENAME.sv`.
+  `testcases/(text|syntax)rules/fail/$RULENAME.sv`.
   Again, you can separate multiple testcases with a comment line of 80 forward
   slash characters.
   For an example, see
-  [`testcases/fail/generate_case_with_label.sv`](https://github.com/dalance/svlint/blob/master/testcases/fail/generate_case_with_label.sv).
+  [`testcases/syntaxrules/fail/generate_case_with_label.sv`](https://github.com/dalance/svlint/blob/master/testcases/syntaxrules/fail/generate_case_with_label.sv).
 5. Implement the rule in `src/rules/$RULENAME.rs`.
   This includes writing a short hint and reason to be displayed to the user.
   - Both the hint and reason should be as short as possible (maximum 80
@@ -86,6 +86,49 @@ Adding A New Rule
 10. Open a [Pull Request](https://github.com/dalance/svlint/pulls) by comparing
   your branch to dalance's master branch
   (`https://github.com/dalance/svlint/compare/master...$USERNAME:svlint:$BRANCHNAME`).
+
+
+Related Projects
+----------------
+
+Svlint depends on several (upstream) projects which are listed definitively in
+`Cargo.toml`, but 2 are notable when considering changes to svlint:
+
+- [sv-parser](https://docs.rs/sv-parser/latest/sv_parser/), developed mainly
+  by @dalance:
+  Preprocess and parse SystemVerilog source files into the Rust structure
+  [`SyntaxTree`](https://docs.rs/sv-parser/latest/sv_parser/struct.SyntaxTree.html),
+  sticking very closely to the
+  [BNF](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form) given in
+  IEEE 1800-2017 Annex A.
+- [sv-filelist-parser](https://github.com/supleed2/sv-filelist-parser),
+  developed initially by @Raamakrishnan and extended by @supleed2:
+  Parse filelist files into the Rust structure
+  [`Filelist`](https://github.com/supleed2/sv-filelist-parser/blob/main/src/file_parser.rs#L12).
+
+Svlint is also depended upon by several (downstream) projects:
+
+- [svls](https://github.com/dalance/svls):
+  An [LSP](https://en.wikipedia.org/wiki/Language_Server_Protocol) server for
+  integrating svlint directly into text editors.
+- [svls-vscode](https://github.com/dalance/svls-vscode):
+  A VSCode
+  [extension](https://marketplace.visualstudio.com/items?itemName=dalance.svls-vscode)
+  that integrates svls.
+- [svlint-plugin-sample](https://github.com/dalance/svlint-plugin-sample):
+  A working example of how to make an svlint plugin, i.e. a separately compiled
+  dynamically loaded binary object that implements a collection of rules.
+  Mostly useful for people who need specific rules which be cannot shared
+  publically.
+- [svlint-action](https://github.com/dalance/svlint-action):
+  A [GitHub Action](https://docs.github.com/en/actions) which can be used in a
+  [CI/CD](https://en.wikipedia.org/wiki/CI/CD) workflow in SystemVerilog
+  projects developed on GitHub.
+- [svlint\_installer](https://github.com/DaveMcEwan/svlint_installer):
+  An installer for organisations that wish to build/install svlint and svls
+  from source with
+  [environment modules](https://modules.readthedocs.io/en/latest/index.html).
+  Mostly useful for professional SystemVerilog developers.
 
 
 Contributors
