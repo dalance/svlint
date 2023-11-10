@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+set -e
+
+# If flag/options are given that don't use the ruleset config, simply run
+# svls with the given arguments.
+NONRULESET="-h|--help|-V|--version"
+if printf "%b\n" " $*" | grep -Eq " (${NONRULESET})";
+then
+  svls $*
+  exit $?
+fi
+
+SVLINT_CONFIG="$(dirname $(command -v svls-designintentV2001))/designintentV2001.toml"
+
+env SVLINT_CONFIG="${SVLINT_CONFIG}" svls $*
