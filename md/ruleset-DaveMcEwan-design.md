@@ -375,7 +375,7 @@ syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_always = true
 syntaxrules.keyword_forbidden_wire_reg = true
-syntaxrules.non_ansi_module = true
+syntaxrules.module_nonansi_forbidden = true
 ```
 
 Generally, elaboration-time constants (`parameter`, `localparam`) should be

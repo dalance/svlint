@@ -54,6 +54,11 @@ const RENAMED_SYNTAXRULES: &[(&str, &str, &str)] = &[
         "keyword_required_generate",
         "KeywordRequiredGenerate",
     ),
+    (
+        "non_ansi_module",
+        "module_nonansi_forbidden",
+        "ModuleNonansiForbidden",
+    ),
 ];
 
 fn write_rules_rs(

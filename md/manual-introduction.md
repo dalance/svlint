@@ -155,7 +155,7 @@ prefix_label = "lab_"
 style_indent = true
 
 [syntaxrules]
-non_ansi_module = true
+module_nonansi_forbidden = true
 keyword_forbidden_wire_reg = true
 ```
 

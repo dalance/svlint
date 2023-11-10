@@ -14,4 +14,4 @@ See also:
 - **prefix_module**
 - **uppercamelcase_module**
 - **lowercamelcase_module**
-- **non_ansi_module**
+- **module_nonansi_forbidden**

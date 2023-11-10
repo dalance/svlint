@@ -155,7 +155,7 @@ prefix_label = "lab_"
 style_indent = true
 
 [syntaxrules]
-non_ansi_module = true
+module_nonansi_forbidden = true
 keyword_forbidden_wire_reg = true
 ```
 
@@ -1946,7 +1946,7 @@ requires that each interface port includes a modport identifier.
 See also:
 - **inout_with_tri** - Useful companion rule.
 - **input_with_var** - Useful companion rule.
-- **non_ansi_module** - Useful companion rule.
+- **module_nonansi_forbidden** - Useful companion rule.
 - **output_with_var** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
@@ -3113,6 +3113,84 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `module_nonansi_forbidden`
+
+### Hint
+
+Declare `module` header in ANSI style.
+
+### Reason
+
+Non-ANSI module headers are visually noisy and error-prone.
+
+### Pass Example (1 of 3)
+```systemverilog
+module M      // An ANSI module has ports declared in the module header.
+  ( input  a
+  , output b
+  );
+endmodule
+```
+
+### Pass Example (2 of 3)
+```systemverilog
+module M;     // A module with no ports is also ANSI.
+endmodule
+```
+
+### Pass Example (3 of 3)
+```systemverilog
+module M      // Declaring ports in the header with default direction (inout)
+  ( a         // also specifies an ANSI module.
+  , b
+  );
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M
+  ( a
+  , b
+  );
+  input  a;   // Declaring ports outside the module header declaration
+  output b;   // makes this a non-ANSI module.
+endmodule
+```
+
+### Explanation
+
+There are two ways to declare a module header in SystemVerilog:
+1. ANSI style - newer, neater, more succinct, mostly compatible with
+  IEEE1364-2001 (as long as you don't use `localparam`s for ports).
+2. non-ANSI style - additionally compatible with older Verilog (IEEE1364-1995).
+
+Examples of both styles are given in IEEE1364-2001 (e.g. pages 180 vs 182) and
+IEEE1800-2017 (e.g. pages 702 vs 700).
+
+The non-ANSI style separates the declaration of ports, their direction, and
+their datatype.
+In addition to requiring more text, and visual noise, to convey the same
+information, the non-ANSI style encourages simple coding mistakes where
+essential attributes may be forgotten.
+This rule requires that module headers are declared using the ANSI style.
+
+See also:
+- **module_ansi_forbidden** - For consistency in IEEE1364-2001 (compatibility
+  with non-overridable parameters, i.e. `localparam`, in port declarations,
+  or compatibility with IEEE1364-1995.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 12.1 Modules
+- 12.2 Overriding module parameter values
+
+The most relevant clauses of IEEE1800-2017 are:
+- 23.2 Module definitions
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `multiline_for_begin`
 
 ### Hint
@@ -3283,77 +3361,6 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
 - 12.4 Conditional if-else statement
-
-
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-## Syntax Rule: `non_ansi_module`
-
-### Hint
-
-Declare `module` header in ANSI style.
-
-### Reason
-
-Non-ANSI module headers are visually noisy and error-prone.
-
-### Pass Example (1 of 3)
-```systemverilog
-module M      // An ANSI module has ports declared in the module header.
-  ( input  a
-  , output b
-  );
-endmodule
-```
-
-### Pass Example (2 of 3)
-```systemverilog
-module M;     // A module with no ports is also ANSI.
-endmodule
-```
-
-### Pass Example (3 of 3)
-```systemverilog
-module M      // Declaring ports in the header with default direction (inout)
-  ( a         // also specifies an ANSI module.
-  , b
-  );
-endmodule
-```
-
-### Fail Example (1 of 1)
-```systemverilog
-module M
-  ( a
-  , b
-  );
-  input  a;   // Declaring ports outside the module header declaration
-  output b;   // makes this a non-ANSI module.
-endmodule
-```
-
-### Explanation
-
-There are two ways to declare a module header in SystemVerilog:
-1. ANSI style - newer, neater, more succinct, compatible with IEEE1364-2001.
-2. non-ANSI style - additionally compatible with older Verilog (IEEE1364-1995).
-
-Examples of both styles are given in IEEE1364-2001 (e.g. pages 180 vs 182) and
-IEEE1800-2017 (e.g. pages 702 vs 700).
-
-The non-ANSI style separates the declaration of ports, their direction, and
-their datatype.
-In addition to requiring more text, and visual noise, to convey the same
-information, the non-ANSI style encourages simple coding mistakes where
-essential attributes may be forgotten.
-This rule requires that module headers are declared using the ANSI style.
-
-See also:
-- No related rules.
-
-The most relevant clauses of IEEE1800-2017 are:
-- 23.2 Module definitions
 
 
 
@@ -5800,7 +5807,7 @@ See also:
 - **prefix_module**
 - **uppercamelcase_module**
 - **lowercamelcase_module**
-- **non_ansi_module**
+- **module_nonansi_forbidden**
 
 
 
@@ -5852,7 +5859,7 @@ See also:
 - **prefix_module**
 - **uppercamelcase_module**
 - **lowercamelcase_module**
-- **non_ansi_module**
+- **module_nonansi_forbidden**
 
 
 
@@ -7027,7 +7034,7 @@ See also:
 - **prefix_module**
 - **uppercamelcase_module**
 - **lowercamelcase_module**
-- **non_ansi_module**
+- **module_nonansi_forbidden**
 
 
 
@@ -7079,7 +7086,7 @@ See also:
 - **prefix_module**
 - **uppercamelcase_module**
 - **lowercamelcase_module**
-- **non_ansi_module**
+- **module_nonansi_forbidden**
 
 
 
@@ -10225,7 +10232,7 @@ syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_always = true
 syntaxrules.keyword_forbidden_wire_reg = true
-syntaxrules.non_ansi_module = true
+syntaxrules.module_nonansi_forbidden = true
 ```
 
 Generally, elaboration-time constants (`parameter`, `localparam`) should be
@@ -10969,7 +10976,7 @@ syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_always = true
 syntaxrules.keyword_forbidden_wire_reg = true
-syntaxrules.non_ansi_module = true
+syntaxrules.module_nonansi_forbidden = true
 ```
 
 When synthesised into a netlist, generate blocks should have labels so that
@@ -11446,7 +11453,7 @@ syntaxrules.action_block_with_side_effect = true
 syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_wire_reg = true
-syntaxrules.non_ansi_module = true
+syntaxrules.module_nonansi_forbidden = true
 ```
 
 Generally, elaboration-time constant (`parameter`, `localparam`) should be

@@ -3,9 +3,9 @@ use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct NonAnsiModule;
+pub struct ModuleNonansiForbidden;
 
-impl SyntaxRule for NonAnsiModule {
+impl SyntaxRule for ModuleNonansiForbidden {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -25,7 +25,7 @@ impl SyntaxRule for NonAnsiModule {
     }
 
     fn name(&self) -> String {
-        String::from("non_ansi_module")
+        String::from("module_nonansi_forbidden")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
