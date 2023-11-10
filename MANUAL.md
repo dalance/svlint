@@ -2038,6 +2038,168 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `keyword_forbidden_always_comb`
+
+### Hint
+
+Use `always @*` instead of `always_comb`.
+
+### Reason
+
+Only SystemVerilog, not Verilog, has `always_comb`.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always @* z = x + y;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  always_comb z = x + y;
+endmodule
+```
+
+### Explanation
+
+The keywords `always_comb`, `always_ff`, and `always_latch` were added to
+SystemVerilog (IEEE1800) to require extra safety checks at compile time.
+Verilog (IEEE1364) only has `always`, which can describe equivalent behaviour
+but without the compile-time checks.
+This rule requires `always @*` to be used instead of `always_comb` for
+backwards compatibility with Verilog.
+
+See also:
+- **keyword_forbidden_always_ff** - Suggested companion rule.
+- **keyword_forbidden_always_latch** - Suggested companion rule.
+- **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **operator_self_assignment** - Suggested companion rule.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 9.9 Structured procedures
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2 Structured procedures
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `keyword_forbidden_always_ff`
+
+### Hint
+
+Use `always @(posedge clk)` instead of `always_ff @(posedge clk)`.
+
+### Reason
+
+Only SystemVerilog, not Verilog, has `always_ff`.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always @(posedge clk)
+    d <= q;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  always_ff @(posedge clk)
+    d <= q;
+endmodule
+```
+
+### Explanation
+
+The keywords `always_comb`, `always_ff`, and `always_latch` were added to
+SystemVerilog (IEEE1800) to require extra safety checks at compile time.
+Verilog (IEEE1364) only has `always`, which can describe equivalent behaviour
+but without the compile-time checks.
+This rule requires something like `always @(posedge clk)` to be used instead of
+`always_ff @(posedge clk)` for backwards compatibility with Verilog.
+
+See also:
+- **keyword_forbidden_always_comb** - Suggested companion rule.
+- **keyword_forbidden_always_latch** - Suggested companion rule.
+- **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **operator_self_assignment** - Suggested companion rule.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 9.9 Structured procedures
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2 Structured procedures
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `keyword_forbidden_always_latch`
+
+### Hint
+
+Use `always @*` or `always @(en)` instead of `always_latch`.
+
+### Reason
+
+Only SystemVerilog, not Verilog, has `always_latch`.
+
+### Pass Example (1 of 2)
+```systemverilog
+module M;
+  always @*
+    if (en)
+      d <= q;
+endmodule
+```
+
+### Pass Example (2 of 2)
+```systemverilog
+module M;
+  always @(en)
+    if (en)
+      d <= q;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  always_latch
+    if (en)
+      d <= q;
+endmodule
+```
+
+### Explanation
+
+The keywords `always_comb`, `always_ff`, and `always_latch` were added to
+SystemVerilog (IEEE1800) to require extra safety checks at compile time.
+Verilog (IEEE1364) only has `always`, which can describe equivalent behaviour
+but without the compile-time checks.
+This rule requires `always @*` or something like `always @(en)` to be used
+instead of `always_latch` for backwards compatibility with Verilog.
+
+See also:
+- **keyword_forbidden_always_comb** - Suggested companion rule.
+- **keyword_forbidden_always_ff** - Suggested companion rule.
+- **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **operator_self_assignment** - Suggested companion rule.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 9.9 Structured procedures
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2 Structured procedures
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `keyword_forbidden_generate`
 
 ### Hint
@@ -3684,6 +3846,9 @@ compatibility with Verilog.
 
 See also:
 - **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **keyword_forbidden_always_comb** - Suggested companion rule.
+- **keyword_forbidden_always_ff** - Suggested companion rule.
+- **keyword_forbidden_always_latch** - Suggested companion rule.
 
 The most relevant clauses of IEEE1364-2001 are:
 - 4.1 Operators

@@ -7,6 +7,9 @@ compatibility with Verilog.
 
 See also:
 - **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **keyword_forbidden_always_comb** - Suggested companion rule.
+- **keyword_forbidden_always_ff** - Suggested companion rule.
+- **keyword_forbidden_always_latch** - Suggested companion rule.
 
 The most relevant clauses of IEEE1364-2001 are:
 - 4.1 Operators
