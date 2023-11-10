@@ -3570,6 +3570,133 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `operator_self_assignment`
+
+### Hint
+
+Use `=` with a binary operator instead of a self-assignment operator.
+
+### Reason
+
+Only SystemVerilog, not Verilog, allows self-assignment operators.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always @*
+    if (a == b) // Logical-equality operator is not an assignment.
+      z = y;    // Simple assignment operator is allowed.
+endmodule
+```
+
+### Fail Example (1 of 12)
+```systemverilog
+module M;
+  always @* z += y; // Addition `z = z + y`
+endmodule
+```
+
+### Fail Example (2 of 12)
+```systemverilog
+module M;
+  always @* z -= y; // Subtraction `z = z - y`
+endmodule
+```
+
+### Fail Example (3 of 12)
+```systemverilog
+module M;
+  always @* z *= y; // Multiplication `z = z * y`
+endmodule
+```
+
+### Fail Example (4 of 12)
+```systemverilog
+module M;
+  always @* z /= y; // Division `z = z / y`
+endmodule
+```
+
+### Fail Example (5 of 12)
+```systemverilog
+module M;
+  always @* z %= y; // Modulo `z = z % y`
+endmodule
+```
+
+### Fail Example (6 of 12)
+```systemverilog
+module M;
+  always @* z &= y; // Bitwise AND `z = z & y`
+endmodule
+```
+
+### Fail Example (7 of 12)
+```systemverilog
+module M;
+  always @* z |= y; // Bitwise OR `z = z | y`
+endmodule
+```
+
+### Fail Example (8 of 12)
+```systemverilog
+module M;
+  always @* z ^= y; // Bitwise XOR `z = z ^ y`
+endmodule
+```
+
+### Fail Example (9 of 12)
+```systemverilog
+module M;
+  always @* z <<= y; // Logical left shift `z = z << y`
+endmodule
+```
+
+### Fail Example (10 of 12)
+```systemverilog
+module M;
+  always @* z >>= y; // Logical right shift `z = z >> y`
+endmodule
+```
+
+### Fail Example (11 of 12)
+```systemverilog
+module M;
+  always @* z <<<= y; // Arithmetic left shift `z = z <<< y`
+endmodule
+```
+
+### Fail Example (12 of 12)
+```systemverilog
+module M;
+  always @* z >>>= y; // Arithmetic right shift `z = z >>> y`
+endmodule
+```
+
+### Explanation
+
+Self-assignment operators (`+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=`, `^=`,
+`<<=`, `>>=`, `<<<=`, and `>>>=`) are part of SystemVerilog (IEEE1800), but not
+Verilog (IEEE1364).
+
+This rule allows only simple assigment (using `=`) to encourage backwards
+compatibility with Verilog.
+
+See also:
+- **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 4.1 Operators
+- 9.2.1 Blocking procedural assignments
+
+The most relevant clauses of IEEE1800-2017 are:
+- 10.4.1 Blocking procedural assignments
+- 11.4.1 Assignment operators
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `output_with_var`
 
 ### Hint
