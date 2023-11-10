@@ -39,6 +39,7 @@ synthesizable design code, but on verification code use
 
 See also:
 - **general_always_no_edge** - Alternative rule.
+- **general_always_level_sensitive** - Alternative rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 - **sequential_block_in_always_if** - Useful companion rule.
 - **sequential_block_in_always_latch** - Useful companion rule.

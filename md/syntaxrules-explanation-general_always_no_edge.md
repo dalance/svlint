@@ -33,6 +33,7 @@ code, but on verification code use **general_always_no_edge** instead.
 
 See also:
 - **keyword_forbidden_always** - Alternative rule.
+- **general_always_no_edge** - Similar rule that allows `always @*`.
 
 The most relevant clauses of IEEE1800-2017 are:
 - 9.2.2 Always procedures

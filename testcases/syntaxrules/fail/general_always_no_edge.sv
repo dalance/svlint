@@ -4,6 +4,6 @@ module M;
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
-  always @ (a or b) begin // No sensitivity to posedge, negedge, or edge.
+  always @(a or b) begin // No sensitivity to posedge, negedge, or edge.
   end
 endmodule
