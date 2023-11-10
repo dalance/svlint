@@ -943,7 +943,7 @@ When `foo` is non-zero, this example may be interpreted in at least two ways:
 See also:
 - **explicit_case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
-- **legacy_always** - Useful companion rule.
+- **keyword_forbidden_always** - Useful companion rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
@@ -1399,7 +1399,7 @@ endmodule
 
 ### Explanation
 
-The reasoning behind this rule are different between combinatial constructs
+The reasoning behind this is are different between combinatial constructs
 (`always_comb`, `always @*`) vs sequential constructs (`always_ff`,
 `always_latch`).
 The reasoning behind this rule is equivalent to that of **explicit_if_else**.
@@ -1420,12 +1420,12 @@ and clear through some useful redundancy.
 
 NOTE: The legacy keyword `always` can infer both combinational and sequential
 constructs in the same block, which can be confusing and should be avoided.
-Use of the legacy keyword can be detected with the rule **legacy_always**.
+Use of the legacy keyword can be detected with the rule **keyword_forbidden_always**.
 
 See also:
 - **case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
-- **legacy_always** - Useful companion rule.
+- **keyword_forbidden_always** - Useful companion rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 - **sequential_block_in_always_ff** - Useful companion rule.
 - **sequential_block_in_always_latch** - Useful companion rule.
@@ -1504,11 +1504,11 @@ and clear through some useful redundancy.
 
 NOTE: The legacy keyword `always` can infer both combinational and sequential
 constructs in the same block, which can be confusing and should be avoided.
-Use of the legacy keyword can be detected with the rule **legacy_always**.
+Use of the legacy keyword can be detected with the rule **keyword_forbidden_always**.
 
 See also:
 - **explicit_case_default** - Useful companion rule.
-- **legacy_always** - Useful companion rule.
+- **keyword_forbidden_always** - Useful companion rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 - **sequential_block_in_always_ff** - Useful companion rule.
 - **sequential_block_in_always_latch** - Useful companion rule.
@@ -11742,7 +11742,7 @@ syntaxrules.function_with_automatic = true
 syntaxrules.keyword_forbidden_priority = true
 syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
-syntaxrules.general_always_no_edge = true # Redundant with keyword_forbidden_always.
+#syntaxrules.general_always_no_edge = true # Redundant with keyword_forbidden_always.
 syntaxrules.operator_case_equality = true
 ```
 
