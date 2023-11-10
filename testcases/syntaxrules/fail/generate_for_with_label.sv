@@ -1,5 +1,5 @@
 module M;
-  for (genvar i=0; i < 10; i++) // No begin/end delimeters.
+  for (genvar i=0; i < 10; i++) // No begin/end delimiters.
     assign a[i] = i;
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
