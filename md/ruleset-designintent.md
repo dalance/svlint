@@ -15,7 +15,7 @@ syntaxrules.function_with_automatic = true
 syntaxrules.keyword_forbidden_priority = true
 syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
-syntaxrules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
+syntaxrules.general_always_no_edge = true # Redundant with keyword_forbidden_always.
 syntaxrules.operator_case_equality = true
 ```
 

@@ -3,9 +3,9 @@ use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct LevelSensitiveAlways;
+pub struct GeneralAlwaysNoEdge;
 
-impl SyntaxRule for LevelSensitiveAlways {
+impl SyntaxRule for GeneralAlwaysNoEdge {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -39,14 +39,14 @@ impl SyntaxRule for LevelSensitiveAlways {
     }
 
     fn name(&self) -> String {
-        String::from("level_sensitive_always")
+        String::from("general_always_no_edge")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("Replace level-sensitive `always` with `always_comb`.")
+        String::from("Replace general-purpose `always` with `always_comb`.")
     }
 
     fn reason(&self) -> String {
-        String::from("Level-sensitive `always` cannot detect combinatorial/stateful (non-)blocking mistakes.")
+        String::from("General-purpose `always` cannot detect combinatorial/stateful mistakes.")
     }
 }

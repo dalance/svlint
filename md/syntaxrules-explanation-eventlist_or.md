@@ -31,7 +31,7 @@ processes.
 See also:
 - **eventlist_comma_always_ff** - Mutually exclusive rule.
 - **blocking_assignment_in_always_ff** - Useful companion rule.
-- **level_sensitive_always** - Useful companion rule.
+- **general_always_no_edge** - Useful companion rule.
 - **style_keyword_commaleading** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:

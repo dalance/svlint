@@ -59,6 +59,11 @@ const RENAMED_SYNTAXRULES: &[(&str, &str, &str)] = &[
         "module_nonansi_forbidden",
         "ModuleNonansiForbidden",
     ),
+    (
+        "level_sensitive_always",
+        "general_always_no_edge",
+        "GeneralAlwaysNoEdge",
+    ),
 ];
 
 fn write_rules_rs(
