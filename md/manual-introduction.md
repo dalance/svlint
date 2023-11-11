@@ -51,7 +51,7 @@ Another class of functional rules is those which check for datatypes and
 constructs that avoid compiler checks for legacy compatibility.
 
 
-## Usage
+## How Svlint Works
 
 Svlint works in a series of well-defined steps:
 
@@ -73,7 +73,7 @@ Svlint works in a series of well-defined steps:
   failure, otherwise return a pass.
 
 
-### Filelists
+## Filelists
 
 Specification of the files to be processed can be given on the command line by
 *either* a list of files, e.g. `svlint foo.sv bar/*.sv`, or via filelists,
@@ -103,7 +103,7 @@ $(FOO)/ddd.sv
 ```
 
 
-### Plugin Syntax Rules
+## Plugin Syntax Rules
 
 Svlint supports plugin syntax rules, an example of which is available
 [here](https://github.com/dalance/svlint-plugin-sample).
@@ -119,7 +119,7 @@ All loaded plugins, via the `--plugin` option, are enabled and have access
 to all values in the TOML configuration.
 
 
-### Configuration
+## Configuration
 
 Firstly, you need a TOML configuration file to specify which rules to enable.
 By default, svlint will search up the filesystem hierarchy from the current
@@ -165,7 +165,7 @@ To generate an updated configuration, use the `--update` command line option
 which will load your existing configuration then emit the updated TOML to
 STDOUT.
 
-#### `[option]` Section
+### `[option]` Section
 
 - `exclude_paths` is a list of regular expressions.
   If a file path is matched with any regex in the list, the file is skipped.
@@ -187,7 +187,7 @@ STDOUT.
 - Please see the explanations for individual rules for details of other
   options.
 
-#### `[textrules]` and `[syntaxrules]` Sections
+### `[textrules]` and `[syntaxrules]` Sections
 
 All rules are disabled unless explicitly enabled in their corresponding
 `[textrules]` or `[syntaxrules]` section.
