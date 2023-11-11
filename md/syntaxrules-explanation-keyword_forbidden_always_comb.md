@@ -8,6 +8,7 @@ backwards compatibility with Verilog.
 See also:
 - **keyword_forbidden_always_ff** - Suggested companion rule.
 - **keyword_forbidden_always_latch** - Suggested companion rule.
+- **keyword_forbidden_logic** - Suggested companion rule.
 - **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
 - **operator_incdec** - Suggested companion rule.
 - **operator_self_assignment** - Suggested companion rule.

@@ -9,6 +9,7 @@ See also:
 - **keyword_forbidden_always_comb** - Suggested companion rule.
 - **keyword_forbidden_always_ff** - Suggested companion rule.
 - **keyword_forbidden_always_latch** - Suggested companion rule.
+- **keyword_forbidden_logic** - Suggested companion rule.
 - **operator_self_assignment** - Suggested companion rule.
 
 The most relevant clauses of IEEE1364-2001 are:
