@@ -51,7 +51,7 @@ Another class of functional rules is those which check for datatypes and
 constructs that avoid compiler checks for legacy compatibility.
 
 
-## Usage
+## How Svlint Works
 
 Svlint works in a series of well-defined steps:
 
@@ -73,7 +73,7 @@ Svlint works in a series of well-defined steps:
   failure, otherwise return a pass.
 
 
-### Filelists
+## Filelists
 
 Specification of the files to be processed can be given on the command line by
 *either* a list of files, e.g. `svlint foo.sv bar/*.sv`, or via filelists,
@@ -103,7 +103,7 @@ $(FOO)/ddd.sv
 ```
 
 
-### Plugin Syntax Rules
+## Plugin Syntax Rules
 
 Svlint supports plugin syntax rules, an example of which is available
 [here](https://github.com/dalance/svlint-plugin-sample).
@@ -119,7 +119,40 @@ All loaded plugins, via the `--plugin` option, are enabled and have access
 to all values in the TOML configuration.
 
 
-### Configuration
+## Environment Variables
+
+Svlint is sensitive to 4 environment variables:
+- `SVLINT_CONFIG` - an exact absolute or relative path to a TOML configuration.
+  This is the only way to specify an *exact* configuration path, as the `-c`
+  command-line option is used to search hierarchically.
+- `SVLINT_INCDIRS` - a colon-separated list of include paths, i.e. an
+  alternative to using the `-I` command-line option.
+- `SVLINT_PREFILES` - a colon-separated list of files to process before those
+  given on the command-vline.
+- `SVLINT_POSTFILES` - a colon-separated list of files to process after those
+  given on the command-line.
+
+
+For example:
+```sh
+svlint -I/cad/tools/uvm -I/work/myTeam \
+  uvm_macros.svh \
+  /another/thing/first \
+  foo.sv bar.sv \
+  /another/thing/last \
+  check_pp_final_state.svh
+```
+
+Is exactly equivalent to:
+```sh
+$ export SVLINT_INCDIRS="/cad/tools/uvm:/work/myTeam"
+$ export SVLINT_PREFILES="uvm_macros.svh:/another/thing/first"
+$ export SVLINT_POSTFILES="/another/thing/last:check_pp_final_state.svh"
+$ svlint foo.sv bar.sv
+```
+
+
+## Configuration
 
 Firstly, you need a TOML configuration file to specify which rules to enable.
 By default, svlint will search up the filesystem hierarchy from the current
@@ -165,7 +198,7 @@ To generate an updated configuration, use the `--update` command line option
 which will load your existing configuration then emit the updated TOML to
 STDOUT.
 
-#### `[option]` Section
+### `[option]` Section
 
 - `exclude_paths` is a list of regular expressions.
   If a file path is matched with any regex in the list, the file is skipped.
@@ -187,7 +220,7 @@ STDOUT.
 - Please see the explanations for individual rules for details of other
   options.
 
-#### `[textrules]` and `[syntaxrules]` Sections
+### `[textrules]` and `[syntaxrules]` Sections
 
 All rules are disabled unless explicitly enabled in their corresponding
 `[textrules]` or `[syntaxrules]` section.
