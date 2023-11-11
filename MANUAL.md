@@ -3547,6 +3547,41 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `package_item_not_in_package`
+
+### Hint
+
+Place item into a package, module, interface, program, udp, or config.
+
+### Reason
+
+Globally-scoped items are not supported by some tools.
+
+### Pass Example (1 of 1)
+```systemverilog
+package P;
+  localparam int A = 1;
+endpackage
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+localparam int A = 1;
+```
+
+### Explanation
+
+Some tools support items, like variables, nets, `task`, `function`, `class`,
+`localparam`, `covergroup`, etc. to be defined outside of a `package`,
+`module`, `program`, `interface` etc. which can lead to namespace issues.
+
+The most relevant clauses of IEEE1800-2017 are:
+- A.1.11 Package items
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `parameter_default_value`
 
 ### Hint
