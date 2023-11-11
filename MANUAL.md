@@ -2328,7 +2328,7 @@ endmodule
 
 The keywords `always_comb`, `always_ff`, and `always_latch` were added to
 SystemVerilog (IEEE1800) to require extra safety checks at compile time.
-Verilog (IEEE1364) only has `always`, which can describe equivalent behaviour
+Verilog (IEEE1364) only has `always`, which can describe equivalent behavior
 but without the compile-time checks.
 This rule requires `always @*` to be used instead of `always_comb` for
 backwards compatibility with Verilog.
@@ -2381,7 +2381,7 @@ endmodule
 
 The keywords `always_comb`, `always_ff`, and `always_latch` were added to
 SystemVerilog (IEEE1800) to require extra safety checks at compile time.
-Verilog (IEEE1364) only has `always`, which can describe equivalent behaviour
+Verilog (IEEE1364) only has `always`, which can describe equivalent behavior
 but without the compile-time checks.
 This rule requires something like `always @(posedge clk)` to be used instead of
 `always_ff @(posedge clk)` for backwards compatibility with Verilog.
@@ -2445,7 +2445,7 @@ endmodule
 
 The keywords `always_comb`, `always_ff`, and `always_latch` were added to
 SystemVerilog (IEEE1800) to require extra safety checks at compile time.
-Verilog (IEEE1364) only has `always`, which can describe equivalent behaviour
+Verilog (IEEE1364) only has `always`, which can describe equivalent behavior
 but without the compile-time checks.
 This rule requires `always @*` or something like `always @(en)` to be used
 instead of `always_latch` for backwards compatibility with Verilog.
@@ -10622,8 +10622,8 @@ If instead the `--config` option was used in wrapper scripts, this could lead
 to confusion where TOML files exist elsewhere in the hierarchy.
 
 It isn't essential for all ruleset scripts to be POSIX compliant, but POSIX
-compliance should be encourage because it allows for consistent behavior across
-the widest range of systems.
+compliance should be encouraged because it allows for consistent behavior
+across the widest range of systems.
 The utilities used in the POSIX wrappers are specified in the current POSIX
 standard (IEEE1003.1-2017, Volume 3: Shell and Utilities).
 Some resources related to these components:

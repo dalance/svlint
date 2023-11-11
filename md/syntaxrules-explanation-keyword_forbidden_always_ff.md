@@ -1,6 +1,6 @@
 The keywords `always_comb`, `always_ff`, and `always_latch` were added to
 SystemVerilog (IEEE1800) to require extra safety checks at compile time.
-Verilog (IEEE1364) only has `always`, which can describe equivalent behaviour
+Verilog (IEEE1364) only has `always`, which can describe equivalent behavior
 but without the compile-time checks.
 This rule requires something like `always @(posedge clk)` to be used instead of
 `always_ff @(posedge clk)` for backwards compatibility with Verilog.
