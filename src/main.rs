@@ -375,19 +375,19 @@ fn get_files_incdirs(
     cli_incdirs: Vec<PathBuf>
 ) -> (Vec<PathBuf>, Vec<PathBuf>) {
     let env_incdirs: Vec<PathBuf> = if let Ok(e) = env::var("SVLINT_INCDIRS") {
-        e.split(':').map(|x| PathBuf::from(x)).collect()
+        env::split_paths(&e).map(|x| PathBuf::from(x)).collect()
     } else {
         vec![]
     };
 
     let env_prefiles: Vec<PathBuf> = if let Ok(e) = env::var("SVLINT_PREFILES") {
-        e.split(':').map(|x| PathBuf::from(x)).collect()
+        env::split_paths(&e).map(|x| PathBuf::from(x)).collect()
     } else {
         vec![]
     };
 
     let env_postfiles: Vec<PathBuf> = if let Ok(e) = env::var("SVLINT_POSTFILES") {
-        e.split(':').map(|x| PathBuf::from(x)).collect()
+        env::split_paths(&e).map(|x| PathBuf::from(x)).collect()
     } else {
         vec![]
     };
