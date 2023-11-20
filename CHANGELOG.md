@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.9.0...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.9.1...Unreleased) - ReleaseDate
+
+## [v0.9.1](https://github.com/dalance/svlint/compare/v0.9.0...v0.9.1) - 2023-11-20
 
 * [Added] New rule: package_item_not_in_package [#272](https://github.com/dalance/svlint/pull/272)
 * [Added] Feature: Include files and incdirs from the environment. [#271](https://github.com/dalance/svlint/pull/271)
