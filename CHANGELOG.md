@@ -2,6 +2,11 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.9.0...Unreleased) - ReleaseDate
 
+* [Added] New rule: package_item_not_in_package [#272](https://github.com/dalance/svlint/pull/272)
+* [Added] Feature: Include files and incdirs from the environment. [#271](https://github.com/dalance/svlint/pull/271)
+* [Added] New rules for compatibility with Verilog 2001 [#270](https://github.com/dalance/svlint/pull/270)
+* [Added] Improvement: Add description of related projects to CONTRIBUTING. [#265](https://github.com/dalance/svlint/pull/265)
+
 ## [v0.9.0](https://github.com/dalance/svlint/compare/v0.8.0...v0.9.0) - 2023-08-09
 
 * [Added] New rules for leading spaces of binary operators [#263](https://github.com/dalance/svlint/pull/263)
