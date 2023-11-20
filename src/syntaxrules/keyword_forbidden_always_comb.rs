@@ -1,11 +1,11 @@
 use crate::config::ConfigOption;
 use crate::linter::{SyntaxRule, SyntaxRuleResult};
-use sv_parser::{NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct NonAnsiModule;
+pub struct KeywordForbiddenAlwaysComb;
 
-impl SyntaxRule for NonAnsiModule {
+impl SyntaxRule for KeywordForbiddenAlwaysComb {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -19,20 +19,20 @@ impl SyntaxRule for NonAnsiModule {
             }
         };
         match node {
-            RefNode::ModuleDeclarationNonansi(_) => SyntaxRuleResult::Fail,
+            RefNode::AlwaysKeyword(AlwaysKeyword::AlwaysComb(_)) => SyntaxRuleResult::Fail,
             _ => SyntaxRuleResult::Pass,
         }
     }
 
     fn name(&self) -> String {
-        String::from("non_ansi_module")
+        String::from("keyword_forbidden_always_comb")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("Declare `module` header in ANSI style.")
+        String::from("Use `always @*` instead of `always_comb`.")
     }
 
     fn reason(&self) -> String {
-        String::from("Non-ANSI module headers are visually noisy and error-prone.")
+        String::from("Only SystemVerilog, not Verilog, has `always_comb`.")
     }
 }

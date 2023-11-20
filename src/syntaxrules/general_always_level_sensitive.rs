@@ -3,9 +3,9 @@ use crate::linter::{SyntaxRule, SyntaxRuleResult};
 use sv_parser::{unwrap_node, AlwaysKeyword, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct LevelSensitiveAlways;
+pub struct GeneralAlwaysLevelSensitive;
 
-impl SyntaxRule for LevelSensitiveAlways {
+impl SyntaxRule for GeneralAlwaysLevelSensitive {
     fn check(
         &mut self,
         _syntax_tree: &SyntaxTree,
@@ -20,15 +20,18 @@ impl SyntaxRule for LevelSensitiveAlways {
         };
         match node {
             RefNode::AlwaysConstruct(x) => {
-                let (ref a, ref b) = x.nodes;
-                let always = unwrap_node!(a, AlwaysKeyword).unwrap();
-                let edge = unwrap_node!(b, EdgeIdentifier);
-                match always {
-                    RefNode::AlwaysKeyword(AlwaysKeyword::Always(_)) => {
-                        if edge.is_some() {
-                            SyntaxRuleResult::Pass
+                let (t, x) = &x.nodes;
+                match t {
+                    AlwaysKeyword::Always(_) => {
+                        let c = unwrap_node!(x, EventControlEventExpression);
+                        if let Some(x) = c {
+                            if let Some(_) = unwrap_node!(x, EdgeIdentifier) {
+                                SyntaxRuleResult::Pass
+                            } else {
+                                SyntaxRuleResult::Fail
+                            }
                         } else {
-                            SyntaxRuleResult::Fail
+                            SyntaxRuleResult::Pass
                         }
                     }
                     _ => SyntaxRuleResult::Pass,
@@ -39,14 +42,14 @@ impl SyntaxRule for LevelSensitiveAlways {
     }
 
     fn name(&self) -> String {
-        String::from("level_sensitive_always")
+        String::from("general_always_level_sensitive")
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("Replace level-sensitive `always` with `always_comb`.")
+        String::from("Replace general-purpose `always @(...no edge...)` with `always @*`.")
     }
 
     fn reason(&self) -> String {
-        String::from("Level-sensitive `always` cannot detect combinatorial/stateful (non-)blocking mistakes.")
+        String::from("General-purpose `always` cannot detect combinatorial/stateful mistakes.")
     }
 }

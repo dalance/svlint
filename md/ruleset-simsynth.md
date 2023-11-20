@@ -16,7 +16,7 @@ syntaxrules.function_with_automatic = true
 syntaxrules.keyword_forbidden_priority = true
 syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
-syntaxrules.level_sensitive_always = true
+syntaxrules.general_always_no_edge = true
 syntaxrules.operator_case_equality = true
 ```
 

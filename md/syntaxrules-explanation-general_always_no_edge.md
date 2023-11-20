@@ -29,10 +29,11 @@ meet that requriment.
 The alternative rule **keyword_forbidden_always** has similar reasoning but is
 more strict, completely forbidding the use of general-purpose `always` blocks.
 It is appropriate to use **keyword_forbidden_always** on synthesizable design
-code, but on verification code use **level_sensitive_always** instead.
+code, but on verification code use **general_always_no_edge** instead.
 
 See also:
 - **keyword_forbidden_always** - Alternative rule.
+- **general_always_no_edge** - Similar rule that allows `always @*`.
 
 The most relevant clauses of IEEE1800-2017 are:
 - 9.2.2 Always procedures

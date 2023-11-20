@@ -15,7 +15,7 @@ syntaxrules.function_with_automatic = true
 syntaxrules.keyword_forbidden_priority = true
 syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
-syntaxrules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
+#syntaxrules.general_always_no_edge = true # Redundant with keyword_forbidden_always.
 syntaxrules.operator_case_equality = true
 ```
 
@@ -32,7 +32,7 @@ syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_always = true
 syntaxrules.keyword_forbidden_wire_reg = true
-syntaxrules.non_ansi_module = true
+syntaxrules.module_nonansi_forbidden = true
 ```
 
 When synthesised into a netlist, generate blocks should have labels so that

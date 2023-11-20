@@ -155,7 +155,7 @@ prefix_label = "lab_"
 style_indent = true
 
 [syntaxrules]
-non_ansi_module = true
+module_nonansi_forbidden = true
 keyword_forbidden_wire_reg = true
 ```
 
@@ -667,6 +667,100 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `blocking_assignment_in_always_at_edge`
+
+### Hint
+
+Do not use blocking assignments within edge-sensitive `always`.
+
+### Reason
+
+Blocking assignment in `always_ff` may cause undefined event ordering.
+
+### Pass Example (1 of 3)
+```systemverilog
+module M;
+  always @(posedge clk) q <= d;
+endmodule
+```
+
+### Pass Example (2 of 3)
+```systemverilog
+module M;
+  always @(negedge clk) q <= d;
+endmodule
+```
+
+### Pass Example (3 of 3)
+```systemverilog
+module M;
+  always @(edge clk) q <= d;
+endmodule
+```
+
+### Fail Example (1 of 3)
+```systemverilog
+module M;
+  always @(posedge clk) q = d;
+endmodule
+```
+
+### Fail Example (2 of 3)
+```systemverilog
+module M;
+  always @(negedge clk) q = d;
+endmodule
+```
+
+### Fail Example (3 of 3)
+```systemverilog
+module M;
+  always @(edge clk) q = d;
+endmodule
+```
+
+### Explanation
+
+Simulator event ordering between blocking and non-blocking assignments
+is undefined, so observed behavior is simulator-dependent.
+Edge-sensitive (usually clocked) processes like, `always @(posedge clk)` should
+only contain non-blocking assignments in order for sampling and variable
+evaluation to operate in a defined order, e.g. `q <= d;`, not `q = d;`.
+
+For SystemVerilog (IEEE1800) code, the keyword `always_ff` (or `always_latch`)
+should be used instead of the general purpose `always` to take advantage of
+extra compile-time checks.
+For code which must be compatible with Verilog (IEEE1364), `always` is the only
+option.
+Therefore, this rule `reg` assignments to be compatible with Verilog like this
+(in conjunction with **non_blocking_assignment_in_always_no_edge**):
+```verilog
+always @(posedge clk) q <= d;       // Clocked to reg (flip-flop)
+always @* a = b + c;                // Combinational to reg (logic gates)
+assign d = e + f;                   // Combinational to wire (logic gates)
+```
+
+See also:
+- **non_blocking_assignment_in_always_no_edge** - Useful companion rule.
+- **blocking_assignment_in_always_ff** - Similar rule, suggested as alternative
+  for SystemVerilog code, but not Verilog.
+- **blocking_assignment_in_always_latch** - Useful companion rule for
+  SystemVerilog, but not Verilog.
+- **non_blocking_assignment_in_always_comb** - Useful companion rule for
+  SystemVerilog, but not Verilog.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 4.9.3 Blocking assignment
+- 4.9.4 Non-blocking assignment
+- 9.4.2 Event control
+- 10.4.1 Blocking procedural assignments
+- 10.4.2 Nonblocking procedural assignments
+- 16.5.1 Sampling
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `blocking_assignment_in_always_ff`
 
 ### Hint
@@ -691,11 +785,7 @@ endmodule
 ### Fail Example (1 of 1)
 ```systemverilog
 module M;
-/* svlint off blocking_assignment_in_always_ff */
-always_ff @(posedge clk) q1 = d;   // Control comments avoid failure.
-/* svlint on blocking_assignment_in_always_ff */
-
-always_ff @(posedge clk) q2 = d;   // Failure.
+  always_ff @(posedge clk) q = d; // Failure.
 endmodule
 ```
 
@@ -853,7 +943,7 @@ When `foo` is non-zero, this example may be interpreted in at least two ways:
 See also:
 - **explicit_case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
-- **legacy_always** - Useful companion rule.
+- **keyword_forbidden_always** - Useful companion rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
@@ -1115,7 +1205,7 @@ This rule only applies to event expressions in `always_ff` processes.
 See also:
 - **eventlist_or** - Mutually exclusive rule.
 - **blocking_assignment_in_always_ff** - Useful companion rule.
-- **level_sensitive_always** - Useful companion rule.
+- **general_always_no_edge** - Useful companion rule.
 - **style_keyword_1space** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
@@ -1242,7 +1332,7 @@ processes.
 See also:
 - **eventlist_comma_always_ff** - Mutually exclusive rule.
 - **blocking_assignment_in_always_ff** - Useful companion rule.
-- **level_sensitive_always** - Useful companion rule.
+- **general_always_no_edge** - Useful companion rule.
 - **style_keyword_commaleading** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
@@ -1309,7 +1399,7 @@ endmodule
 
 ### Explanation
 
-The reasoning behind this rule are different between combinatial constructs
+The reasoning behind this is are different between combinatial constructs
 (`always_comb`, `always @*`) vs sequential constructs (`always_ff`,
 `always_latch`).
 The reasoning behind this rule is equivalent to that of **explicit_if_else**.
@@ -1330,12 +1420,12 @@ and clear through some useful redundancy.
 
 NOTE: The legacy keyword `always` can infer both combinational and sequential
 constructs in the same block, which can be confusing and should be avoided.
-Use of the legacy keyword can be detected with the rule **legacy_always**.
+Use of the legacy keyword can be detected with the rule **keyword_forbidden_always**.
 
 See also:
 - **case_default** - Useful companion rule.
 - **explicit_if_else** - Useful companion rule.
-- **legacy_always** - Useful companion rule.
+- **keyword_forbidden_always** - Useful companion rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 - **sequential_block_in_always_ff** - Useful companion rule.
 - **sequential_block_in_always_latch** - Useful companion rule.
@@ -1414,11 +1504,11 @@ and clear through some useful redundancy.
 
 NOTE: The legacy keyword `always` can infer both combinational and sequential
 constructs in the same block, which can be confusing and should be avoided.
-Use of the legacy keyword can be detected with the rule **legacy_always**.
+Use of the legacy keyword can be detected with the rule **keyword_forbidden_always**.
 
 See also:
 - **explicit_case_default** - Useful companion rule.
-- **legacy_always** - Useful companion rule.
+- **keyword_forbidden_always** - Useful companion rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 - **sequential_block_in_always_ff** - Useful companion rule.
 - **sequential_block_in_always_latch** - Useful companion rule.
@@ -1583,6 +1673,177 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
 - 13.4.2 Static and automatic functions
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `general_always_level_sensitive`
+
+### Hint
+
+Replace general-purpose `always @(...no edge...)` with `always @*`.
+
+### Reason
+
+General-purpose `always` cannot detect combinatorial/stateful mistakes.
+
+### Pass Example (1 of 2)
+```systemverilog
+module M;
+  always @* // Sensitive to `b` and `c`.
+    a = b + c;
+endmodule
+```
+
+### Pass Example (2 of 2)
+```systemverilog
+module M;
+  always @(posedge clk) // Sensitive to edges of `clk`.
+    q <= d;
+endmodule
+```
+
+### Fail Example (1 of 2)
+```systemverilog
+module M;
+  always @(b) // Missing sensitivity to `c`.
+    a = b + c;
+endmodule
+```
+
+### Fail Example (2 of 2)
+```systemverilog
+module M;
+  always @(a or b) // Correct sensitivity list, but error prone.
+    a = b + c;
+endmodule
+```
+
+### Explanation
+
+This rule is specific to code which must be compatible with Verilog, not
+only SystemVerilog.
+
+In Verilog (IEEE1364), there are two language constructs which can be used to
+model combinatorial logic:
+1. Continuous assignment to `wire` signals is specified with the `assign`
+  keyword.
+2. `reg` signals are assigned to with an `always` block, which is evaluated
+  whenever anything in the sensitivity list changes value.
+
+To ensure that the process correctly sensitive to changes on all driving
+signals, `always @*` should be used instead of providing an explicit
+sensitivity list like `always @(a or b or c)`.
+The `always` keyword can also be used for modelling sequential logic by
+including the edge of a signal in the sensitivity list.
+Providing an explicit sensitivity list is prone to two mistakes:
+1. Forgetting to add a driver to the list, e.g. `always @(b) a = b + c;`
+   instead of `always @(b or c) a = b + c;`.
+2. Forgetting to add and edge specifier, e.g. `always @(clk) q <= d;` instead
+   of `always @(posedge clk) q <= d;`.
+   That makes the process level-sensitive, instead of the edge-sensitive.
+
+This rule requires that general-purpose `always` blocks with an explicit
+sensitivity list which include at least one edge.
+Combinational logic should use the Kleen-star notation,
+e.g. `always @* a = b + c;`
+
+See also:
+- **keyword_forbidden_always** - Related rule forbidding general-purpose
+  `always`, only applicable for SystemVerilog code.
+- **general_always_no_edge** - Related rule forbidding purely combinational
+  logic in `always` processes.
+  While this is straightforward to use with SystemVerilog, this might be overly
+  restrictive for Verilog because all combinational variables must be driven
+  with `assign`.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2.2 Always procedures
+- 9.5 Process execution threads
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `general_always_no_edge`
+
+### Hint
+
+Replace general-purpose `always` with `always_comb`.
+
+### Reason
+
+General-purpose `always` cannot detect combinatorial/stateful mistakes.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always_comb begin
+  end
+  always @(posedge a) begin
+  end
+endmodule
+```
+
+### Fail Example (1 of 2)
+```systemverilog
+module M;
+  always @* begin // No sensitivity list.
+  end
+endmodule
+```
+
+### Fail Example (2 of 2)
+```systemverilog
+module M;
+  always @(a or b) begin // No sensitivity to posedge, negedge, or edge.
+  end
+endmodule
+```
+
+### Explanation
+
+In Verilog (IEEE1364), there are two language constructs which can be used to
+model combinatorial logic:
+1. Continuous assignment to `wire` signals is specified with the `assign`
+  keyword.
+2. `reg` signals are assigned to with an `always` block, which is evaluated
+  whenever anything in the sensitivity list changes value.
+
+The `always` keyword can also be used for modelling sequential logic by
+including the edge of a signal in the sensitivity list.
+
+The semantics of these keywords in SystemVerilog are compatible with Verilog,
+but additional keywords (`always_comb`, `always_ff`, and `always_latch`) should
+be used to clarify intent of digital designs.
+The `always_*` keywords have slightly different semantics which are beneficial
+for synthesizable designs:
+1. `always_*` processes require compiler checks that any signals driven on the
+  LHS are not driven by any other process, i.e. `always_*` cannot infer
+  multi-driven or tri-state logic.
+2. `always_comb` processes require a compiler check that the process does not
+  infer state.
+3. `always_ff` processes require a compiler check that the process does infer
+  state.
+
+This rule requires that general-purpose `always` blocks have an explicit
+sensitivity list which includes at least one edge, thus forcing the use of
+`assign` or `always_comb` to specify combinatorial logic.
+It is possible to construct a full-featured testbench where all `always` blocks
+meet that requriment.
+The alternative rule **keyword_forbidden_always** has similar reasoning but is
+more strict, completely forbidding the use of general-purpose `always` blocks.
+It is appropriate to use **keyword_forbidden_always** on synthesizable design
+code, but on verification code use **general_always_no_edge** instead.
+
+See also:
+- **keyword_forbidden_always** - Alternative rule.
+- **general_always_no_edge** - Similar rule that allows `always @*`.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2.2 Always procedures
+- 9.5 Process execution threads
 
 
 
@@ -1946,7 +2207,7 @@ requires that each interface port includes a modport identifier.
 See also:
 - **inout_with_tri** - Useful companion rule.
 - **input_with_var** - Useful companion rule.
-- **non_ansi_module** - Useful companion rule.
+- **module_nonansi_forbidden** - Useful companion rule.
 - **output_with_var** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:
@@ -2015,17 +2276,18 @@ process is a valid and useful way of scheduling events.
 Therefore, this rule is intended only for synthesizable design code, not for
 testbench code.
 
-The alternative rule **level_sensitive_always** has similar reasoning but is
+The alternative rule **general_always_no_edge** has similar reasoning but is
 slightly relaxed, requiring that `always` blocks have an explicit sensitivity
 list including an edge.
 It is possible to construct a full-featured testbench where all `always` blocks
 meet that requriment.
 Therefore, it is appropriate to use **keyword_forbidden_always** on
 synthesizable design code, but on verification code use
-**level_sensitive_always** instead.
+**general_always_no_edge** instead.
 
 See also:
-- **level_sensitive_always** - Alternative rule.
+- **general_always_no_edge** - Alternative rule.
+- **general_always_level_sensitive** - Alternative rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 - **sequential_block_in_always_if** - Useful companion rule.
 - **sequential_block_in_always_latch** - Useful companion rule.
@@ -2033,6 +2295,174 @@ See also:
 The most relevant clauses of IEEE1800-2017 are:
 - 9.2.2 Always procedures
 - 9.5 Process execution threads
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `keyword_forbidden_always_comb`
+
+### Hint
+
+Use `always @*` instead of `always_comb`.
+
+### Reason
+
+Only SystemVerilog, not Verilog, has `always_comb`.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always @* z = x + y;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  always_comb z = x + y;
+endmodule
+```
+
+### Explanation
+
+The keywords `always_comb`, `always_ff`, and `always_latch` were added to
+SystemVerilog (IEEE1800) to require extra safety checks at compile time.
+Verilog (IEEE1364) only has `always`, which can describe equivalent behavior
+but without the compile-time checks.
+This rule requires `always @*` to be used instead of `always_comb` for
+backwards compatibility with Verilog.
+
+See also:
+- **keyword_forbidden_always_ff** - Suggested companion rule.
+- **keyword_forbidden_always_latch** - Suggested companion rule.
+- **keyword_forbidden_logic** - Suggested companion rule.
+- **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **operator_incdec** - Suggested companion rule.
+- **operator_self_assignment** - Suggested companion rule.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 9.9 Structured procedures
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2 Structured procedures
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `keyword_forbidden_always_ff`
+
+### Hint
+
+Use `always @(posedge clk)` instead of `always_ff @(posedge clk)`.
+
+### Reason
+
+Only SystemVerilog, not Verilog, has `always_ff`.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always @(posedge clk)
+    d <= q;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  always_ff @(posedge clk)
+    d <= q;
+endmodule
+```
+
+### Explanation
+
+The keywords `always_comb`, `always_ff`, and `always_latch` were added to
+SystemVerilog (IEEE1800) to require extra safety checks at compile time.
+Verilog (IEEE1364) only has `always`, which can describe equivalent behavior
+but without the compile-time checks.
+This rule requires something like `always @(posedge clk)` to be used instead of
+`always_ff @(posedge clk)` for backwards compatibility with Verilog.
+
+See also:
+- **keyword_forbidden_always_comb** - Suggested companion rule.
+- **keyword_forbidden_always_latch** - Suggested companion rule.
+- **keyword_forbidden_logic** - Suggested companion rule.
+- **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **operator_incdec** - Suggested companion rule.
+- **operator_self_assignment** - Suggested companion rule.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 9.9 Structured procedures
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2 Structured procedures
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `keyword_forbidden_always_latch`
+
+### Hint
+
+Use `always @*` or `always @(en)` instead of `always_latch`.
+
+### Reason
+
+Only SystemVerilog, not Verilog, has `always_latch`.
+
+### Pass Example (1 of 2)
+```systemverilog
+module M;
+  always @*
+    if (en)
+      d <= q;
+endmodule
+```
+
+### Pass Example (2 of 2)
+```systemverilog
+module M;
+  always @(en)
+    if (en)
+      d <= q;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  always_latch
+    if (en)
+      d <= q;
+endmodule
+```
+
+### Explanation
+
+The keywords `always_comb`, `always_ff`, and `always_latch` were added to
+SystemVerilog (IEEE1800) to require extra safety checks at compile time.
+Verilog (IEEE1364) only has `always`, which can describe equivalent behavior
+but without the compile-time checks.
+This rule requires `always @*` or something like `always @(en)` to be used
+instead of `always_latch` for backwards compatibility with Verilog.
+
+See also:
+- **keyword_forbidden_always_comb** - Suggested companion rule.
+- **keyword_forbidden_always_ff** - Suggested companion rule.
+- **keyword_forbidden_logic** - Suggested companion rule.
+- **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **operator_incdec** - Suggested companion rule.
+- **operator_self_assignment** - Suggested companion rule.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 9.9 Structured procedures
+
+The most relevant clauses of IEEE1800-2017 are:
+- 9.2 Structured procedures
 
 
 
@@ -2086,6 +2516,62 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
 - 27.3 Generate construct syntax
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `keyword_forbidden_logic`
+
+### Hint
+
+Replace `logic` keywords with `wire` or `reg`.
+
+### Reason
+
+Only SystemVerilog, not Verilog, has `logic`.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  wire a;
+  reg  b;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M;
+  logic a;
+endmodule
+```
+
+### Explanation
+
+The datatype `logic` was added to SystemVerilog (IEEE1800) to clarify
+designer's intent, mostly replacing `wire` and fully replacing `reg`.
+Verilog (IEEE1364) only has the `reg` bit-vector variable (and the various type
+of nets).
+This rule forbids `logic` for backwards compatibility with Verilog.
+
+See also:
+- **keyword_forbidden_always_comb** - Suggested companion rule.
+- **keyword_forbidden_always_ff** - Suggested companion rule.
+- **keyword_forbidden_always_latch** - Suggested companion rule.
+- **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **operator_incdec** - Suggested companion rule.
+- **operator_self_assignment** - Suggested companion rule.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 3.2 Nets and variables
+- 3.3 Vectors
+- 3.7 Nets types
+- 3.8 regs
+
+The most relevant clauses of IEEE1800-2017 are:
+- 6.5 Nets and variables
+- 6.5 Vector declarations
+- 6.11 Integer data types
 
 
 
@@ -2505,88 +2991,6 @@ See also:
 
 The most relevant clauses of IEEE1800-2017 are:
 - 27.3 Generate construct syntax
-
-
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-## Syntax Rule: `level_sensitive_always`
-
-### Hint
-
-Replace level-sensitive `always` with `always_comb`.
-
-### Reason
-
-Level-sensitive `always` cannot detect combinatorial/stateful (non-)blocking mistakes.
-
-### Pass Example (1 of 1)
-```systemverilog
-module M;
-  always_comb begin
-  end
-  always @(posedge a) begin
-  end
-endmodule
-```
-
-### Fail Example (1 of 2)
-```systemverilog
-module M;
-  always @* begin // No sensitivity list.
-  end
-endmodule
-```
-
-### Fail Example (2 of 2)
-```systemverilog
-module M;
-  always @ (a or b) begin // No sensitivity to posedge, negedge, or edge.
-  end
-endmodule
-```
-
-### Explanation
-
-In Verilog (IEEE1364), there are two language constructs which can be used to
-model combinatorial logic:
-1. Continuous assignment to `wire` signals is specified with the `assign`
-  keyword.
-2. `reg` signals are assigned to with an `always` block, which is evaluated
-  whenever anything in the sensitivity list changes value.
-
-The `always` keyword can also be used for modelling sequential logic by
-including the edge of a signal in the sensitivity list.
-
-The semantics of these keywords in SystemVerilog are compatible with Verilog,
-but additional keywords (`always_comb`, `always_ff`, and `always_latch`) should
-be used to clarify intent of digital designs.
-The `always_*` keywords have slightly different semantics which are beneficial
-for synthesizable designs:
-1. `always_*` processes require compiler checks that any signals driven on the
-  LHS are not driven by any other process, i.e. `always_*` cannot infer
-  multi-driven or tri-state logic.
-2. `always_comb` processes require a compiler check that the process does not
-  infer state.
-3. `always_ff` processes require a compiler check that the process does infer
-  state.
-
-This rule requires that general-purpose `always` blocks have an explicit
-sensitivity list which includes at least one edge, thus forcing the use of
-`assign` or `always_comb` to specify combinatorial logic.
-It is possible to construct a full-featured testbench where all `always` blocks
-meet that requriment.
-The alternative rule **keyword_forbidden_always** has similar reasoning but is
-more strict, completely forbidding the use of general-purpose `always` blocks.
-It is appropriate to use **keyword_forbidden_always** on synthesizable design
-code, but on verification code use **level_sensitive_always** instead.
-
-See also:
-- **keyword_forbidden_always** - Alternative rule.
-
-The most relevant clauses of IEEE1800-2017 are:
-- 9.2.2 Always procedures
-- 9.5 Process execution threads
 
 
 
@@ -3113,6 +3517,176 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `module_ansi_forbidden`
+
+### Hint
+
+Declare `module` header in non-ANSI style.
+
+### Reason
+
+Only SystemVerilog, not Verilog, allows `localparam` in ANSI module header.
+
+### Pass Example (1 of 2)
+```systemverilog
+module M
+  ( a
+  , b
+  );
+  input  a;   // Declaring ports outside the module header declaration
+  output b;   // makes this a non-ANSI module.
+endmodule
+```
+
+### Pass Example (2 of 2)
+```systemverilog
+module M;     // A module with no portlist is ANSI, but allowed.
+endmodule
+```
+
+### Fail Example (1 of 3)
+```systemverilog
+module M      // An ANSI module has ports declared in the module header.
+  ( input  a
+  , output b
+  );
+endmodule
+```
+
+### Fail Example (2 of 3)
+```systemverilog
+module M      // Declaring ports in the header with default direction (inout)
+  ( a         // also specifies an ANSI module where directions are not given
+  , b         // later.
+  );
+endmodule
+```
+
+### Fail Example (3 of 3)
+```systemverilog
+module M
+  ();         // A module with an empty portlist is ANSI.
+endmodule
+```
+
+### Explanation
+
+There are two ways to declare a module header in SystemVerilog:
+1. ANSI style - newer, neater, more succinct, mostly compatible with
+  IEEE1364-2001 (as long as you don't use `localparam`s for ports).
+2. non-ANSI style - additionally compatible with older Verilog (IEEE1364-1995).
+
+Examples of both styles are given in IEEE1364-2001 (e.g. pages 180 vs 182) and
+IEEE1800-2017 (e.g. pages 702 vs 700).
+
+The non-ANSI style separates the declaration of ports, their direction, and
+their datatype.
+While requiring more text, and visual noise, to convey the same information,
+the non-ANSI style allows non-overridable parameters, i.e. `localparam`, to be
+used in port declarations.
+If only `parameter` is used instead, as allowed in IEEE1364, an instance may
+inadvertently override a parameter, thus causing difficult-to-debug issues.
+
+This rule requires that module headers are declared using the non-ANSI style.
+It is recommended only to use this rule where compatibility with IEEE1364 is
+required.
+By forbidding the ANSI style, this rule requires that module declarations are
+written in a consistent manner, which facilitates easier review and prevents
+easily overlooked issues before they become problems.
+
+See also:
+- **module_nonansi_forbidden** - For safer usability where compatibility with
+  Verilog is not required.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 12.1 Modules
+- 12.2 Overriding module parameter values
+
+The most relevant clauses of IEEE1800-2017 are:
+- 23.2 Module definitions
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `module_nonansi_forbidden`
+
+### Hint
+
+Declare `module` header in ANSI style.
+
+### Reason
+
+Non-ANSI module headers are visually noisy and error-prone.
+
+### Pass Example (1 of 3)
+```systemverilog
+module M      // An ANSI module has ports declared in the module header.
+  ( input  a
+  , output b
+  );
+endmodule
+```
+
+### Pass Example (2 of 3)
+```systemverilog
+module M;     // A module with no ports is also ANSI.
+endmodule
+```
+
+### Pass Example (3 of 3)
+```systemverilog
+module M      // Declaring ports in the header with default direction (inout)
+  ( a         // also specifies an ANSI module.
+  , b
+  );
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M
+  ( a
+  , b
+  );
+  input  a;   // Declaring ports outside the module header declaration
+  output b;   // makes this a non-ANSI module.
+endmodule
+```
+
+### Explanation
+
+There are two ways to declare a module header in SystemVerilog:
+1. ANSI style - newer, neater, more succinct, mostly compatible with
+  IEEE1364-2001 (as long as you don't use `localparam`s for ports).
+2. non-ANSI style - additionally compatible with older Verilog (IEEE1364-1995).
+
+Examples of both styles are given in IEEE1364-2001 (e.g. pages 180 vs 182) and
+IEEE1800-2017 (e.g. pages 702 vs 700).
+
+The non-ANSI style separates the declaration of ports, their direction, and
+their datatype.
+In addition to requiring more text, and visual noise, to convey the same
+information, the non-ANSI style encourages simple coding mistakes where
+essential attributes may be forgotten.
+This rule requires that module headers are declared using the ANSI style.
+
+See also:
+- **module_ansi_forbidden** - For consistency in IEEE1364-2001 (compatibility
+  with non-overridable parameters, i.e. `localparam`, in port declarations,
+  or compatibility with IEEE1364-1995.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 12.1 Modules
+- 12.2 Overriding module parameter values
+
+The most relevant clauses of IEEE1800-2017 are:
+- 23.2 Module definitions
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `multiline_for_begin`
 
 ### Hint
@@ -3288,77 +3862,6 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-## Syntax Rule: `non_ansi_module`
-
-### Hint
-
-Declare `module` header in ANSI style.
-
-### Reason
-
-Non-ANSI module headers are visually noisy and error-prone.
-
-### Pass Example (1 of 3)
-```systemverilog
-module M      // An ANSI module has ports declared in the module header.
-  ( input  a
-  , output b
-  );
-endmodule
-```
-
-### Pass Example (2 of 3)
-```systemverilog
-module M;     // A module with no ports is also ANSI.
-endmodule
-```
-
-### Pass Example (3 of 3)
-```systemverilog
-module M      // Declaring ports in the header with default direction (inout)
-  ( a         // also specifies an ANSI module.
-  , b
-  );
-endmodule
-```
-
-### Fail Example (1 of 1)
-```systemverilog
-module M
-  ( a
-  , b
-  );
-  input  a;   // Declaring ports outside the module header declaration
-  output b;   // makes this a non-ANSI module.
-endmodule
-```
-
-### Explanation
-
-There are two ways to declare a module header in SystemVerilog:
-1. ANSI style - newer, neater, more succinct, compatible with IEEE1364-2001.
-2. non-ANSI style - additionally compatible with older Verilog (IEEE1364-1995).
-
-Examples of both styles are given in IEEE1364-2001 (e.g. pages 180 vs 182) and
-IEEE1800-2017 (e.g. pages 702 vs 700).
-
-The non-ANSI style separates the declaration of ports, their direction, and
-their datatype.
-In addition to requiring more text, and visual noise, to convey the same
-information, the non-ANSI style encourages simple coding mistakes where
-essential attributes may be forgotten.
-This rule requires that module headers are declared using the ANSI style.
-
-See also:
-- No related rules.
-
-The most relevant clauses of IEEE1800-2017 are:
-- 23.2 Module definitions
-
-
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
 ## Syntax Rule: `non_blocking_assignment_in_always_comb`
 
 ### Hint
@@ -3408,6 +3911,86 @@ The most relevant clauses of IEEE1800-2017 are:
 - 9.4.2 Event control
 - 10.4.1 Blocking procedural assignments
 - 10.4.2 Nonblocking procedural assignments
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `non_blocking_assignment_in_always_no_edge`
+
+### Hint
+
+Remove non-blocking assignment in combinational `always`.
+
+### Reason
+
+Scheduling between blocking and non-blocking assignments is non-deterministic.
+
+### Pass Example (1 of 2)
+```systemverilog
+module M;
+  always @* a = b + c;
+endmodule
+```
+
+### Pass Example (2 of 2)
+```systemverilog
+module M;
+  always @(*) a = b + c;
+endmodule
+```
+
+### Fail Example (1 of 2)
+```systemverilog
+module M;
+  always @* a <= b + c;
+endmodule
+```
+
+### Fail Example (2 of 2)
+```systemverilog
+module M;
+  always @(*) a <= b + c;
+endmodule
+```
+
+### Explanation
+
+Simulator event ordering between blocking and non-blocking assignments
+is undefined, so observed behavior is simulator-dependent.
+Value-sensitive (usually combinatorial) processes like, `always @*`
+should only contain blocking assignments in order for sampling and variable
+evaluation to operate in a defined order, e.g. `a = b;`, not `a <= b;`.
+
+For SystemVerilog (IEEE1800) code, the keyword `always_comb` should be used
+instead of the general purpose `always` to take advantage of extra compile-time
+checks.
+For code which must be compatible with Verilog (IEEE1364), `always` is the only
+option.
+Therefore, this rule `reg` assignments to be compatible with Verilog like this
+(in conjunction with **blocking_assignment_in_always_at_edge**):
+```verilog
+always @(posedge clk) q <= d;       // Clocked to reg (flip-flop)
+always @* a = b + c;                // Combinational to reg (logic gates)
+assign d = e + f;                   // Combinational to wire (logic gates)
+```
+
+See also:
+- **non_blocking_assignment_in_always_at_edge** - Useful companion rule.
+- **blocking_assignment_in_always_ff** - Similar rule, suggested as alternative
+  for SystemVerilog code, but not Verilog.
+- **blocking_assignment_in_always_latch** - Useful companion rule for
+  SystemVerilog, but not Verilog.
+- **non_blocking_assignment_in_always_comb** - Useful companion rule for
+  SystemVerilog, but not Verilog.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 4.9.3 Blocking assignment
+- 4.9.4 Non-blocking assignment
+- 9.4.2 Event control
+- 10.4.1 Blocking procedural assignments
+- 10.4.2 Nonblocking procedural assignments
+- 16.5.1 Sampling
 
 
 
@@ -3466,6 +4049,274 @@ See also:
 The most relevant clauses of IEEE1800-2017 are:
 - 11.4.5 Equality operators
 - 11.4.6 Wildcard quality operators
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `operator_incdec`
+
+### Hint
+
+Use `=` with a `+` or `-` instead of an increment or decrement operator.
+
+### Reason
+
+Only SystemVerilog, not Verilog, has increment and decrement operators.
+
+### Pass Example (1 of 6)
+```systemverilog
+module M;
+  always @(posedge clk) z = z - 1;
+endmodule
+```
+
+### Pass Example (2 of 6)
+```systemverilog
+module M;
+  always @(posedge clk) z = z + 1;
+endmodule
+```
+
+### Pass Example (3 of 6)
+```systemverilog
+module M;
+  always @* z = z - 1;
+endmodule
+```
+
+### Pass Example (4 of 6)
+```systemverilog
+module M;
+  always @* z = z + 1;
+endmodule
+```
+
+### Pass Example (5 of 6)
+```systemverilog
+module M;
+  genvar i;
+  for (i = 4; i >= 0; i = i - 1) begin
+    assign z[i] = y[i] + x[i];
+  end
+endmodule
+```
+
+### Pass Example (6 of 6)
+```systemverilog
+module M;
+  genvar i;
+  for (i = 0; i < 5; i = i + 1) begin
+    assign z[i] = y[i] + x[i];
+  end
+endmodule
+```
+
+### Fail Example (1 of 6)
+```systemverilog
+module M;
+  always @(posedge clk) z--;
+endmodule
+```
+
+### Fail Example (2 of 6)
+```systemverilog
+module M;
+  always @(posedge clk) z++;
+endmodule
+```
+
+### Fail Example (3 of 6)
+```systemverilog
+module M;
+  always @* z = x + y--;
+endmodule
+```
+
+### Fail Example (4 of 6)
+```systemverilog
+module M;
+  always @* z = x + y++;
+endmodule
+```
+
+### Fail Example (5 of 6)
+```systemverilog
+module M;
+  genvar i;
+  for (i = 4; i >= 0; i--) begin
+    assign z[i] = y[i] + x[i];
+  end
+endmodule
+```
+
+### Fail Example (6 of 6)
+```systemverilog
+module M;
+  genvar i;
+  for (i = 0; i < 5; i++) begin
+    assign z[i] = y[i] + x[i];
+  end
+endmodule
+```
+
+### Explanation
+
+Increment and decrement operators (`++` and `--`) are part of SystemVerilog
+(IEEE1800), but not Verilog (IEEE1364).
+
+This rule allows only binary operators with simple assigments (`foo = foo + 1`)
+to encourage backwards compatibility with Verilog.
+
+See also:
+- **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **keyword_forbidden_always_comb** - Suggested companion rule.
+- **keyword_forbidden_always_ff** - Suggested companion rule.
+- **keyword_forbidden_always_latch** - Suggested companion rule.
+- **keyword_forbidden_logic** - Suggested companion rule.
+- **operator_self_assignment** - Suggested companion rule.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 4.1 Operators
+- 9.2.1 Blocking procedural assignments
+- 12.1.3.2 generate-loop
+
+The most relevant clauses of IEEE1800-2017 are:
+- 10.4.1 Blocking procedural assignments
+- 11.4.2 Increment and decrement operators
+- 27.4 Loop generate constructs
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `operator_self_assignment`
+
+### Hint
+
+Use `=` with a binary operator instead of a self-assignment operator.
+
+### Reason
+
+Only SystemVerilog, not Verilog, allows self-assignment operators.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M;
+  always @*
+    if (a == b) // Logical-equality operator is not an assignment.
+      z = y;    // Simple assignment operator is allowed.
+endmodule
+```
+
+### Fail Example (1 of 12)
+```systemverilog
+module M;
+  always @* z += y; // Addition `z = z + y`
+endmodule
+```
+
+### Fail Example (2 of 12)
+```systemverilog
+module M;
+  always @* z -= y; // Subtraction `z = z - y`
+endmodule
+```
+
+### Fail Example (3 of 12)
+```systemverilog
+module M;
+  always @* z *= y; // Multiplication `z = z * y`
+endmodule
+```
+
+### Fail Example (4 of 12)
+```systemverilog
+module M;
+  always @* z /= y; // Division `z = z / y`
+endmodule
+```
+
+### Fail Example (5 of 12)
+```systemverilog
+module M;
+  always @* z %= y; // Modulo `z = z % y`
+endmodule
+```
+
+### Fail Example (6 of 12)
+```systemverilog
+module M;
+  always @* z &= y; // Bitwise AND `z = z & y`
+endmodule
+```
+
+### Fail Example (7 of 12)
+```systemverilog
+module M;
+  always @* z |= y; // Bitwise OR `z = z | y`
+endmodule
+```
+
+### Fail Example (8 of 12)
+```systemverilog
+module M;
+  always @* z ^= y; // Bitwise XOR `z = z ^ y`
+endmodule
+```
+
+### Fail Example (9 of 12)
+```systemverilog
+module M;
+  always @* z <<= y; // Logical left shift `z = z << y`
+endmodule
+```
+
+### Fail Example (10 of 12)
+```systemverilog
+module M;
+  always @* z >>= y; // Logical right shift `z = z >> y`
+endmodule
+```
+
+### Fail Example (11 of 12)
+```systemverilog
+module M;
+  always @* z <<<= y; // Arithmetic left shift `z = z <<< y`
+endmodule
+```
+
+### Fail Example (12 of 12)
+```systemverilog
+module M;
+  always @* z >>>= y; // Arithmetic right shift `z = z >>> y`
+endmodule
+```
+
+### Explanation
+
+Self-assignment operators (`+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=`, `^=`,
+`<<=`, `>>=`, `<<<=`, and `>>>=`) are part of SystemVerilog (IEEE1800), but not
+Verilog (IEEE1364).
+
+This rule allows only simple assigment (using `=`) to encourage backwards
+compatibility with Verilog.
+
+See also:
+- **module_ansi_forbidden** - Useful companion rule for Verilog compatibility.
+- **keyword_forbidden_always_comb** - Suggested companion rule.
+- **keyword_forbidden_always_ff** - Suggested companion rule.
+- **keyword_forbidden_always_latch** - Suggested companion rule.
+- **keyword_forbidden_logic** - Suggested companion rule.
+- **operator_incdec** - Suggested companion rule.
+
+The most relevant clauses of IEEE1364-2001 are:
+- 4.1 Operators
+- 9.2.1 Blocking procedural assignments
+
+The most relevant clauses of IEEE1800-2017 are:
+- 10.4.1 Blocking procedural assignments
+- 11.4.1 Assignment operators
 
 
 
@@ -4481,7 +5332,7 @@ endmodule
 ### Fail Example (1 of 3)
 ```systemverilog
 module M;
-  for (genvar i=0; i < 10; i++) // No begin/end delimeters.
+  for (genvar i=0; i < 10; i++) // No begin/end delimiters.
     assign a[i] = i;
 endmodule
 ```
@@ -4567,7 +5418,7 @@ endmodule
 ### Fail Example (1 of 8)
 ```systemverilog
 module M;
-  if (x)                        // No begin/end delimeters.
+  if (x)                        // No begin/end delimiters.
     assign a = 0;               // if condition.
   else if (x) begin: l_def
     assign a = 1;
@@ -4582,7 +5433,7 @@ endmodule
 module M;
   if (x) begin: l_abc
     assign a = 0;
-  end else if (x)               // No begin/end delimeters.
+  end else if (x)               // No begin/end delimiters.
     assign a = 1;               // else-if condition.
   else begin: l_hij
     assign a = 2;
@@ -4595,7 +5446,7 @@ module M;
     assign a = 0;
   end else if (x) begin: l_def
     assign a = 1;
-  end else                      // No begin/end delimeters.
+  end else                      // No begin/end delimiters.
     assign a = 2;               // else condition
 endmodule
 ```
@@ -5800,7 +6651,7 @@ See also:
 - **prefix_module**
 - **uppercamelcase_module**
 - **lowercamelcase_module**
-- **non_ansi_module**
+- **module_nonansi_forbidden**
 
 
 
@@ -5852,7 +6703,7 @@ See also:
 - **prefix_module**
 - **uppercamelcase_module**
 - **lowercamelcase_module**
-- **non_ansi_module**
+- **module_nonansi_forbidden**
 
 
 
@@ -7027,7 +7878,7 @@ See also:
 - **prefix_module**
 - **uppercamelcase_module**
 - **lowercamelcase_module**
-- **non_ansi_module**
+- **module_nonansi_forbidden**
 
 
 
@@ -7079,7 +7930,7 @@ See also:
 - **prefix_module**
 - **uppercamelcase_module**
 - **lowercamelcase_module**
-- **non_ansi_module**
+- **module_nonansi_forbidden**
 
 
 
@@ -9771,8 +10622,8 @@ If instead the `--config` option was used in wrapper scripts, this could lead
 to confusion where TOML files exist elsewhere in the hierarchy.
 
 It isn't essential for all ruleset scripts to be POSIX compliant, but POSIX
-compliance should be encourage because it allows for consistent behavior across
-the widest range of systems.
+compliance should be encouraged because it allows for consistent behavior
+across the widest range of systems.
 The utilities used in the POSIX wrappers are specified in the current POSIX
 standard (IEEE1003.1-2017, Volume 3: Shell and Utilities).
 Some resources related to these components:
@@ -10216,7 +11067,7 @@ syntaxrules.function_with_automatic = true
 syntaxrules.keyword_forbidden_priority = true
 syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
-syntaxrules.level_sensitive_always = true
+syntaxrules.general_always_no_edge = true
 syntaxrules.operator_case_equality = true
 
 # Common to **ruleset-designintent**.
@@ -10225,7 +11076,7 @@ syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_always = true
 syntaxrules.keyword_forbidden_wire_reg = true
-syntaxrules.non_ansi_module = true
+syntaxrules.module_nonansi_forbidden = true
 ```
 
 Generally, elaboration-time constants (`parameter`, `localparam`) should be
@@ -10952,7 +11803,7 @@ syntaxrules.function_with_automatic = true
 syntaxrules.keyword_forbidden_priority = true
 syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
-syntaxrules.level_sensitive_always = true # Redundant with keyword_forbidden_always.
+#syntaxrules.general_always_no_edge = true # Redundant with keyword_forbidden_always.
 syntaxrules.operator_case_equality = true
 ```
 
@@ -10969,7 +11820,7 @@ syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_always = true
 syntaxrules.keyword_forbidden_wire_reg = true
-syntaxrules.non_ansi_module = true
+syntaxrules.module_nonansi_forbidden = true
 ```
 
 When synthesised into a netlist, generate blocks should have labels so that
@@ -11060,6 +11911,136 @@ syntaxrules.interface_port_with_modport = true
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Ruleset: *designintentV2001*
+
+This ruleset has the same aims as **ruleset-designintent** but with the
+additional aim of only allowing code which is backwards compatible with
+IEEE1364-2001 (Verilog).
+Note that IEEE1364-2001 is not the most recent version (IEEE1364-2005), which
+was released in the same year as the first version of SystemVerilog
+(IEEE1800-2005).
+
+Firstly, let's forbid some things which are only in SystemVerilog, but not
+Verilog.
+```toml
+syntaxrules.keyword_forbidden_always_comb = true
+syntaxrules.keyword_forbidden_always_ff = true
+syntaxrules.keyword_forbidden_always_latch = true
+syntaxrules.keyword_forbidden_priority = true
+syntaxrules.keyword_forbidden_unique = true
+syntaxrules.keyword_forbidden_unique0 = true
+syntaxrules.keyword_forbidden_logic = true
+syntaxrules.operator_incdec = true
+syntaxrules.operator_self_assignment = true
+```
+
+Next, let's use some of the rules in common with **ruleset-simsynth**.
+```toml
+syntaxrules.enum_with_type = true
+syntaxrules.function_with_automatic = true
+syntaxrules.operator_case_equality = true
+syntaxrules.action_block_with_side_effect = true
+syntaxrules.default_nettype_none = true
+syntaxrules.function_same_as_system_function = true
+```
+
+Verilog does allow both ANSI and non-ANSI forms of module declaration, but
+there is a crucial difference for the ANSI form:
+Only `parameter`s are allowed in the list of parameter ports, not
+`localparam`s, meaning that derived parameters are overridable.
+In the following example, there is no way of preventing `PTR_W` from being
+overridden to something incorrect, risking some frustration and wasted time
+when non-obvious effects cause issues later.
+```verilog
+module M
+  #(parameter integer WIDTH = 123
+  , parameter integer PTR_W = clogb2(WIDTH)
+  )
+  ( input  wire [WIDTH-1:0] i_data
+  , output wire [PTR_W-1:0] o_pointer
+  );
+```
+However, using the non-ANSI form allows `PTR_W` to be specified as
+`localparam`, thus preventing overrides and the resulting confusion, i.e:
+```verilog
+module M
+  ( i_data
+  , o_pointer
+  );
+
+  parameter integer WIDTH = 123;
+  localparam integer PTR_W = clogb2(WIDTH);
+
+  input  wire [WIDTH-1:0] i_data;
+  output wire [PTR_W-1:0] o_pointer;
+```
+While this only affects modules which use derived parameters in the port
+declarations, a consistent style is generally easier to work with.
+For these reasons, the non-ANSI form is required.
+```toml
+syntaxrules.module_ansi_forbidden = true
+```
+
+SystemVerilog introduced several keywords which greatly help to clarify intent,
+but these are unavailable.
+Instead of `always_ff @(posedge clk)` and `always_comb`, we can use
+`always @(posedge clk)` and `always @*`.
+That means only the form like `always @(a or b)`, i.e. no edge sensitivities,
+can be forbidden.
+```toml
+syntaxrules.general_always_level_sensitive = true
+```
+On the same theme, guidelines around blocking vs non-blocking assignments also
+need to be altered, but keeping the same general intention.
+Clocked `always` processes should only use non-blocking assignment `<=`, and
+combinatorial `always` processes should only use blocking assignment `=`.
+```toml
+syntaxrules.blocking_assignment_in_always_at_edge = true
+syntaxrules.non_blocking_assignment_in_always_no_edge = true
+```
+
+Verilog doesn't have the same distinction between 2-state and 4-state types as
+SystemVerilog, e.g. `int` and `integer`, but requiring some type is still a
+good idea.
+```toml
+syntaxrules.localparam_explicit_type = true
+syntaxrules.parameter_explicit_type = true
+syntaxrules.parameter_default_value = true
+syntaxrules.parameter_in_generate = true
+```
+
+In IEEE1364-2001, the use of `generate` and `endgenerate` is mandatory, but
+optional in IEEE1364-2005.
+For more compatibility, these keywords are required by this ruleset, as are
+`genvar` declarations outside their generate `for` statements.
+The enablements of these rules are swapped in **ruleset-designintent** to
+reduce visual noise in SystemVerilog.
+```toml
+syntaxrules.genvar_declaration_in_loop = false
+syntaxrules.genvar_declaration_out_loop = true
+syntaxrules.keyword_forbidden_generate = false
+syntaxrules.keyword_required_generate = true
+```
+
+Unlike the in the richer language of SystemVerilog, forbidding sequential
+blocks (between `begin` and `end`) and sequential loops (`for` under `always`)
+is probably too restrictive for Verilog.
+Indeed, there is little point in using `always @*` instead of `assign` if
+`begin` and `end` are forbidden - in SystemVerilog, `always_comb` provides
+extra compile-time checks that `assign` does not.
+```toml
+#syntaxrules.loop_statement_in_always = true # Not implemented.
+#syntaxrules.sequential_block_in_always = true # Not implemented.
+syntaxrules.case_default = true # Applies in functions.
+syntaxrules.explicit_case_default = true # Applies under `always`.
+syntaxrules.explicit_if_else = true
+syntaxrules.multiline_for_begin = true
+syntaxrules.multiline_if_begin = true
+```
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Ruleset: *parseonly*
 
 If a file passes this ruleset you have these pieces of information:
@@ -11105,7 +12086,7 @@ syntaxrules.function_with_automatic = true
 syntaxrules.keyword_forbidden_priority = true
 syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
-syntaxrules.level_sensitive_always = true
+syntaxrules.general_always_no_edge = true
 syntaxrules.operator_case_equality = true
 ```
 
@@ -11446,7 +12427,7 @@ syntaxrules.action_block_with_side_effect = true
 syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_wire_reg = true
-syntaxrules.non_ansi_module = true
+syntaxrules.module_nonansi_forbidden = true
 ```
 
 Generally, elaboration-time constant (`parameter`, `localparam`) should be

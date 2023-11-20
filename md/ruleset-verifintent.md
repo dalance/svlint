@@ -30,7 +30,7 @@ syntaxrules.action_block_with_side_effect = true
 syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_wire_reg = true
-syntaxrules.non_ansi_module = true
+syntaxrules.module_nonansi_forbidden = true
 ```
 
 Generally, elaboration-time constant (`parameter`, `localparam`) should be

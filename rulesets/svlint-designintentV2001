@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+set -e
+
+# If flag/options are given that don't use the ruleset config, simply run
+# svlint with the given arguments.
+NONRULESET="-h|--help|-V|--version"
+NONRULESET="${NONRULESET}|--dump-filelist|--shell-completion"
+NONRULESET="${NONRULESET}|-E|--preprocess-only"
+NONRULESET="${NONRULESET}|--config-example|--config-update|--example|--update"
+if printf "%b\n" " $*" | grep -Eq " (${NONRULESET})";
+then
+  svlint $*
+  exit $?
+fi
+
+SVLINT_CONFIG="$(dirname $(command -v svlint-designintentV2001))/designintentV2001.toml"
+
+# Delete ANSI control sequences that begin with ESC and (usually) end with m.
+# Delete ASCII control characters except line feed ('\n' = 0o12 = 10 = 0x0A).
+SANS_CONTROL="| sed -e 's/\\o33\\[[0-9;]*[mGKHF]//g'"
+SANS_CONTROL="${SANS_CONTROL} | tr -d '[\\000-\\011\\013-\\037\\177]'"
+
+# Combine the above output sanitization fragments into variables which can be
+# evaluated and processed with xargs, e.g:
+#   eval "${SVFILES}" | xargs -I {} sh -c "grep foo {};"
+# NOTE: Creating a variable with the result (instead of the command) would lead
+# to undefined behavior where the list of file paths exceeds 2MiB.
+SVFILES="svlint --dump-filelist=files $* ${SANS_CONTROL}"
+SVINCDIRS="svlint --dump-filelist=incdirs $* ${SANS_CONTROL}"
+
+
+env SVLINT_CONFIG="${SVLINT_CONFIG}" svlint $*

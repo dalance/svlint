@@ -33,7 +33,7 @@ This rule only applies to event expressions in `always_ff` processes.
 See also:
 - **eventlist_or** - Mutually exclusive rule.
 - **blocking_assignment_in_always_ff** - Useful companion rule.
-- **level_sensitive_always** - Useful companion rule.
+- **general_always_no_edge** - Useful companion rule.
 - **style_keyword_1space** - Useful companion rule.
 
 The most relevant clauses of IEEE1800-2017 are:

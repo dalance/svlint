@@ -35,7 +35,7 @@ syntaxrules.function_with_automatic = true
 syntaxrules.keyword_forbidden_priority = true
 syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
-syntaxrules.level_sensitive_always = true
+syntaxrules.general_always_no_edge = true
 syntaxrules.operator_case_equality = true
 
 # Common to **ruleset-designintent**.
@@ -44,7 +44,7 @@ syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_always = true
 syntaxrules.keyword_forbidden_wire_reg = true
-syntaxrules.non_ansi_module = true
+syntaxrules.module_nonansi_forbidden = true
 syntaxrules.localparam_type_twostate = true
 syntaxrules.parameter_type_twostate = true
 syntaxrules.localparam_explicit_type = true

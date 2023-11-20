@@ -1,5 +1,5 @@
 module M;
-  if (x)                        // No begin/end delimeters.
+  if (x)                        // No begin/end delimiters.
     assign a = 0;               // if condition.
   else if (x) begin: l_def
     assign a = 1;
@@ -11,7 +11,7 @@ endmodule
 module M;
   if (x) begin: l_abc
     assign a = 0;
-  end else if (x)               // No begin/end delimeters.
+  end else if (x)               // No begin/end delimiters.
     assign a = 1;               // else-if condition.
   else begin: l_hij
     assign a = 2;
@@ -24,7 +24,7 @@ module M;
     assign a = 0;
   end else if (x) begin: l_def
     assign a = 1;
-  end else                      // No begin/end delimeters.
+  end else                      // No begin/end delimiters.
     assign a = 2;               // else condition
 endmodule
 ////////////////////////////////////////////////////////////////////////////////

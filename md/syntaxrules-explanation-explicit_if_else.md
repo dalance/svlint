@@ -17,11 +17,11 @@ and clear through some useful redundancy.
 
 NOTE: The legacy keyword `always` can infer both combinational and sequential
 constructs in the same block, which can be confusing and should be avoided.
-Use of the legacy keyword can be detected with the rule **legacy_always**.
+Use of the legacy keyword can be detected with the rule **keyword_forbidden_always**.
 
 See also:
 - **explicit_case_default** - Useful companion rule.
-- **legacy_always** - Useful companion rule.
+- **keyword_forbidden_always** - Useful companion rule.
 - **sequential_block_in_always_comb** - Useful companion rule.
 - **sequential_block_in_always_ff** - Useful companion rule.
 - **sequential_block_in_always_latch** - Useful companion rule.
