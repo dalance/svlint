@@ -243,9 +243,9 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
             }
         }
 
-        (files, incdirs)
+        get_files_incdirs(files, incdirs)
     } else {
-        (opt.files.clone(), opt.incdirs.clone())
+        get_files_incdirs(opt.files.clone(), opt.incdirs.clone())
     };
 
     if let Some(mode) = &opt.dump_filelist {
@@ -367,6 +367,35 @@ fn print_parser_error(
     }
 
     Ok(())
+}
+
+#[cfg_attr(tarpaulin, skip)]
+fn get_files_incdirs(
+    cli_files: Vec<PathBuf>,
+    cli_incdirs: Vec<PathBuf>
+) -> (Vec<PathBuf>, Vec<PathBuf>) {
+    let env_incdirs: Vec<PathBuf> = if let Ok(e) = env::var("SVLINT_INCDIRS") {
+        env::split_paths(&e).map(|x| PathBuf::from(x)).collect()
+    } else {
+        vec![]
+    };
+
+    let env_prefiles: Vec<PathBuf> = if let Ok(e) = env::var("SVLINT_PREFILES") {
+        env::split_paths(&e).map(|x| PathBuf::from(x)).collect()
+    } else {
+        vec![]
+    };
+
+    let env_postfiles: Vec<PathBuf> = if let Ok(e) = env::var("SVLINT_POSTFILES") {
+        env::split_paths(&e).map(|x| PathBuf::from(x)).collect()
+    } else {
+        vec![]
+    };
+
+    let ret_files: Vec<PathBuf> = [env_prefiles, cli_files, env_postfiles].concat();
+    let ret_incdirs: Vec<PathBuf> = [env_incdirs, cli_incdirs].concat();
+
+    (ret_files, ret_incdirs)
 }
 
 #[cfg_attr(tarpaulin, skip)]
