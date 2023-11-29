@@ -38,7 +38,7 @@ serde_derive            = "1.0"
 serde_regex             = "1.1"
 clap                    = {version = "3.2", features = ["derive"]}
 clap_complete           = "3.2"
-sv-parser               = "0.13.1"
+sv-parser               = "0.13.2"
 term                    = "0.7"
 toml                    = "0.8"
 sv-filelist-parser      = "0.1.3"
