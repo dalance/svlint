@@ -4811,6 +4811,56 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `procedural_continuous_assignment`
+
+### Hint
+
+Move continuous assignment out of procedural block.
+
+### Reason
+
+Continuous assigments ('assign a = b') in procedural blocks ('always*') are not synthesizable.
+
+### Pass Example (1 of 1)
+```systemverilog
+module M (
+    input logic a,
+    input logic b,
+    output logic c
+);
+
+assign c = a + b;
+
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module M (
+    input logic clk,
+    input logic a,
+    input logic b,
+    output logic c
+);
+
+always_ff @(posedge clk)
+    assign c = a + b;
+
+endmodule
+```
+
+### Explanation
+
+SystemVerilog continuous assignment (`assign x = y`) infers combinatorial logic
+that continuously drives the LHS and changes with any change on the RHS.
+
+Such construct in a procedural (`always*`) block which is only triggered
+on the changes of the signals in the sensitivity list may not be synthesizable.
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `sequential_block_in_always_comb`
 
 ### Hint
@@ -11889,6 +11939,7 @@ syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_always = true
 syntaxrules.keyword_forbidden_wire_reg = true
 syntaxrules.module_nonansi_forbidden = true
+syntaxrules.procedural_continuous_assignment = true
 ```
 
 When synthesised into a netlist, generate blocks should have labels so that
