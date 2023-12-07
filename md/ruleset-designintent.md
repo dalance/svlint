@@ -33,6 +33,7 @@ syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_always = true
 syntaxrules.keyword_forbidden_wire_reg = true
 syntaxrules.module_nonansi_forbidden = true
+syntaxrules.procedural_continuous_assignment = true
 ```
 
 When synthesised into a netlist, generate blocks should have labels so that
