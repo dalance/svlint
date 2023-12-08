@@ -146,3 +146,4 @@ under the Developer Certificate of Origin <https://developercertificate.org/>.
 - Damien Pretet (@dpretet)
 - Taichi Ishitani (@taichi-ishitani)
 - Sosuke Hosokawa (@so298)
+- Jan Remes (@remes-codasip)
