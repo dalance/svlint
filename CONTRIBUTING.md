@@ -55,8 +55,8 @@ Adding A New Rule
   placeholder in this list of steps.
 2. Write a short description in Markdown about what the new rule checks and why
   it might be used.
-  Write this in `md/explanation-$RULENAME.md`, preferably keeping a similar
-  format to similar existing rules.
+  Write this in `md/(text|syntax)rules-explanation-$RULENAME.md`, preferably
+  keeping a similar format to similar existing rules.
 3. Write at least one testcase which the new rule passes in
   `testcases/(text|syntax)rules/pass/$RULENAME.sv`.
   If you have more than one testcase which must pass, they should all go into
