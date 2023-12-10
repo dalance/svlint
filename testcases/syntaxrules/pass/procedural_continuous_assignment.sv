@@ -1,9 +1,18 @@
-module M (
-    input logic a,
-    input logic b,
-    output logic c
-);
-
-assign c = a + b;
-
+module M;
+  assign c = a + b; // Continuous assignment
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_ff @(posedge clk)
+    c <= a + b; // Procedural non-blocking assignment
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_comb
+    c = a + b; // Procedural blocking assignment
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always @*
+    c = a + b; // Procedural blocking assignment, Verilog 2001
 endmodule
