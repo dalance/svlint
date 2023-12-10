@@ -29,10 +29,10 @@ impl SyntaxRule for ProceduralContinuousAssignment {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("Move continuous assignment out of procedural block.")
+        String::from("Move `assign` out of `always` block.")
     }
 
     fn reason(&self) -> String {
-        String::from("Continuous assigments ('assign a = b') in procedural blocks ('always*') are not synthesizable.")
+        String::from("Procedural continuous assigments are not synthesizable.")
     }
 }
