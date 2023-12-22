@@ -4815,47 +4815,98 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Move continuous assignment out of procedural block.
+Move `assign` out of `always` block.
 
 ### Reason
 
-Continuous assigments ('assign a = b') in procedural blocks ('always*') are not synthesizable.
+Procedural continuous assigments are not synthesizable.
 
-### Pass Example (1 of 1)
+### Pass Example (1 of 4)
 ```systemverilog
-module M (
-    input logic a,
-    input logic b,
-    output logic c
-);
-
-assign c = a + b;
-
+module M;
+  assign c = a + b; // Continuous assignment
 endmodule
 ```
 
-### Fail Example (1 of 1)
+### Pass Example (2 of 4)
 ```systemverilog
-module M (
-    input logic clk,
-    input logic a,
-    input logic b,
-    output logic c
-);
+module M;
+  always_ff @(posedge clk)
+    c <= a + b; // Procedural non-blocking assignment
+endmodule
+```
 
-always_ff @(posedge clk)
+### Pass Example (3 of 4)
+```systemverilog
+module M;
+  always_comb
+    c = a + b; // Procedural blocking assignment
+endmodule
+```
+
+### Pass Example (4 of 4)
+```systemverilog
+module M;
+  always @*
+    c = a + b; // Procedural blocking assignment, Verilog 2001
+endmodule
+```
+
+### Fail Example (1 of 4)
+```systemverilog
+module M;
+  always @*
     assign c = a + b;
+endmodule
+```
 
+### Fail Example (2 of 4)
+```systemverilog
+module M;
+  always_comb
+    assign c = a + b;
+endmodule
+```
+
+### Fail Example (3 of 4)
+```systemverilog
+module M;
+  always_latch
+    assign c = a + b;
+endmodule
+```
+
+### Fail Example (4 of 4)
+```systemverilog
+module M;
+  always_ff @(posedge clk)
+    assign c = a + b;
 endmodule
 ```
 
 ### Explanation
 
-SystemVerilog continuous assignment (`assign x = y`) infers combinatorial logic
-that continuously drives the LHS and changes with any change on the RHS.
+Continuous assignment, e.g. `assign x = y;` outside of any `always` process,
+continuously drives the LHS and changes with any change on the RHS.
+The same keyword `assign` has different meaning when used within an `always`
+process (or `always_ff`, `always_comb`, `initial`, etc.) where it can be used
+to override procedural assignments.
+Using this construct in a procedural block (`always*`) which is only triggered
+on changes to signals in the sensitivity list may not be synthesizable.
 
-Such construct in a procedural (`always*`) block which is only triggered
-on the changes of the signals in the sensitivity list may not be synthesizable.
+This SystemVerilog language feature is being considered for deprecation, as
+noted in IEEE1800-2017 Annex C, because it is easily abused and difficult to
+implement while not providing additional capability.
+Users are strongly encouraged to migrate their cod to use one of the alternate
+methods of procedural or continuous assignments.
+
+See also:
+- **non_blocking_assignment_in_always_comb** - Useful companion rule.
+- **blocking_assignment_in_always_ff** - Useful companion rule.
+
+The most relevant clauses of IEEE1800-2017 are:
+- 10.6.1 The assign and deassign procedural statements
+- Annex C.4 Constructs identified for deprecation
 
 
 
@@ -11187,6 +11238,7 @@ syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
 syntaxrules.general_always_no_edge = true
 syntaxrules.operator_case_equality = true
+syntaxrules.procedural_continuous_assignment = true
 
 # Common to **ruleset-designintent**.
 syntaxrules.action_block_with_side_effect = true
@@ -11923,6 +11975,7 @@ syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
 #syntaxrules.general_always_no_edge = true # Redundant with keyword_forbidden_always.
 syntaxrules.operator_case_equality = true
+syntaxrules.procedural_continuous_assignment = true
 ```
 
 This ruleset has further rules which don't depend on each other or combine
@@ -11939,7 +11992,6 @@ syntaxrules.function_same_as_system_function = true
 syntaxrules.keyword_forbidden_always = true
 syntaxrules.keyword_forbidden_wire_reg = true
 syntaxrules.module_nonansi_forbidden = true
-syntaxrules.procedural_continuous_assignment = true
 ```
 
 When synthesised into a netlist, generate blocks should have labels so that
@@ -12061,6 +12113,7 @@ syntaxrules.operator_case_equality = true
 syntaxrules.action_block_with_side_effect = true
 syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
+syntaxrules.procedural_continuous_assignment = true
 ```
 
 Verilog does allow both ANSI and non-ANSI forms of module declaration, but
@@ -12207,6 +12260,7 @@ syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
 syntaxrules.general_always_no_edge = true
 syntaxrules.operator_case_equality = true
+syntaxrules.procedural_continuous_assignment = true
 ```
 
 
@@ -12534,6 +12588,7 @@ syntaxrules.enum_with_type = true
 syntaxrules.keyword_forbidden_priority = true
 syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
+syntaxrules.procedural_continuous_assignment = true
 ```
 
 This ruleset has further rules which don't depend on each other or combine

@@ -1,11 +1,19 @@
-module M (
-    input logic clk,
-    input logic a,
-    input logic b,
-    output logic c
-);
-
-always_ff @(posedge clk)
+module M;
+  always @*
     assign c = a + b;
-
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_comb
+    assign c = a + b;
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_latch
+    assign c = a + b;
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_ff @(posedge clk)
+    assign c = a + b;
 endmodule

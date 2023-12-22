@@ -368,6 +368,7 @@ syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
 syntaxrules.general_always_no_edge = true
 syntaxrules.operator_case_equality = true
+syntaxrules.procedural_continuous_assignment = true
 
 # Common to **ruleset-designintent**.
 syntaxrules.action_block_with_side_effect = true

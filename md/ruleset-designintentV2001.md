@@ -28,6 +28,7 @@ syntaxrules.operator_case_equality = true
 syntaxrules.action_block_with_side_effect = true
 syntaxrules.default_nettype_none = true
 syntaxrules.function_same_as_system_function = true
+syntaxrules.procedural_continuous_assignment = true
 ```
 
 Verilog does allow both ANSI and non-ANSI forms of module declaration, but
