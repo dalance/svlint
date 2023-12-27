@@ -18,6 +18,7 @@ syntaxrules.enum_with_type = true
 syntaxrules.keyword_forbidden_priority = true
 syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
+syntaxrules.procedural_continuous_assignment = true
 ```
 
 This ruleset has further rules which don't depend on each other or combine

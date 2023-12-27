@@ -17,6 +17,7 @@ syntaxrules.keyword_forbidden_unique = true
 syntaxrules.keyword_forbidden_unique0 = true
 #syntaxrules.general_always_no_edge = true # Redundant with keyword_forbidden_always.
 syntaxrules.operator_case_equality = true
+syntaxrules.procedural_continuous_assignment = true
 ```
 
 This ruleset has further rules which don't depend on each other or combine
