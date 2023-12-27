@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.9.1...Unreleased) - ReleaseDate
 
 * [Changed] Update sv-parser
+* [Added] New rule procedural_continuous_assignment [#276](https://github.com/dalance/svlint/pull/276)
 
 ## [v0.9.1](https://github.com/dalance/svlint/compare/v0.9.0...v0.9.1) - 2023-11-20
 
