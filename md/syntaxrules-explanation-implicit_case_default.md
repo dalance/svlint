@@ -14,3 +14,8 @@ If the case match fails, `y` wouldn't infer memory or be undriven because the de
 See also:
  - **case_default**
  - **explicit_case_default**
+
+The most relevant clauses of IEEE1800-2017 are:
+
+- 12.5 Case statement
+
