@@ -5357,7 +5357,7 @@ logic [7:0][3:0] b;
 endmodule
 ```
 
-### Fail Example (1 of 2)
+### Fail Example (1 of 4)
 ```systemverilog
 module M;
 
@@ -5366,13 +5366,31 @@ logic a [7:0];
 endmodule;
 ```
 
-### Fail Example (2 of 2)
+### Fail Example (2 of 4)
 ```systemverilog
 module M;
 
 logic [31:0] b [0:7];
 
 endmodule;
+```
+
+### Fail Example (3 of 4)
+```systemverilog
+module M;
+
+localparam bit [7:0] ARRAY [0:3];
+
+endmodule
+```
+
+### Fail Example (4 of 4)
+```systemverilog
+module M (
+  input logic [7:0] a_in [0:5]
+);
+
+endmodule
 ```
 
 ### Explanation
