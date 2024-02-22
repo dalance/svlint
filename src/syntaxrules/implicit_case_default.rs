@@ -5,7 +5,8 @@ use sv_parser::{unwrap_node, Locate, NodeEvent, RefNode, SyntaxTree};
 #[derive(Default)]
 pub struct ImplicitCaseDefault {
     under_always_construct: bool,
-    lhs_variables: Vec<String>,
+    implicit_variables: Vec<String>,
+    case_variables: Vec<String>,
 }
 
 impl SyntaxRule for ImplicitCaseDefault {
@@ -29,9 +30,9 @@ impl SyntaxRule for ImplicitCaseDefault {
                         let id = get_identifier(var);
                         let id = syntax_tree.get_str(&id).unwrap();
 
-                        self.lhs_variables.push(String::from(id));
+                        self.implicit_variables.push(String::from(id));
 
-                        println!("LHS Variables: {:?}", self.lhs_variables);
+                        println!("LHS Variables: {:?}", self.implicit_variables);
                     }
 
                     _ => (),
@@ -58,8 +59,8 @@ impl SyntaxRule for ImplicitCaseDefault {
 
                     println!("Case variable: {id}");
 
-                    // check if id is in lhs_variables
-                    if self.lhs_variables.contains(&id.to_string()) {
+                    // check if id is in implicit_variables
+                    if self.implicit_variables.contains(&id.to_string()) {
                         SyntaxRuleResult::Pass
                     } else {
                         SyntaxRuleResult::Fail
