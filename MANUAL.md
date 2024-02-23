@@ -2032,6 +2032,89 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `implicit_case_default`
+
+### Hint
+
+Signal driven in `case` statement does not have a default value.
+
+### Reason
+
+Default values ensure that signals are always driven.
+
+### Pass Example (1 of 2)
+```systemverilog
+module M;
+  always_comb
+    y = 0;
+    case(x)
+      1: y = 1; // case default is implicit
+    endcase
+endmodule
+```
+
+### Pass Example (2 of 2)
+```systemverilog
+module M;
+  always_comb
+    case(x)
+      1: y = 1;
+      default: y = 0;
+    endcase
+endmodule
+```
+
+### Fail Example (1 of 2)
+```systemverilog
+module M;
+  always_comb
+    case (x)
+      1: a = 0; // No implicit or explicit case default
+    endcase
+endmodule
+```
+
+### Fail Example (2 of 2)
+```systemverilog
+module M;
+  always_comb begin
+    a = 0;
+
+    case(x)
+      1: b = 0;
+    endcase
+  end
+endmodule
+```
+
+### Explanation
+
+This rule is an extension of the **case_default** rule that allows the case default to be implicitly defined.
+Case statements without a `default` branch can cause signals to be undriven. Setting default values of signals at the top of an `always` procedures is good practice and ensures that signals are never metastable when a case match fails. For example,
+```sv
+always_comb begin
+  y = 0;
+  case(x)
+    1: y = 1;
+  endcase
+end
+
+```
+If the case match fails, `y` wouldn't infer memory or be undriven because the default value is defined before the `case`.
+
+See also:
+ - **case_default**
+ - **explicit_case_default**
+
+The most relevant clauses of IEEE1800-2017 are:
+
+- 12.5 Case statement
+
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `inout_with_tri`
 
 ### Hint
