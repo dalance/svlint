@@ -2036,13 +2036,13 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Signal driven in `case` statement does not have a default value.
+Signal driven in `case` statement does not have a default value. Define a default case or implicitly define before `case` statement.
 
 ### Reason
 
 Default values ensure that signals are always driven.
 
-### Pass Example (1 of 2)
+### Pass Example (1 of 3)
 ```systemverilog
 module M;
   always_comb
@@ -2053,7 +2053,25 @@ module M;
 endmodule
 ```
 
-### Pass Example (2 of 2)
+### Pass Example (2 of 3)
+```systemverilog
+module M;
+  always_comb begin
+    y = 0;
+    z = 0;
+    w = 0;
+    case(x)
+      1: y = 1;
+      2: begin 
+        z = 1;
+        w = 1;
+      end
+    endcase
+  end
+endmodule
+```
+
+### Pass Example (3 of 3)
 ```systemverilog
 module M;
   always_comb
@@ -2079,7 +2097,6 @@ endmodule
 module M;
   always_comb begin
     a = 0;
-
     case(x)
       1: b = 0;
     endcase
