@@ -5,7 +5,8 @@ use sv_parser::{unwrap_node, Locate, NodeEvent, RefNode, SyntaxTree};
 #[derive(Default)]
 pub struct ImplicitCaseDefault {
     under_always_construct: bool,
-    under_case_statement: bool,
+    under_case_item: bool,
+    is_default: bool,
 
     lhs_variables: Vec<String>,
     case_variables: Vec<String>
@@ -25,10 +26,11 @@ impl SyntaxRule for ImplicitCaseDefault {
                 match x {
                     RefNode::AlwaysConstruct(_) => {
                         self.under_always_construct = true;
+                        self.is_default = false;
                     }
 
                     RefNode::CaseItemNondefault(_) => {
-                        self.under_case_statement = true;
+                        self.under_case_item = true;
                     }
                     
                     _ => (),
@@ -40,13 +42,14 @@ impl SyntaxRule for ImplicitCaseDefault {
                 match x {
                     RefNode::AlwaysConstruct(_) => {
                         self.under_always_construct = false;
+                        self.is_default = false;
                         self.lhs_variables.clear();
                         self.case_variables.clear();
 
                     }
 
                     RefNode::CaseItemNondefault(_) => {
-                        self.under_case_statement = false;
+                        self.under_case_item = false;
                     }
 
                     _ => ()
@@ -56,9 +59,9 @@ impl SyntaxRule for ImplicitCaseDefault {
         };
 
         //println!("{}", node);
-        
+
         // match implicit declarations
-        match (self.under_always_construct, self.under_case_statement, node) {
+        match (self.under_always_construct, self.under_case_item, node) {
             (true, false, RefNode::BlockItemDeclaration(x)) => {
                 let var = unwrap_node!(*x, VariableDeclAssignment).unwrap();
                 let id = get_identifier(var);
@@ -69,14 +72,26 @@ impl SyntaxRule for ImplicitCaseDefault {
             _ => ()
         }
 
+        // check if default
+        match (self.under_always_construct, node) {
+            (true, RefNode::CaseStatementNormal(x)) => {
+                let a = unwrap_node!(*x, CaseItemDefault);
+                if a.is_some() {
+                    self.is_default = true;
+                }
+            }
+
+            _ => ()
+        }
+
         // match case statement declarations
-        match (self.under_always_construct, self.under_case_statement, node) {
+        match (self.under_always_construct, self.under_case_item, node) {
             (true, true, RefNode::BlockingAssignment(x)) => {
                 let var = unwrap_node!(*x, VariableLvalueIdentifier).unwrap();
                 let id = get_identifier(var);
                 let id = syntax_tree.get_str(&id).unwrap();
                 
-                if self.lhs_variables.contains(&id.to_string()) {
+                if self.lhs_variables.contains(&id.to_string()) || self.is_default {
                     return SyntaxRuleResult::Pass
                 } else {
                     return SyntaxRuleResult::Fail
@@ -88,7 +103,7 @@ impl SyntaxRule for ImplicitCaseDefault {
                 let id = get_identifier(var);
                 let id = syntax_tree.get_str(&id).unwrap();
                
-                if self.lhs_variables.contains(&id.to_string()) {
+                if self.lhs_variables.contains(&id.to_string()) || self.is_default {
                     return SyntaxRuleResult::Pass
                 } else {
                     return SyntaxRuleResult::Fail
@@ -97,34 +112,6 @@ impl SyntaxRule for ImplicitCaseDefault {
             
             _ => ()
         }
-
-        /*
-        match (self.under_always_construct, node) {
-            (true, RefNode::CaseStatementNormal(x)) => {
-                let a = unwrap_node!(*x, CaseItemDefault);
-                if a.is_some() {
-                    SyntaxRuleResult::Pass
-                } else {
-                    // check if lvalues of case statement have an implicit definition
-                    let var = unwrap_node!(*x, VariableLvalueIdentifier).unwrap();
-                    let id = get_identifier(var);
-                    let id = syntax_tree.get_str(&id).unwrap();
-
-                    println!("Case variable: {id}");
-
-                    // check if id is in lhs_variables
-                    if self.lhs_variables.contains(&id.to_string()) {
-                        SyntaxRuleResult::Pass
-                    } else {
-                        SyntaxRuleResult::Fail
-                    }
-                }
-            }
-
-            _ => {
-                SyntaxRuleResult::Pass
-            }
-        }*/
 
         return SyntaxRuleResult::Pass
     }

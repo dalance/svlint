@@ -8,7 +8,6 @@ endmodule
 module M;
   always_comb begin
     a = 0;
-
     case(x)
       1: b = 0;
     endcase
