@@ -19,8 +19,6 @@ impl SyntaxRule for ImplicitCaseDefault {
         event: &NodeEvent,
         _option: &ConfigOption,
     ) -> SyntaxRuleResult {
-        //println!("{}", syntax_tree);
-
         let node = match event {
             NodeEvent::Enter(x) => {
                 match x {
@@ -57,8 +55,6 @@ impl SyntaxRule for ImplicitCaseDefault {
                 return SyntaxRuleResult::Pass;
             }
         };
-
-        //println!("{}", node);
 
         // match implicit declarations
         match (self.under_always_construct, self.under_case_item, node) {
