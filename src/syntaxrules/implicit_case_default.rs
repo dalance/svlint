@@ -9,7 +9,6 @@ pub struct ImplicitCaseDefault {
     is_default: bool,
 
     lhs_variables: Vec<String>,
-    case_variables: Vec<String>
 }
 
 impl SyntaxRule for ImplicitCaseDefault {
@@ -42,8 +41,6 @@ impl SyntaxRule for ImplicitCaseDefault {
                         self.under_always_construct = false;
                         self.is_default = false;
                         self.lhs_variables.clear();
-                        self.case_variables.clear();
-
                     }
 
                     RefNode::CaseItemNondefault(_) => {
@@ -117,7 +114,7 @@ impl SyntaxRule for ImplicitCaseDefault {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("Signal driven in `case` statement does not have a default value. Define a default case or implicitly define before `case` statement.")
+        String::from("Signal driven in `case` statement does not have a default value.\n Define a default case or implicitly define before `case` statement.")
     }
 
     fn reason(&self) -> String {
