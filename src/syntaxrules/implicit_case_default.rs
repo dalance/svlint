@@ -114,7 +114,7 @@ impl SyntaxRule for ImplicitCaseDefault {
     }
 
     fn hint(&self, _option: &ConfigOption) -> String {
-        String::from("Signal driven in `case` statement does not have a default value.\n Define a default case or implicitly define before `case` statement.")
+        String::from("Signal driven in `case` statement does not have a default value.")
     }
 
     fn reason(&self) -> String {
