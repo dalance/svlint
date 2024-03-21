@@ -1,9 +1,10 @@
 module M;
-  always_comb
+  always_comb begin
     y = 0;
-    case(x)
+    case (x)
       1: y = 1; // case default is implicit
     endcase
+  end
 endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
@@ -11,9 +12,9 @@ module M;
     y = 0;
     z = 0;
     w = 0;
-    case(x)
+    case (x)
       1: y = 1;
-      2: begin 
+      2: begin
         z = 1;
         w = 1;
       end
@@ -23,7 +24,7 @@ endmodule
 ////////////////////////////////////////////////////////////////////////////////
 module M;
   always_comb
-    case(x)
+    case (x)
       1: y = 1;
       default: y = 0;
     endcase
