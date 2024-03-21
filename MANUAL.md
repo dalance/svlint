@@ -5357,7 +5357,7 @@ logic [7:0][3:0] b;
 endmodule
 ```
 
-### Fail Example (1 of 2)
+### Fail Example (1 of 4)
 ```systemverilog
 module M;
 
@@ -5366,7 +5366,7 @@ logic a [7:0];
 endmodule;
 ```
 
-### Fail Example (2 of 2)
+### Fail Example (2 of 4)
 ```systemverilog
 module M;
 
@@ -5375,13 +5375,35 @@ logic [31:0] b [0:7];
 endmodule;
 ```
 
+### Fail Example (3 of 4)
+```systemverilog
+module M;
+
+localparam bit [7:0] ARRAY [0:3];
+
+endmodule
+```
+
+### Fail Example (4 of 4)
+```systemverilog
+module M (
+  input logic [7:0] a_in [0:5]
+);
+
+endmodule
+```
+
 ### Explanation
 
 This rule forbids unpacked array declarations.
 
-Unpacked arrays are not guaranteed to be represented as contiguous memory, and can cause issues with synthesis tools, especially with how multidimensional arrays are synthesized. For example, a synthesis tool might synthesize out unused memory locations of an unpacked array which is not the intended behavior.
+Unpacked arrays are not guaranteed to be represented as contiguous memory, and
+can cause issues with synthesis tools, especially with how multidimensional
+arrays are synthesized. For example, a synthesis tool might synthesize out
+unused memory locations of an unpacked array which is not the intended behavior.
 
-Additionally, packed arrays allow the user to intuitively index and slice the array and apply bitwise operations.
+Additionally, packed arrays allow the user to intuitively index and slice the
+array and apply bitwise operations.
 
 The most relevant clauses of IEEE1800-2017 are:
 - 7.4 Packed and unpacked arrays
