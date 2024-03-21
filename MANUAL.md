@@ -2036,7 +2036,8 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Signal driven in `case` statement does not have a default value. Define a default case or implicitly define before `case` statement.
+Signal driven in `case` statement does not have a default value.
+ Define a default case or implicitly define before `case` statement.
 
 ### Reason
 
