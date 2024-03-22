@@ -2040,16 +2040,17 @@ Signal driven in `case` statement does not have a default value.
 
 ### Reason
 
-Default values ensure that signals are always driven.
+Default values ensure that signals are never metastable.
 
 ### Pass Example (1 of 3)
 ```systemverilog
 module M;
-  always_comb
+  always_comb begin
     y = 0;
-    case(x)
+    case (x)
       1: y = 1; // case default is implicit
     endcase
+  end
 endmodule
 ```
 
@@ -2060,9 +2061,9 @@ module M;
     y = 0;
     z = 0;
     w = 0;
-    case(x)
+    case (x)
       1: y = 1;
-      2: begin 
+      2: begin
         z = 1;
         w = 1;
       end
@@ -2075,7 +2076,7 @@ endmodule
 ```systemverilog
 module M;
   always_comb
-    case(x)
+    case (x)
       1: y = 1;
       default: y = 0;
     endcase
@@ -2097,9 +2098,9 @@ endmodule
 module M;
   always_comb begin
     y = 0;
-    case(x)
+    case (x)
       1: y = 1;
-      2: begin 
+      2: begin
         z = 1;
         w = 1;
       end
@@ -2113,7 +2114,7 @@ endmodule
 module M;
   always_comb begin
     a = 0;
-    case(x)
+    case (x)
       1: b = 0;
     endcase
   end
