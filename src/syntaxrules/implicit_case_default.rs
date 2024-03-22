@@ -1,12 +1,12 @@
 use crate::config::ConfigOption;
 use crate::linter::{SyntaxRule, SyntaxRuleResult};
-use sv_parser::{unwrap_locate, unwrap_node, Locate, NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
 pub struct ImplicitCaseDefault {
     under_always_construct: bool,
     under_case_item: bool,
-    is_default: bool,
+    has_default: bool,
     lhs_variables: Vec<String>,
 }
 
@@ -22,7 +22,7 @@ impl SyntaxRule for ImplicitCaseDefault {
                 match x {
                     RefNode::AlwaysConstruct(_) => {
                         self.under_always_construct = true;
-                        self.is_default = false;
+                        self.has_default = false;
                     }
 
                     RefNode::CaseItemNondefault(_) => {
@@ -38,7 +38,7 @@ impl SyntaxRule for ImplicitCaseDefault {
                 match x {
                     RefNode::AlwaysConstruct(_) => {
                         self.under_always_construct = false;
-                        self.is_default = false;
+                        self.has_default = false;
                         self.lhs_variables.clear();
                     }
 
@@ -57,16 +57,15 @@ impl SyntaxRule for ImplicitCaseDefault {
             (self.under_always_construct, self.under_case_item, node)
         {
             let var = unwrap_node!(*x, VariableDeclAssignment).unwrap();
-            let id = get_identifier(var);
-            let id = syntax_tree.get_str(&id).unwrap();
-            self.lhs_variables.push(String::from(id));
+            let id = get_identifier(var, syntax_tree);
+            self.lhs_variables.push(id);
         }
 
         // check if default
         if let (true, RefNode::CaseStatementNormal(x)) = (self.under_always_construct, node) {
             let a = unwrap_node!(*x, CaseItemDefault);
             if a.is_some() {
-                self.is_default = true;
+                self.has_default = true;
             }
         }
 
@@ -75,10 +74,9 @@ impl SyntaxRule for ImplicitCaseDefault {
             (true, true, RefNode::BlockingAssignment(x)) => {
                 let var = unwrap_node!(*x, VariableLvalueIdentifier).unwrap();
                 let loc = unwrap_locate!(var.clone()).unwrap();
-                let id = get_identifier(var);
-                let id = syntax_tree.get_str(&id).unwrap();
+                let id = get_identifier(var, syntax_tree);
 
-                if self.lhs_variables.contains(&id.to_string()) || self.is_default {
+                if self.lhs_variables.contains(&id.to_string()) || self.has_default {
                     return SyntaxRuleResult::Pass;
                 } else {
                     return SyntaxRuleResult::FailLocate(*loc);
@@ -88,10 +86,9 @@ impl SyntaxRule for ImplicitCaseDefault {
             (true, true, RefNode::BlockItemDeclaration(x)) => {
                 let var = unwrap_node!(*x, VariableDeclAssignment).unwrap();
                 let loc = unwrap_locate!(var.clone()).unwrap();
-                let id = get_identifier(var);
-                let id = syntax_tree.get_str(&id).unwrap();
+                let id = get_identifier(var, syntax_tree);
 
-                if self.lhs_variables.contains(&id.to_string()) || self.is_default {
+                if self.lhs_variables.contains(&id.to_string()) || self.has_default {
                     return SyntaxRuleResult::Pass;
                 } else {
                     return SyntaxRuleResult::FailLocate(*loc);
@@ -117,10 +114,12 @@ impl SyntaxRule for ImplicitCaseDefault {
     }
 }
 
-fn get_identifier(node: RefNode) -> Option<Locate> {
-    match unwrap_node!(node, SimpleIdentifier, EscapedIdentifier) {
+fn get_identifier(node: RefNode, syntax_tree: &SyntaxTree) -> String {
+    let id = match unwrap_node!(node, SimpleIdentifier, EscapedIdentifier) {
         Some(RefNode::SimpleIdentifier(x)) => Some(x.nodes.0),
         Some(RefNode::EscapedIdentifier(x)) => Some(x.nodes.0),
         _ => None,
-    }
+    };
+
+    String::from(syntax_tree.get_str(&id).unwrap())
 }
