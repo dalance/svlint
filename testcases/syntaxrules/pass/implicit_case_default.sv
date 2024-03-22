@@ -29,3 +29,28 @@ module M;
       default: y = 0;
     endcase
 endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_comb
+    case (x)
+      1: p = 1;
+      2: q = 0;
+      default: begin
+        p = 0;
+        q = 0;
+      end
+    endcase
+endmodule
+////////////////////////////////////////////////////////////////////////////////
+module M;
+  always_comb begin
+    p = 0;  // p -> implicit default
+    q = 0;  // q -> implicit default
+    case (x)
+      1: p = 1;
+      2: q = 1;
+      3: r = 1;
+      default: r = 1; // r -> explicit default
+    endcase
+  end
+endmodule
