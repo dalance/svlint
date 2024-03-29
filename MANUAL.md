@@ -2181,6 +2181,39 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `interface_identifier_matches_filename`
+
+### Hint
+
+Ensure that the interface name matches the file name. Interface Bar should be in some/path/to/Bar.sv
+
+### Reason
+
+Encourages consistent file naming standards for packages and assists in searching for interfaces.
+
+### Pass Example (1 of 1)
+```systemverilog
+interface syntaxrules_interface_identifier_matches_filename_pass_1of1;
+endinterface
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+interface Bar;
+endinterface
+```
+
+### Explanation
+
+Interface Identifier should have the same name as the file it's in.
+
+```interface Bar``` should be in ```some/path/to/Bar.sv```
+
+Note that as a result, only one interface can be declared per file.
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `interface_port_with_modport`
 
 ### Hint
@@ -3642,6 +3675,39 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `module_identifier_matches_filename`
+
+### Hint
+
+Ensure that the module name matches the file name. module Bar should be in some/path/to/Bar.sv
+
+### Reason
+
+Encourages consistent file naming standards for packages and assists in searching for modules.
+
+### Pass Example (1 of 1)
+```systemverilog
+module syntaxrules_module_identifier_matches_filename_pass_1of1;
+endmodule
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module Bar;
+endmodule
+```
+
+### Explanation
+
+Module Identifier should have the same name as the file it's in.
+
+```module Bar``` should be in ```some/path/to/Bar.sv```
+
+Note that as a result, only one module can be declared per file.
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `module_nonansi_forbidden`
 
 ### Hint
@@ -4431,6 +4497,41 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `package_identifier_matches_filename`
+
+### Hint
+
+Ensure that the package name name matches the file name. Package fooBar should be in some/path/to/fooBar.sv
+
+### Reason
+
+Encourages consistent file naming standards for packages and assists in searching for packages.
+
+### Pass Example (1 of 1)
+```systemverilog
+package syntaxrules_package_identifier_matches_filename_pass_1of1;
+endpackage
+
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+package fooBar;
+endpackage
+```
+
+### Explanation
+
+Package Identifier should have the same name as the file it's in.
+
+```package Bar``` should be in ```some/path/to/Bar.sv```
+
+
+Note that as a result, only one package can be declared per file.
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `package_item_not_in_package`
 
 ### Hint
@@ -4908,6 +5009,40 @@ The most relevant clauses of IEEE1800-2017 are:
 - 10.6.1 The assign and deassign procedural statements
 - Annex C.4 Constructs identified for deprecation
 
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `program_identifier_matches_filename`
+
+### Hint
+
+Ensure that the program name matches the file name. program Bar should be in some/path/to/Bar.sv
+
+### Reason
+
+Encourages consistent file naming standards for packages and assists in searching for programs.
+
+### Pass Example (1 of 1)
+```systemverilog
+program syntaxrules_program_identifier_matches_filename_pass_1of1;
+endprogram
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+program Bar;
+endprogram
+```
+
+### Explanation
+
+Program Identifier should have the same name as the file it's in.
+
+```program Bar``` should be in ```some/path/to/Bar.sv```
+
+
+Note that as a result, only one program can be declared per file.
 
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
