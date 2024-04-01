@@ -377,7 +377,7 @@ fn write_test_rs(
             for (t, testcase) in testcases.into_iter().enumerate().map(|(i, x)| (i + 1, x)) {
                 // Write subtest to its own file.
                 let subtest_path: std::path::PathBuf = Path::new(&out_dir)
-                    .join(format!("syntaxrules_{rulename}_{passfail}_{t}of{n_testcases}.sv"));
+                    .join(format!("syntaxrules.{rulename}.{passfail}.{t}of{n_testcases}.sv"));
                 let mut out_subtest = File::create(&subtest_path).unwrap();
                 for line in testcase {
                     let _ = writeln!(out_subtest, "{}", line);
