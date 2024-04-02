@@ -1,3 +1,3 @@
-package syntaxrules_package_identifier_matches_filename_pass_1of1;
+package syntaxrules;
 endpackage
 
