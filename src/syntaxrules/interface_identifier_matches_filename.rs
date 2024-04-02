@@ -44,10 +44,22 @@ impl SyntaxRule for InterfaceIdentifierMatchesFilename {
                 let interface_name = syntax_tree.get_str(id.unwrap()).unwrap();
         
                 let path = std::path::Path::new(path_str);
-                if let Some(file_name) = path.file_name().and_then(std::ffi::OsStr::to_str) {
-                    if file_name.ends_with(".sv") {
-                        let file_ident = file_name.trim_end_matches(".sv");
-                        if interface_name == file_ident {
+                if let Some(file_name_os_str) = path.file_name() {
+                    if let Some(file_name) = file_name_os_str.to_str() {
+                        let mut identifier_end = 0;
+                        for (i, c) in file_name.char_indices() {
+                            if c.is_alphanumeric() || c == '_' || c == '$' {
+                                identifier_end = i + c.len_utf8();
+                            } else {
+                                // Stop at the first non-identifier character
+                                break;
+                            }
+                        }
+
+                        let file_ident = &file_name[..identifier_end];
+
+                        // Ignoring Case
+                        if file_ident.eq_ignore_ascii_case(interface_name) {
                             return SyntaxRuleResult::Pass;
                         }
                     }
