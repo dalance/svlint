@@ -1,2 +1,2 @@
-program syntaxrules_program_identifier_matches_filename_pass_1of1;
+program syntaxrules;
 endprogram
