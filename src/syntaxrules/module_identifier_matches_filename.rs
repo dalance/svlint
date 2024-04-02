@@ -29,6 +29,7 @@ impl SyntaxRule for ModuleIdentifierMatchesFilename {
                 } else {
                     return SyntaxRuleResult::Fail;
                 };
+
         
                 let module_name = if let Some(RefNode::ModuleIdentifier(module_ident)) = unwrap_node!(*x, ModuleIdentifier) {
                     syntax_tree.get_str(module_ident).unwrap()
@@ -36,12 +37,29 @@ impl SyntaxRule for ModuleIdentifierMatchesFilename {
                     return SyntaxRuleResult::Fail;
                 };
         
-                // Use the extracted path_str and module_name to perform the file name check
+
                 let path = std::path::Path::new(&path_str);
-                if let Some(file_name) = path.file_name().and_then(std::ffi::OsStr::to_str) {
-                    if file_name.ends_with(".sv") {
-                        let file_ident = file_name.trim_end_matches(".sv");
-                        if file_ident == module_name {
+                if let Some(file_name_os_str) = path.file_name() {
+                    if let Some(file_name) = file_name_os_str.to_str() {
+                        // Iterate over each character in the file name to find the first non-identifier character
+                        let mut identifier_end = 0;
+                        for (i, c) in file_name.char_indices() {
+                            if c.is_alphanumeric() || c == '_' || c == '$' {
+                                identifier_end = i + c.len_utf8();
+                            } else {
+                                // Stop at the first non-identifier character
+                                break;
+                            }
+                        }
+
+                        let file_ident = &file_name[..identifier_end];
+
+                        println !("\n\nPath: {:?}", path_str);
+
+                        println!("File: {}, Module: {}\n\n", file_ident, module_name);
+
+                        // Ignoring Case
+                        if file_ident.eq_ignore_ascii_case(module_name) {
                             return SyntaxRuleResult::Pass;
                         }
                     }
