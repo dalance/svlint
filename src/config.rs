@@ -163,29 +163,18 @@ pub struct ConfigOption {
     pub unpacked_array: UnpackedArrayOption,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct UnpackedArrayOption {
-    #[serde(default = "default_as_false")]
     pub localparam_decl: bool,
-    #[serde(default = "default_as_false")]
     pub param_decl: bool,
-    #[serde(default = "default_as_false")]
     pub specparam_decl: bool,
-    #[serde(default = "default_as_false")]
     pub inout_decl: bool,
-    #[serde(default = "default_as_false")]
     pub ansi_port_decl: bool,
-    #[serde(default = "default_as_false")]
     pub input_decl: bool,
-    #[serde(default = "default_as_false")]
     pub output_decl: bool,
-    #[serde(default = "default_as_false")]
     pub intf_port_decl: bool,
-    #[serde(default = "default_as_false")]
     pub ref_decl: bool,
-    #[serde(default = "default_as_false")]
     pub data_decl: bool,
-    #[serde(default = "default_as_false")]
     pub net_decl: bool,
 }
 
@@ -206,6 +195,24 @@ impl Default for ConfigTextRules {
 impl Default for ConfigSyntaxRules {
     fn default() -> Self {
         toml::from_str("").unwrap()
+    }
+}
+
+impl Default for UnpackedArrayOption {
+    fn default() -> Self {
+        Self {
+            localparam_decl: true,
+            param_decl: true,
+            specparam_decl: true,
+            inout_decl: true,
+            ansi_port_decl: true,
+            input_decl: true,
+            output_decl: true,
+            intf_port_decl: true,
+            ref_decl: true,
+            data_decl: true,
+            net_decl: true,
+        }
     }
 }
 
