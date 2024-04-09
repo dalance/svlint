@@ -1,4 +1,4 @@
-use crate::linter::{TextRule, SyntaxRule};
+use crate::linter::{SyntaxRule, TextRule};
 use crate::rules::*;
 use regex::Regex;
 use serde_derive::{Deserialize, Serialize};
@@ -158,6 +158,35 @@ pub struct ConfigOption {
     pub re_forbidden_var_class: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_var_classmethod: String,
+
+    #[serde(default)]
+    pub unpacked_array: UnpackedArrayOption,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+pub struct UnpackedArrayOption {
+    #[serde(default = "default_as_false")]
+    pub localparam_decl: bool,
+    #[serde(default = "default_as_false")]
+    pub param_decl: bool,
+    #[serde(default = "default_as_false")]
+    pub specparam_decl: bool,
+    #[serde(default = "default_as_false")]
+    pub inout_decl: bool,
+    #[serde(default = "default_as_false")]
+    pub ansi_port_decl: bool,
+    #[serde(default = "default_as_false")]
+    pub input_decl: bool,
+    #[serde(default = "default_as_false")]
+    pub output_decl: bool,
+    #[serde(default = "default_as_false")]
+    pub intf_port_decl: bool,
+    #[serde(default = "default_as_false")]
+    pub ref_decl: bool,
+    #[serde(default = "default_as_false")]
+    pub data_decl: bool,
+    #[serde(default = "default_as_false")]
+    pub net_decl: bool,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));
