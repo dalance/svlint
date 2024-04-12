@@ -5333,7 +5333,7 @@ The most relevant clauses of IEEE1800-2017 are:
 
 ### Hint
 
-Avoid using unpacked arrays in variable declarations.
+Avoid using unpacked dimensions in declarations.
 
 ### Reason
 
@@ -5357,7 +5357,7 @@ logic [7:0][3:0] b;
 endmodule
 ```
 
-### Fail Example (1 of 4)
+### Fail Example (1 of 7)
 ```systemverilog
 module M;
 
@@ -5366,7 +5366,7 @@ logic a [7:0];
 endmodule;
 ```
 
-### Fail Example (2 of 4)
+### Fail Example (2 of 7)
 ```systemverilog
 module M;
 
@@ -5375,7 +5375,7 @@ logic [31:0] b [0:7];
 endmodule;
 ```
 
-### Fail Example (3 of 4)
+### Fail Example (3 of 7)
 ```systemverilog
 module M;
 
@@ -5384,11 +5384,37 @@ localparam bit [7:0] ARRAY [0:3];
 endmodule
 ```
 
-### Fail Example (4 of 4)
+### Fail Example (4 of 7)
 ```systemverilog
 module M (
   input logic [7:0] a_in [0:5]
 );
+endmodule
+```
+
+### Fail Example (5 of 7)
+```systemverilog
+module M;
+
+parameter [3:0] ARRAY [0:1];
+
+endmodule
+```
+
+### Fail Example (6 of 7)
+```systemverilog
+module M;
+
+wire [3:0] c [0:1];
+
+endmodule
+```
+
+### Fail Example (7 of 7)
+```systemverilog
+module M;
+
+var [3:0] d [0:1];
 
 endmodule
 ```
