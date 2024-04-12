@@ -105,17 +105,17 @@ impl SyntaxRule for UnpackedArray {
         };
 
         if let (true, RefNode::UnpackedDimension(_)) = (
-            (self.under_localparam_decl && option.unpacked_array.localparam_decl
-                || self.under_param_decl && option.unpacked_array.param_decl
-                || self.under_specparam_decl && option.unpacked_array.specparam_decl
-                || self.under_inout_decl && option.unpacked_array.inout_decl
-                || self.under_ansi_port_decl && option.unpacked_array.ansi_port_decl
-                || self.under_input_decl && option.unpacked_array.input_decl
-                || self.under_output_decl && option.unpacked_array.output_decl
-                || self.under_intf_port_decl && option.unpacked_array.intf_port_decl
-                || self.under_ref_decl && option.unpacked_array.ref_decl
-                || self.under_data_decl && option.unpacked_array.data_decl
-                || self.under_net_decl && option.unpacked_array.net_decl),
+            (self.under_localparam_decl && option.unpacked_array.localparam_declaration
+                || self.under_param_decl && option.unpacked_array.param_declaration
+                || self.under_specparam_decl && option.unpacked_array.specparam_declaration
+                || self.under_inout_decl && option.unpacked_array.inout_declaration
+                || self.under_ansi_port_decl && option.unpacked_array.ansi_port_declaration
+                || self.under_input_decl && option.unpacked_array.input_declaration
+                || self.under_output_decl && option.unpacked_array.output_declaration
+                || self.under_intf_port_decl && option.unpacked_array.interface_port_declaration
+                || self.under_ref_decl && option.unpacked_array.ref_declaration
+                || self.under_data_decl && option.unpacked_array.data_declaration
+                || self.under_net_decl && option.unpacked_array.net_declaration),
             node,
         ) {
             SyntaxRuleResult::Fail
@@ -132,6 +132,8 @@ impl SyntaxRule for UnpackedArray {
     }
 
     fn reason(&self) -> String {
-        String::from("Unpacked arrays can lead to issues during synthesis.")
+        String::from(
+            "Unpacked arrays are not guaranteed to be contiguous and can lead to synthesis issues.",
+        )
     }
 }

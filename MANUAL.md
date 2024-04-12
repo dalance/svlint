@@ -5337,7 +5337,7 @@ Avoid using unpacked dimensions in declarations.
 
 ### Reason
 
-Unpacked arrays can lead to issues during synthesis.
+Unpacked arrays are not guaranteed to be contiguous and can lead to synthesis issues.
 
 ### Pass Example (1 of 2)
 ```systemverilog
@@ -5357,7 +5357,7 @@ logic [7:0][3:0] b;
 endmodule
 ```
 
-### Fail Example (1 of 7)
+### Fail Example (1 of 2)
 ```systemverilog
 module M;
 
@@ -5366,57 +5366,13 @@ logic a [7:0];
 endmodule;
 ```
 
-### Fail Example (2 of 7)
+### Fail Example (2 of 2)
 ```systemverilog
 module M;
 
 logic [31:0] b [0:7];
 
 endmodule;
-```
-
-### Fail Example (3 of 7)
-```systemverilog
-module M;
-
-localparam bit [7:0] ARRAY [0:3];
-
-endmodule
-```
-
-### Fail Example (4 of 7)
-```systemverilog
-module M (
-  input logic [7:0] a_in [0:5]
-);
-endmodule
-```
-
-### Fail Example (5 of 7)
-```systemverilog
-module M;
-
-parameter [3:0] ARRAY [0:1];
-
-endmodule
-```
-
-### Fail Example (6 of 7)
-```systemverilog
-module M;
-
-wire [3:0] c [0:1];
-
-endmodule
-```
-
-### Fail Example (7 of 7)
-```systemverilog
-module M;
-
-var [3:0] d [0:1];
-
-endmodule
 ```
 
 ### Explanation
@@ -5431,7 +5387,27 @@ unused memory locations of an unpacked array which is not the intended behavior.
 Additionally, packed arrays allow the user to intuitively index and slice the
 array and apply bitwise operations.
 
+This rule by default targets data declarations, but can be configured to target
+other declarations. To target a declaration, enable the corresponding boolean
+option in the configuration file.
+
+``` toml
+[option.unpacked_array]
+localparam_declaration  = false
+param_declaration  = false
+specparam_declaration  = false
+inout_declaration  = false
+ansi_port_declaration  = false
+input_declaration  = false
+output_declaration  = false
+intf_port_declaration  = false
+ref_declaration  = false
+data_declaration  = true # enabled by default
+net_declaration = false
+```
+
 The most relevant clauses of IEEE1800-2017 are:
+
 - 7.4 Packed and unpacked arrays
 
 
