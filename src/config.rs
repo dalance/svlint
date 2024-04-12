@@ -165,17 +165,28 @@ pub struct ConfigOption {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct UnpackedArrayOption {
-    pub localparam_decl: bool,
-    pub param_decl: bool,
-    pub specparam_decl: bool,
-    pub inout_decl: bool,
-    pub ansi_port_decl: bool,
-    pub input_decl: bool,
-    pub output_decl: bool,
-    pub intf_port_decl: bool,
-    pub ref_decl: bool,
-    pub data_decl: bool,
-    pub net_decl: bool,
+    #[serde(default)]
+    pub localparam_declaration: bool,
+    #[serde(default)]
+    pub param_declaration: bool,
+    #[serde(default)]
+    pub specparam_declaration: bool,
+    #[serde(default)]
+    pub inout_declaration: bool,
+    #[serde(default)]
+    pub ansi_port_declaration: bool,
+    #[serde(default)]
+    pub input_declaration: bool,
+    #[serde(default)]
+    pub output_declaration: bool,
+    #[serde(default)]
+    pub interface_port_declaration: bool,
+    #[serde(default)]
+    pub ref_declaration: bool,
+    #[serde(default)]
+    pub data_declaration: bool,
+    #[serde(default)]
+    pub net_declaration: bool,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));
@@ -201,17 +212,17 @@ impl Default for ConfigSyntaxRules {
 impl Default for UnpackedArrayOption {
     fn default() -> Self {
         Self {
-            localparam_decl: true,
-            param_decl: true,
-            specparam_decl: true,
-            inout_decl: true,
-            ansi_port_decl: true,
-            input_decl: true,
-            output_decl: true,
-            intf_port_decl: true,
-            ref_decl: true,
-            data_decl: true,
-            net_decl: true,
+            localparam_declaration: false,
+            param_declaration: false,
+            specparam_declaration: false,
+            inout_declaration: false,
+            ansi_port_declaration: false,
+            input_declaration: false,
+            output_declaration: false,
+            interface_port_declaration: false,
+            ref_declaration: false,
+            data_declaration: true,
+            net_declaration: false,
         }
     }
 }
