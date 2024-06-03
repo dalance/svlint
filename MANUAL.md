@@ -2181,6 +2181,53 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `interface_identifier_matches_filename`
+
+### Hint
+
+Ensure that the interface name matches the file name. Interface Bar should be in some/path/to/Bar.sv
+
+### Reason
+
+Encourages consistent file naming standards for packages and assists in searching for interfaces.
+
+### Pass Example (1 of 1)
+```systemverilog
+interface syntaxrules;
+endinterface
+
+// This testcase, when executed, is called from a file named "syntaxrules.interface_identifier_matches_filename.pass.1of1"
+// The rule matches all valid characters up until the first non-identifier (in this case, the period).
+// The file identifier to be matched in this case becomes "syntaxrules" which matches the interface identifier
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+interface Bar;
+endinterface
+```
+
+### Explanation
+
+Interface identifier should have the same name as the file it's in.
+
+```interface foo;``` is allowed to live in any file of naming convention ```foo <Non-Identifier> <whatever else>```
+
+According to Clause 5.6 of IEEE 1800-2017:
+
+> A simple identifier shall consist of a sequence of letters, digits, dollar signs (`$`), and underscore (`_`) characters.
+
+Any symbol defined outside this exhaustive list is considered a non-identifier.
+
+The stopping point for string matching has to be a non-identifier character.
+
+For example, the interface declaration ```interface foo;``` is valid in filenames such as ```foo-Bar.sv```, ```foo.debug.sv```, and ```foo-final-version.sv```. Each of these filenames begins with the interface identifier ```foo``` and is immediately followed by a non-identifier character (```-```, ```.```, or another acceptable symbol), making them compliant. A filename like ```FooBar.sv``` is invalid for the ```interface Foo;``` declaration since it does not contain a non-identifier character following the interface name.
+
+Note that as a consequence, only one interface can be declared per file.
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `interface_port_with_modport`
 
 ### Hint
@@ -3642,6 +3689,53 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `module_identifier_matches_filename`
+
+### Hint
+
+Ensure that the module name matches the file name. module Bar should be in some/path/to/Bar.sv
+
+### Reason
+
+Encourages consistent file naming standards for packages and assists in searching for modules.
+
+### Pass Example (1 of 1)
+```systemverilog
+module syntaxrules;
+endmodule 
+
+// This testcase, when executed, is called from a file named "syntaxrules.module_identifier_matches_filename.pass.1of1"
+// The rule matches all valid characters up until the first non-identifier (in this case, the period).
+// The file identifier to be matched in this case becomes "syntaxrules" which matches the module identifier
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+module Bar;
+endmodule
+```
+
+### Explanation
+
+Module identifier should have the same name as the file it's in.
+
+```module foo;``` is allowed to live in any file of naming convention ```foo <Non-Identifier> <whatever else>```
+
+According to Clause 5.6 of IEEE 1800-2017:
+
+> A simple identifier shall consist of a sequence of letters, digits, dollar signs (`$`), and underscore (`_`) characters.
+
+Any symbol defined outside this exhaustive list is considered a non-identifier.
+
+The stopping point for string matching has to be a non-identifier character.
+
+For example, the module declaration ```module foo;``` is valid in filenames such as ```foo-Bar.sv```, ```foo.debug.sv```, and ```foo-final-version.sv```. Each of these filenames begins with the module identifier ```foo``` and is immediately followed by a non-identifier character (```-```, ```.```, or another acceptable symbol), making them compliant. A filename like ```FooBar.sv``` is invalid for the ```module Foo;``` declaration since it does not contain a non-identifier character following the module name.
+
+Note that as a consequence, only one module can be declared per file.
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `module_nonansi_forbidden`
 
 ### Hint
@@ -4431,6 +4525,54 @@ The most relevant clauses of IEEE1800-2017 are:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+## Syntax Rule: `package_identifier_matches_filename`
+
+### Hint
+
+Ensure that the package name name matches the file name. Package fooBar should be in some/path/to/fooBar.sv
+
+### Reason
+
+Encourages consistent file naming standards for packages and assists in searching for packages.
+
+### Pass Example (1 of 1)
+```systemverilog
+package syntaxrules;
+endpackage
+
+
+// This testcase, when executed, is called from a file named "syntaxrules.package_identifier_matches_filename.pass.1of1"
+// The rule matches all valid characters up until the first non-identifier (in this case, the period).
+// The file identifier to be matched in this case becomes "syntaxrules" which matches the package identifier
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+package fooBar;
+endpackage
+```
+
+### Explanation
+
+Package identifier should have the same name as the file it's in.
+
+```package foo;``` is allowed to live in any file of naming convention ```foo <Non-Identifier> <whatever else>```
+
+According to Clause 5.6 of IEEE 1800-2017:
+
+> A simple identifier shall consist of a sequence of letters, digits, dollar signs (`$`), and underscore (`_`) characters.
+
+Any symbol defined outside this exhaustive list is considered a non-identifier.
+
+The stopping point for string matching has to be a non-identifier character.
+
+For example, the package declaration ```package foo;``` is valid in filenames such as ```foo-Bar.sv```, ```foo.debug.sv```, and ```foo-final-version.sv```. Each of these filenames begins with the package identifier ```foo``` and is immediately followed by a non-identifier character (```-```, ```.```, or another acceptable symbol), making them compliant. A filename like ```FooBar.sv``` is invalid for the ```package Foo;``` declaration since it does not contain a non-identifier character following the package name.
+
+Note that as a consequence, only one package can be declared per file.
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 ## Syntax Rule: `package_item_not_in_package`
 
 ### Hint
@@ -4908,6 +5050,53 @@ The most relevant clauses of IEEE1800-2017 are:
 - 10.6.1 The assign and deassign procedural statements
 - Annex C.4 Constructs identified for deprecation
 
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `program_identifier_matches_filename`
+
+### Hint
+
+Ensure that the program name matches the file name. program Bar should be in some/path/to/Bar.sv
+
+### Reason
+
+Encourages consistent file naming standards for packages and assists in searching for programs.
+
+### Pass Example (1 of 1)
+```systemverilog
+program syntaxrules;
+endprogram
+
+// This testcase, when executed, is called from a file named "syntaxrules.program_identifier_matches_filename.pass.1of1"
+// The rule matches all valid characters up until the first non-identifier (in this case, the period).
+// The file identifier to be matched in this case becomes "syntaxrules" which matches the program identifier
+```
+
+### Fail Example (1 of 1)
+```systemverilog
+program Bar;
+endprogram
+```
+
+### Explanation
+
+Program identifier should have the same name as the file it's in.
+
+```program foo;``` is allowed to live in any file of naming convention ```foo <Non-Identifier> <whatever else>```
+
+According to Clause 5.6 of IEEE 1800-2017:
+
+> A simple identifier shall consist of a sequence of letters, digits, dollar signs (`$`), and underscore (`_`) characters.
+
+Any symbol defined outside this exhaustive list is considered a non-identifier.
+
+The stopping point for string matching has to be a non-identifier character.
+
+For example, the program declaration ```program foo;``` is valid in filenames such as ```foo-Bar.sv```, ```foo.debug.sv```, and ```foo-final-version.sv```. Each of these filenames begins with the program identifier ```foo``` and is immediately followed by a non-identifier character (```-```, ```.```, or another acceptable symbol), making them compliant. A filename like ```FooBar.sv``` is invalid for the ```program Foo;``` declaration since it does not contain a non-identifier character following the program name.
+
+Note that as a consequence, only one program can be declared per file.
 
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
