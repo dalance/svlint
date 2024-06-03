@@ -4,6 +4,10 @@
 
 ## [v0.9.3](https://github.com/dalance/svlint/compare/v0.9.2...v0.9.3) - 2024-06-03
 
+* [Added] New rule that ensures module/interface/package/program identifier matches the filename it's in [#283](https://github.com/dalance/svlint/pull/283)
+* [Added] New Rule: Implicit case default [#281](https://github.com/dalance/svlint/pull/281)
+* [Added] New Rule: Forbid unpacked array declarations [#280](https://github.com/dalance/svlint/pull/280)
+
 ## [v0.9.2](https://github.com/dalance/svlint/compare/v0.9.1...v0.9.2) - 2023-12-27
 
 * [Changed] Update sv-parser
