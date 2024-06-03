@@ -70,7 +70,10 @@ jobs:
         shell: sh
 
       - if: matrix.os == 'macOS-latest'
-        run: make release_mac VERSION=${{github.ref_name}}
+        run: |
+          rustup target add x86_64-apple-darwin
+          make release_mac_x86_64  VERSION=${{github.ref_name}}
+          make release_mac_aarch64 VERSION=${{github.ref_name}}
         shell: sh
 
       - if: matrix.os == 'windows-latest'

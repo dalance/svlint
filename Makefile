@@ -110,7 +110,7 @@ release_win:
 	mv tmp/${BIN_NAME}-${VERSION}-x86_64-win.zip ./
 	rm -rf tmp/
 
-release_mac:
+release_mac_x86_64:
 	cargo build --release --target=x86_64-apple-darwin
 	rm -rf tmp
 	mkdir -p tmp/bin/ tmp/doc/
@@ -121,4 +121,17 @@ release_mac:
 	cd tmp/ && \
 		zip ${BIN_NAME}-${VERSION}-x86_64-mac.zip -r *
 	mv tmp/${BIN_NAME}-${VERSION}-x86_64-mac.zip ./
+	rm -rf tmp/
+
+release_mac_aarch64:
+	cargo build --release --target=aarch64-apple-darwin
+	rm -rf tmp
+	mkdir -p tmp/bin/ tmp/doc/
+	cp ${RELEASE_MANUAL} tmp/doc/
+	cp rulesets/*.toml tmp/bin/
+	cp $$(find rulesets/ -type f -perm -u+x) tmp/bin/
+	cp target/aarch64-apple-darwin/release/${BIN_NAME} tmp/bin/
+	cd tmp/ && \
+		zip ${BIN_NAME}-${VERSION}-aarch64-mac.zip -r *
+	mv tmp/${BIN_NAME}-${VERSION}-aarch64-mac.zip ./
 	rm -rf tmp/
