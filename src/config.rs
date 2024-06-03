@@ -1,4 +1,4 @@
-use crate::linter::{TextRule, SyntaxRule};
+use crate::linter::{SyntaxRule, TextRule};
 use crate::rules::*;
 use regex::Regex;
 use serde_derive::{Deserialize, Serialize};
@@ -158,6 +158,35 @@ pub struct ConfigOption {
     pub re_forbidden_var_class: String,
     #[serde(default = "default_re_unconfigured")]
     pub re_forbidden_var_classmethod: String,
+
+    #[serde(default)]
+    pub unpacked_array: UnpackedArrayOption,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct UnpackedArrayOption {
+    #[serde(default)]
+    pub localparam_declaration: bool,
+    #[serde(default)]
+    pub param_declaration: bool,
+    #[serde(default)]
+    pub specparam_declaration: bool,
+    #[serde(default)]
+    pub inout_declaration: bool,
+    #[serde(default)]
+    pub ansi_port_declaration: bool,
+    #[serde(default)]
+    pub input_declaration: bool,
+    #[serde(default)]
+    pub output_declaration: bool,
+    #[serde(default)]
+    pub interface_port_declaration: bool,
+    #[serde(default)]
+    pub ref_declaration: bool,
+    #[serde(default)]
+    pub data_declaration: bool,
+    #[serde(default)]
+    pub net_declaration: bool,
 }
 
 include!(concat!(env!("OUT_DIR"), "/config_rules.rs"));
@@ -177,6 +206,24 @@ impl Default for ConfigTextRules {
 impl Default for ConfigSyntaxRules {
     fn default() -> Self {
         toml::from_str("").unwrap()
+    }
+}
+
+impl Default for UnpackedArrayOption {
+    fn default() -> Self {
+        Self {
+            localparam_declaration: false,
+            param_declaration: false,
+            specparam_declaration: false,
+            inout_declaration: false,
+            ansi_port_declaration: false,
+            input_declaration: false,
+            output_declaration: false,
+            interface_port_declaration: false,
+            ref_declaration: false,
+            data_declaration: true,
+            net_declaration: false,
+        }
     }
 }
 
