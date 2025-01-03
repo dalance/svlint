@@ -227,7 +227,7 @@ impl Linter {
             NodeEvent::Enter(x) => x,
             NodeEvent::Leave(x) => x,
         };
-        let locate = if let Some(x) = unwrap_locate!(node.clone()) {
+        let locate = if let Some(x) = unwrap_locate!(node) {
             x
         } else {
             return vec![];
