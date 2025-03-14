@@ -1,9 +1,10 @@
 use anyhow::{Context, Error};
+use chardetng::EncodingDetector;
 use clap::{Parser, CommandFactory};
 use clap_complete;
 use enquote;
 use std::collections::HashMap;
-use std::fs::{read_to_string, File, OpenOptions};
+use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{env, process};
@@ -275,7 +276,15 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
             // by textrules to reset their internal state.
             let _ = linter.textrules_check(TextRuleEvent::StartOfFile, &path, &0);
 
-            let text: String = read_to_string(&path)?;
+            let mut file = File::open(&path)?;
+            let mut buffer = Vec::new();
+
+            file.read_to_end(&mut buffer)?;
+            let mut detector = EncodingDetector::new();
+            detector.feed(&buffer, true);
+            let encoding = detector.guess(None, true).decode(&buffer).0;
+
+            let text = encoding.into_owned();
             let mut beg: usize = 0;
 
             // Iterate over lines in the file, applying each textrule to each
@@ -1215,4 +1224,40 @@ mod tests {
         let stdout = printer.read_to_string().unwrap();
         assert_eq!(stdout, expected_contents("dump_filelist_8"));
     } // }}}
+
+    #[test]
+    fn lint_gbk_encoded_verilog() {
+        use std::fs::File;
+        use std::io::Write;
+        use std::path::Path;
+
+        // Create a temporary Verilog file
+        let temp_path = Path::new("temp_gbk_verilog.sv");
+        let mut file = File::create(&temp_path).expect("Failed to create test file");
+
+        // Write GBK-encoded Verilog code
+        let gbk_verilog = vec![
+            0x0a, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x20, 0x74, 0x6f, 0x70, 0x3b, 0x0a, 0x2f,
+            0x2f, 0x20, 0xd6, 0xd0, 0xce, 0xc4, 0xd7, 0xa2, 0xca, 0xcd, 0x0a, 0x65, 0x6e, 0x64,
+            0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x0a,
+        ];
+        file.write_all(&gbk_verilog)
+            .expect("Failed to write test file");
+        drop(file); // Close the file
+
+        // Run `svlint` to analyze the file
+        let config: Config = toml::from_str("").unwrap();
+        let mut args = vec!["svlint"];
+        args.push(temp_path.to_str().unwrap());
+        let opt = Opt::parse_from(args.iter());
+
+        let mut printer = Printer::new(true);
+        let ret = run_opt_config(&mut printer, &opt, config.clone());
+
+        // Clean up the test file
+        std::fs::remove_file(&temp_path).expect("Failed to remove test file");
+
+        // Assert that `svlint` successfully processes the GBK-encoded Verilog file
+        assert!(ret.is_ok(), "svlint failed to process GBK-encoded Verilog");
+    }
 }
