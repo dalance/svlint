@@ -41,6 +41,8 @@ sv-parser               = "0.13.3"
 term                    = "1.0"
 toml                    = "0.8"
 sv-filelist-parser      = "0.1.3"
+chardetng               = "0.1.17"
+encoding_rs             = "0.8.34"
 
 [build-dependencies]
 regex   = "1"
