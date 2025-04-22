@@ -151,3 +151,4 @@ under the Developer Certificate of Origin <https://developercertificate.org/>.
 - Ronit Nallagatla (@ronitnallagatla)
 - Shreyas Chinnola (@ShreChinno)
 - An Yudong (@iMMIQ)
+- Bryce Berger (@bryceberger)

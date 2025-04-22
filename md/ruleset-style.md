@@ -227,6 +227,7 @@ syntaxrules.style_keyword_0or1space = true
 syntaxrules.style_keyword_0space = true
 syntaxrules.style_keyword_1or2space = true
 syntaxrules.style_keyword_1space = true
+syntaxrules.style_keyword_1spaceornewline = true
 syntaxrules.style_keyword_construct = true
 syntaxrules.style_keyword_datatype = false # Overly restrictive.
 syntaxrules.style_keyword_end = true

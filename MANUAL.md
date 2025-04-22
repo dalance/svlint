@@ -9541,6 +9541,7 @@ See also:
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
@@ -9620,6 +9621,7 @@ See also:
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
@@ -9689,6 +9691,7 @@ See also:
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
@@ -9924,9 +9927,96 @@ See also:
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
+- **style_keyword_maybelabel** - Suggested companion rule.
+- **style_keyword_new** - Suggested companion rule.
+- **style_keyword_newline** - Suggested companion rule.
+
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+## Syntax Rule: `style_keyword_1spaceornewline`
+
+### Hint
+
+Follow keyword with a newline or exactly 1 space.
+
+### Reason
+
+Consistent use of whitespace enhances readability by reducing visual noise.
+
+### Pass Example (1 of 3)
+```systemverilog
+module M();
+  always_comb
+    case (a) matches
+      tagged Jmp .j: b = 1;
+    endcase
+endmodule
+```
+
+### Pass Example (2 of 3)
+```systemverilog
+module M();
+  always_comb
+    if (a matches tagged Jmp .j)
+      b = 1;
+endmodule
+```
+
+### Pass Example (3 of 3)
+```systemverilog
+module M();
+  always_comb
+    case (a) matches // with a comment
+      tagged Jmp .j: b = 1;
+    endcase
+endmodule
+```
+
+### Fail Example (1 of 2)
+```systemverilog
+module M();
+  always_comb
+    if (a matches  tagged Jmp .j)
+      b = 1;
+endmodule
+```
+
+### Fail Example (2 of 2)
+```systemverilog
+module M();
+  always_comb
+    case (a) matches  // comment with two spaces
+      tagged Jmp .j: b = 1;
+    endcase
+endmodule
+```
+
+### Explanation
+
+This rule checks the whitespace immediately following the `matches` keyword.
+The `matches` keyword can be used inside the condition of an if statement,
+in which case there should be one space between the keyword and the following
+symbol, i.e. `matches (tagged ...)`.
+The `matches` keyword can also be used as part of a case statement, in which
+case there should be a newline between the keyword and the following identifier,
+i.e. `case (a) matches\ntagged ...:`
+
+See also:
+- **style_keyword_0or1space** - Suggested companion rule.
+- **style_keyword_0space** - Suggested companion rule.
+- **style_keyword_1or2space** - Suggested companion rule.
+- **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
+- **style_keyword_construct** - Suggested companion rule.
+- **style_keyword_datatype** - Potential companion rule.
+- **style_keyword_end** - Suggested companion rule.
+- **style_keyword_indent** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
 - **style_keyword_new** - Suggested companion rule.
 - **style_keyword_newline** - Suggested companion rule.
@@ -10024,6 +10114,7 @@ See also:
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
@@ -10109,6 +10200,7 @@ See also:
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_end** - Suggested companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
@@ -10200,6 +10292,7 @@ See also:
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_maybelabel** - Suggested companion rule.
@@ -10300,6 +10393,7 @@ See also:
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
@@ -10396,6 +10490,7 @@ See also:
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
@@ -10469,6 +10564,7 @@ See also:
 - **style_keyword_0space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
@@ -12934,6 +13030,7 @@ syntaxrules.style_keyword_0or1space = true
 syntaxrules.style_keyword_0space = true
 syntaxrules.style_keyword_1or2space = true
 syntaxrules.style_keyword_1space = true
+syntaxrules.style_keyword_1spaceornewline = true
 syntaxrules.style_keyword_construct = true
 syntaxrules.style_keyword_datatype = false # Overly restrictive.
 syntaxrules.style_keyword_end = true
