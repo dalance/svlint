@@ -3864,8 +3864,13 @@ Encourages consistent file naming standards for packages and assists in searchin
 
 ### Pass Example (1 of 1)
 ```systemverilog
-module syntaxrules;
+module syntaxrules();
 endmodule 
+
+
+// Allowing Whitespace in Module Names
+module syntaxrules ();
+endmodule
 
 // This testcase, when executed, is called from a file named "syntaxrules.module_identifier_matches_filename.pass.1of1"
 // The rule matches all valid characters up until the first non-identifier (in this case, the period).
