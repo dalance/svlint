@@ -39,6 +39,7 @@ impl SyntaxRule for ModuleIdentifierMatchesFilename {
         
 
                 let path = std::path::Path::new(&path_str);
+
                 if let Some(file_name_os_str) = path.file_name() {
                     if let Some(file_name) = file_name_os_str.to_str() {
                         let mut identifier_end = 0;
@@ -46,15 +47,13 @@ impl SyntaxRule for ModuleIdentifierMatchesFilename {
                             if c.is_alphanumeric() || c == '_' || c == '$' {
                                 identifier_end = i + c.len_utf8();
                             } else {
-                                // Stop at the first non-identifier character
                                 break;
                             }
                         }
 
                         let file_ident = &file_name[..identifier_end];
 
-                        // Ignoring Case
-                        if file_ident.eq_ignore_ascii_case(module_name) {
+                        if file_ident.trim().eq_ignore_ascii_case(module_name.trim()) {
                             return SyntaxRuleResult::Pass;
                         }
                     }
