@@ -25,7 +25,7 @@ impl SyntaxRule for StyleKeyword0Or1Space {
             - exactly 1space, then identifier or symbol
         */
         if self.re_split.is_none() {
-            self.re_split = Some(Regex::new(r"(?P<kw>[\\$'BXZa-z_01]+)(?P<succ>(?s:.)*)").unwrap());
+            self.re_split = Some(Regex::new(r#"(?P<kw>[\\$'"BXZa-z_01]+)(?P<succ>(?s:.)*)"#).unwrap());
         }
         if self.re_kw.is_none() {
             let keywords =
@@ -50,17 +50,21 @@ impl SyntaxRule for StyleKeyword0Or1Space {
                 let re_split = self.re_split.as_ref().unwrap();
                 let re_kw = self.re_kw.as_ref().unwrap();
                 let t = syntax_tree.get_str(*x).unwrap();
-                let caps = re_split.captures(&t).unwrap();
+                if let Some(caps) = re_split.captures(&t) {
+                    if re_kw.is_match(&caps[1]) {
+                        let re_succ = self.re_succ.as_ref().unwrap();
 
-                if re_kw.is_match(&caps[1]) {
-                    let re_succ = self.re_succ.as_ref().unwrap();
-
-                    if re_succ.is_match(&caps[2]) {
-                        SyntaxRuleResult::Pass
+                        if re_succ.is_match(&caps[2]) {
+                            SyntaxRuleResult::Pass
+                        } else {
+                            SyntaxRuleResult::Fail
+                        }
                     } else {
-                        SyntaxRuleResult::Fail
+                        SyntaxRuleResult::Pass
                     }
                 } else {
+                    // Don't crash in case there's a mistake in the `re_split` regex
+                    // and it doesn't match a `Keyword`.
                     SyntaxRuleResult::Pass
                 }
             }
