@@ -353,11 +353,17 @@ fn print_parser_error(
         SvParserError::Preprocess(Some((path, pos))) => {
             printer.print_preprocess_error(&path, pos, oneline)?;
         }
-        SvParserError::Include { source: x } => {
-            if let SvParserError::File { path: x, .. } = *x {
-                printer.print_error(&format!("failed to include '{}'", x.to_string_lossy()))?;
+        SvParserError::Include { source } => match *source {
+            SvParserError::File { source: _, path } => {
+                printer.print_error(&format!("failed to include '{}'", path.display()))?;
             }
-        }
+            SvParserError::DefineNotFound(define) => {
+                printer.print_error(&format!("definition not found for '{}'", define))?;
+            }
+            _ => {
+                printer.print_error(&format!("{}", source))?;
+            }
+        },
         SvParserError::ReadUtf8(path) => {
             printer.print_error(&format!("file '{}' is not valid UTF-8", path.display()))?;
         }
