@@ -328,13 +328,14 @@ pub fn run_opt_config(printer: &mut Printer, opt: &Opt, config: Config) -> Resul
             }
         }
 
-        if pass {
-            if opt.verbose {
-                printer.print_info(&format!("pass '{}'", path.to_string_lossy()))?;
-            }
-        } else {
-            all_pass = false;
+        if opt.verbose {
+            printer.print_info(&format!(
+                "{} '{}'",
+                if pass { "pass" } else { "fail" },
+                path.display()
+            ))?;
         }
+        all_pass &= pass;
     }
 
     Ok(all_pass && not_obsolete)
