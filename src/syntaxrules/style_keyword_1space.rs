@@ -106,7 +106,6 @@ impl SyntaxRule for StyleKeyword1Space {
                 , "local"
                 , "localparam"
                 , "macromodule"
-                , "matches"
                 , "medium"
                 , "modport"
                 , "module"

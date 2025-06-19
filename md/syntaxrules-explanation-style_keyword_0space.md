@@ -18,6 +18,7 @@ See also:
 - **style_keyword_0or1space** - Suggested companion rule.
 - **style_keyword_1or2space** - Suggested companion rule.
 - **style_keyword_1space** - Suggested companion rule.
+- **style_keyword_1spaceornewline** - Suggested companion rule.
 - **style_keyword_construct** - Suggested companion rule.
 - **style_keyword_datatype** - Potential companion rule.
 - **style_keyword_end** - Suggested companion rule.
