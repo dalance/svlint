@@ -5,5 +5,6 @@ module M;
     else
       return a; // 1 space then expression after `return`.
   endfunction
-endmodule
 
+  import "DPI-C" function bit bar();
+endmodule
