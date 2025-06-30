@@ -9596,8 +9596,9 @@ module M;
     else
       return a; // 1 space then expression after `return`.
   endfunction
-endmodule
 
+  import "DPI-C" function bit bar();
+endmodule
 ```
 
 ### Fail Example (1 of 1)
