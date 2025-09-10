@@ -5,6 +5,7 @@ use regex::Regex;
 #[derive(Default)]
 pub struct StyleDirectives {
     re: Option<Regex>,
+    re_comment: Option<Regex>,
 }
 
 impl TextRule for StyleDirectives {
@@ -46,20 +47,23 @@ impl TextRule for StyleDirectives {
 
             self.re = Some(Regex::new(format!("^(.+)`({})", keywords).as_str()).unwrap());
         }
+        if self.re_comment.is_none() {
+            self.re_comment = Some(Regex::new(format!(r"//").as_str()).unwrap());
+        }
         let re = self.re.as_ref().unwrap();
+        let re_comment = self.re_comment.as_ref().unwrap();
 
         if let Some(caps) = re.captures(line) {
             if let Some(m) = caps.get(1) {
-                TextRuleResult::Fail {
-                    offset: 0,
-                    len: m.as_str().chars().count(),
+                if !re_comment.is_match(m.as_str()) {
+                    return TextRuleResult::Fail {
+                        offset: 0,
+                        len: m.as_str().chars().count(),
+                    }
                 }
-            } else {
-                TextRuleResult::Pass
             }
-        } else {
-            TextRuleResult::Pass
         }
+        TextRuleResult::Pass
     }
 
     fn name(&self) -> String {

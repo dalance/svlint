@@ -22,3 +22,6 @@ module M ();
       b = e;
     `endif
 endmodule
+////////////////////////////////////////////////////////////////////////////////
+ `ifdef FOO // The ifdef is not commented and indented
+`endif

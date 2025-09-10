@@ -408,6 +408,9 @@ Compiler directives should not cause whitespace issues or hide in other code.
 `resetall
 /* This FILE is `__FILE__ */
 /* This LINE is `__LINE__ */
+// This directive is commented `celldefine
+module testmodule(); //Those directives are also commented `ifdef FOO Foo `else Bar `endif
+endmodule
 `include "testcases/syntaxrules/pass/blocking_assignment_in_always_ff.sv"
 `define FOO 5
 `ifdef FOO
@@ -418,17 +421,18 @@ Compiler directives should not cause whitespace issues or hide in other code.
 `endif
 `undef FOO
 `undefineall
-
+`ifdef FOO // `ifdef BAR
+`endif
 ```
 
-### Fail Example (1 of 3)
+### Fail Example (1 of 4)
 ```systemverilog
 module `ifdef FOO Foo `else Bar `endif
   (); // ifdef, else, and endif are on a single line.
 endmodule
 ```
 
-### Fail Example (2 of 3)
+### Fail Example (2 of 4)
 ```systemverilog
 `ifdef FOO
   `ifdef BAR
@@ -439,7 +443,7 @@ endmodule
 `endif
 ```
 
-### Fail Example (3 of 3)
+### Fail Example (3 of 4)
 ```systemverilog
 module M ();
   always_comb
@@ -453,6 +457,12 @@ module M ();
       b = e;
     `endif
 endmodule
+```
+
+### Fail Example (4 of 4)
+```systemverilog
+ `ifdef FOO // The ifdef is not commented and indented
+`endif
 ```
 
 ### Explanation
