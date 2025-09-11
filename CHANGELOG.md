@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.9.3...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.9.4...Unreleased) - ReleaseDate
+
+## [v0.9.4](https://github.com/dalance/svlint/compare/v0.9.3...v0.9.4) - 2025-09-11
 
 * [Changed] Ignore compiler directive if commented in style_directives [#308](https://github.com/dalance/svlint/pull/308)
 * [Added] Add rule to prevent mixing operators with confusing precedence [#301](https://github.com/dalance/svlint/pull/301)
