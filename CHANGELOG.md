@@ -2,6 +2,12 @@
 
 ## [Unreleased](https://github.com/dalance/svlint/compare/v0.9.3...Unreleased) - ReleaseDate
 
+* [Changed] Ignore compiler directive if commented in style_directives [#308](https://github.com/dalance/svlint/pull/308)
+* [Added] Add rule to prevent mixing operators with confusing precedence [#301](https://github.com/dalance/svlint/pull/301)
+* [Fixed] Fix crash in style_keyword_0or1space [#300](https://github.com/dalance/svlint/pull/300)
+* [Added] feat: add style_keyword_1spaceornewline rule [#297](https://github.com/dalance/svlint/pull/297)
+* [Added] feat: add support for file encoding detection [#294](https://github.com/dalance/svlint/pull/294)
+
 ## [v0.9.3](https://github.com/dalance/svlint/compare/v0.9.2...v0.9.3) - 2024-06-03
 
 * [Added] New rule that ensures module/interface/package/program identifier matches the filename it's in [#283](https://github.com/dalance/svlint/pull/283)
