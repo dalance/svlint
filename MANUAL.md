@@ -5099,10 +5099,18 @@ Replace `parameter` keyword with `localparam`.
 
 In a package, `localparam` properly describes the non-overridable semantics.
 
-### Pass Example (1 of 1)
+### Pass Example (1 of 2)
 ```systemverilog
 package P;
   localparam int A = 1;
+endpackage
+```
+
+### Pass Example (2 of 2)
+```systemverilog
+package foo;
+   class bar #( parameter int baz );
+   endclass
 endpackage
 ```
 
