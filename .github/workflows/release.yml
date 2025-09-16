@@ -42,7 +42,7 @@ jobs:
             --variable=colorlinks
             --variable=papersize:a4
             -o svlint_MANUAL_${{github.ref_name}}.pdf
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: pdf
           path: svlint_MANUAL_${{github.ref_name}}.pdf

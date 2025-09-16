@@ -12,6 +12,9 @@
 `resetall
 /* This FILE is `__FILE__ */
 /* This LINE is `__LINE__ */
+// This directive is commented `celldefine
+module testmodule(); //Those directives are also commented `ifdef FOO Foo `else Bar `endif
+endmodule
 `include "testcases/syntaxrules/pass/blocking_assignment_in_always_ff.sv"
 `define FOO 5
 `ifdef FOO
@@ -22,4 +25,5 @@
 `endif
 `undef FOO
 `undefineall
-
+`ifdef FOO // `ifdef BAR
+`endif
