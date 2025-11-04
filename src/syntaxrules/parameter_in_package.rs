@@ -1,9 +1,11 @@
 use crate::config::ConfigOption;
 use crate::linter::{SyntaxRule, SyntaxRuleResult};
-use sv_parser::{unwrap_locate, unwrap_node, NodeEvent, RefNode, SyntaxTree};
+use sv_parser::{unwrap_locate, NodeEvent, RefNode, SyntaxTree};
 
 #[derive(Default)]
-pub struct ParameterInPackage;
+pub struct ParameterInPackage {
+    inside_param_port_list : bool,
+}
 
 impl SyntaxRule for ParameterInPackage {
     fn check(
@@ -12,24 +14,22 @@ impl SyntaxRule for ParameterInPackage {
         event: &NodeEvent,
         _option: &ConfigOption,
     ) -> SyntaxRuleResult {
-        let node = match event {
-            NodeEvent::Enter(x) => x,
-            NodeEvent::Leave(_) => {
-                return SyntaxRuleResult::Pass;
-            }
-        };
-        match node {
-            RefNode::PackageDeclaration(x) => {
-                let param = unwrap_node!(*x, ParameterDeclaration);
-                if let Some(param) = param {
-                    let param_locate = unwrap_locate!(param).unwrap();
-                    SyntaxRuleResult::FailLocate(*param_locate)
-                } else {
-                    SyntaxRuleResult::Pass
+        match event {
+            NodeEvent::Enter(RefNode::ParameterPortList(_)) => {
+                self.inside_param_port_list = true;
+            },
+            NodeEvent::Leave(RefNode::ParameterPortList(_)) => {
+                self.inside_param_port_list = false;
+            },
+            NodeEvent::Enter(RefNode::ParameterDeclaration(&ref x)) => {
+                if !self.inside_param_port_list {
+                    let param_locate = unwrap_locate!(x).unwrap();
+                    return SyntaxRuleResult::FailLocate(*param_locate)
                 }
-            }
-            _ => SyntaxRuleResult::Pass,
-        }
+            },
+            _ => {}
+        };
+        return SyntaxRuleResult::Pass
     }
 
     fn name(&self) -> String {
