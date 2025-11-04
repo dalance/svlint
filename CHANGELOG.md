@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/svlint/compare/v0.9.4...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/svlint/compare/v0.9.5...Unreleased) - ReleaseDate
+
+## [v0.9.5](https://github.com/dalance/svlint/compare/v0.9.4...v0.9.5) - 2025-11-04
 
 * [Fixed] proposed fix for parameter in package false negative #309 [#310](https://github.com/dalance/svlint/pull/310)
 * [Added] Add rule: default_nettype_wire_at_end [#312](https://github.com/dalance/svlint/pull/312)
