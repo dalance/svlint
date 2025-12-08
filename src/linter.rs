@@ -100,7 +100,8 @@ pub struct Linter {
     syntaxrules: Vec<Box<dyn SyntaxRule>>,
     plugins: Vec<Library>,
     re_ctl: Regex,
-    pub ctl_enabled: HashMap<String, bool>,
+    pub ctl_enabled_syntax: HashMap<String, bool>,
+    pub ctl_enabled_text: HashMap<String, bool>,
 }
 
 #[derive(Debug)]
@@ -120,9 +121,13 @@ impl Linter {
 
         // NOTE: Only syntaxrules are comment-controllable, not textrules.
         let re_ctl = Regex::new(r"/\*\s*svlint\s+(on|off)\s+([a-z0-9_]+)\s*\*/").unwrap();
-        let mut ctl_enabled = HashMap::new();
+        let mut ctl_enabled_syntax = HashMap::new();
         for rule in &syntaxrules {
-            ctl_enabled.insert(rule.name(), true);
+            ctl_enabled_syntax.insert(rule.name(), true);
+        }
+        let mut ctl_enabled_text = HashMap::new();
+        for rule in &textrules {
+            ctl_enabled_text.insert(rule.name(), true);
         }
 
         Linter {
@@ -131,7 +136,8 @@ impl Linter {
             syntaxrules,
             plugins: Vec::new(),
             re_ctl,
-            ctl_enabled,
+            ctl_enabled_syntax,
+            ctl_enabled_text,
         }
     }
 
@@ -149,11 +155,12 @@ impl Linter {
                 match plugin {
                     Rule::Text(p) => {
                         let plugin = unsafe { Box::from_raw(p) };
+                        self.ctl_enabled_text.insert(plugin.name(), true);
                         self.textrules.push(plugin);
                     },
                     Rule::Syntax(p) => {
                         let plugin = unsafe { Box::from_raw(p) };
-                        self.ctl_enabled.insert(plugin.name(), true);
+                        self.ctl_enabled_syntax.insert(plugin.name(), true);
                         self.syntaxrules.push(plugin);
                     },
                 }
@@ -163,10 +170,40 @@ impl Linter {
         Ok(())
     }
 
+    fn update_ctl_enabled_text(&mut self, event: &TextRuleEvent) {
+        match event {
+            TextRuleEvent::StartOfFile => {
+                for (_, enable) in self.ctl_enabled_text.iter_mut() {
+                    *enable = true;
+                }
+            }
+            TextRuleEvent::Line(x) => {
+                let res_caps = self.re_ctl.captures(*x);
+                if let Some(caps) = res_caps {
+                    let ctl_name = caps.get(2).unwrap().as_str();
+                    if self.ctl_enabled_text.contains_key(ctl_name) {
+                        let ctl_enable = match caps.get(1).unwrap().as_str() {
+                            "off" => false,
+                            _ => true,
+                        };
+                        self.ctl_enabled_text.insert(ctl_name.to_string(), ctl_enable);
+                    }
+                }
+            }
+        }
+    }
+
     pub fn textrules_check(&mut self, event: TextRuleEvent, path: &Path, beg: &usize) -> Vec<LintFailed> {
+        self.update_ctl_enabled_text(&event);
 
         let mut ret = Vec::new();
         'outer: for rule in &mut self.textrules {
+            match self.ctl_enabled_text[&rule.name()] {
+                true => {}
+                _ => {
+                    continue 'outer;
+                }
+            }
             match rule.check(event, &self.option) {
                 TextRuleResult::Fail {offset, len} => {
                     match event {
@@ -195,7 +232,7 @@ impl Linter {
         ret
     }
 
-    fn update_ctl_enabled(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) {
+    fn update_ctl_enabled_syntax(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) {
         match event {
             NodeEvent::Enter(RefNode::Comment(x)) => {
                 let loc: Option<&Locate> = unwrap_locate!(*x);
@@ -207,12 +244,12 @@ impl Linter {
                 if caps.is_some() {
                     let caps = caps.unwrap();
                     let ctl_name = caps.get(2).unwrap().as_str();
-                    if self.ctl_enabled.contains_key(ctl_name) {
+                    if self.ctl_enabled_syntax.contains_key(ctl_name) {
                         let ctl_enable = match caps.get(1).unwrap().as_str() {
                             "off" => false,
                             _ => true,
                         };
-                        self.ctl_enabled.insert(ctl_name.to_string(), ctl_enable);
+                        self.ctl_enabled_syntax.insert(ctl_name.to_string(), ctl_enable);
                     }
                 }
             }
@@ -221,7 +258,7 @@ impl Linter {
     }
 
     pub fn syntaxrules_check(&mut self, syntax_tree: &SyntaxTree, event: &NodeEvent) -> Vec<LintFailed> {
-        self.update_ctl_enabled(syntax_tree, event);
+        self.update_ctl_enabled_syntax(syntax_tree, event);
 
         let node = match event {
             NodeEvent::Enter(x) => x,
@@ -235,7 +272,7 @@ impl Linter {
 
         let mut ret = Vec::new();
         'outer: for rule in &mut self.syntaxrules {
-            match self.ctl_enabled[&rule.name()] {
+            match self.ctl_enabled_syntax[&rule.name()] {
                 true => {}
                 _ => {
                     continue 'outer;

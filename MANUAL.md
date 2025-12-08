@@ -230,9 +230,8 @@ Where no configuration file can be found, all rules are implicitly
 enabled which will most likely result in errors from conflicting rules, e.g.
 **keyword_forbidden_generate** and **keyword_required_generate**.
 
-If you need to turn off specific syntax rules for a section, then you can use
-special comments within your SystemVerilog source code
-(not currently available for text rules):
+If you need to turn off specific rules for a section, then you can use
+special comments within your SystemVerilog source code:
 ```systemverilog
 /* svlint off keyword_forbidden_always */
 always @* foo = bar;                      // <-- This line is special.
@@ -281,7 +280,6 @@ a short reason why it should be seen.
 You are welcome to suggest a new rule through
 [Issues](https://github.com/dalance/svlint/issues) or
 [Pull Requests](https://github.com/dalance/svlint/pulls).
-
 
 # Text Rules
 
